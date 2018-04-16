@@ -374,19 +374,22 @@ void DRS4TextFileStreamManager::writeInterpolations(QVector<QPointF> *interpolat
                  splineType = "linear";
                  break;
              case DRS4SplineInterpolationType::type::cubic:
-                 splineType = "cubic";
+                 splineType = "cubic - ALGLIB";
                  break;
              case DRS4SplineInterpolationType::type::akima:
-                 splineType = "akima";
+                 splineType = "akima - ALGLIB";
                  break;
              case DRS4SplineInterpolationType::type::catmullRom:
-                 splineType = "catmull-rom";
+                 splineType = "catmull-rom - ALGLIB";
                  break;
              case DRS4SplineInterpolationType::type::monotone:
-                 splineType = "monotone";
+                 splineType = "monotone - ALGLIB";
+                 break;
+             case DRS4SplineInterpolationType::type::tk_cubic:
+                 splineType = "cubic - Tino Kluge";
                  break;
              default:
-                 splineType = "linear";
+                 splineType = "cubic - ALGLIB";
                  break;
              }
 

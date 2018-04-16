@@ -2037,27 +2037,33 @@ void DRS4Worker::runSingleThreaded()
 
                 if ( (DRS4TextFileStreamManager::sharedInstance()->writeInterpolationA() || DRS4TextFileStreamManager::sharedInstance()->writeInterpolationB())
                      && (m_pListChannelA.size() > 0 && m_pListChannelB.size() > 0) ) {
-                    const int points = m_pListChannelA.size()*streamIntraRenderPoints;
+                    if (!bUsingLinearInterpol) {
+                        const int points = m_pListChannelA.size()*streamIntraRenderPoints;
 
-                    QVector<QPointF> splineA(points);
-                    QVector<QPointF> splineB(points);
+                        QVector<QPointF> splineA(points);
+                        QVector<QPointF> splineB(points);
 
-                    const float incrA = (m_pListChannelA.at(m_pListChannelA.size()-1).x() - m_pListChannelA.at(0).x())/(float)points;
-                    const float incrB = (m_pListChannelB.at(m_pListChannelB.size()-1).x() - m_pListChannelB.at(0).x())/(float)points;
-                    const float startXA = m_pListChannelA.at(0).x();
-                    const float startXB = m_pListChannelB.at(0).x();
+                        const float incrA = (m_pListChannelA.at(m_pListChannelA.size()-1).x() - m_pListChannelA.at(0).x())/(float)points;
+                        const float incrB = (m_pListChannelB.at(m_pListChannelB.size()-1).x() - m_pListChannelB.at(0).x())/(float)points;
+                        const float startXA = m_pListChannelA.at(0).x();
+                        const float startXB = m_pListChannelB.at(0).x();
 
-                    for ( int i = 0 ; i < points ; ++ i ) {
-                        const float valXA = startXA + (float)i*incrA;
-                        const float valXB = startXB + (float)i*incrB;
-                        const float valYA = (interpolationType == DRS4InterpolationType::type::spline)?(alglib::spline1dcalc(m_interpolantA, valXA)):(alglib::barycentriccalc(m_baryCentricInterpolantA, valXA));
-                        const float valYB = (interpolationType == DRS4InterpolationType::type::spline)?(alglib::spline1dcalc(m_interpolantA, valXB)):(alglib::barycentriccalc(m_baryCentricInterpolantB, valXB));
+                        for ( int i = 0 ; i < points ; ++ i ) {
+                            const float valXA = startXA + (float)i*incrA;
+                            const float valXB = startXB + (float)i*incrB;
 
-                        splineA[i] = QPointF(valXA, valYA);
-                        splineB[i] = QPointF(valXB, valYB);
+                            const float valYA = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingTinoKluge?(tkSplineA(valXA)):(alglib::spline1dcalc(m_interpolantA, valXA))):(alglib::barycentriccalc(m_baryCentricInterpolantA, valXA));
+                            const float valYB = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingTinoKluge?(tkSplineB(valXB)):(alglib::spline1dcalc(m_interpolantB, valXB))):(alglib::barycentriccalc(m_baryCentricInterpolantB, valXB));
+
+                            splineA[i] = QPointF(valXA, valYA);
+                            splineB[i] = QPointF(valXB, valYB);
+                        }
+
+                        DRS4TextFileStreamManager::sharedInstance()->writeInterpolations(&splineA, &splineB, interpolationType, splineInterpolationType);
                     }
-
-                    DRS4TextFileStreamManager::sharedInstance()->writeInterpolations(&splineA, &splineB, interpolationType, splineInterpolationType);
+                    else {
+                        DRS4TextFileStreamManager::sharedInstance()->writeInterpolations(&m_pListChannelA, &m_pListChannelB, interpolationType, splineInterpolationType);
+                    }
                 }
             }
         }
