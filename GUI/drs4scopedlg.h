@@ -171,7 +171,7 @@ private slots:
 
     void saveABSpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecAB.txt");
     void saveBASpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecBA.txt");
-    void saveCoincidenceSpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecPromt.txt");
+    void saveCoincidenceSpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecPrompt.txt");
     void saveMergedSpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecMerged.txt");
     void savePHSA(bool autosave = false, const QString& fileNameAutosave = "__autosavePHSA.txt");
     void savePHSB(bool autosave = false, const QString& fileNameAutosave = "__autosavePHSB.txt");

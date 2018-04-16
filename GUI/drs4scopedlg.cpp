@@ -1432,7 +1432,7 @@ bool DRS4ScopeDlg::saveABSpectrumFromExtern(const QString &fileName)
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumAB()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntAB() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumAB()->at(i)).toString() << "\n";
@@ -1480,7 +1480,7 @@ bool DRS4ScopeDlg::saveBASpectrumFromExtern(const QString &fileName)
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumBA()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntBA() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumBA()->at(i)).toString() << "\n";
@@ -1527,7 +1527,7 @@ bool DRS4ScopeDlg::saveMergedSpectrumFromExtern(const QString &fileName)
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumMerged()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntMerged() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumMerged()->at(i)).toString() << "\n";
@@ -1574,7 +1574,7 @@ bool DRS4ScopeDlg::saveCoincidenceSpectrumFromExtern(const QString &fileName)
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumCoincidence()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntCoincindence() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumCoincidence()->at(i)).toString() << "\n";
@@ -3899,7 +3899,7 @@ void DRS4ScopeDlg::saveABSpectrum(bool autosave, const QString &fileNameAutosave
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumAB()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntAB() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumAB()->at(i)).toString() << "\n";
@@ -3953,7 +3953,7 @@ void DRS4ScopeDlg::saveBASpectrum(bool autosave, const QString &fileNameAutosave
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumBA()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntBA() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumBA()->at(i)).toString() << "\n";
@@ -4007,7 +4007,7 @@ void DRS4ScopeDlg::saveCoincidenceSpectrum(bool autosave, const QString &fileNam
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumCoincidence()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntCoincindence() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumCoincidence()->at(i)).toString() << "\n";
@@ -4062,7 +4062,7 @@ void DRS4ScopeDlg::saveMergedSpectrum(bool autosave, const QString &fileNameAuto
         stream << "#" << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumMerged()).toDouble(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts";
+        stream << "channel\tcounts\n";
 
         for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntMerged() ; ++ i ) {
             stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->spectrumMerged()->at(i)).toString() << "\n";
@@ -4092,7 +4092,7 @@ void DRS4ScopeDlg::savePHSA(bool autosave, const QString &fileNameAutosave)
     QString fileName = "";
 
     if (!autosave) {
-        const QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+        fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                               DRS4ProgramSettingsManager::sharedInstance()->savePHSDataFilePath(),
                                                               tr("Data (*.dat *.txt *.log)"));
 
