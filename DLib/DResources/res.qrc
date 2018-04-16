@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>yaxis_hover.svg</file>
+        <file>yaxis_default.svg</file>
+        <file>yaxis_click.svg</file>
+        <file>xaxis_hover.svg</file>
+        <file>xaxis_default.svg</file>
+        <file>xaxis_click.svg</file>
+        <file>logLin_hover.svg</file>
+        <file>logLin_default.svg</file>
+        <file>logLin_click.svg</file>
+    </qresource>
+</RCC>

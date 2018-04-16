@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/settings">
+        <file alias="defaultSimulationSettings">res/___generalSimulationModeSettings</file>
+        <file alias="DataAcqu_1">res/Load Settings-File and Save Data after Counts.drs4Script</file>
+        <file alias="PulseStream_1">res/Optimize CFD-Levels.drs4Script</file>
+        <file alias="WarmingUp_1">res/DRS4Warming.drs4Script</file>
+        <file>images/license_png.pdf</file>
+        <file>images/license_svg.pdf</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>images/007-folder-3.png</file>
+        <file>images/008-folder-2.png</file>
+        <file>images/002-information.png</file>
+        <file>images/003-chat.png</file>
+        <file>images/004-computing-script.png</file>
+        <file>images/play_click.svg</file>
+        <file>images/play_default.svg</file>
+        <file>images/play_hover.svg</file>
+        <file>images/stop_click.svg</file>
+        <file>images/stop_default.svg</file>
+        <file>images/stop_hover.svg</file>
+        <file>images/IconPNGRounded.png</file>
+        <file>images/PALS.JPG</file>
+        <file>images/calculator73.svg</file>
+        <file>images/simulation.png</file>
+        <file>images/006-binary-code-loading-symbol.png</file>
+        <file>images/log.png</file>
+        <file>images/001-heart-rate-monitor.png</file>
+    </qresource>
+</RCC>

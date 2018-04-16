@@ -1,0 +1,59 @@
+function dwell() {
+	var i = 0;
+	while(i<2000000) { i ++; }
+}
+
+var directory_1 = "C:/Users/s224043/Desktop/PALS/RepTest";
+
+
+var settingsFile =  "C:/Users/s224043/Desktop/PALS/RepTest/CFDSweep.drs4LTSettings";
+
+
+var DatastreamFile="E:/PALSJunk/Al_22_12_2016.drs4DataStream"
+var CFDincrement=10
+var counts=3000000
+var CFDLevelStart=10
+var CFDLevelStop=90
+var savedataname= "C:/Users/s224043/Desktop/PALS/RepTest/Test/Test"
+var savesettingsname= "C:/Users/s224043/Desktop/PALS/RepTest/Test/set"
+var savelogFile="C:/Users/s224043/Desktop/PALS/RepTest/Test/log"
+restartAcquisition();
+
+
+loadSettingsFile(settingsFile);
+
+//changeGaussianFitAutomaticallyForCoincidenceSpectrum(true);
+
+for ( var CFDLevel=CFDLevelStart ; CFDLevel<=CFDLevelStop ; CFDLevel+=CFDincrement )
+{
+		changeCFDLevelA(CFDLevel);
+		changeCFDLevelB(CFDLevel);
+
+
+
+		stopLoadingFromDataStreamFile();
+		dwell();
+		loadDataStreamFile(DatastreamFile);
+
+		resetAllSpectra();
+
+		while ( getCountsOfMergedSpectrum() < counts && isRunningFromDataStream() ) {}
+
+
+print(getFWHMOfCoincidenceSpectrumInPicoseconds());
+
+		stopAcquisition();
+		
+		saveDataOfMergedSpectrum(savedataname + "_"+ CFDLevel+ "Percentage" + "_merged.dat");
+		saveDataOfCoincidenceSpectrum(savedataname + "_"+ CFDLevel+ "Percentage" + "_coincidence.dat");
+		saveDataOfABSpectrum(savedataname + "_"+ CFDLevel+ "Percentage" + "_AB.dat");
+		saveDataOfBASpectrum(savedataname + "_"+ CFDLevel+ "Percentage" + "_BA.dat");
+		
+
+		saveSettingsFile(savesettingsname + "_"+ CFDLevel+ "Percentage");
+		
+		restartAcquisition();
+
+}
+
+saveLogFile(savelogFile + "_" +  CFDLevel + "Percentage" + ".log")
