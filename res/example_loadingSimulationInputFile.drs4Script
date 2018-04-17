@@ -1,0 +1,26 @@
+//*************************************************************************/
+// All rights reserved by Danny Petschke (C) 2016-2018
+//
+// Author: Danny Petschke
+// Date: 17.04.2018
+//
+//*************************************************************************/
+
+var __settingsFile__ = "C:/Users/User/Desktop/settings"; //extension is not necessary!
+var __simulationFile__ = "C:/Users/User/Desktop/dataStream"; //extension is not necessary!
+
+if (!loadSettingsFile(__settingsFile__)) {
+	print("An error occurred while loading the settings file!");
+	return;
+}
+
+resetAllSpectra();
+
+if (!loadSimulationInputFile(__simulationFile__)) {
+	print("An error occurred while loading the data simulation input file!");
+	return;
+}
+
+startAcquisition();
+
+// .....

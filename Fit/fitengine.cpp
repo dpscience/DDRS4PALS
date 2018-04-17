@@ -342,7 +342,7 @@ bool FitEngine::runGaussianWithBkgrd(const QVector<int> &dataVec, int numberOfIt
     params[2] = *amplitude;
 
     //bkgrd
-    paramContraints[3].fixed = 1;
+    paramContraints[3].fixed = 0;
     paramContraints[3].limited[0] = 0;
 
     params[3] = *bkgrd;

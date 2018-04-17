@@ -30,14 +30,14 @@
 
 #include "include/DLTPulseGenerator/DLTPulseGenerator.h"
 
-//comment-out to use in-line Pulse-Generator - deprecated (07/2017):
+//Pulse-Generator: deprecated (07/2017):
 #define __DPALSPULSEGENERATOR_DEPRECATED
 
 /** To Change before Release **/
 
 #define NAME                       QString("DDRS4PALS")
 #define MAJOR_VERSION       QString("1")
-#define MINOR_VERSION    QString("0")
+#define MINOR_VERSION    QString("01")
 #define VERSION_EXTENSION QString("(official)")
 #define DATE_EXTENSION  QString("16.04.2018")
 

@@ -42,6 +42,9 @@ DRS4ScriptDlg::DRS4ScriptDlg(DRS4ScopeDlg *dlg, QWidget *parent) :
     ui->actionSave_Script->setIcon(QIcon(":/images/images/008-folder-2.png"));
 
     ui->actionSave_Log->setIcon(QIcon(":/images/images/log.png"));
+    ui->actionSave_Log_Failed->setIcon(QIcon(":/images/images/log.png"));
+    ui->actionSave_Log_PrintOut->setIcon(QIcon(":/images/images/log.png"));
+    ui->actionSave_Log_Succeed->setIcon(QIcon(":/images/images/log.png"));
 
     m_currentScriptPath = "";
     m_currentScriptFileLabel = new QLabel;
@@ -88,11 +91,18 @@ DRS4ScriptDlg::DRS4ScriptDlg(DRS4ScopeDlg *dlg, QWidget *parent) :
     connect(ui->actionSave_Log_Failed, SIGNAL(triggered()), this, SLOT(saveLogFailedFile()));
     connect(ui->actionSave_Log_PrintOut, SIGNAL(triggered()), this, SLOT(saveLogPrintOutFile()));
 
-
-    /* Add examples here: */
+    /* add examples here: */
     connect(ui->actionLoad_Settings_File_and_Save_after_Counts, SIGNAL(triggered()), this, SLOT(loadExample_DataAcqu_1()));
     connect(ui->actionOptimize_FWHM_by_CFD_Levels, SIGNAL(triggered()), this, SLOT(loadExample_PulseStream_1()));
     connect(ui->actionWarming_Up_DRS4_Board_and_Start_Measurement, SIGNAL(triggered()), this, SLOT(loadExample_WarmingUp_2()));
+    connect(ui->actionLoading_a_Simulation_Input_File, SIGNAL(triggered()), this, SLOT(loadExample_Simulation_1()));
+
+    if (DRS4BoardManager::sharedInstance()->isDemoModeEnabled()) {
+        ui->actionWarming_Up_DRS4_Board_and_Start_Measurement->setEnabled(false);
+    }
+    else {
+        ui->actionLoading_a_Simulation_Input_File->setEnabled(false);
+    }
 
     connect(this, SIGNAL(scriptStarted()), ui->textEdit_log, SLOT(clear()), Qt::DirectConnection);
     connect(this, SIGNAL(scriptStarted()), ui->textEdit_logSucceed, SLOT(clear()), Qt::DirectConnection);
@@ -110,8 +120,6 @@ DRS4ScriptDlg::DRS4ScriptDlg(DRS4ScopeDlg *dlg, QWidget *parent) :
 
     m_currentScriptPath = NO_SCRIPT_FILE_PLACEHOLDER;
     updateCurrentFileLabel();
-
-    ui->menuExamples->setEnabled(false); //to be done!
 }
 
 DRS4ScriptDlg::~DRS4ScriptDlg()
@@ -239,8 +247,8 @@ void DRS4ScriptDlg::loadExample_DataAcqu_1()
     if ( !ui->textEdit_scriptInput->document()->isEmpty() )
     {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Load Script-File?");
-            msgBox.setText("Loading a Script will overwrite the existing Script. Do you wan`t to load a new Script?");
+            msgBox.setWindowTitle("Loading a Script-File?");
+            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
             msgBox.setStandardButtons(QMessageBox::Yes);
             msgBox.addButton(QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
@@ -274,8 +282,8 @@ void DRS4ScriptDlg::loadExample_PulseStream_1()
     if ( !ui->textEdit_scriptInput->document()->isEmpty() )
     {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Load Script-File?");
-            msgBox.setText("Loading a Script will overwrite the existing Script. Do you wan`t to load a new Script?");
+            msgBox.setWindowTitle("Loading a Script-File?");
+            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
             msgBox.setStandardButtons(QMessageBox::Yes);
             msgBox.addButton(QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
@@ -309,8 +317,8 @@ void DRS4ScriptDlg::loadExample_WarmingUp_2()
     if ( !ui->textEdit_scriptInput->document()->isEmpty() )
     {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Load Script-File?");
-            msgBox.setText("Loading a Script will overwrite the existing Script. Do you wan`t to load a new Script?");
+            msgBox.setWindowTitle("Loading a Script-File?");
+            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
             msgBox.setStandardButtons(QMessageBox::Yes);
             msgBox.addButton(QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
@@ -323,6 +331,41 @@ void DRS4ScriptDlg::loadExample_WarmingUp_2()
     }
 
     QFile file(":/settings/WarmingUp_1");
+
+    if ( file.open(QIODevice::ReadOnly) )
+    {
+        ui->textEdit_scriptInput->clear();
+        ui->textEdit_scriptInput->appendPlainText(QString(file.readAll()));
+
+        emit ui->textEdit_scriptInput->textChanged();
+
+        file.close();
+    }
+    else
+    {
+        MSGBOX("Sorry, cannot load this Script-File!")
+    }
+}
+
+void DRS4ScriptDlg::loadExample_Simulation_1()
+{
+    if ( !ui->textEdit_scriptInput->document()->isEmpty() )
+    {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Loading a Script-File?");
+            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
+            msgBox.setStandardButtons(QMessageBox::Yes);
+            msgBox.addButton(QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+
+            const int retVal = msgBox.exec();
+
+            if ( retVal == QMessageBox::No
+                 ||  retVal == QMessageBox::Cancel  )
+                return;
+    }
+
+    QFile file(":/settings/Simulation_1");
 
     if ( file.open(QIODevice::ReadOnly) )
     {

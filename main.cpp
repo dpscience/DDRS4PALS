@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     if ( !mem.create(1) )
     {
-        MSGBOX("An Instance of this DDRS4PALS is already running!");
+        MSGBOX("An instance of DDRS4PALS is already running!");
         exit(0);
     }
 
