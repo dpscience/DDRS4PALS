@@ -1,11 +1,12 @@
 <RCC>
     <qresource prefix="/settings">
         <file alias="defaultSimulationSettings">res/___generalSimulationModeSettings</file>
-        <file alias="DataAcqu_1">res/Load Settings-File and Save Data after Counts.drs4Script</file>
-        <file alias="PulseStream_1">res/Optimize CFD-Levels.drs4Script</file>
-        <file alias="WarmingUp_1">res/DRS4Warming.drs4Script</file>
         <file>images/license_png.pdf</file>
         <file>images/license_svg.pdf</file>
+        <file alias="DataAcqu_1">res/example_startAcquireAndSaveSpectrum.drs4Script</file>
+        <file alias="PulseStream_1">res/example_loadingDataStreamFile.drs4Script</file>
+        <file alias="WarmingUp_1">res/example_startAcquisitionAfterBoardTemperatureReached.drs4Script</file>
+        <file alias="Simulation_1">res/example_loadingSimulationInputFile.drs4Script</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/007-folder-3.png</file>

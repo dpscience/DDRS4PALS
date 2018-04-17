@@ -127,9 +127,15 @@
      </property>
      <addaction name="actionOptimize_FWHM_by_CFD_Levels"/>
     </widget>
+    <widget class="QMenu" name="menuSimulation">
+     <property name="title">
+      <string>Simulation</string>
+     </property>
+     <addaction name="actionLoading_a_Simulation_Input_File"/>
+    </widget>
     <addaction name="separator"/>
     <addaction name="menuData_Acquisition"/>
-    <addaction name="actionSimulation"/>
+    <addaction name="menuSimulation"/>
     <addaction name="menuPulse_Stream"/>
    </widget>
    <addaction name="menuFile"/>
@@ -303,17 +309,12 @@
   </action>
   <action name="actionLoad_Settings_File_and_Save_after_Counts">
    <property name="text">
-    <string>Load Settings-File and Save after Counts</string>
-   </property>
-  </action>
-  <action name="actionSimulation">
-   <property name="text">
-    <string>Simulation</string>
+    <string>Loading a Settings-File and save Spectra after Counts</string>
    </property>
   </action>
   <action name="actionOptimize_FWHM_by_CFD_Levels">
    <property name="text">
-    <string>Optimize FWHM by CFD-Levels</string>
+    <string>Loading a Pulse-Stream</string>
    </property>
   </action>
   <action name="actionSave_Log_Succeed">
@@ -341,7 +342,12 @@
   </action>
   <action name="actionWarming_Up_DRS4_Board_and_Start_Measurement">
    <property name="text">
-    <string>Warming Up DRS4-Board and Start Measurement</string>
+    <string>Warming Up the DRS4-Board and start Measurement</string>
+   </property>
+  </action>
+  <action name="actionLoading_a_Simulation_Input_File">
+   <property name="text">
+    <string>Loading a Simulation-Input File</string>
    </property>
   </action>
  </widget>

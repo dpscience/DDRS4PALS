@@ -57,7 +57,7 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
     list.append("changeBurstMode(__bool_burstMode?__)");
     list.append("isBurstModeRunning() << bool");
 
-    list.append("saveDataOfPromtSpectrum(\"__name_of_file__\") << bool");
+    list.append("saveDataOfPromptSpectrum(\"__name_of_file__\") << bool");
     list.append("saveDataOfMergedSpectrum(\"__name_of_file__\") << bool");
     list.append("saveDataOfABSpectrum(\"__name_of_file__\") << bool");
     list.append("saveDataOfBASpectrum(\"__name_of_file__\") << bool");
@@ -100,7 +100,7 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
     list.append("resetAllSpectra()");
     list.append("resetABSpectrum()");
     list.append("resetBASpectrum()");
-    list.append("resetPromtSpectrum()");
+    list.append("resetPromptSpectrum()");
     list.append("resetMergedSpectrum()");
 
     list.append("resetAreaPlotA()");
@@ -139,7 +139,7 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
 
     list.append("changePulseAreaFilterEnabled(__bool_areaFilter?__)");
 
-    list.append("fitGaussianOnPromtData()");
+    list.append("fitGaussianOnPromptData()");
     list.append("fitGaussianOnMergedData()");
     list.append("fitGaussianOnABData()");
     list.append("fitGaussianOnBAData()");
@@ -182,7 +182,7 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
 
     list.append("getATSInPicoseconds() << double");
 
-    list.append("getPromtFitIterations() << int");
+    list.append("getPromptFitIterations() << int");
     list.append("getABFitIterations() << int");
     list.append("getBAFitIterations() << int");
     list.append("getMergedFitIterations() << int");

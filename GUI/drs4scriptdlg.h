@@ -77,6 +77,7 @@ public slots:
     void loadExample_DataAcqu_1();
     void loadExample_PulseStream_1();
     void loadExample_WarmingUp_2();
+    void loadExample_Simulation_1();
 
     void saveLogCompleteFile();
     void saveLogSucceedFile();

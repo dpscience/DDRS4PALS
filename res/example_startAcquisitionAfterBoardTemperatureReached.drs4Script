@@ -1,0 +1,22 @@
+//*************************************************************************/
+// All rights reserved by Danny Petschke (C) 2016-2018
+//
+// Author: Danny Petschke
+// Date: 17.04.2018
+//
+//*************************************************************************/
+
+var __temperatureToBeReached__ = 48.0; // [°C]
+
+//disable burst-mode:
+if (isBurstModeRunning()) {
+	changeBurstMode(false); 
+}
+
+while (getBoardTemperatureInDegree() < __temperatureToBeReached__ ) {}
+print("DRS4-Board reached temperature of: " + getBoardTemperatureInDegree() + " °");
+
+resetAllSpectra();
+startAcquisition();
+
+// ....
