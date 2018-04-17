@@ -28,5 +28,5 @@ For more details see [GNU General Public License v3](https://www.gnu.org/license
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
 2. Download and Setup MS Visual Studio Compiler 2013 (or any newer version) .
 3. Compile (x86/x64) and Run the code on your Machine.
-4. Start the Simulation Modus or Acquisition Modus if your DRS4 Board is connected.
+4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
 5. Finished. Press run to obtain your Lifetime Spectra.
