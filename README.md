@@ -12,17 +12,27 @@ You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This D
 ## v1.x
 DDRS4PALS v1.02:<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219523.svg)](https://doi.org/10.5281/zenodo.1219523)<br>
 
-# License (GNU General Public License)
-<p align="justify">This program is free software: you can redistribute it and/or modify<br>
-it under the terms of the GNU General Public License as published by<br>
-the Free Software Foundation, either version 3 of the License, or<br>
-(at your option) any later version.<br><br>
+# Third Party Libraries and Licenses
 
-This program is distributed in the hope that it will be useful,<br>
-but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.<br><br></p>
+<b>DDRS4PALS</b> is written in C++ using [Qt-Framework](https://www.qt.io/) and is licensed under the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)
 
-For more details see [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)
+### A library for spline and polynomial interpolation fitting is provided by: 
+- [ALGLIB: A cross-platform numerical analysis and data processing library](http://www.alglib.net/) License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
+- [Tino Kluge: A cubic spline interpolation library](http://kluge.in-chemnitz.de/opensource/spline/) License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
+
+### A least-square fitting library using the Levenberg-Marquardt algorithm is provided by:
+- [MPFIT: A MINPACK-1 Least Squares Fitting Library in C](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html)<br>
+
+### A library for USB device access is provided by:
+- [libusb-1.0 package](http://libusb.info/)<br>
+
+### Source code for the communication with the DRS4 evaluation board:
+- [Paul Scherrer Institut - PSI](https://www.psi.ch/drs/software-download)<br><br>
+These files containing documentation, drivers, applications, C/C++ source code and the FPGA firmware in VHDL and compiled bit files.<br><br>
+<b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b> License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
+
+### A C++ library for the simulation of lifetime spectra based in detector pulses is provided by:
+- [DLTPulseGenerator - Danny Petschke](https://github.com/dpscience/DLTPulseGenerator) License: [BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
 
 # Setup
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
