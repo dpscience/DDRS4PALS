@@ -30,7 +30,7 @@
 
 #include "include/DLTPulseGenerator/DLTPulseGenerator.h"
 
-//comment-out to use in-line Pulse-Generator - deprecated (07/2017):
+//Pulse-Generator: deprecated (07/2017):
 #define __DPALSPULSEGENERATOR_DEPRECATED
 
 /** To Change before Release **/
