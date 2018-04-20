@@ -37,9 +37,9 @@
 
 #define NAME                       QString("DDRS4PALS")
 #define MAJOR_VERSION       QString("1")
-#define MINOR_VERSION    QString("01")
+#define MINOR_VERSION    QString("03")
 #define VERSION_EXTENSION QString("(official)")
-#define DATE_EXTENSION  QString("16.04.2018")
+#define DATE_EXTENSION  QString("20.04.2018")
 
 #define DATA_STREAM_VERSION 1
 

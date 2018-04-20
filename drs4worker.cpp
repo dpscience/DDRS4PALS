@@ -1761,7 +1761,7 @@ void DRS4Worker::runSingleThreaded()
                     cfdValueA = cfdA*yMaxA;
 
                     cfdACounter = 0;
-                }
+                }              
             }
 
             if ( waveChannel1[a] >= yMaxB ) {
@@ -1772,7 +1772,7 @@ void DRS4Worker::runSingleThreaded()
                     cfdValueB = cfdB*yMaxB;
 
                     cfdBCounter = 0;
-                }
+                }                
             }
 
             if ( waveChannel0[a] <= yMinA ) {
@@ -1804,8 +1804,11 @@ void DRS4Worker::runSingleThreaded()
                 /* calculate the pulse area of ROI */
                 if (bPulseAreaPlot
                         || bPulseAreaFilter) {
-                    areaA += waveChannel0[aDecr]*(tChannel0[a] - tChannel0[aDecr])*0.5f;
-                    areaB += waveChannel1[aDecr]*(tChannel1[a] - tChannel1[aDecr])*0.5f;
+                    //const float valA = abs((waveChannel0[aDecr] + 0.5*(waveChannel0[a] - waveChannel0[aDecr]))*(tChannel0[a] - tChannel0[aDecr]));
+                    //const float valB = abs((waveChannel1[aDecr] + 0.5*(waveChannel1[a] - waveChannel1[aDecr]))*(tChannel1[a] - tChannel1[aDecr]));
+
+                    areaA += abs((waveChannel0[aDecr] + 0.5*(waveChannel0[a] - waveChannel0[aDecr]))*(tChannel0[a] - tChannel0[aDecr]));//positiveSignal?((valA>1E-6)?valA:0.0f):((valA<1E-6)?valA:0.0f);
+                    areaB += abs((waveChannel1[aDecr] + 0.5*(waveChannel1[a] - waveChannel1[aDecr]))*(tChannel1[a] - tChannel1[aDecr]));//positiveSignal?((valB>1E-6)?valB:0.0f):((valB<1E-6)?valB:0.0f);
                 }
 
                 const double slopeA = (waveChannel0[a] - waveChannel0[aDecr])/(tChannel0[a] - tChannel0[aDecr]);
@@ -1972,8 +1975,8 @@ void DRS4Worker::runSingleThreaded()
         }
 
         /* reject artefacts */
-        if ( cfdBCounter > 1
-             || cfdACounter > 1 )
+        if ( cfdBCounter > 1 || cfdBCounter == 0
+             || cfdACounter > 1 || cfdACounter == 0 )
             continue;
 
         /* select interpolation type - obtain interpolant */
@@ -2026,8 +2029,8 @@ void DRS4Worker::runSingleThreaded()
                 || bPulseAreaFilter) {
             const float rat = 5120*((float)cellWidth/((float)kNumberOfBins));
 
-            areaA = abs(areaA)/(pulseAreaFilterNormA*rat);
-            areaB = abs(areaB)/(pulseAreaFilterNormB*rat);
+            areaA = areaA/(pulseAreaFilterNormA*rat);
+            areaB = areaB/(pulseAreaFilterNormB*rat);
         }
 
         /* store/write pulses and interpolations to ASCII file */
@@ -3611,8 +3614,11 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 /* calculate the pulse area of ROI */
                 if (inputData.m_bPulseAreaPlot
                         || inputData.m_bPulseAreaFilter) {
-                    areaA += inputData.m_waveChannel0[aDecr]*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr])*0.5f;
-                    areaB += inputData.m_waveChannel1[aDecr]*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr])*0.5f;
+                    //const float valA = (inputData.m_waveChannel0[aDecr] + 0.5*(inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr]))*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]);
+                    //const float valB = (inputData.m_waveChannel1[aDecr] + 0.5*(inputData.m_waveChannel1[a] - inputData.m_waveChannel1[aDecr]))*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr]);
+
+                    areaA += abs((inputData.m_waveChannel0[aDecr] + 0.5*(inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr]))*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]));//inputData.m_positiveSignal?((valA>1E-6)?valA:0.0f):((valA<1E-6)?valA:0.0f);
+                    areaB += abs((inputData.m_waveChannel1[aDecr] + 0.5*(inputData.m_waveChannel1[a] - inputData.m_waveChannel1[aDecr]))*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr]));//inputData.m_positiveSignal?((valB>1E-6)?valB:0.0f):((valB<1E-6)?valB:0.0f);
                 }
 
                 const double slopeA = (inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr])/(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]);
@@ -3731,8 +3737,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
         }
 
         /* reject artefacts */
-        if ( cfdBCounter > 1
-             || cfdACounter > 1 )
+        if ( cfdBCounter > 1 || cfdBCounter == 0
+             || cfdACounter > 1 || cfdACounter == 0 )
             continue;
 
         /* select interpolation type - obtain interpolant */
@@ -3785,8 +3791,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 || inputData.m_bPulseAreaFilter) {
             const float rat = 5120*((float)inputData.m_cellWidth/((float)kNumberOfBins));
 
-            areaA = abs(areaA)/(inputData.m_pulseAreaFilterNormA*rat);
-            areaB = abs(areaB)/(inputData.m_pulseAreaFilterNormB*rat);
+            areaA = areaA/(inputData.m_pulseAreaFilterNormA*rat);
+            areaB = areaB/(inputData.m_pulseAreaFilterNormB*rat);
         }
 
         /* determine max/min more precisely */

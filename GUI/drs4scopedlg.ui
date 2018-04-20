@@ -61,7 +61,7 @@
          <string notr="true">color: dark-blue</string>
         </property>
         <property name="text">
-         <string>enable Parallel Processing?</string>
+         <string>enable parallel Processing?</string>
         </property>
        </widget>
       </item>
@@ -3086,7 +3086,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Left of max. Value [ns]: </string>
+                 <string>Right of max. Value [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3181,7 +3181,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Left of max. Value [ns]: </string>
+                 <string>Right of max. Value [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3299,7 +3299,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="tab_12">
                <attribute name="title">
@@ -3374,14 +3374,20 @@
                       <height>30</height>
                      </size>
                     </property>
+                    <property name="decimals">
+                     <number>5</number>
+                    </property>
                     <property name="minimum">
-                     <double>0.010000000000000</double>
+                     <double>0.000010000000000</double>
                     </property>
                     <property name="maximum">
                      <double>100.000000000000000</double>
                     </property>
+                    <property name="singleStep">
+                     <double>0.001000000000000</double>
+                    </property>
                     <property name="value">
-                     <double>5.000000000000000</double>
+                     <double>0.010000000000000</double>
                     </property>
                    </widget>
                   </item>
@@ -3689,14 +3695,20 @@
                       <height>30</height>
                      </size>
                     </property>
+                    <property name="decimals">
+                     <number>5</number>
+                    </property>
                     <property name="minimum">
-                     <double>0.010000000000000</double>
+                     <double>0.000010000000000</double>
                     </property>
                     <property name="maximum">
                      <double>100.000000000000000</double>
                     </property>
+                    <property name="singleStep">
+                     <double>0.001000000000000</double>
+                    </property>
                     <property name="value">
-                     <double>5.000000000000000</double>
+                     <double>0.010000000000000</double>
                     </property>
                    </widget>
                   </item>
