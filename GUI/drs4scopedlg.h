@@ -335,6 +335,16 @@ public slots:
     void ACCESSED_BY_SCRIPT_AND_GUI resetAreaPlotA(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI resetAreaPlotB(const FunctionSource& source = FunctionSource::AccessFromGUI);
 
+    /* Median - Filter */
+    void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterAEnabled(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterBEnabled(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterWindowSizeA(int size, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterWindowSizeB(int size, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterUsingIntegerA(bool usingInt, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterUsingIntegerB(bool usingInt, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
     /* Lifetime - Spectra */
     void ACCESSED_BY_SCRIPT_AND_GUI resetLTSpectrumAB(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI resetLTSpectrumBA(const FunctionSource& source = FunctionSource::AccessFromGUI);

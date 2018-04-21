@@ -157,55 +157,37 @@ class DRS4SettingsManager
     bool m_persistanceEnabled;
 
     DSimpleXMLNode *m_parentNode;
-
     DSimpleXMLNode *m_versionNode;
-
     DSimpleXMLNode *m_generalSettingsNode;
-
     DSimpleXMLNode *m_cfdDeterminationSettingsNode;
-
-        DSimpleXMLNode *m_cfdAlgorithmTypeNode;
-
-            DSimpleXMLNode *m_cfdAlgorithmType_polynomialInterpolationNode;
-
-                DSimpleXMLNode *m_polynomialIntraSamplingPointsNode;
-
-            DSimpleXMLNode *m_cfdAlgorithmType_splineAndFittingInterpolationNode;
-
-                DSimpleXMLNode *m_splineTypeNode;
-
-                    DSimpleXMLNode *m_splineTypeLinearNode;
-                        DSimpleXMLNode *m_splineTypeLinearEnabledNode;
-
-                    DSimpleXMLNode *m_splineTypeCubicNode;
-                        DSimpleXMLNode *m_splineTypeCubicEnabledNode;
-
-                    DSimpleXMLNode *m_splineTypeAkimaNode;
-                        DSimpleXMLNode *m_splineTypeAkimaEnabledNode;
-
-                    DSimpleXMLNode *m_splineTypeCatmullRomNode;
-                        DSimpleXMLNode *m_splineTypeCatmullRomEnabledNode;
-
-                    DSimpleXMLNode *m_splineTypeMonotoneNode;
-                        DSimpleXMLNode *m_splineTypeMonotoneEnabledNode;
-
-                     DSimpleXMLNode *m_splineTypeTKCubicNode;
-                        DSimpleXMLNode *m_splineTypeTKCubicEnabledNode;
-
-                DSimpleXMLNode *m_splineIntraSamplingPointsNode;
-
+    DSimpleXMLNode *m_cfdAlgorithmTypeNode;
+    DSimpleXMLNode *m_cfdAlgorithmType_polynomialInterpolationNode;
+    DSimpleXMLNode *m_polynomialIntraSamplingPointsNode;
+    DSimpleXMLNode *m_cfdAlgorithmType_splineAndFittingInterpolationNode;
+    DSimpleXMLNode *m_splineTypeNode;
+    DSimpleXMLNode *m_splineTypeLinearNode;
+    DSimpleXMLNode *m_splineTypeLinearEnabledNode;
+    DSimpleXMLNode *m_splineTypeCubicNode;
+    DSimpleXMLNode *m_splineTypeCubicEnabledNode;
+    DSimpleXMLNode *m_splineTypeAkimaNode;
+    DSimpleXMLNode *m_splineTypeAkimaEnabledNode;
+    DSimpleXMLNode *m_splineTypeCatmullRomNode;
+    DSimpleXMLNode *m_splineTypeCatmullRomEnabledNode;
+    DSimpleXMLNode *m_splineTypeMonotoneNode;
+    DSimpleXMLNode *m_splineTypeMonotoneEnabledNode;
+    DSimpleXMLNode *m_splineTypeTKCubicNode;
+    DSimpleXMLNode *m_splineTypeTKCubicEnabledNode;
+    DSimpleXMLNode *m_splineIntraSamplingPointsNode;
     DSimpleXMLNode *m_phsSettingsNode;
     DSimpleXMLNode *m_spectrumSettingsNode;
     DSimpleXMLNode *m_abSpecNode, *m_baSpecNode, *m_mergedSpecNode, *m_promptSpecNode;
     DSimpleXMLNode *m_areaFilterSettingsNode;
+    DSimpleXMLNode *m_medianFilterSettingsNode;
     DSimpleXMLNode *m_persistancePlotSettingsNode;
-
     DSimpleXMLNode *m_startAChannelMinNode, *m_startAChannelMaxNode;
     DSimpleXMLNode *m_startBChannelMinNode, *m_startBChannelMaxNode;
-
     DSimpleXMLNode *m_stopAChannelMinNode, *m_stopAChannelMaxNode;
     DSimpleXMLNode *m_stopBChannelMinNode, *m_stopBChannelMaxNode;
-
     DSimpleXMLNode *m_burstModeNode;
     DSimpleXMLNode *m_negativeLifetimesNode;
     DSimpleXMLNode *m_ignoreBusyNode;
@@ -227,54 +209,46 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_channelCountMergedNode;
     DSimpleXMLNode *m_triggerSourceNode;
     DSimpleXMLNode *m_isPositivSignalNode;
-
     DSimpleXMLNode *m_sweepInNanoSecNode;
     DSimpleXMLNode *m_freqInGHzNode;
-
     DSimpleXMLNode *m_meanNSNode;
-
     DSimpleXMLNode *m_isTriggerPolarityPositiveNode;
     DSimpleXMLNode *m_triggerLevelANode;
     DSimpleXMLNode *m_triggerLevelBNode;
     DSimpleXMLNode *m_triggerDelayInNSNode;
-
     DSimpleXMLNode *m_commentNode;
     DSimpleXMLNode *m_lastSaveDateNode;
-
     DSimpleXMLNode *m_channelNumberANode;
     DSimpleXMLNode *m_channelNumberBNode;
-
     DSimpleXMLNode *m_bForceCoincidenceNode;
-
     DSimpleXMLNode *m_fitIterNode;
     DSimpleXMLNode *m_fitIterMergedNode;
     DSimpleXMLNode *m_fitIterABNode;
     DSimpleXMLNode *m_fitIterBANode;
-
     DSimpleXMLNode *m_pulseAreaFilerEnabledNode;
     DSimpleXMLNode *m_pulseAreaFilerEnabledPlotNode;
-
     DSimpleXMLNode *m_pulseAreaBinningANode;
     DSimpleXMLNode *m_pulseAreaBinningBNode;
-
     DSimpleXMLNode *m_pulseAreaNormANode;
     DSimpleXMLNode *m_pulseAreaNormBNode;
-
     DSimpleXMLNode *m_pulseAreaLeftUpper_A_Node;
     DSimpleXMLNode *m_pulseAreaRightUpper_A_Node;
     DSimpleXMLNode *m_pulseAreaLeftLower_A_Node;
     DSimpleXMLNode *m_pulseAreaRightLower_A_Node;
-
     DSimpleXMLNode *m_pulseAreaLeftUpper_B_Node;
     DSimpleXMLNode *m_pulseAreaRightUpper_B_Node;
     DSimpleXMLNode *m_pulseAreaLeftLower_B_Node;
     DSimpleXMLNode *m_pulseAreaRightLower_B_Node;
-
+    DSimpleXMLNode *m_medianFilterActivated_A_Node;
+    DSimpleXMLNode *m_medianFilterWindowSize_A_Node;
+    DSimpleXMLNode *m_medianFilterUsingInteger_A_Node;
+    DSimpleXMLNode *m_medianFilterActivated_B_Node;
+    DSimpleXMLNode *m_medianFilterWindowSize_B_Node;
+    DSimpleXMLNode *m_medianFilterUsingInteger_B_Node;
     DSimpleXMLNode *m_persistance_leftAInNs_Node;
     DSimpleXMLNode *m_persistance_leftBInNs_Node;
     DSimpleXMLNode *m_persistance_rightAInNs_Node;
     DSimpleXMLNode *m_persistance_rightBInNs_Node;
-
     DSimpleXMLNode *m_persistanceEnabled_Node;
 
     mutable QMutex m_mutex;
@@ -388,6 +362,24 @@ public:
     void setSplineInterpolationType(const DRS4SplineInterpolationType::type& type);
     void setSplineIntraSamplingCounts(int counts);
     void setPolynomialSamplingCounts(int counts);
+
+    void setMedianFilterAEnabled(bool enabled);
+    void setMedianFilterBEnabled(bool enabled);
+
+    void setMedianFilterWindowSizeA(int size);
+    void setMedianFilterWindowSizeB(int size);
+
+    void setMedianFilterUsingIntegerForSortingA(bool enabled);
+    void setMedianFilterUsingIntegerForSortingB(bool enabled);
+
+    bool medianFilterAEnabled() const;
+    bool medianFilterBEnabled() const;
+
+    int medianFilterWindowSizeA() const;
+    int medianFilterWindowSizeB() const;
+
+    bool medianFilterUsingIntegerForSortingA() const;
+    bool medianFilterUsingIntegerForSortingB() const;
 
     DRS4InterpolationType::type interpolationType() const;
     DRS4SplineInterpolationType::type splineInterpolationType() const;

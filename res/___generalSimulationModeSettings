@@ -108,6 +108,14 @@ p, li { white-space: pre-wrap; }
         <pulse-area-filter-lower-left-bounding-B>-2</pulse-area-filter-lower-left-bounding-B>
         <pulse-area-filter-lower-right-bounding-B>96</pulse-area-filter-lower-right-bounding-B>
     </area-filter-settings>
+    <median-filter-settings>
+         <median-filter-A?>false</median-filter-A?>
+         <median-filter-window-size-A>3</median-filter-window-size-A>
+         <median-filter-using-integer-for-sorting-A?>true</median-filter-using-integer-for-sorting-A?>
+         <median-filter-B?>false</median-filter-B?>
+         <median-filter-window-size-B>3</median-filter-window-size-B>
+         <median-filter-using-integer-for-sorting-B?>true</median-filter-using-integer-for-sorting-B?>
+    </median-filter-settings>
     <persistance-plot-settings>
         <persistance-plot?>false</persistance-plot?>
         <persistance-plot-left-of-maxValue-in-ns-A>2</persistance-plot-left-of-maxValue-in-ns-A>

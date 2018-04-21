@@ -327,6 +327,18 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->checkBox_activateAreaFilter->setChecked(false);
     ui->checkBox_enableAreaFilter->setChecked(true);
 
+    ui->checkBox_medianFilterAActivate->setChecked(false);
+    ui->checkBox_medianFilterBActivate->setChecked(false);
+
+    ui->checkBox_medianFilterUsingIntegerA->setChecked(true);
+    ui->checkBox_medianFilterUsingIntegerB->setChecked(true);
+
+    ui->spinBox_medianFilterWindowSizeA->setRange(3, kNumberOfBins-1);
+    ui->spinBox_medianFilterWindowSizeB->setRange(3, kNumberOfBins-1);
+
+    ui->spinBox_medianFilterWindowSizeA->setValue(3);
+    ui->spinBox_medianFilterWindowSizeB->setValue(3);
+
     ui->spinBox_parallelChunkSize->setRange(1, 10000);
     ui->spinBox_parallelChunkSize->setValue(DRS4ProgramSettingsManager::sharedInstance()->pulsePairChunkSize());
 
@@ -388,6 +400,11 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->doubleSpinBox_cfdB, SIGNAL(valueChanged(double)), this, SLOT(changeCFDLevelB(double)));
 
     connect(ui->checkBox_activateAreaFilter, SIGNAL(clicked(bool)), this, SLOT(changePulseAreaFilterEnabled(bool)));
+    connect(ui->checkBox_medianFilterAActivate, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterAEnabled(bool)));
+    connect(ui->checkBox_medianFilterBActivate, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterBEnabled(bool)));
+    connect(ui->checkBox_medianFilterUsingIntegerA, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterUsingIntegerA(bool)));
+    connect(ui->checkBox_medianFilterUsingIntegerB, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterUsingIntegerB(bool)));
+
     connect(ui->checkBox_enableAreaFilter, SIGNAL(clicked(bool)), this, SLOT(changePulseAreaFilterPlotEnabled(bool)));
     connect(ui->checkBox_enablePersistance, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotEnabled(bool)));
     connect(ui->checkBox_forceStopStopCoincindence, SIGNAL(clicked(bool)), this, SLOT(changeForceCoincidence(bool)));
@@ -439,6 +456,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->doubleSpinBox_areaFilter_rightB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
     connect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
     connect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
+
+    connect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
+    connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         connect(m_temperatureTimer, SIGNAL(timeout()), this, SLOT(plotTemperature()), Qt::QueuedConnection);
@@ -3079,6 +3099,120 @@ void DRS4ScopeDlg::resetAreaPlotB(const FunctionSource &source)
     m_worker->setBusy(false);
 }
 
+void DRS4ScopeDlg::changeMedianFilterAEnabled(bool on, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_medianFilterAActivate->clicked(on);
+        ui->checkBox_medianFilterAActivate->setChecked(on);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setMedianFilterAEnabled(on);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeMedianFilterBEnabled(bool on, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_medianFilterBActivate->clicked(on);
+        ui->checkBox_medianFilterBActivate->setChecked(on);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setMedianFilterBEnabled(on);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeMedianFilterWindowSizeA(int size, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_medianFilterWindowSizeA->setValue(size);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setMedianFilterWindowSizeA(size);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeMedianFilterWindowSizeB(int size, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_medianFilterWindowSizeB->setValue(size);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setMedianFilterWindowSizeB(size);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeMedianFilterUsingIntegerA(bool usingInt, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_medianFilterUsingIntegerA->clicked(usingInt);
+        ui->checkBox_medianFilterUsingIntegerA->setChecked(usingInt);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setMedianFilterUsingIntegerForSortingA(usingInt);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeMedianFilterUsingIntegerB(bool usingInt, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_medianFilterUsingIntegerB->clicked(usingInt);
+        ui->checkBox_medianFilterUsingIntegerB->setChecked(usingInt);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setMedianFilterUsingIntegerForSortingB(usingInt);
+
+    m_worker->setBusy(false);
+}
+
 void DRS4ScopeDlg::changeTriggerLevelA(int levelMilliVolt, const FunctionSource &source)
 {
     QMutexLocker locker(&m_mutex);
@@ -4755,6 +4889,9 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     disconnect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
     disconnect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
 
+    disconnect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
+    disconnect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
+
     disconnect(ui->doubleSpinBox_persistanceLeftA, SIGNAL(valueChanged(double)), this, SLOT(changeLeftAPersistance(double)));
     disconnect(ui->doubleSpinBox_persistanceLeftB, SIGNAL(valueChanged(double)), this, SLOT(changeLeftBPersistance(double)));
     disconnect(ui->doubleSpinBox_persistanceRightA, SIGNAL(valueChanged(double)), this, SLOT(changeRightAPersistance(double)));
@@ -4799,6 +4936,9 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
         ui->doubleSpinBox_areaFilter_rightB_lower->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerRightB());
         ui->doubleSpinBox_areaFilter_leftB_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperLeftB());
         ui->doubleSpinBox_areaFilter_rightB_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperRightB());
+
+        ui->spinBox_medianFilterWindowSizeA->setValue(DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA());
+        ui->spinBox_medianFilterWindowSizeB->setValue(DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB());
 
         ui->doubleSpinBox_persistanceLeftA->setValue(DRS4SettingsManager::sharedInstance()->persistanceLeftInNsOfA());
         ui->doubleSpinBox_persistanceLeftB->setValue(DRS4SettingsManager::sharedInstance()->persistanceLeftInNsOfB());
@@ -4845,6 +4985,9 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     connect(ui->doubleSpinBox_areaFilter_rightB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
     connect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
     connect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
+
+    connect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
+    connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
 
     connect(ui->doubleSpinBox_persistanceLeftA, SIGNAL(valueChanged(double)), this, SLOT(changeLeftAPersistance(double)));
     connect(ui->doubleSpinBox_persistanceLeftB, SIGNAL(valueChanged(double)), this, SLOT(changeLeftBPersistance(double)));
@@ -4895,6 +5038,12 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
 
     ui->checkBox_activateAreaFilter->setChecked(DRS4SettingsManager::sharedInstance()->isPulseAreaFilterEnabled());
     ui->checkBox_enableAreaFilter->setChecked(DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled());
+
+    ui->checkBox_medianFilterAActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterAEnabled());
+    ui->checkBox_medianFilterBActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterBEnabled());
+
+    ui->checkBox_medianFilterUsingIntegerA->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingA());
+    ui->checkBox_medianFilterUsingIntegerB->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingB());
 
     ui->checkBox_enablePersistance->setChecked(DRS4SettingsManager::sharedInstance()->isPersistanceEnabled());
 

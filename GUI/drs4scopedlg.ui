@@ -3943,6 +3943,12 @@
            <layout class="QVBoxLayout" name="verticalLayout_29">
             <item>
              <widget class="QTabWidget" name="tabWidget_2">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="currentIndex">
                <number>0</number>
               </property>
@@ -3994,6 +4000,18 @@
                      </item>
                      <item>
                       <widget class="QSpinBox" name="spinBox_medianFilterWindowSizeA">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>28</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>28</height>
+                        </size>
+                       </property>
                        <property name="styleSheet">
                         <string notr="true">color: blue</string>
                        </property>
@@ -4113,6 +4131,18 @@
                      </item>
                      <item>
                       <widget class="QSpinBox" name="spinBox_medianFilterWindowSizeB">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>28</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>28</height>
+                        </size>
+                       </property>
                        <property name="styleSheet">
                         <string notr="true">color: blue</string>
                        </property>

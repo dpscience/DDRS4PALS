@@ -29,6 +29,7 @@
 
 #include "Stream/drs4streamdataloader.h"
 #include "DLib/DMath/dspline.h"
+#include "DLib/DMath/dmedianfilter.h"
 
 DRS4Worker::DRS4Worker(DRS4WorkerDataExchange *dataExchange, QObject *parent) :
     m_dataExchange(dataExchange),
@@ -1676,6 +1677,24 @@ void DRS4Worker::runSingleThreaded()
         const int intraRenderPoints = (DRS4InterpolationType::type::spline == interpolationType)?(DRS4SettingsManager::sharedInstance()->splineIntraSamplingCounts()):(DRS4SettingsManager::sharedInstance()->polynomialSamplingCounts());
         const int streamIntraRenderPoints = DRS4ProgramSettingsManager::sharedInstance()->splineIntraPoints();
 
+        const bool bMedianFilterA = DRS4SettingsManager::sharedInstance()->medianFilterAEnabled();
+        const bool bMedianFilterB = DRS4SettingsManager::sharedInstance()->medianFilterBEnabled();
+        const bool bMedianFilterUsingIntForSortingA = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingA();
+        const bool bMedianFilterUsingIntForSortingB = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingB();
+        const int medianFilterWindowSizeA = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA();
+        const int medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
+
+        //apply median filter to remove spikes:
+        if (bMedianFilterA) {
+            if (!DMedianFilter::apply(waveChannel0, kNumberOfBins, medianFilterWindowSizeA, bMedianFilterUsingIntForSortingA))
+                continue;
+        }
+
+        if (bMedianFilterB) {
+            if (!DMedianFilter::apply(waveChannel1, kNumberOfBins, medianFilterWindowSizeB, bMedianFilterUsingIntForSortingB))
+                continue;
+        }
+
         /* clear pulse-data for new visualization */
         if (!bBurstMode) {
             resetPulseA();
@@ -1804,11 +1823,8 @@ void DRS4Worker::runSingleThreaded()
                 /* calculate the pulse area of ROI */
                 if (bPulseAreaPlot
                         || bPulseAreaFilter) {
-                    //const float valA = abs((waveChannel0[aDecr] + 0.5*(waveChannel0[a] - waveChannel0[aDecr]))*(tChannel0[a] - tChannel0[aDecr]));
-                    //const float valB = abs((waveChannel1[aDecr] + 0.5*(waveChannel1[a] - waveChannel1[aDecr]))*(tChannel1[a] - tChannel1[aDecr]));
-
-                    areaA += abs((waveChannel0[aDecr] + 0.5*(waveChannel0[a] - waveChannel0[aDecr]))*(tChannel0[a] - tChannel0[aDecr]));//positiveSignal?((valA>1E-6)?valA:0.0f):((valA<1E-6)?valA:0.0f);
-                    areaB += abs((waveChannel1[aDecr] + 0.5*(waveChannel1[a] - waveChannel1[aDecr]))*(tChannel1[a] - tChannel1[aDecr]));//positiveSignal?((valB>1E-6)?valB:0.0f):((valB<1E-6)?valB:0.0f);
+                    areaA += abs((waveChannel0[aDecr] + 0.5*(waveChannel0[a] - waveChannel0[aDecr]))*(tChannel0[a] - tChannel0[aDecr]));
+                    areaB += abs((waveChannel1[aDecr] + 0.5*(waveChannel1[a] - waveChannel1[aDecr]))*(tChannel1[a] - tChannel1[aDecr]));
                 }
 
                 const double slopeA = (waveChannel0[a] - waveChannel0[aDecr])/(tChannel0[a] - tChannel0[aDecr]);
@@ -3403,6 +3419,24 @@ void DRS4Worker::runMultiThreaded()
         inputData.m_stopBMinPHS = DRS4SettingsManager::sharedInstance()->stopChanneBMin();
         inputData.m_stopBMaxPHS = DRS4SettingsManager::sharedInstance()->stopChanneBMax();
 
+        inputData.m_bMedianFilterA = DRS4SettingsManager::sharedInstance()->medianFilterAEnabled();
+        inputData.m_bMedianFilterB = DRS4SettingsManager::sharedInstance()->medianFilterBEnabled();
+        inputData.m_bMedianFilterUsingIntForSortingA = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingA();
+        inputData.m_bMedianFilterUsingIntForSortingB = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingB();
+        inputData.m_medianFilterWindowSizeA = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA();
+        inputData.m_medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
+
+        //apply median filter to remove spikes:
+        if (inputData.m_bMedianFilterA) {
+            if (!DMedianFilter::apply(inputData.m_waveChannel0, kNumberOfBins, inputData.m_medianFilterWindowSizeA, inputData.m_bMedianFilterUsingIntForSortingA))
+                continue;
+        }
+
+        if (inputData.m_bMedianFilterB) {
+            if (!DMedianFilter::apply(inputData.m_waveChannel1, kNumberOfBins, inputData.m_medianFilterWindowSizeB, inputData.m_bMedianFilterUsingIntForSortingB))
+                continue;
+        }
+
         /* clear pulse-data for new visualization */
         if (!inputData.m_bBurstMode) {
             resetPulseA();
@@ -3421,9 +3455,6 @@ void DRS4Worker::runMultiThreaded()
                 m_pListChannelB[it] = QPointF(inputData.m_tChannel1[a], inputData.m_waveChannel1[a]);
             }
         }
-
-        /* prevent mutex locking: call these functions only once within the loop */
-
 
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_tChannel0, sizeOfWave)) {
@@ -3614,11 +3645,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 /* calculate the pulse area of ROI */
                 if (inputData.m_bPulseAreaPlot
                         || inputData.m_bPulseAreaFilter) {
-                    //const float valA = (inputData.m_waveChannel0[aDecr] + 0.5*(inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr]))*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]);
-                    //const float valB = (inputData.m_waveChannel1[aDecr] + 0.5*(inputData.m_waveChannel1[a] - inputData.m_waveChannel1[aDecr]))*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr]);
-
-                    areaA += abs((inputData.m_waveChannel0[aDecr] + 0.5*(inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr]))*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]));//inputData.m_positiveSignal?((valA>1E-6)?valA:0.0f):((valA<1E-6)?valA:0.0f);
-                    areaB += abs((inputData.m_waveChannel1[aDecr] + 0.5*(inputData.m_waveChannel1[a] - inputData.m_waveChannel1[aDecr]))*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr]));//inputData.m_positiveSignal?((valB>1E-6)?valB:0.0f):((valB<1E-6)?valB:0.0f);
+                    areaA += abs((inputData.m_waveChannel0[aDecr] + 0.5*(inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr]))*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]));
+                    areaB += abs((inputData.m_waveChannel1[aDecr] + 0.5*(inputData.m_waveChannel1[a] - inputData.m_waveChannel1[aDecr]))*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr]));
                 }
 
                 const double slopeA = (inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr])/(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]);

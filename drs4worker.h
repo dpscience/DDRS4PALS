@@ -216,6 +216,15 @@ public:
     double m_areaFilterBSlopeLower;
     double m_areaFilterBInterceptLower;
 
+    bool m_bMedianFilterA;
+    bool m_bMedianFilterB;
+
+    bool m_bMedianFilterUsingIntForSortingA;
+    bool m_bMedianFilterUsingIntForSortingB;
+
+    int m_medianFilterWindowSizeA;
+    int m_medianFilterWindowSizeB;
+
     int m_channelCntAB;
     int m_channelCntBA;
     int m_channelCntPrompt;
@@ -322,7 +331,6 @@ public:
 
     DRS4WorkerDataExchange::~DRS4WorkerDataExchange() {}
 };
-
 
 DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInputData>& copyDataVec);
 

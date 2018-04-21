@@ -150,6 +150,7 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_mergedSpecNode = new DSimpleXMLNode("spectrum-Merged");
     m_promptSpecNode = new DSimpleXMLNode("spectrum-Prompt");
     m_areaFilterSettingsNode = new DSimpleXMLNode("area-filter-settings");
+    m_medianFilterSettingsNode = new DSimpleXMLNode("median-filter-settings");
     m_persistancePlotSettingsNode = new DSimpleXMLNode("persistance-plot-settings");
 
     m_burstModeNode = new DSimpleXMLNode("burst-mode?");
@@ -311,6 +312,14 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_pulseAreaRightLower_B_Node = new DSimpleXMLNode("pulse-area-filter-lower-right-bounding-B");
     m_pulseAreaRightLower_B_Node->setValue(m_pulseAreaRightLower_B);
 
+    m_medianFilterActivated_A_Node = new DSimpleXMLNode("median-filter-A?");
+    m_medianFilterWindowSize_A_Node = new DSimpleXMLNode("median-filter-window-size-A");
+    m_medianFilterUsingInteger_A_Node = new DSimpleXMLNode("median-filter-using-integer-for-sorting-A?");
+
+    m_medianFilterActivated_B_Node = new DSimpleXMLNode("median-filter-B?");
+    m_medianFilterWindowSize_B_Node = new DSimpleXMLNode("median-filter-window-size-B");
+    m_medianFilterUsingInteger_B_Node = new DSimpleXMLNode("median-filter-using-integer-for-sorting-B?");
+
     m_persistanceEnabled_Node = new DSimpleXMLNode("persistance-plot?");
     m_persistanceEnabled_Node->setValue(m_persistanceEnabled);
 
@@ -406,6 +415,13 @@ DRS4SettingsManager::DRS4SettingsManager() :
                                 << m_pulseAreaLeftLower_B_Node
                                 << m_pulseAreaRightLower_B_Node;
 
+    (*m_medianFilterSettingsNode) << m_medianFilterActivated_A_Node
+                                  << m_medianFilterWindowSize_A_Node
+                                  << m_medianFilterUsingInteger_A_Node
+                                  << m_medianFilterActivated_B_Node
+                                  << m_medianFilterWindowSize_B_Node
+                                  << m_medianFilterUsingInteger_B_Node;
+
     (*m_persistancePlotSettingsNode) << m_persistanceEnabled_Node
                                      << m_persistance_leftAInNs_Node
                                      << m_persistance_leftBInNs_Node
@@ -417,6 +433,7 @@ DRS4SettingsManager::DRS4SettingsManager() :
                     << m_phsSettingsNode
                     << m_spectrumSettingsNode
                     << m_areaFilterSettingsNode
+                    << m_medianFilterSettingsNode
                     << m_persistancePlotSettingsNode;
 }
 
@@ -531,6 +548,11 @@ bool DRS4SettingsManager::load(const QString &path)
         return false;
 
     const DSimpleXMLTag pAreaFilterSettingsTag = pTag.getTag(m_areaFilterSettingsNode, &ok);
+
+    if ( !ok )
+        return false;
+
+    const DSimpleXMLTag pMedianFilterSettingsTag = pTag.getTag(m_medianFilterSettingsNode, &ok);
 
     if ( !ok )
         return false;
@@ -777,6 +799,26 @@ bool DRS4SettingsManager::load(const QString &path)
 
     m_pulseAreaRightUpper_B_Node->setValue(pAreaFilterSettingsTag.getValueAt(m_pulseAreaRightUpper_B_Node, &ok));
     if (!ok) m_pulseAreaRightUpper_B_Node->setValue(m_pulseAreaRightUpper_B);
+
+    /* Median filter */
+
+    m_medianFilterActivated_A_Node->setValue(pMedianFilterSettingsTag.getValueAt(m_medianFilterActivated_A_Node, &ok));
+    if (!ok) m_medianFilterActivated_A_Node->setValue(false);
+
+    m_medianFilterActivated_B_Node->setValue(pMedianFilterSettingsTag.getValueAt(m_medianFilterActivated_B_Node, &ok));
+    if (!ok) m_medianFilterActivated_B_Node->setValue(false);
+
+    m_medianFilterWindowSize_A_Node->setValue(pMedianFilterSettingsTag.getValueAt(m_medianFilterWindowSize_A_Node, &ok));
+    if (!ok) m_medianFilterWindowSize_A_Node->setValue(3);
+
+    m_medianFilterWindowSize_B_Node->setValue(pMedianFilterSettingsTag.getValueAt(m_medianFilterWindowSize_B_Node, &ok));
+    if (!ok) m_medianFilterWindowSize_B_Node->setValue(3);
+
+    m_medianFilterUsingInteger_A_Node->setValue(pMedianFilterSettingsTag.getValueAt(m_medianFilterUsingInteger_A_Node, &ok));
+    if (!ok) m_medianFilterUsingInteger_A_Node->setValue(true);
+
+    m_medianFilterUsingInteger_B_Node->setValue(pMedianFilterSettingsTag.getValueAt(m_medianFilterUsingInteger_B_Node, &ok));
+    if (!ok) m_medianFilterUsingInteger_B_Node->setValue(true);
 
     /* Persistance */
 
@@ -1418,6 +1460,90 @@ void DRS4SettingsManager::setPolynomialSamplingCounts(int counts)
     QMutexLocker locker(&m_mutex);
 
     m_polynomialIntraSamplingPointsNode->setValue(counts);
+}
+
+void DRS4SettingsManager::setMedianFilterAEnabled(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_medianFilterActivated_A_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setMedianFilterBEnabled(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_medianFilterActivated_B_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setMedianFilterWindowSizeA(int size)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_medianFilterWindowSize_A_Node->setValue(size);
+}
+
+void DRS4SettingsManager::setMedianFilterWindowSizeB(int size)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_medianFilterWindowSize_B_Node->setValue(size);
+}
+
+void DRS4SettingsManager::setMedianFilterUsingIntegerForSortingA(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_medianFilterUsingInteger_A_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setMedianFilterUsingIntegerForSortingB(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_medianFilterUsingInteger_B_Node->setValue(enabled);
+}
+
+bool DRS4SettingsManager::medianFilterAEnabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_medianFilterActivated_A_Node->getValue().toBool();
+}
+
+bool DRS4SettingsManager::medianFilterBEnabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_medianFilterActivated_B_Node->getValue().toBool();
+}
+
+int DRS4SettingsManager::medianFilterWindowSizeA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_medianFilterWindowSize_A_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::medianFilterWindowSizeB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_medianFilterWindowSize_B_Node->getValue().toInt();
+}
+
+bool DRS4SettingsManager::medianFilterUsingIntegerForSortingA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_medianFilterUsingInteger_A_Node->getValue().toBool();
+}
+
+bool DRS4SettingsManager::medianFilterUsingIntegerForSortingB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_medianFilterUsingInteger_B_Node->getValue().toBool();
 }
 
 DRS4InterpolationType::type DRS4SettingsManager::interpolationType() const

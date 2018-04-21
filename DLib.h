@@ -51,5 +51,6 @@
 #include "DLib/DPlot/plot2DXAxis.h"
 
 #include "DLib/DMath/constantexplanations.h"
+#include "DLib/DMath/dmedianfilter.h"
 
 #endif // DLIB_H
