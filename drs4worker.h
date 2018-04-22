@@ -219,9 +219,6 @@ public:
     bool m_bMedianFilterA;
     bool m_bMedianFilterB;
 
-    bool m_bMedianFilterUsingIntForSortingA;
-    bool m_bMedianFilterUsingIntForSortingB;
-
     int m_medianFilterWindowSizeA;
     int m_medianFilterWindowSizeB;
 

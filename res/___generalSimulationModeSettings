@@ -97,8 +97,8 @@ p, li { white-space: pre-wrap; }
         <pulse-area-filter-plot?>false</pulse-area-filter-plot?>
         <pulse-area-filter-binning-A>100</pulse-area-filter-binning-A>
         <pulse-area-filter-binning-B>100</pulse-area-filter-binning-B>
-        <pulse-area-filter-nomalization-fraction-in-%-A>0.10000000000000001</pulse-area-filter-nomalization-fraction-in-%-A>
-        <pulse-area-filter-nomalization-fraction-in-%-B>0.10000000000000001</pulse-area-filter-nomalization-fraction-in-%-B>
+        <pulse-area-filter-nomalization-fraction-in-%-A>0.2</pulse-area-filter-nomalization-fraction-in-%-A>
+        <pulse-area-filter-nomalization-fraction-in-%-B>0.2</pulse-area-filter-nomalization-fraction-in-%-B>
         <pulse-area-filter-upper-left-bounding-A>1</pulse-area-filter-upper-left-bounding-A>
         <pulse-area-filter-upper-right-bounding-A>110</pulse-area-filter-upper-right-bounding-A>
         <pulse-area-filter-lower-left-bounding-A>-2</pulse-area-filter-lower-left-bounding-A>
@@ -111,10 +111,8 @@ p, li { white-space: pre-wrap; }
     <median-filter-settings>
          <median-filter-A?>false</median-filter-A?>
          <median-filter-window-size-A>3</median-filter-window-size-A>
-         <median-filter-using-integer-for-sorting-A?>true</median-filter-using-integer-for-sorting-A?>
          <median-filter-B?>false</median-filter-B?>
          <median-filter-window-size-B>3</median-filter-window-size-B>
-         <median-filter-using-integer-for-sorting-B?>true</median-filter-using-integer-for-sorting-B?>
     </median-filter-settings>
     <persistance-plot-settings>
         <persistance-plot?>false</persistance-plot?>

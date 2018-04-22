@@ -1679,19 +1679,17 @@ void DRS4Worker::runSingleThreaded()
 
         const bool bMedianFilterA = DRS4SettingsManager::sharedInstance()->medianFilterAEnabled();
         const bool bMedianFilterB = DRS4SettingsManager::sharedInstance()->medianFilterBEnabled();
-        const bool bMedianFilterUsingIntForSortingA = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingA();
-        const bool bMedianFilterUsingIntForSortingB = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingB();
         const int medianFilterWindowSizeA = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA();
         const int medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
 
         //apply median filter to remove spikes:
         if (bMedianFilterA) {
-            if (!DMedianFilter::apply(waveChannel0, kNumberOfBins, medianFilterWindowSizeA, bMedianFilterUsingIntForSortingA))
+            if (!DMedianFilter::apply(waveChannel0, kNumberOfBins, medianFilterWindowSizeA))
                 continue;
         }
 
         if (bMedianFilterB) {
-            if (!DMedianFilter::apply(waveChannel1, kNumberOfBins, medianFilterWindowSizeB, bMedianFilterUsingIntForSortingB))
+            if (!DMedianFilter::apply(waveChannel1, kNumberOfBins, medianFilterWindowSizeB))
                 continue;
         }
 
@@ -2373,8 +2371,7 @@ void DRS4Worker::runSingleThreaded()
 
         /* lifetime: A-B - master */
         if ( bIsStart_A
-             && bIsStop_B && !bForcePrompt  )
-        {
+             && bIsStop_B && !bForcePrompt  ) {
             const double ltdiff = (timeStampB - timeStampA);
             const int binAB = ((int)round(((((ltdiff)+offsetAB)/scalerAB))*((double)channelCntAB)))-1;
 
@@ -2405,6 +2402,31 @@ void DRS4Worker::runSingleThreaded()
                          && binAB <= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMaxAB() ) {
                         if ( DRS4TextFileStreamRangeManager::sharedInstance()->isABEnabled() )
                             DRS4TextFileStreamRangeManager::sharedInstance()->writePulses(pulseDataA(), pulseDataB());
+                    }
+                }
+
+                /* calculate normalized persistance data */
+                if (bPersistance
+                        && !bBurstMode) {
+                    m_persistanceDataA.clear();
+                    m_persistanceDataB.clear();
+
+                    m_persistanceDataA.resize(m_pListChannelA.size());
+                    m_persistanceDataB.resize(m_pListChannelB.size());
+
+                    const float fractYMaxA = 1.0f/yMaxA;
+                    const float fractYMaxB = 1.0f/yMaxB;
+
+                    const float fractYMinA = 1.0f/yMinA;
+                    const float fractYMinB = 1.0f/yMinB;
+
+                    const int size = m_persistanceDataA.size();
+                    for ( int j = 0 ; j < size ; ++ j ) {
+                        const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
+                        const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
+
+                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-timeStampA, yA); // >> shift channel A relative to CFD-%(t0) of A
+                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-timeStampB, yB); // >> shift channel B relative to CFD-%(t0) of B
                     }
                 }
             }
@@ -2465,6 +2487,31 @@ void DRS4Worker::runSingleThreaded()
                             DRS4TextFileStreamRangeManager::sharedInstance()->writePulses(pulseDataA(), pulseDataB());
                     }
                 }
+
+                /* calculate normalized persistance data */
+                if (bPersistance
+                        && !bBurstMode) {
+                    m_persistanceDataA.clear();
+                    m_persistanceDataB.clear();
+
+                    m_persistanceDataA.resize(m_pListChannelA.size());
+                    m_persistanceDataB.resize(m_pListChannelB.size());
+
+                    const float fractYMaxA = 1.0f/yMaxA;
+                    const float fractYMaxB = 1.0f/yMaxB;
+
+                    const float fractYMinA = 1.0f/yMinA;
+                    const float fractYMinB = 1.0f/yMinB;
+
+                    const int size = m_persistanceDataA.size();
+                    for ( int j = 0 ; j < size ; ++ j ) {
+                        const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
+                        const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
+
+                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-timeStampA, yA); // >> shift channel A relative to CFD-%(t0) of A
+                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-timeStampB, yB); // >> shift channel B relative to CFD-%(t0) of B
+                    }
+                }
             }
 
             if ( binMerged < 0 || binMerged >= channelCntMerged )
@@ -2505,32 +2552,7 @@ void DRS4Worker::runSingleThreaded()
 
                 m_specCoincidenceCounterCnt ++;
             }
-
-            /* calculate normalized persistance data */
-            if (bPersistance
-                    && !bBurstMode ) {
-                m_persistanceDataA.clear();
-                m_persistanceDataB.clear();
-
-                m_persistanceDataA.resize(m_pListChannelA.size());
-                m_persistanceDataB.resize(m_pListChannelB.size());
-
-                const float fractYMaxA = 1.0f/yMaxA;
-                const float fractYMaxB = 1.0f/yMaxB;
-
-                const float fractYMinA = 1.0f/yMinA;
-                const float fractYMinB = 1.0f/yMinB;
-
-                const int size = m_persistanceDataA.size();
-                for ( int j = 0 ; j < size ; ++ j ) {
-                    const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
-                    const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
-
-                    m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-timeStampB, yA); // >> shift channel A relative to CFD-%(t0) of B
-                    m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-timeStampA, yB); // >> shift channel B relative to CFD-%(t0) of A
-                }
-            }
-        }
+        } //end prompt
     }
 }
 
@@ -3421,19 +3443,17 @@ void DRS4Worker::runMultiThreaded()
 
         inputData.m_bMedianFilterA = DRS4SettingsManager::sharedInstance()->medianFilterAEnabled();
         inputData.m_bMedianFilterB = DRS4SettingsManager::sharedInstance()->medianFilterBEnabled();
-        inputData.m_bMedianFilterUsingIntForSortingA = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingA();
-        inputData.m_bMedianFilterUsingIntForSortingB = DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingB();
         inputData.m_medianFilterWindowSizeA = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA();
         inputData.m_medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
 
         //apply median filter to remove spikes:
         if (inputData.m_bMedianFilterA) {
-            if (!DMedianFilter::apply(inputData.m_waveChannel0, kNumberOfBins, inputData.m_medianFilterWindowSizeA, inputData.m_bMedianFilterUsingIntForSortingA))
+            if (!DMedianFilter::apply(inputData.m_waveChannel0, kNumberOfBins, inputData.m_medianFilterWindowSizeA))
                 continue;
         }
 
         if (inputData.m_bMedianFilterB) {
-            if (!DMedianFilter::apply(inputData.m_waveChannel1, kNumberOfBins, inputData.m_medianFilterWindowSizeB, inputData.m_bMedianFilterUsingIntForSortingB))
+            if (!DMedianFilter::apply(inputData.m_waveChannel1, kNumberOfBins, inputData.m_medianFilterWindowSizeB))
                 continue;
         }
 

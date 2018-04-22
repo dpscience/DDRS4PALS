@@ -3,9 +3,10 @@
 DMedianFilter::DMedianFilter() {}
 DMedianFilter::~DMedianFilter() {}
 
-bool DMedianFilter::apply(float *data_1d, int size, int windowSize, bool autocastToInteger)
+#ifdef __DMEDIANFILTER_VARIANT_1
+bool DMedianFilter::apply(float *data_1d, int size, int windowSize)
 {
-    if (!data_1d || size <= 0 || windowSize <= 3)
+    if (!data_1d || size < 3 || windowSize < 3)
         return false;
 
     const int windowSizeHalf = windowSize/2;
@@ -59,6 +60,27 @@ bool DMedianFilter::apply(float *data_1d, int size, int windowSize, bool autocas
             mediator.insert(data_1d[nMinus1]);
         }
     }
+
+    return true;
+}
+#endif
+
+bool DMedianFilter::apply(float *data_1d, int size, int windowSize)
+{
+    if (!data_1d || size <= 3 || windowSize < 3)
+        return false;
+
+    TMedianFilter1D<float> filter(windowSize);
+
+    std::vector<float> data(size);
+    for ( int i = 0 ; i < size ; ++ i )
+        data[i] = data_1d[i];
+
+    filter.Execute(data);
+
+    for ( int i = 0 ; i < filter.Count() ; ++ i )
+        data_1d[i] = filter[i];
+
 
     return true;
 }

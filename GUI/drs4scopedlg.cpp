@@ -330,9 +330,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->checkBox_medianFilterAActivate->setChecked(false);
     ui->checkBox_medianFilterBActivate->setChecked(false);
 
-    ui->checkBox_medianFilterUsingIntegerA->setChecked(true);
-    ui->checkBox_medianFilterUsingIntegerB->setChecked(true);
-
     ui->spinBox_medianFilterWindowSizeA->setRange(3, kNumberOfBins-1);
     ui->spinBox_medianFilterWindowSizeB->setRange(3, kNumberOfBins-1);
 
@@ -402,8 +399,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->checkBox_activateAreaFilter, SIGNAL(clicked(bool)), this, SLOT(changePulseAreaFilterEnabled(bool)));
     connect(ui->checkBox_medianFilterAActivate, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterAEnabled(bool)));
     connect(ui->checkBox_medianFilterBActivate, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterBEnabled(bool)));
-    connect(ui->checkBox_medianFilterUsingIntegerA, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterUsingIntegerA(bool)));
-    connect(ui->checkBox_medianFilterUsingIntegerB, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterUsingIntegerB(bool)));
 
     connect(ui->checkBox_enableAreaFilter, SIGNAL(clicked(bool)), this, SLOT(changePulseAreaFilterPlotEnabled(bool)));
     connect(ui->checkBox_enablePersistance, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotEnabled(bool)));
@@ -2674,6 +2669,16 @@ void DRS4ScopeDlg::plotPersistance()
 
     if (!m_worker->persistanceDataA()->isEmpty()
             && !m_worker->persistanceDataB()->isEmpty()) {
+        if (ui->widget_persistanceA->curve().at(0)->getDataSize() >= 80000) {
+            ui->widget_persistanceA->curve().at(0)->clearCurveContent();
+            ui->widget_persistanceA->curve().at(0)->clearCurveCache();
+        }
+
+        if (ui->widget_persistanceB->curve().at(0)->getDataSize() >= 80000) {
+            ui->widget_persistanceB->curve().at(0)->clearCurveContent();
+            ui->widget_persistanceB->curve().at(0)->clearCurveCache();
+        }
+
         ui->widget_persistanceA->curve().at(0)->addData(*m_worker->persistanceDataA(), m_bSwapDirection);
         ui->widget_persistanceB->curve().at(0)->addData(*m_worker->persistanceDataB(), m_bSwapDirection);
 
@@ -3169,46 +3174,6 @@ void DRS4ScopeDlg::changeMedianFilterWindowSizeB(int size, const FunctionSource 
     while(!m_worker->isBlocking()) {}
 
     DRS4SettingsManager::sharedInstance()->setMedianFilterWindowSizeB(size);
-
-    m_worker->setBusy(false);
-}
-
-void DRS4ScopeDlg::changeMedianFilterUsingIntegerA(bool usingInt, const FunctionSource &source)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( source == FunctionSource::AccessFromScript )
-    {
-        emit ui->checkBox_medianFilterUsingIntegerA->clicked(usingInt);
-        ui->checkBox_medianFilterUsingIntegerA->setChecked(usingInt);
-        return;
-    }
-
-    m_worker->setBusy(true);
-
-    while(!m_worker->isBlocking()) {}
-
-    DRS4SettingsManager::sharedInstance()->setMedianFilterUsingIntegerForSortingA(usingInt);
-
-    m_worker->setBusy(false);
-}
-
-void DRS4ScopeDlg::changeMedianFilterUsingIntegerB(bool usingInt, const FunctionSource &source)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( source == FunctionSource::AccessFromScript )
-    {
-        emit ui->checkBox_medianFilterUsingIntegerB->clicked(usingInt);
-        ui->checkBox_medianFilterUsingIntegerB->setChecked(usingInt);
-        return;
-    }
-
-    m_worker->setBusy(true);
-
-    while(!m_worker->isBlocking()) {}
-
-    DRS4SettingsManager::sharedInstance()->setMedianFilterUsingIntegerForSortingB(usingInt);
 
     m_worker->setBusy(false);
 }
@@ -5041,9 +5006,6 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
 
     ui->checkBox_medianFilterAActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterAEnabled());
     ui->checkBox_medianFilterBActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterBEnabled());
-
-    ui->checkBox_medianFilterUsingIntegerA->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingA());
-    ui->checkBox_medianFilterUsingIntegerB->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterUsingIntegerForSortingB());
 
     ui->checkBox_enablePersistance->setChecked(DRS4SettingsManager::sharedInstance()->isPersistanceEnabled());
 

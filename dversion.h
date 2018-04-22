@@ -82,11 +82,12 @@
     const QString contact = "contact: <a href=\"danny.petschke@uni-wuerzburg.de\">danny.petschke@uni-wuerzburg.de</a><br><br>"; \
     const QString license = "<nobr>Fit Algorithm by: <br><a href=\"https://www.physics.wisc.edu/~craigm/idl/cmpfit.html\">MPFIT</a>: A MINPACK-1 Least Squares Fitting Library in C</nobr><br><br>"; \
     const QString license2 = "<nobr>CFD Interpolation by:<br><a href=\"http://www.alglib.net/\">ALGLIB</a>: A Numerical Analysis and Data Processing Library</nobr><br>and<br><a href=\"http://kluge.in-chemnitz.de/opensource/spline/\">Tino Kluge</a>: Cubic Spline Interpolation in C++<br><br>"; \
+    const QString license2_1 = "<nobr>Spike Removal by:<br><a href=\"http://www.sergejusz.com/engineering_tips/median_filter.htm/\">S. Zabinskis</a>: A Fast Median Filter in C++<br><br>";\
     const QString license4 = "<nobr>Logo designed by: Hannah Heil</nobr>"; \
     QString versionStr; \
     versionStr = QString("v%1.%2").arg(DLTPULSEGENERATOR_MAJOR_VERSION).arg(DLTPULSEGENERATOR_MINOR_VERSION); \
     const QString license3 = "<nobr><a href=\"https://github.com/dpscience/DLTPulseGenerator\">DLTPulseGenerator</a> " + versionStr + " for Spectra-Simulation by: <br>Danny Petschke</nobr><br><br>"; \
-    QMessageBox::about(this, PROGRAM_NAME, text + contact + license + license2 + license3 + license4);}
+    QMessageBox::about(this, PROGRAM_NAME, text + contact + license + license2 + license2_1 + license3 + license4);}
 
 enum class ProgramStartType {
     Unknown,

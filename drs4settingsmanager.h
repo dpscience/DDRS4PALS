@@ -241,10 +241,8 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_pulseAreaRightLower_B_Node;
     DSimpleXMLNode *m_medianFilterActivated_A_Node;
     DSimpleXMLNode *m_medianFilterWindowSize_A_Node;
-    DSimpleXMLNode *m_medianFilterUsingInteger_A_Node;
     DSimpleXMLNode *m_medianFilterActivated_B_Node;
     DSimpleXMLNode *m_medianFilterWindowSize_B_Node;
-    DSimpleXMLNode *m_medianFilterUsingInteger_B_Node;
     DSimpleXMLNode *m_persistance_leftAInNs_Node;
     DSimpleXMLNode *m_persistance_leftBInNs_Node;
     DSimpleXMLNode *m_persistance_rightAInNs_Node;
@@ -369,17 +367,11 @@ public:
     void setMedianFilterWindowSizeA(int size);
     void setMedianFilterWindowSizeB(int size);
 
-    void setMedianFilterUsingIntegerForSortingA(bool enabled);
-    void setMedianFilterUsingIntegerForSortingB(bool enabled);
-
     bool medianFilterAEnabled() const;
     bool medianFilterBEnabled() const;
 
     int medianFilterWindowSizeA() const;
     int medianFilterWindowSizeB() const;
-
-    bool medianFilterUsingIntegerForSortingA() const;
-    bool medianFilterUsingIntegerForSortingB() const;
 
     DRS4InterpolationType::type interpolationType() const;
     DRS4SplineInterpolationType::type splineInterpolationType() const;

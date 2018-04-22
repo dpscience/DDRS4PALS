@@ -237,7 +237,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>8</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -2994,7 +2994,7 @@
       </widget>
       <widget class="QWidget" name="tab_persistance">
        <attribute name="title">
-        <string>Persistance (Prompt)</string>
+        <string>Persistance</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_24">
         <item>
@@ -3011,7 +3011,7 @@
              <string notr="true">color: green</string>
             </property>
             <property name="text">
-             <string>Enable Plot?</string>
+             <string>enable Plot?</string>
             </property>
            </widget>
           </item>
@@ -3054,7 +3054,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Left of max. Value [ns]: </string>
+                 <string>Left of Ref. Value [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3086,7 +3086,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Right of max. Value [ns]: </string>
+                 <string>Right of Ref. Value [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3158,7 +3158,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Left of max. Value [ns]: </string>
+                 <string>Left of Ref. Value [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3181,7 +3181,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Right of max. Value [ns]: </string>
+                 <string>Right of Ref. Value [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3255,7 +3255,7 @@
                  <string notr="true">color: green</string>
                 </property>
                 <property name="text">
-                 <string>Activate?</string>
+                 <string>activate?</string>
                 </property>
                </widget>
               </item>
@@ -3271,7 +3271,7 @@
                  <string notr="true">color: green</string>
                 </property>
                 <property name="text">
-                 <string>Enable Plot?</string>
+                 <string>enable Plot?</string>
                 </property>
                </widget>
               </item>
@@ -4032,39 +4032,6 @@
                      </item>
                     </layout>
                    </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_36">
-                     <item>
-                      <widget class="QCheckBox" name="checkBox_medianFilterUsingIntegerA">
-                       <property name="font">
-                        <font>
-                         <weight>75</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true">color: blue</string>
-                       </property>
-                       <property name="text">
-                        <string>using Integer for Sorting?</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_13">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -4150,39 +4117,6 @@
                      </item>
                      <item>
                       <spacer name="horizontalSpacer_14">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_39">
-                     <item>
-                      <widget class="QCheckBox" name="checkBox_medianFilterUsingIntegerB">
-                       <property name="font">
-                        <font>
-                         <weight>75</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true">color: blue</string>
-                       </property>
-                       <property name="text">
-                        <string>using Integer for Sorting?</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_20">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>

@@ -1,6 +1,8 @@
 #ifndef DMEDIANFILTER_H
 #define DMEDIANFILTER_H
 
+#include "DLib/DThirdParty/MedianFilter/medflt.h"
+
 template <typename DItem> class DMediator {
     const int m_N;
     DItem* m_data;
@@ -152,7 +154,7 @@ class DMedianFilter
     virtual ~DMedianFilter();
 
 public:
-    static bool apply(float *data_1d, int size, int windowSize, bool autocastToInteger = false);
+    static bool apply(float *data_1d, int size, int windowSize);
 };
 
 #endif // DMEDIANFILTER_H
