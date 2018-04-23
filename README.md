@@ -47,3 +47,6 @@ These files containing documentation, drivers, applications, C/C++ source code a
 3. Compile (x86/x64) and Run the code on your Machine.
 4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
 5. Finished. Press run to obtain your Lifetime Spectra.
+
+# Manual
+- The full documentation can be found [here](https://github.com/dpscience/DDRS4PALS/wiki).
