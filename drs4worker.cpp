@@ -1937,6 +1937,8 @@ void DRS4Worker::runSingleThreaded()
         const double ATS = DRS4SettingsManager::sharedInstance()->meanCableDelay();
         const bool bStreamInRangeArmed = DRS4TextFileStreamRangeManager::sharedInstance()->isArmed();
         const bool bStreamWithoutRangeArmed = DRS4TextFileStreamManager::sharedInstance()->isArmed();
+        const bool bOppositePersistanceA = DRS4SettingsManager::sharedInstance()->persistanceUsingCFDBAsRefForA();
+        const bool bOppositePersistanceB = DRS4SettingsManager::sharedInstance()->persistanceUsingCFDAAsRefForB();
 
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel0, sizeOfWave)) {
@@ -2425,8 +2427,8 @@ void DRS4Worker::runSingleThreaded()
                         const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
                         const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
 
-                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-timeStampA, yA); // >> shift channel A relative to CFD-%(t0) of A
-                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-timeStampB, yB); // >> shift channel B relative to CFD-%(t0) of B
+                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
+                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
                     }
                 }
             }
@@ -2508,8 +2510,8 @@ void DRS4Worker::runSingleThreaded()
                         const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
                         const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
 
-                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-timeStampA, yA); // >> shift channel A relative to CFD-%(t0) of A
-                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-timeStampB, yB); // >> shift channel B relative to CFD-%(t0) of B
+                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
+                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
                     }
                 }
             }
@@ -2551,6 +2553,31 @@ void DRS4Worker::runSingleThreaded()
                 m_maxY_CoincidenceSpectrum = qMax(m_maxY_CoincidenceSpectrum, m_lifeTimeDataCoincidence[binBA]);
 
                 m_specCoincidenceCounterCnt ++;
+            }
+
+            /* calculate normalized persistance data */
+            if (bPersistance
+                    && !bBurstMode) {
+                m_persistanceDataA.clear();
+                m_persistanceDataB.clear();
+
+                m_persistanceDataA.resize(m_pListChannelA.size());
+                m_persistanceDataB.resize(m_pListChannelB.size());
+
+                const float fractYMaxA = 1.0f/yMaxA;
+                const float fractYMaxB = 1.0f/yMaxB;
+
+                const float fractYMinA = 1.0f/yMinA;
+                const float fractYMinB = 1.0f/yMinB;
+
+                const int size = m_persistanceDataA.size();
+                for ( int j = 0 ; j < size ; ++ j ) {
+                    const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
+                    const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
+
+                    m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
+                    m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
+                }
             }
         } //end prompt
     }

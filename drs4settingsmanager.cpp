@@ -321,6 +321,12 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_persistanceEnabled_Node = new DSimpleXMLNode("persistance-plot?");
     m_persistanceEnabled_Node->setValue(m_persistanceEnabled);
 
+    m_persistanceUsingRefB_A_Node = new DSimpleXMLNode("persistance-plot-using-CFD-B-as-reference-A?");
+    m_persistanceUsingRefB_A_Node->setValue(false);
+
+    m_persistanceUsingRefA_B_Node = new DSimpleXMLNode("persistance-plot-using-CFD-A-as-reference-B?");
+    m_persistanceUsingRefA_B_Node->setValue(false);
+
     m_persistance_leftAInNs_Node = new DSimpleXMLNode("persistance-plot-left-of-maxValue-in-ns-A");
     m_persistance_leftAInNs_Node->setValue(m_persistance_leftAInNs);
 
@@ -419,6 +425,8 @@ DRS4SettingsManager::DRS4SettingsManager() :
                                   << m_medianFilterWindowSize_B_Node;
 
     (*m_persistancePlotSettingsNode) << m_persistanceEnabled_Node
+                                     << m_persistanceUsingRefB_A_Node
+                                     << m_persistanceUsingRefA_B_Node
                                      << m_persistance_leftAInNs_Node
                                      << m_persistance_leftBInNs_Node
                                      << m_persistance_rightAInNs_Node
@@ -811,6 +819,12 @@ bool DRS4SettingsManager::load(const QString &path)
     if (!ok) m_medianFilterWindowSize_B_Node->setValue(3);
 
     /* Persistance */
+
+    m_persistanceUsingRefB_A_Node->setValue(pPersistanceSettingsTag.getValueAt(m_persistanceUsingRefB_A_Node, &ok));
+    if (!ok) m_persistanceUsingRefB_A_Node->setValue(false);
+
+    m_persistanceUsingRefA_B_Node->setValue(pPersistanceSettingsTag.getValueAt(m_persistanceUsingRefA_B_Node, &ok));
+    if (!ok) m_persistanceUsingRefA_B_Node->setValue(false);
 
     m_persistance_leftAInNs_Node->setValue(pPersistanceSettingsTag.getValueAt(m_persistance_leftAInNs_Node, &ok));
     if (!ok) m_persistance_leftAInNs_Node->setValue(m_persistance_leftAInNs);
@@ -1389,6 +1403,20 @@ void DRS4SettingsManager::setPersistanceRightInNsOfB(double value)
     m_persistance_rightBInNs_Node->setValue(value);
 }
 
+void DRS4SettingsManager::setPersistanceUsingCFDBAsRefForA(bool on)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_persistanceUsingRefB_A_Node->setValue(on);
+}
+
+void DRS4SettingsManager::setPersistanceUsingCFDAAsRefForB(bool on)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_persistanceUsingRefA_B_Node->setValue(on);
+}
+
 void DRS4SettingsManager::setInterpolationType(const DRS4InterpolationType::type &type)
 {
     QMutexLocker locker(&m_mutex);
@@ -1600,6 +1628,20 @@ double DRS4SettingsManager::persistanceRightInNsOfB() const
     QMutexLocker locker(&m_mutex);
 
     return m_persistance_rightBInNs_Node->getValue().toDouble();
+}
+
+bool DRS4SettingsManager::persistanceUsingCFDBAsRefForA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_persistanceUsingRefB_A_Node->getValue().toBool();
+}
+
+bool DRS4SettingsManager::persistanceUsingCFDAAsRefForB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_persistanceUsingRefA_B_Node->getValue().toBool();
 }
 
 bool DRS4SettingsManager::isPulseAreaFilterEnabled() const

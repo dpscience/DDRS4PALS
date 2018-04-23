@@ -3041,6 +3041,19 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_26">
             <item>
+             <widget class="QCheckBox" name="checkBox_usingCFDB_A">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>using CFD - B as Reference?</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="plot2DXWidget" name="widget_persistanceA" native="true"/>
             </item>
             <item>
@@ -3138,6 +3151,19 @@
             <string>B</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_25">
+            <item>
+             <widget class="QCheckBox" name="checkBox_usingCFDA_B">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>using CFD - A as Reference?</string>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="plot2DXWidget" name="widget_persistanceB" native="true"/>
             </item>

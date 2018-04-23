@@ -330,6 +330,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->checkBox_medianFilterAActivate->setChecked(false);
     ui->checkBox_medianFilterBActivate->setChecked(false);
 
+    ui->checkBox_usingCFDB_A->setChecked(false);
+    ui->checkBox_usingCFDA_B->setChecked(false);
+
     ui->spinBox_medianFilterWindowSizeA->setRange(3, kNumberOfBins-1);
     ui->spinBox_medianFilterWindowSizeB->setRange(3, kNumberOfBins-1);
 
@@ -402,6 +405,8 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     connect(ui->checkBox_enableAreaFilter, SIGNAL(clicked(bool)), this, SLOT(changePulseAreaFilterPlotEnabled(bool)));
     connect(ui->checkBox_enablePersistance, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotEnabled(bool)));
+    connect(ui->checkBox_usingCFDB_A, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotUsingCFDB_For_A(bool)));
+    connect(ui->checkBox_usingCFDA_B, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotUsingCFDA_For_B(bool)));
     connect(ui->checkBox_forceStopStopCoincindence, SIGNAL(clicked(bool)), this, SLOT(changeForceCoincidence(bool)));
     connect(ui->checkBox_burstMode, SIGNAL(clicked(bool)), this, SLOT(changeBurstModeEnabled(bool)));
     connect(ui->checkBox_hyperthreading, SIGNAL(clicked(bool)), this, SLOT(changeMulticoreThreadingEnabled(bool)));
@@ -4577,6 +4582,42 @@ void DRS4ScopeDlg::changePersistancePlotEnabled(bool on, const FunctionSource &s
     m_worker->setBusy(false);
 }
 
+void DRS4ScopeDlg::changePersistancePlotUsingCFDB_For_A(bool on, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_usingCFDB_A->clicked(on);
+        ui->checkBox_usingCFDB_A->setChecked(on);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPersistanceUsingCFDBAsRefForA(on);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changePersistancePlotUsingCFDA_For_B(bool on, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_usingCFDA_B->clicked(on);
+        ui->checkBox_usingCFDA_B->setChecked(on);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPersistanceUsingCFDAAsRefForB(on);
+
+    m_worker->setBusy(false);
+}
+
 bool DRS4ScopeDlg::isPositivTriggerPolarity() const
 {
     QMutexLocker locker(&m_mutex);
@@ -5008,6 +5049,8 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     ui->checkBox_medianFilterBActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterBEnabled());
 
     ui->checkBox_enablePersistance->setChecked(DRS4SettingsManager::sharedInstance()->isPersistanceEnabled());
+    ui->checkBox_usingCFDB_A->setChecked(DRS4SettingsManager::sharedInstance()->persistanceUsingCFDBAsRefForA());
+    ui->checkBox_usingCFDA_B->setChecked(DRS4SettingsManager::sharedInstance()->persistanceUsingCFDAAsRefForB());
 
     ui->horizontalSlider_triggerDelay->setRange(0, DRS4SettingsManager::sharedInstance()->sweepInNanoseconds());
 

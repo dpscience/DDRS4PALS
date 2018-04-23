@@ -116,6 +116,8 @@ p, li { white-space: pre-wrap; }
     </median-filter-settings>
     <persistance-plot-settings>
         <persistance-plot?>false</persistance-plot?>
+        <persistance-plot-using-CFD-B-as-reference-A?>false</persistance-plot-using-CFD-B-as-reference-A?>
+        <persistance-plot-using-CFD-A-as-reference-B?>false</persistance-plot-using-CFD-A-as-reference-B?>
         <persistance-plot-left-of-maxValue-in-ns-A>2</persistance-plot-left-of-maxValue-in-ns-A>
         <persistance-plot-left-of-maxValue-in-ns-B>2</persistance-plot-left-of-maxValue-in-ns-B>
         <persistance-plot-right-of-maxValue-in-ns-A>2</persistance-plot-right-of-maxValue-in-ns-A>

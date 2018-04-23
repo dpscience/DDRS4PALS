@@ -251,6 +251,9 @@ public slots:
     /* Persistance */
     void ACCESSED_BY_SCRIPT_AND_GUI changePersistancePlotEnabled(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
 
+    void ACCESSED_BY_SCRIPT_AND_GUI changePersistancePlotUsingCFDB_For_A(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changePersistancePlotUsingCFDA_For_B(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
     void ACCESSED_BY_SCRIPT_AND_GUI changeLeftAPersistance(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeLeftBPersistance(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeRightAPersistance(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);

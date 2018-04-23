@@ -243,6 +243,8 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_medianFilterWindowSize_A_Node;
     DSimpleXMLNode *m_medianFilterActivated_B_Node;
     DSimpleXMLNode *m_medianFilterWindowSize_B_Node;
+    DSimpleXMLNode *m_persistanceUsingRefB_A_Node;
+    DSimpleXMLNode *m_persistanceUsingRefA_B_Node;
     DSimpleXMLNode *m_persistance_leftAInNs_Node;
     DSimpleXMLNode *m_persistance_leftBInNs_Node;
     DSimpleXMLNode *m_persistance_rightAInNs_Node;
@@ -356,6 +358,9 @@ public:
     void setPersistanceRightInNsOfA(double value);
     void setPersistanceRightInNsOfB(double value);
 
+    void setPersistanceUsingCFDBAsRefForA(bool on);
+    void setPersistanceUsingCFDAAsRefForB(bool on);
+
     void setInterpolationType(const DRS4InterpolationType::type &type);
     void setSplineInterpolationType(const DRS4SplineInterpolationType::type& type);
     void setSplineIntraSamplingCounts(int counts);
@@ -383,6 +388,9 @@ public:
     double persistanceLeftInNsOfB() const;
     double persistanceRightInNsOfA() const;
     double persistanceRightInNsOfB() const;
+
+    bool persistanceUsingCFDBAsRefForA() const;
+    bool persistanceUsingCFDAAsRefForB() const;
 
     bool isPulseAreaFilterEnabled() const;
     bool isPulseAreaFilterPlotEnabled() const;
