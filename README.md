@@ -10,6 +10,7 @@ You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This D
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## v1.x
+DDRS4PALS v1.03:<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1227278.svg)](https://doi.org/10.5281/zenodo.1227278)<br>
 DDRS4PALS v1.02:<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219523.svg)](https://doi.org/10.5281/zenodo.1219523)<br>
 
 # Third Party Libraries and Licenses
