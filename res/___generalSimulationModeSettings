@@ -97,8 +97,8 @@ p, li { white-space: pre-wrap; }
         <pulse-area-filter-plot?>false</pulse-area-filter-plot?>
         <pulse-area-filter-binning-A>100</pulse-area-filter-binning-A>
         <pulse-area-filter-binning-B>100</pulse-area-filter-binning-B>
-        <pulse-area-filter-nomalization-fraction-in-%-A>0.10000000000000001</pulse-area-filter-nomalization-fraction-in-%-A>
-        <pulse-area-filter-nomalization-fraction-in-%-B>0.10000000000000001</pulse-area-filter-nomalization-fraction-in-%-B>
+        <pulse-area-filter-nomalization-fraction-in-%-A>0.2</pulse-area-filter-nomalization-fraction-in-%-A>
+        <pulse-area-filter-nomalization-fraction-in-%-B>0.2</pulse-area-filter-nomalization-fraction-in-%-B>
         <pulse-area-filter-upper-left-bounding-A>1</pulse-area-filter-upper-left-bounding-A>
         <pulse-area-filter-upper-right-bounding-A>110</pulse-area-filter-upper-right-bounding-A>
         <pulse-area-filter-lower-left-bounding-A>-2</pulse-area-filter-lower-left-bounding-A>
@@ -108,8 +108,16 @@ p, li { white-space: pre-wrap; }
         <pulse-area-filter-lower-left-bounding-B>-2</pulse-area-filter-lower-left-bounding-B>
         <pulse-area-filter-lower-right-bounding-B>96</pulse-area-filter-lower-right-bounding-B>
     </area-filter-settings>
+    <median-filter-settings>
+         <median-filter-A?>false</median-filter-A?>
+         <median-filter-window-size-A>3</median-filter-window-size-A>
+         <median-filter-B?>false</median-filter-B?>
+         <median-filter-window-size-B>3</median-filter-window-size-B>
+    </median-filter-settings>
     <persistance-plot-settings>
         <persistance-plot?>false</persistance-plot?>
+        <persistance-plot-using-CFD-B-as-reference-A?>false</persistance-plot-using-CFD-B-as-reference-A?>
+        <persistance-plot-using-CFD-A-as-reference-B?>false</persistance-plot-using-CFD-A-as-reference-B?>
         <persistance-plot-left-of-maxValue-in-ns-A>2</persistance-plot-left-of-maxValue-in-ns-A>
         <persistance-plot-left-of-maxValue-in-ns-B>2</persistance-plot-left-of-maxValue-in-ns-B>
         <persistance-plot-right-of-maxValue-in-ns-A>2</persistance-plot-right-of-maxValue-in-ns-A>

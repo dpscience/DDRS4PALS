@@ -106,6 +106,9 @@ public:
 
     int setMaxContainerSize() const;
 
+    int getDataSize() const;
+    int getCacheSize() const;
+
 private slots:
     void reset();
     void setLastValueBeforeReplot(const QPointF& lastValue);

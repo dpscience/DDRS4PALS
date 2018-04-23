@@ -29,6 +29,7 @@
 
 #include "Stream/drs4streamdataloader.h"
 #include "DLib/DMath/dspline.h"
+#include "DLib/DMath/dmedianfilter.h"
 
 DRS4Worker::DRS4Worker(DRS4WorkerDataExchange *dataExchange, QObject *parent) :
     m_dataExchange(dataExchange),
@@ -1529,6 +1530,13 @@ void DRS4Worker::runSingleThreaded()
         std::fill(waveChannel0, waveChannel0 + sizeof(waveChannel0)*sizeOfFloat, 0);
         std::fill(waveChannel1, waveChannel1 + sizeof(waveChannel1)*sizeOfFloat, 0);
 
+        /* the 'S' extension represents the holding as source (original) data set */
+        float waveChannel0S[kNumberOfBins] = {0};
+        float waveChannel1S[kNumberOfBins] = {0};
+
+        std::fill(waveChannel0S, waveChannel0S + sizeof(waveChannel0S)*sizeOfFloat, 0);
+        std::fill(waveChannel1S, waveChannel1S + sizeof(waveChannel1S)*sizeOfFloat, 0);
+
 
         if (!bDemoMode) {
             int retState = 1;
@@ -1676,6 +1684,22 @@ void DRS4Worker::runSingleThreaded()
         const int intraRenderPoints = (DRS4InterpolationType::type::spline == interpolationType)?(DRS4SettingsManager::sharedInstance()->splineIntraSamplingCounts()):(DRS4SettingsManager::sharedInstance()->polynomialSamplingCounts());
         const int streamIntraRenderPoints = DRS4ProgramSettingsManager::sharedInstance()->splineIntraPoints();
 
+        const bool bMedianFilterA = DRS4SettingsManager::sharedInstance()->medianFilterAEnabled();
+        const bool bMedianFilterB = DRS4SettingsManager::sharedInstance()->medianFilterBEnabled();
+        const int medianFilterWindowSizeA = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA();
+        const int medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
+
+        //apply median filter to remove spikes:
+        if (bMedianFilterA) {
+            if (!DMedianFilter::apply(waveChannel0, waveChannel0S, kNumberOfBins, medianFilterWindowSizeA))
+                continue;
+        }
+
+        if (bMedianFilterB) {
+            if (!DMedianFilter::apply(waveChannel1, waveChannel1S, kNumberOfBins, medianFilterWindowSizeB))
+                continue;
+        }
+
         /* clear pulse-data for new visualization */
         if (!bBurstMode) {
             resetPulseA();
@@ -1761,7 +1785,7 @@ void DRS4Worker::runSingleThreaded()
                     cfdValueA = cfdA*yMaxA;
 
                     cfdACounter = 0;
-                }
+                }              
             }
 
             if ( waveChannel1[a] >= yMaxB ) {
@@ -1772,7 +1796,7 @@ void DRS4Worker::runSingleThreaded()
                     cfdValueB = cfdB*yMaxB;
 
                     cfdBCounter = 0;
-                }
+                }                
             }
 
             if ( waveChannel0[a] <= yMinA ) {
@@ -1804,8 +1828,8 @@ void DRS4Worker::runSingleThreaded()
                 /* calculate the pulse area of ROI */
                 if (bPulseAreaPlot
                         || bPulseAreaFilter) {
-                    areaA += waveChannel0[aDecr]*(tChannel0[a] - tChannel0[aDecr])*0.5f;
-                    areaB += waveChannel1[aDecr]*(tChannel1[a] - tChannel1[aDecr])*0.5f;
+                    areaA += abs((waveChannel0[aDecr] + 0.5*(waveChannel0[a] - waveChannel0[aDecr]))*(tChannel0[a] - tChannel0[aDecr]));
+                    areaB += abs((waveChannel1[aDecr] + 0.5*(waveChannel1[a] - waveChannel1[aDecr]))*(tChannel1[a] - tChannel1[aDecr]));
                 }
 
                 const double slopeA = (waveChannel0[a] - waveChannel0[aDecr])/(tChannel0[a] - tChannel0[aDecr]);
@@ -1920,13 +1944,15 @@ void DRS4Worker::runSingleThreaded()
         const double ATS = DRS4SettingsManager::sharedInstance()->meanCableDelay();
         const bool bStreamInRangeArmed = DRS4TextFileStreamRangeManager::sharedInstance()->isArmed();
         const bool bStreamWithoutRangeArmed = DRS4TextFileStreamManager::sharedInstance()->isArmed();
+        const bool bOppositePersistanceA = DRS4SettingsManager::sharedInstance()->persistanceUsingCFDBAsRefForA();
+        const bool bOppositePersistanceB = DRS4SettingsManager::sharedInstance()->persistanceUsingCFDAAsRefForB();
 
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel0, sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel0, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel0S:waveChannel0), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
@@ -1934,7 +1960,7 @@ void DRS4Worker::runSingleThreaded()
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel1, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel1S:waveChannel1), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
         }
@@ -1972,8 +1998,8 @@ void DRS4Worker::runSingleThreaded()
         }
 
         /* reject artefacts */
-        if ( cfdBCounter > 1
-             || cfdACounter > 1 )
+        if ( cfdBCounter > 1 || cfdBCounter == 0
+             || cfdACounter > 1 || cfdACounter == 0 )
             continue;
 
         /* select interpolation type - obtain interpolant */
@@ -2026,8 +2052,8 @@ void DRS4Worker::runSingleThreaded()
                 || bPulseAreaFilter) {
             const float rat = 5120*((float)cellWidth/((float)kNumberOfBins));
 
-            areaA = abs(areaA)/(pulseAreaFilterNormA*rat);
-            areaB = abs(areaB)/(pulseAreaFilterNormB*rat);
+            areaA = areaA/(pulseAreaFilterNormA*rat);
+            areaB = areaB/(pulseAreaFilterNormB*rat);
         }
 
         /* store/write pulses and interpolations to ASCII file */
@@ -2354,8 +2380,7 @@ void DRS4Worker::runSingleThreaded()
 
         /* lifetime: A-B - master */
         if ( bIsStart_A
-             && bIsStop_B && !bForcePrompt  )
-        {
+             && bIsStop_B && !bForcePrompt  ) {
             const double ltdiff = (timeStampB - timeStampA);
             const int binAB = ((int)round(((((ltdiff)+offsetAB)/scalerAB))*((double)channelCntAB)))-1;
 
@@ -2386,6 +2411,31 @@ void DRS4Worker::runSingleThreaded()
                          && binAB <= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMaxAB() ) {
                         if ( DRS4TextFileStreamRangeManager::sharedInstance()->isABEnabled() )
                             DRS4TextFileStreamRangeManager::sharedInstance()->writePulses(pulseDataA(), pulseDataB());
+                    }
+                }
+
+                /* calculate normalized persistance data */
+                if (bPersistance
+                        && !bBurstMode) {
+                    m_persistanceDataA.clear();
+                    m_persistanceDataB.clear();
+
+                    m_persistanceDataA.resize(m_pListChannelA.size());
+                    m_persistanceDataB.resize(m_pListChannelB.size());
+
+                    const float fractYMaxA = 1.0f/yMaxA;
+                    const float fractYMaxB = 1.0f/yMaxB;
+
+                    const float fractYMinA = 1.0f/yMinA;
+                    const float fractYMinB = 1.0f/yMinB;
+
+                    const int size = m_persistanceDataA.size();
+                    for ( int j = 0 ; j < size ; ++ j ) {
+                        const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
+                        const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
+
+                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
+                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
                     }
                 }
             }
@@ -2446,6 +2496,31 @@ void DRS4Worker::runSingleThreaded()
                             DRS4TextFileStreamRangeManager::sharedInstance()->writePulses(pulseDataA(), pulseDataB());
                     }
                 }
+
+                /* calculate normalized persistance data */
+                if (bPersistance
+                        && !bBurstMode) {
+                    m_persistanceDataA.clear();
+                    m_persistanceDataB.clear();
+
+                    m_persistanceDataA.resize(m_pListChannelA.size());
+                    m_persistanceDataB.resize(m_pListChannelB.size());
+
+                    const float fractYMaxA = 1.0f/yMaxA;
+                    const float fractYMaxB = 1.0f/yMaxB;
+
+                    const float fractYMinA = 1.0f/yMinA;
+                    const float fractYMinB = 1.0f/yMinB;
+
+                    const int size = m_persistanceDataA.size();
+                    for ( int j = 0 ; j < size ; ++ j ) {
+                        const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
+                        const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
+
+                        m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
+                        m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
+                    }
+                }
             }
 
             if ( binMerged < 0 || binMerged >= channelCntMerged )
@@ -2489,7 +2564,7 @@ void DRS4Worker::runSingleThreaded()
 
             /* calculate normalized persistance data */
             if (bPersistance
-                    && !bBurstMode ) {
+                    && !bBurstMode) {
                 m_persistanceDataA.clear();
                 m_persistanceDataB.clear();
 
@@ -2507,11 +2582,11 @@ void DRS4Worker::runSingleThreaded()
                     const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
                     const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
 
-                    m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-timeStampB, yA); // >> shift channel A relative to CFD-%(t0) of B
-                    m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-timeStampA, yB); // >> shift channel B relative to CFD-%(t0) of A
+                    m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
+                    m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
                 }
             }
-        }
+        } //end prompt
     }
 }
 
@@ -3206,6 +3281,12 @@ void DRS4Worker::runMultiThreaded()
         std::fill(inputData.m_waveChannel0, inputData.m_waveChannel0 + sizeof(inputData.m_waveChannel0)*sizeOfFloat, 0);
         std::fill(inputData.m_waveChannel1, inputData.m_waveChannel1 + sizeof(inputData.m_waveChannel1)*sizeOfFloat, 0);
 
+        /* the 'S' extension represents the holding as source (original) data set */
+        float waveChannel0S[kNumberOfBins] = {0};
+        float waveChannel1S[kNumberOfBins] = {0};
+
+        std::fill(waveChannel0S, waveChannel0S + sizeof(waveChannel0S)*sizeOfFloat, 0);
+        std::fill(waveChannel1S, waveChannel1S + sizeof(waveChannel1S)*sizeOfFloat, 0);
 
         if (!bDemoMode) {
             int retState = 1;
@@ -3400,6 +3481,22 @@ void DRS4Worker::runMultiThreaded()
         inputData.m_stopBMinPHS = DRS4SettingsManager::sharedInstance()->stopChanneBMin();
         inputData.m_stopBMaxPHS = DRS4SettingsManager::sharedInstance()->stopChanneBMax();
 
+        inputData.m_bMedianFilterA = DRS4SettingsManager::sharedInstance()->medianFilterAEnabled();
+        inputData.m_bMedianFilterB = DRS4SettingsManager::sharedInstance()->medianFilterBEnabled();
+        inputData.m_medianFilterWindowSizeA = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA();
+        inputData.m_medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
+
+        //apply median filter to remove spikes:
+        if (inputData.m_bMedianFilterA) {
+            if (!DMedianFilter::apply(inputData.m_waveChannel0, waveChannel0S, kNumberOfBins, inputData.m_medianFilterWindowSizeA))
+                continue;
+        }
+
+        if (inputData.m_bMedianFilterB) {
+            if (!DMedianFilter::apply(inputData.m_waveChannel1, waveChannel1S, kNumberOfBins, inputData.m_medianFilterWindowSizeB))
+                continue;
+        }
+
         /* clear pulse-data for new visualization */
         if (!inputData.m_bBurstMode) {
             resetPulseA();
@@ -3419,15 +3516,12 @@ void DRS4Worker::runMultiThreaded()
             }
         }
 
-        /* prevent mutex locking: call these functions only once within the loop */
-
-
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_tChannel0, sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_waveChannel0, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(!inputData.m_bMedianFilterA?inputData.m_waveChannel0:waveChannel0S), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
@@ -3435,7 +3529,7 @@ void DRS4Worker::runMultiThreaded()
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_waveChannel1, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(!inputData.m_bMedianFilterB?inputData.m_waveChannel1:waveChannel1S), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
         }
@@ -3611,8 +3705,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 /* calculate the pulse area of ROI */
                 if (inputData.m_bPulseAreaPlot
                         || inputData.m_bPulseAreaFilter) {
-                    areaA += inputData.m_waveChannel0[aDecr]*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr])*0.5f;
-                    areaB += inputData.m_waveChannel1[aDecr]*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr])*0.5f;
+                    areaA += abs((inputData.m_waveChannel0[aDecr] + 0.5*(inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr]))*(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]));
+                    areaB += abs((inputData.m_waveChannel1[aDecr] + 0.5*(inputData.m_waveChannel1[a] - inputData.m_waveChannel1[aDecr]))*(inputData.m_tChannel1[a] - inputData.m_tChannel1[aDecr]));
                 }
 
                 const double slopeA = (inputData.m_waveChannel0[a] - inputData.m_waveChannel0[aDecr])/(inputData.m_tChannel0[a] - inputData.m_tChannel0[aDecr]);
@@ -3731,8 +3825,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
         }
 
         /* reject artefacts */
-        if ( cfdBCounter > 1
-             || cfdACounter > 1 )
+        if ( cfdBCounter > 1 || cfdBCounter == 0
+             || cfdACounter > 1 || cfdACounter == 0 )
             continue;
 
         /* select interpolation type - obtain interpolant */
@@ -3785,8 +3879,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 || inputData.m_bPulseAreaFilter) {
             const float rat = 5120*((float)inputData.m_cellWidth/((float)kNumberOfBins));
 
-            areaA = abs(areaA)/(inputData.m_pulseAreaFilterNormA*rat);
-            areaB = abs(areaB)/(inputData.m_pulseAreaFilterNormB*rat);
+            areaA = areaA/(inputData.m_pulseAreaFilterNormA*rat);
+            areaB = areaB/(inputData.m_pulseAreaFilterNormB*rat);
         }
 
         /* determine max/min more precisely */

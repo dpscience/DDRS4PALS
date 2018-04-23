@@ -270,6 +270,16 @@ int plot2DXCurve::setMaxContainerSize() const
     return m_maxCount;
 }
 
+int plot2DXCurve::getDataSize() const
+{
+    return m_dataContainer.size();
+}
+
+int plot2DXCurve::getCacheSize() const
+{
+    return m_cache.size();
+}
+
 void plot2DXCurve::reset()
 {
     m_cache.clear();

@@ -37,6 +37,7 @@
 
 #include "DLib/DThirdParty/Crypt/tinyaes.h"
 #include "DLib/DThirdParty/Miniz/miniz.h"
+#include "DLib/DThirdParty/MedianFilter/medflt.h"
 
 #include "DLib/DGUI/slider.h"
 #include "DLib/DGUI/svgbutton.h"
@@ -51,5 +52,6 @@
 #include "DLib/DPlot/plot2DXAxis.h"
 
 #include "DLib/DMath/constantexplanations.h"
+#include "DLib/DMath/dmedianfilter.h"
 
 #endif // DLIB_H

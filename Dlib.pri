@@ -26,8 +26,10 @@ HEADERS  +=  DLib.h\
                         DLib/DPlot/plot2DXAxis.h\
                         DLib/DPlot/plot2DXCanvas.h\
                         DLib/DThirdParty/Crypt/tinyaes.h\
+                        DLib/DThirdParty/MedianFilter/medflt.h\
                         DLib/DMath/dspline.h\
                         DLib/DMath/constantexplanations.h\
+                        DLib/DMath/dmedianfilter.h\
 
 
 SOURCES  +=  DLib/DTypes/defines.cpp\
@@ -44,6 +46,7 @@ SOURCES  +=  DLib/DTypes/defines.cpp\
                         DLib/DPlot/plot2DXCanvas.cpp\
                         DLib/DThirdParty/Crypt/tinyaes.cpp\
                         DLib/DMath/constantexplanations.cpp\
+                        DLib/DMath/dmedianfilter.cpp\
 
 FORMS    += DLib/DGUI/horizontalrangedoubleslider.ui\
                     DLib/DGUI/verticalrangedoubleslider.ui\
