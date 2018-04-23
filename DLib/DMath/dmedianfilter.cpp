@@ -65,7 +65,7 @@ bool DMedianFilter::apply(float *data_1d, int size, int windowSize)
 }
 #endif
 
-bool DMedianFilter::apply(float *data_1d, int size, int windowSize)
+bool DMedianFilter::apply(float *data_1d, float *data_1d_source, int size, int windowSize)
 {
     if (!data_1d || size <= 3 || windowSize < 3)
         return false;
@@ -73,8 +73,10 @@ bool DMedianFilter::apply(float *data_1d, int size, int windowSize)
     TMedianFilter1D<float> filter(windowSize);
 
     std::vector<float> data(size);
-    for ( int i = 0 ; i < size ; ++ i )
+    for ( int i = 0 ; i < size ; ++ i ) {
         data[i] = data_1d[i];
+        data_1d_source[i] = data_1d[i]; /* original data */
+    }
 
     filter.Execute(data);
 

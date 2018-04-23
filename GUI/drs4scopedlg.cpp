@@ -1014,7 +1014,7 @@ void DRS4ScopeDlg::initBoardTPlot()
     ui->widget_boardT->xBottom()->setAxisPlotType(plot2DXAxis::timePlot);
     ui->widget_boardT->xTop()->setAxisPlotType(plot2DXAxis::timePlot);
 
-    ui->widget_boardT->yLeft()->setAxisRange(20, 50);
+    ui->widget_boardT->yLeft()->setAxisRange(20, 70); //20-70°C
     ui->widget_boardT->xBottom()->setAxisRange(0, 300000); //5min
     ui->widget_boardT->xTop()->setAxisRange(0, 300000); //5min
 
@@ -2674,12 +2674,12 @@ void DRS4ScopeDlg::plotPersistance()
 
     if (!m_worker->persistanceDataA()->isEmpty()
             && !m_worker->persistanceDataB()->isEmpty()) {
-        if (ui->widget_persistanceA->curve().at(0)->getDataSize() >= 80000) {
+        if (ui->widget_persistanceA->curve().at(0)->getDataSize() >= 180000) {
             ui->widget_persistanceA->curve().at(0)->clearCurveContent();
             ui->widget_persistanceA->curve().at(0)->clearCurveCache();
         }
 
-        if (ui->widget_persistanceB->curve().at(0)->getDataSize() >= 80000) {
+        if (ui->widget_persistanceB->curve().at(0)->getDataSize() >= 180000) {
             ui->widget_persistanceB->curve().at(0)->clearCurveContent();
             ui->widget_persistanceB->curve().at(0)->clearCurveCache();
         }

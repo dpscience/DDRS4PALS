@@ -1530,6 +1530,13 @@ void DRS4Worker::runSingleThreaded()
         std::fill(waveChannel0, waveChannel0 + sizeof(waveChannel0)*sizeOfFloat, 0);
         std::fill(waveChannel1, waveChannel1 + sizeof(waveChannel1)*sizeOfFloat, 0);
 
+        /* the 'S' extension represents the holding as source (original) data set */
+        float waveChannel0S[kNumberOfBins] = {0};
+        float waveChannel1S[kNumberOfBins] = {0};
+
+        std::fill(waveChannel0S, waveChannel0S + sizeof(waveChannel0S)*sizeOfFloat, 0);
+        std::fill(waveChannel1S, waveChannel1S + sizeof(waveChannel1S)*sizeOfFloat, 0);
+
 
         if (!bDemoMode) {
             int retState = 1;
@@ -1684,12 +1691,12 @@ void DRS4Worker::runSingleThreaded()
 
         //apply median filter to remove spikes:
         if (bMedianFilterA) {
-            if (!DMedianFilter::apply(waveChannel0, kNumberOfBins, medianFilterWindowSizeA))
+            if (!DMedianFilter::apply(waveChannel0, waveChannel0S, kNumberOfBins, medianFilterWindowSizeA))
                 continue;
         }
 
         if (bMedianFilterB) {
-            if (!DMedianFilter::apply(waveChannel1, kNumberOfBins, medianFilterWindowSizeB))
+            if (!DMedianFilter::apply(waveChannel1, waveChannel1S, kNumberOfBins, medianFilterWindowSizeB))
                 continue;
         }
 
@@ -1945,7 +1952,7 @@ void DRS4Worker::runSingleThreaded()
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel0, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel0S:waveChannel0), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
@@ -1953,7 +1960,7 @@ void DRS4Worker::runSingleThreaded()
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel1, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel1S:waveChannel1), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
         }
@@ -3274,6 +3281,12 @@ void DRS4Worker::runMultiThreaded()
         std::fill(inputData.m_waveChannel0, inputData.m_waveChannel0 + sizeof(inputData.m_waveChannel0)*sizeOfFloat, 0);
         std::fill(inputData.m_waveChannel1, inputData.m_waveChannel1 + sizeof(inputData.m_waveChannel1)*sizeOfFloat, 0);
 
+        /* the 'S' extension represents the holding as source (original) data set */
+        float waveChannel0S[kNumberOfBins] = {0};
+        float waveChannel1S[kNumberOfBins] = {0};
+
+        std::fill(waveChannel0S, waveChannel0S + sizeof(waveChannel0S)*sizeOfFloat, 0);
+        std::fill(waveChannel1S, waveChannel1S + sizeof(waveChannel1S)*sizeOfFloat, 0);
 
         if (!bDemoMode) {
             int retState = 1;
@@ -3475,12 +3488,12 @@ void DRS4Worker::runMultiThreaded()
 
         //apply median filter to remove spikes:
         if (inputData.m_bMedianFilterA) {
-            if (!DMedianFilter::apply(inputData.m_waveChannel0, kNumberOfBins, inputData.m_medianFilterWindowSizeA))
+            if (!DMedianFilter::apply(inputData.m_waveChannel0, waveChannel0S, kNumberOfBins, inputData.m_medianFilterWindowSizeA))
                 continue;
         }
 
         if (inputData.m_bMedianFilterB) {
-            if (!DMedianFilter::apply(inputData.m_waveChannel1, kNumberOfBins, inputData.m_medianFilterWindowSizeB))
+            if (!DMedianFilter::apply(inputData.m_waveChannel1, waveChannel1S, kNumberOfBins, inputData.m_medianFilterWindowSizeB))
                 continue;
         }
 
@@ -3508,7 +3521,7 @@ void DRS4Worker::runMultiThreaded()
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_waveChannel0, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(!inputData.m_bMedianFilterA?inputData.m_waveChannel0:waveChannel0S), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
@@ -3516,7 +3529,7 @@ void DRS4Worker::runMultiThreaded()
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_waveChannel1, sizeOfWave)) {
+            if (!DRS4StreamManager::sharedInstance()->write((const char*)(!inputData.m_bMedianFilterB?inputData.m_waveChannel1:waveChannel1S), sizeOfWave)) {
                 DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
         }

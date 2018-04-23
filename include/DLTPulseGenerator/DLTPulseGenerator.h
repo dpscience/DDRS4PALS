@@ -1,6 +1,6 @@
 /*******************************************************************************************
 **
-** Copyright (c) 2017 Danny Petschke. All rights reserved.
+** Copyright (c) 2017, 2018 Danny Petschke. All rights reserved.
 ** 
 ** Redistribution and use in source and binary forms, with or without modification, 
 ** are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@
 ***********************************************************************************************/
 
 /* For the compilation as static or linked library set COMPILE_AS_LIBRARY = 1 */
-#define COMPILE_AS_LIBRARY					   1
+#define COMPILE_AS_LIBRARY					   0
 
 #ifndef DLTPULSEGENERATOR_H
 #define DLTPULSEGENERATOR_H
@@ -136,7 +136,7 @@ typedef struct {
 **  isStartStopAlternating = true.
 **/
 struct DLTPULSEGENERATOR_EXPORT DLTDistributionFunction {
-	enum Function {
+	enum Function : int {
 		UNKNOWN = -1,
 		GAUSSIAN = 0,
 		LOG_NORMAL = 1,
@@ -366,11 +366,11 @@ DLTPULSEGENERATOR_EXPORT_C extern void setStopOfA(double meanOfStop_A_in_milliVo
 DLTPULSEGENERATOR_EXPORT_C extern void setStopOfB(double meanOfStop_B_in_milliVolt, double sigmaOfStop_B_in_milliVolt);
 
 //equivalent to DLTSimulationInput:
-DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_1(bool lt1_activated, double tau1_in_nanoSeconds, double intensity1);
-DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_2(bool lt2_activated, double tau2_in_nanoSeconds, double intensity2);
-DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_3(bool lt3_activated, double tau3_in_nanoSeconds, double intensity3);
-DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_4(bool lt4_activated, double tau4_in_nanoSeconds, double intensity4);
-DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_5(bool lt5_activated, double tau5_in_nanoSeconds, double intensity5);
+DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_1(bool lt1_activated, double tau1_in_nanoSeconds, double intensity1, bool lt1_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);
+DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_2(bool lt2_activated, double tau2_in_nanoSeconds, double intensity2, bool lt2_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);
+DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_3(bool lt3_activated, double tau3_in_nanoSeconds, double intensity3, bool lt3_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);
+DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_4(bool lt4_activated, double tau4_in_nanoSeconds, double intensity4, bool lt4_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);
+DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_5(bool lt5_activated, double tau5_in_nanoSeconds, double intensity5, bool lt5_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);
 
 DLTPULSEGENERATOR_EXPORT_C extern void setStartStopAlternating(bool alternating);
 
