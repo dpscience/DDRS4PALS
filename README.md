@@ -14,25 +14,32 @@ DDRS4PALS v1.02:<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219523.
 
 # Third Party Libraries and Licenses
 
-<b>DDRS4PALS</b> is written in C++ using [Qt-Framework](https://www.qt.io/) and is licensed under the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)
+<b>DDRS4PALS</b> is written in C++ using [Qt-Framework](https://www.qt.io/) (licensed under the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0))
 
-### A library for spline and polynomial interpolation fitting is provided by: 
-- [ALGLIB: A cross-platform numerical analysis and data processing library](http://www.alglib.net/) License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
-- [Tino Kluge: A cubic spline interpolation library](http://kluge.in-chemnitz.de/opensource/spline/) License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
+The following 3rd party libraries used by <b>DDRS4PALS</b> software.<br>
 
-### A least-square fitting library using the Levenberg-Marquardt algorithm is provided by:
+### ALGLIB
+- [ALGLIB: A cross-platform numerical analysis and data processing library](http://www.alglib.net/)<br><br>License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
+
+### Tino Kluge
+- [Tino Kluge: A cubic spline interpolation library](http://kluge.in-chemnitz.de/opensource/spline/)<br><br>License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
+
+### Sergejus Zabinski
+- [Sergejus Zabinski: FAST MEDIAN FILTERING](http://www.sergejusz.com/engineering_tips/median_filter.htm)<br><br>License: [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0)<br>
+
+### Danny Petschke
+- [DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses](https://github.com/dpscience/DLTPulseGenerator)<br><br>License: [BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
+
+### MPFIT (MINPACK-1)
 - [MPFIT: A MINPACK-1 Least Squares Fitting Library in C](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html)<br>
 
-### A library for USB device access is provided by:
-- [libusb-1.0 package](http://libusb.info/)<br>
+### libusb-1.0
+- [libusb-1.0 package: USB device access](http://libusb.info/)<br>
 
-### Source code for the communication with the DRS4 evaluation board:
+### DRS4 evaluation board software and source code package
 - [Paul Scherrer Institut - PSI](https://www.psi.ch/drs/software-download)<br><br>
 These files containing documentation, drivers, applications, C/C++ source code and the FPGA firmware in VHDL and compiled bit files.<br><br>
-<b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b> License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
-
-### A C++ library for the simulation of lifetime spectra based in detector pulses is provided by:
-- [DLTPulseGenerator - Danny Petschke](https://github.com/dpscience/DLTPulseGenerator) License: [BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
+<b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b><br><br>License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
 
 # Setup
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
@@ -40,3 +47,6 @@ These files containing documentation, drivers, applications, C/C++ source code a
 3. Compile (x86/x64) and Run the code on your Machine.
 4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
 5. Finished. Press run to obtain your Lifetime Spectra.
+
+# Manual
+- The full documentation can be found [here](https://github.com/dpscience/DDRS4PALS/wiki).
