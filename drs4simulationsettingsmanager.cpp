@@ -64,6 +64,220 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     m_parentNode = new DSimpleXMLNode("DLTPulseGenerator-library-simulation-input");
 
     m_electronicsNode = new DSimpleXMLNode("hardware-setup");
+
+        m_irfPDSA_parentNode = new DSimpleXMLNode("irf-PDS-A");
+
+            m_irfPDSA_1_parentNode = new DSimpleXMLNode("irf-1");
+
+            m_irfPDSA_1_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSA_1_enabled->setValue(true);
+            m_irfPDSA_1_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSA_1_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_1_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSA_1_intensity->setValue(1.0);
+            m_irfPDSA_1_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSA_1_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_1_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSA_1_relativeShift->setValue(0.0);
+
+            m_irfPDSA_2_parentNode = new DSimpleXMLNode("irf-2");
+
+            m_irfPDSA_2_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSA_2_enabled->setValue(false);
+            m_irfPDSA_2_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSA_2_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_2_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSA_2_intensity->setValue(1.0);
+            m_irfPDSA_2_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSA_2_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_2_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSA_2_relativeShift->setValue(0.0);
+
+
+            m_irfPDSA_3_parentNode = new DSimpleXMLNode("irf-3");
+
+            m_irfPDSA_3_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSA_3_enabled->setValue(false);
+            m_irfPDSA_3_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSA_3_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_3_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSA_3_intensity->setValue(1.0);
+            m_irfPDSA_3_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSA_3_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_3_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSA_3_relativeShift->setValue(0.0);
+
+
+            m_irfPDSA_4_parentNode = new DSimpleXMLNode("irf-4");
+
+            m_irfPDSA_4_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSA_4_enabled->setValue(false);
+            m_irfPDSA_4_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSA_4_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_4_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSA_4_intensity->setValue(1.0);
+            m_irfPDSA_4_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSA_4_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_4_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSA_4_relativeShift->setValue(0.0);
+
+
+            m_irfPDSA_5_parentNode = new DSimpleXMLNode("irf-5");
+
+            m_irfPDSA_5_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSA_5_enabled->setValue(false);
+            m_irfPDSA_5_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSA_5_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_5_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSA_5_intensity->setValue(1.0);
+            m_irfPDSA_5_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSA_5_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_5_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSA_5_relativeShift->setValue(0.0);
+
+
+        m_irfPDSB_parentNode = new DSimpleXMLNode("irf-PDS-B");
+
+            m_irfPDSB_1_parentNode = new DSimpleXMLNode("irf-1");
+
+            m_irfPDSB_1_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSB_1_enabled->setValue(true);
+            m_irfPDSB_1_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSB_1_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_1_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSB_1_intensity->setValue(1.0);
+            m_irfPDSB_1_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSB_1_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_1_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSB_1_relativeShift->setValue(0.0);
+
+
+            m_irfPDSB_2_parentNode = new DSimpleXMLNode("irf-2");
+
+            m_irfPDSB_2_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSB_2_enabled->setValue(false);
+            m_irfPDSB_2_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSB_2_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_2_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSB_2_intensity->setValue(1.0);
+            m_irfPDSB_2_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSB_2_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_2_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSB_2_relativeShift->setValue(0.0);
+
+
+            m_irfPDSB_3_parentNode = new DSimpleXMLNode("irf-3");
+
+            m_irfPDSB_3_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSB_3_enabled->setValue(false);
+            m_irfPDSB_3_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSB_3_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_3_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSB_3_intensity->setValue(1.0);
+            m_irfPDSB_3_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSB_3_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_3_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSB_3_relativeShift->setValue(0.0);
+
+
+            m_irfPDSB_4_parentNode = new DSimpleXMLNode("irf-4");
+
+            m_irfPDSB_4_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSB_4_enabled->setValue(false);
+            m_irfPDSB_4_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSB_4_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_4_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSB_4_intensity->setValue(1.0);
+            m_irfPDSB_4_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSB_4_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_4_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSB_4_relativeShift->setValue(0.0);
+
+
+            m_irfPDSB_5_parentNode = new DSimpleXMLNode("irf-5");
+
+            m_irfPDSB_5_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfPDSB_5_enabled->setValue(false);
+            m_irfPDSB_5_functionType = new DSimpleXMLNode("function-type");
+            m_irfPDSB_5_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_5_intensity = new DSimpleXMLNode("intensity");
+            m_irfPDSB_5_intensity->setValue(1.0);
+            m_irfPDSB_5_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfPDSB_5_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_5_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfPDSB_5_relativeShift->setValue(0.0);
+
+        m_irfMU_parentNode = new DSimpleXMLNode("irf-MU");
+
+            m_irfMU_1_parentNode = new DSimpleXMLNode("irf-1");
+
+            m_irfMU_1_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfMU_1_enabled->setValue(true);
+            m_irfMU_1_functionType = new DSimpleXMLNode("function-type");
+            m_irfMU_1_functionType->setValue("GAUSSIAN");
+            m_irfMU_1_intensity = new DSimpleXMLNode("intensity");
+            m_irfMU_1_intensity->setValue(1.0);
+            m_irfMU_1_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfMU_1_uncertainty->setValue(0.0025f);
+            m_irfMU_1_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfMU_1_relativeShift->setValue(0.0);
+
+
+            m_irfMU_2_parentNode = new DSimpleXMLNode("irf-2");
+
+            m_irfMU_2_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfMU_2_enabled->setValue(false);
+            m_irfMU_2_functionType = new DSimpleXMLNode("function-type");
+            m_irfMU_2_functionType->setValue("GAUSSIAN");
+            m_irfMU_2_intensity = new DSimpleXMLNode("intensity");
+            m_irfMU_2_intensity->setValue(1.0);
+            m_irfMU_2_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfMU_2_uncertainty->setValue(0.0025f);
+            m_irfMU_2_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfMU_2_relativeShift->setValue(0.0);
+
+
+            m_irfMU_3_parentNode = new DSimpleXMLNode("irf-3");
+
+            m_irfMU_3_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfMU_3_enabled->setValue(false);
+            m_irfMU_3_functionType = new DSimpleXMLNode("function-type");
+            m_irfMU_3_functionType->setValue("GAUSSIAN");
+            m_irfMU_3_intensity = new DSimpleXMLNode("intensity");
+            m_irfMU_3_intensity->setValue(1.0);
+            m_irfMU_3_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfMU_3_uncertainty->setValue(0.0025f);
+            m_irfMU_3_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfMU_3_relativeShift->setValue(0.0);
+
+
+            m_irfMU_4_parentNode = new DSimpleXMLNode("irf-4");
+
+            m_irfMU_4_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfMU_4_enabled->setValue(false);
+            m_irfMU_4_functionType = new DSimpleXMLNode("function-type");
+            m_irfMU_4_functionType->setValue("GAUSSIAN");
+            m_irfMU_4_intensity = new DSimpleXMLNode("intensity");
+            m_irfMU_4_intensity->setValue(1.0);
+            m_irfMU_4_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfMU_4_uncertainty->setValue(0.0025f);
+            m_irfMU_4_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfMU_4_relativeShift->setValue(0.0);
+
+
+            m_irfMU_5_parentNode = new DSimpleXMLNode("irf-5");
+
+            m_irfMU_5_enabled = new DSimpleXMLNode("is-enabled?");
+            m_irfMU_5_enabled->setValue(false);
+            m_irfMU_5_functionType = new DSimpleXMLNode("function-type");
+            m_irfMU_5_functionType->setValue("GAUSSIAN");
+            m_irfMU_5_intensity = new DSimpleXMLNode("intensity");
+            m_irfMU_5_intensity->setValue(1.0);
+            m_irfMU_5_uncertainty = new DSimpleXMLNode("uncertainty-in-ns");
+            m_irfMU_5_uncertainty->setValue(0.0025f);
+            m_irfMU_5_relativeShift = new DSimpleXMLNode("shift-in-ns");
+            m_irfMU_5_relativeShift->setValue(0.0);
+
     m_phsParentNode = new DSimpleXMLNode("pulse-height-spectrum-PHS");
     m_pulseShapeParentNode = new DSimpleXMLNode("detector-output-pulse-shape");
     m_ltParentNode = new DSimpleXMLNode("lifetime-spectrum-simulation-input");
@@ -194,12 +408,12 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     m_tau5_distrGridIncrement->setValue(0.0f);
 
     //electronics:
-    m_tts_detectorAInNsNode = new DSimpleXMLNode("uncertainty-PDS-detector-A-in-ns");
+    /*m_tts_detectorAInNsNode = new DSimpleXMLNode("uncertainty-PDS-detector-A-in-ns");
     m_tts_detectorAInNsNode->setValue(0.0849329f);
     m_tts_detectorBInNsNode = new DSimpleXMLNode("uncertainty-PDS-detector-B-in-ns");
     m_tts_detectorBInNsNode->setValue(0.0849329f);
     m_timingResolution_boardInNsNode = new DSimpleXMLNode("uncertainty-MU-in-ns");
-    m_timingResolution_boardInNsNode->setValue(0.0025f);
+    m_timingResolution_boardInNsNode->setValue(0.0025f);*/
     m_arrivalTimeSpreadInNsNode = new DSimpleXMLNode("arrival-time-spread-ATS-in-ns");
     m_arrivalTimeSpreadInNsNode->setValue(0.25f);
 
@@ -224,7 +438,29 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
                                   << m_tau4_NS << m_I4_NS << m_ltDistr4ParentNode
                                   << m_tau5_NS << m_I5_NS << m_ltDistr5ParentNode;
 
-    (*m_electronicsNode) << m_tts_detectorAInNsNode << m_tts_detectorBInNsNode << m_timingResolution_boardInNsNode << m_arrivalTimeSpreadInNsNode;
+    (*m_irfPDSA_1_parentNode) << m_irfPDSA_1_enabled << m_irfPDSA_1_functionType << m_irfPDSA_1_intensity << m_irfPDSA_1_uncertainty << m_irfPDSA_1_relativeShift;
+    (*m_irfPDSA_2_parentNode) << m_irfPDSA_2_enabled << m_irfPDSA_2_functionType << m_irfPDSA_2_intensity << m_irfPDSA_2_uncertainty << m_irfPDSA_2_relativeShift;
+    (*m_irfPDSA_3_parentNode) << m_irfPDSA_3_enabled << m_irfPDSA_3_functionType << m_irfPDSA_3_intensity << m_irfPDSA_3_uncertainty << m_irfPDSA_3_relativeShift;
+    (*m_irfPDSA_4_parentNode) << m_irfPDSA_4_enabled << m_irfPDSA_4_functionType << m_irfPDSA_4_intensity << m_irfPDSA_4_uncertainty << m_irfPDSA_4_relativeShift;
+    (*m_irfPDSA_5_parentNode) << m_irfPDSA_5_enabled << m_irfPDSA_5_functionType << m_irfPDSA_5_intensity << m_irfPDSA_5_uncertainty << m_irfPDSA_5_relativeShift;
+
+    (*m_irfPDSB_1_parentNode) << m_irfPDSB_1_enabled << m_irfPDSB_1_functionType << m_irfPDSB_1_intensity << m_irfPDSB_1_uncertainty << m_irfPDSB_1_relativeShift;
+    (*m_irfPDSB_2_parentNode) << m_irfPDSB_2_enabled << m_irfPDSB_2_functionType << m_irfPDSB_2_intensity << m_irfPDSB_2_uncertainty << m_irfPDSB_2_relativeShift;
+    (*m_irfPDSB_3_parentNode) << m_irfPDSB_3_enabled << m_irfPDSB_3_functionType << m_irfPDSB_3_intensity << m_irfPDSB_3_uncertainty << m_irfPDSB_3_relativeShift;
+    (*m_irfPDSB_4_parentNode) << m_irfPDSB_4_enabled << m_irfPDSB_4_functionType << m_irfPDSB_4_intensity << m_irfPDSB_4_uncertainty << m_irfPDSB_4_relativeShift;
+    (*m_irfPDSB_5_parentNode) << m_irfPDSB_5_enabled << m_irfPDSB_5_functionType << m_irfPDSB_5_intensity << m_irfPDSB_5_uncertainty << m_irfPDSB_5_relativeShift;
+
+    (*m_irfMU_1_parentNode) << m_irfMU_1_enabled << m_irfMU_1_functionType << m_irfMU_1_intensity << m_irfMU_1_uncertainty << m_irfMU_1_relativeShift;
+    (*m_irfMU_2_parentNode) << m_irfMU_2_enabled << m_irfMU_2_functionType << m_irfMU_2_intensity << m_irfMU_2_uncertainty << m_irfMU_2_relativeShift;
+    (*m_irfMU_3_parentNode) << m_irfMU_3_enabled << m_irfMU_3_functionType << m_irfMU_3_intensity << m_irfMU_3_uncertainty << m_irfMU_3_relativeShift;
+    (*m_irfMU_4_parentNode) << m_irfMU_4_enabled << m_irfMU_4_functionType << m_irfMU_4_intensity << m_irfMU_4_uncertainty << m_irfMU_4_relativeShift;
+    (*m_irfMU_5_parentNode) << m_irfMU_5_enabled << m_irfMU_5_functionType << m_irfMU_5_intensity << m_irfMU_5_uncertainty << m_irfMU_5_relativeShift;
+
+    (*m_irfPDSA_parentNode) << m_irfPDSA_1_parentNode << m_irfPDSA_2_parentNode << m_irfPDSA_3_parentNode << m_irfPDSA_4_parentNode << m_irfPDSA_5_parentNode;
+    (*m_irfPDSB_parentNode) << m_irfPDSB_1_parentNode << m_irfPDSB_2_parentNode << m_irfPDSB_3_parentNode << m_irfPDSB_4_parentNode << m_irfPDSB_5_parentNode;
+    (*m_irfMU_parentNode) << m_irfMU_1_parentNode << m_irfMU_2_parentNode << m_irfMU_3_parentNode << m_irfMU_4_parentNode << m_irfMU_5_parentNode;
+
+    (*m_electronicsNode) << m_irfPDSA_parentNode << m_irfPDSB_parentNode << m_irfMU_parentNode << m_arrivalTimeSpreadInNsNode;
 
 
     (*m_parentNode) << m_electronicsNode << m_phsParentNode << m_pulseShapeParentNode << m_ltParentNode;
@@ -257,14 +493,106 @@ bool DRS4SimulationSettingsManager::load(const QString &path)
 
     if ( !ok )
     {
-        m_tts_detectorAInNsNode->setValue(0.0849329f);
+        m_irfPDSA_1_enabled->setValue(true);
+        m_irfPDSA_1_functionType->setValue("GAUSSIAN");
+        m_irfPDSA_1_intensity->setValue(1.0);
+        m_irfPDSA_1_uncertainty->setValue(0.0849329f);
+        m_irfPDSA_1_relativeShift->setValue(0.0);
+
+        m_irfPDSA_2_enabled->setValue(false);
+        m_irfPDSA_2_functionType->setValue("GAUSSIAN");
+        m_irfPDSA_2_intensity->setValue(1.0);
+        m_irfPDSA_2_uncertainty->setValue(0.0849329f);
+        m_irfPDSA_2_relativeShift->setValue(0.0);
+
+        m_irfPDSA_3_enabled->setValue(false);
+        m_irfPDSA_3_functionType->setValue("GAUSSIAN");
+        m_irfPDSA_3_intensity->setValue(1.0);
+        m_irfPDSA_3_uncertainty->setValue(0.0849329f);
+        m_irfPDSA_3_relativeShift->setValue(0.0);
+
+        m_irfPDSA_4_enabled->setValue(false);
+        m_irfPDSA_4_functionType->setValue("GAUSSIAN");
+        m_irfPDSA_4_intensity->setValue(1.0);
+        m_irfPDSA_4_uncertainty->setValue(0.0849329f);
+        m_irfPDSA_4_relativeShift->setValue(0.0);
+
+        m_irfPDSA_5_enabled->setValue(false);
+        m_irfPDSA_5_functionType->setValue("GAUSSIAN");
+        m_irfPDSA_5_intensity->setValue(1.0);
+        m_irfPDSA_5_uncertainty->setValue(0.0849329f);
+        m_irfPDSA_5_relativeShift->setValue(0.0);
+
+
+        m_irfPDSB_1_enabled->setValue(true);
+        m_irfPDSB_1_functionType->setValue("GAUSSIAN");
+        m_irfPDSB_1_intensity->setValue(1.0);
+        m_irfPDSB_1_uncertainty->setValue(0.0849329f);
+        m_irfPDSB_1_relativeShift->setValue(0.0);
+
+        m_irfPDSB_2_enabled->setValue(false);
+        m_irfPDSB_2_functionType->setValue("GAUSSIAN");
+        m_irfPDSB_2_intensity->setValue(1.0);
+        m_irfPDSB_2_uncertainty->setValue(0.0849329f);
+        m_irfPDSB_2_relativeShift->setValue(0.0);
+
+        m_irfPDSB_3_enabled->setValue(false);
+        m_irfPDSB_3_functionType->setValue("GAUSSIAN");
+        m_irfPDSB_3_intensity->setValue(1.0);
+        m_irfPDSB_3_uncertainty->setValue(0.0849329f);
+        m_irfPDSB_3_relativeShift->setValue(0.0);
+
+        m_irfPDSB_4_enabled->setValue(false);
+        m_irfPDSB_4_functionType->setValue("GAUSSIAN");
+        m_irfPDSB_4_intensity->setValue(1.0);
+        m_irfPDSB_4_uncertainty->setValue(0.0849329f);
+        m_irfPDSB_4_relativeShift->setValue(0.0);
+
+        m_irfPDSB_5_enabled->setValue(false);
+        m_irfPDSB_5_functionType->setValue("GAUSSIAN");
+        m_irfPDSB_5_intensity->setValue(1.0);
+        m_irfPDSB_5_uncertainty->setValue(0.0849329f);
+        m_irfPDSB_5_relativeShift->setValue(0.0);
+
+
+        m_irfMU_1_enabled->setValue(true);
+        m_irfMU_1_functionType->setValue("GAUSSIAN");
+        m_irfMU_1_intensity->setValue(1.0);
+        m_irfMU_1_uncertainty->setValue(0.0025f);
+        m_irfMU_1_relativeShift->setValue(0.0);
+
+        m_irfMU_2_enabled->setValue(false);
+        m_irfMU_2_functionType->setValue("GAUSSIAN");
+        m_irfMU_2_intensity->setValue(1.0);
+        m_irfMU_2_uncertainty->setValue(0.0025f);
+        m_irfMU_2_relativeShift->setValue(0.0);
+
+        m_irfMU_3_enabled->setValue(false);
+        m_irfMU_3_functionType->setValue("GAUSSIAN");
+        m_irfMU_3_intensity->setValue(1.0);
+        m_irfMU_3_uncertainty->setValue(0.0025f);
+        m_irfMU_3_relativeShift->setValue(0.0);
+
+        m_irfMU_4_enabled->setValue(false);
+        m_irfMU_4_functionType->setValue("GAUSSIAN");
+        m_irfMU_4_intensity->setValue(1.0);
+        m_irfMU_4_uncertainty->setValue(0.0025f);
+        m_irfMU_4_relativeShift->setValue(0.0);
+
+        m_irfMU_5_enabled->setValue(false);
+        m_irfMU_5_functionType->setValue("GAUSSIAN");
+        m_irfMU_5_intensity->setValue(1.0);
+        m_irfMU_5_uncertainty->setValue(0.0025f);
+        m_irfMU_5_relativeShift->setValue(0.0);
+
+        /*m_tts_detectorAInNsNode->setValue(0.0849329f);
         m_tts_detectorBInNsNode->setValue(0.0849329f);
-        m_timingResolution_boardInNsNode->setValue(0.0025f);
+        m_timingResolution_boardInNsNode->setValue(0.0025f);*/
         m_arrivalTimeSpreadInNsNode->setValue(0.25f);
     }
     else
     {
-        const double  tts_detectorAInNs = electronicTag.getValueAt(m_tts_detectorAInNsNode, &ok).toDouble(&ok);
+        /*const double  tts_detectorAInNs = electronicTag.getValueAt(m_tts_detectorAInNsNode, &ok).toDouble(&ok);
         if ( ok )
             m_tts_detectorAInNsNode->setValue(tts_detectorAInNs);
         else
@@ -280,14 +608,445 @@ bool DRS4SimulationSettingsManager::load(const QString &path)
         if ( ok )
             m_timingResolution_boardInNsNode->setValue(timingResolution_boardInNsNode);
         else
-            m_timingResolution_boardInNsNode->setValue(0.0025f);
-
+            m_timingResolution_boardInNsNode->setValue(0.0025f);*/
 
         const double  arrivalTimeSpreadInNs = electronicTag.getValueAt(m_arrivalTimeSpreadInNsNode, &ok).toDouble(&ok);
         if ( ok )
             m_arrivalTimeSpreadInNsNode->setValue(arrivalTimeSpreadInNs);
         else
             m_arrivalTimeSpreadInNsNode->setValue(0.25f);
+
+        bool ok2 = false, ok3 = false;
+        bool ok_A_1 = false, ok_A_2 = false, ok_A_3 = false, ok_A_4 = false, ok_A_5 = false;
+        bool ok_B_1 = false, ok_B_2 = false, ok_B_3 = false, ok_B_4 = false, ok_B_5 = false;
+        bool ok_MU_1 = false, ok_MU_2 = false, ok_MU_3 = false, ok_MU_4 = false, ok_MU_5 = false;
+
+        const DSimpleXMLTag pdsA_irf = electronicTag.getTag(m_irfPDSA_parentNode, &ok);
+
+        const DSimpleXMLTag pdsA_irf_1 = pdsA_irf.getTag(m_irfPDSA_1_parentNode, &ok_A_1);
+        const DSimpleXMLTag pdsA_irf_2 = pdsA_irf.getTag(m_irfPDSA_2_parentNode, &ok_A_2);
+        const DSimpleXMLTag pdsA_irf_3 = pdsA_irf.getTag(m_irfPDSA_3_parentNode, &ok_A_3);
+        const DSimpleXMLTag pdsA_irf_4 = pdsA_irf.getTag(m_irfPDSA_4_parentNode, &ok_A_4);
+        const DSimpleXMLTag pdsA_irf_5 = pdsA_irf.getTag(m_irfPDSA_5_parentNode, &ok_A_5);
+
+        const DSimpleXMLTag pdsB_irf = electronicTag.getTag(m_irfPDSB_parentNode, &ok2);
+
+        const DSimpleXMLTag pdsB_irf_1 = pdsB_irf.getTag(m_irfPDSB_1_parentNode, &ok_B_1);
+        const DSimpleXMLTag pdsB_irf_2 = pdsB_irf.getTag(m_irfPDSB_2_parentNode, &ok_B_2);
+        const DSimpleXMLTag pdsB_irf_3 = pdsB_irf.getTag(m_irfPDSB_3_parentNode, &ok_B_3);
+        const DSimpleXMLTag pdsB_irf_4 = pdsB_irf.getTag(m_irfPDSB_4_parentNode, &ok_B_4);
+        const DSimpleXMLTag pdsB_irf_5 = pdsB_irf.getTag(m_irfPDSB_5_parentNode, &ok_B_5);
+
+        const DSimpleXMLTag mu_irf = electronicTag.getTag(m_irfMU_parentNode, &ok3);
+
+        const DSimpleXMLTag mu_irf_1 = mu_irf.getTag(m_irfMU_1_parentNode, &ok_MU_1);
+        const DSimpleXMLTag mu_irf_2 = mu_irf.getTag(m_irfMU_2_parentNode, &ok_MU_2);
+        const DSimpleXMLTag mu_irf_3 = mu_irf.getTag(m_irfMU_3_parentNode, &ok_MU_3);
+        const DSimpleXMLTag mu_irf_4 = mu_irf.getTag(m_irfMU_4_parentNode, &ok_MU_4);
+        const DSimpleXMLTag mu_irf_5 = mu_irf.getTag(m_irfMU_5_parentNode, &ok_MU_5);
+
+        const bool iok = (ok && ok2 && ok3 && ok_A_1 && ok_A_2 && ok_A_3 && ok_A_4 && ok_A_5 && ok_B_1 && ok_B_2 && ok_B_3 && ok_B_4 && ok_B_5 && ok_MU_1 && ok_MU_2 && ok_MU_3 && ok_MU_4 && ok_MU_5);
+
+        if ( !iok ) {
+            m_irfPDSA_1_enabled->setValue(true);
+            m_irfPDSA_1_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_1_intensity->setValue(1.0);
+            m_irfPDSA_1_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_1_relativeShift->setValue(0.0);
+
+            m_irfPDSA_2_enabled->setValue(false);
+            m_irfPDSA_2_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_2_intensity->setValue(1.0);
+            m_irfPDSA_2_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_2_relativeShift->setValue(0.0);
+
+            m_irfPDSA_3_enabled->setValue(false);
+            m_irfPDSA_3_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_3_intensity->setValue(1.0);
+            m_irfPDSA_3_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_3_relativeShift->setValue(0.0);
+
+            m_irfPDSA_4_enabled->setValue(false);
+            m_irfPDSA_4_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_4_intensity->setValue(1.0);
+            m_irfPDSA_4_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_4_relativeShift->setValue(0.0);
+
+            m_irfPDSA_5_enabled->setValue(false);
+            m_irfPDSA_5_functionType->setValue("GAUSSIAN");
+            m_irfPDSA_5_intensity->setValue(1.0);
+            m_irfPDSA_5_uncertainty->setValue(0.0849329f);
+            m_irfPDSA_5_relativeShift->setValue(0.0);
+
+
+            m_irfPDSB_1_enabled->setValue(true);
+            m_irfPDSB_1_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_1_intensity->setValue(1.0);
+            m_irfPDSB_1_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_1_relativeShift->setValue(0.0);
+
+            m_irfPDSB_2_enabled->setValue(false);
+            m_irfPDSB_2_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_2_intensity->setValue(1.0);
+            m_irfPDSB_2_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_2_relativeShift->setValue(0.0);
+
+            m_irfPDSB_3_enabled->setValue(false);
+            m_irfPDSB_3_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_3_intensity->setValue(1.0);
+            m_irfPDSB_3_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_3_relativeShift->setValue(0.0);
+
+            m_irfPDSB_4_enabled->setValue(false);
+            m_irfPDSB_4_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_4_intensity->setValue(1.0);
+            m_irfPDSB_4_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_4_relativeShift->setValue(0.0);
+
+            m_irfPDSB_5_enabled->setValue(false);
+            m_irfPDSB_5_functionType->setValue("GAUSSIAN");
+            m_irfPDSB_5_intensity->setValue(1.0);
+            m_irfPDSB_5_uncertainty->setValue(0.0849329f);
+            m_irfPDSB_5_relativeShift->setValue(0.0);
+
+
+            m_irfMU_1_enabled->setValue(true);
+            m_irfMU_1_functionType->setValue("GAUSSIAN");
+            m_irfMU_1_intensity->setValue(1.0);
+            m_irfMU_1_uncertainty->setValue(0.0025f);
+            m_irfMU_1_relativeShift->setValue(0.0);
+
+            m_irfMU_2_enabled->setValue(false);
+            m_irfMU_2_functionType->setValue("GAUSSIAN");
+            m_irfMU_2_intensity->setValue(1.0);
+            m_irfMU_2_uncertainty->setValue(0.0025f);
+            m_irfMU_2_relativeShift->setValue(0.0);
+
+            m_irfMU_3_enabled->setValue(false);
+            m_irfMU_3_functionType->setValue("GAUSSIAN");
+            m_irfMU_3_intensity->setValue(1.0);
+            m_irfMU_3_uncertainty->setValue(0.0025f);
+            m_irfMU_3_relativeShift->setValue(0.0);
+
+            m_irfMU_4_enabled->setValue(false);
+            m_irfMU_4_functionType->setValue("GAUSSIAN");
+            m_irfMU_4_intensity->setValue(1.0);
+            m_irfMU_4_uncertainty->setValue(0.0025f);
+            m_irfMU_4_relativeShift->setValue(0.0);
+
+            m_irfMU_5_enabled->setValue(false);
+            m_irfMU_5_functionType->setValue("GAUSSIAN");
+            m_irfMU_5_intensity->setValue(1.0);
+            m_irfMU_5_uncertainty->setValue(0.0025f);
+            m_irfMU_5_relativeShift->setValue(0.0);
+        }
+        else
+        {
+            /* PDS-A */
+            bool  enabled_1 = pdsA_irf_1.getValueAt(m_irfPDSA_1_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSA_1_enabled->setValue(enabled_1);
+            else m_irfPDSA_1_enabled->setValue(false);
+
+            QString  ft_1 = pdsA_irf_1.getValueAt(m_irfPDSA_1_functionType, &ok).toString();
+            if ( ok ) m_irfPDSA_1_functionType->setValue(ft_1);
+            else m_irfPDSA_1_functionType->setValue("GAUSSIAN");
+
+            float intensity_1 = pdsA_irf_1.getValueAt(m_irfPDSA_1_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_1_intensity->setValue(intensity_1);
+            else m_irfPDSA_1_intensity->setValue(1.0);
+
+            float uncertainty_1 = pdsA_irf_1.getValueAt(m_irfPDSA_1_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_1_uncertainty->setValue(uncertainty_1);
+            else m_irfPDSA_1_uncertainty->setValue(0.0849329f);
+
+            float shift_1 = pdsA_irf_1.getValueAt(m_irfPDSA_1_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_1_relativeShift->setValue(shift_1);
+            else m_irfPDSA_1_relativeShift->setValue(0.0f);
+
+            bool  enabled_2 = pdsA_irf_2.getValueAt(m_irfPDSA_2_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSA_2_enabled->setValue(enabled_2);
+            else m_irfPDSA_2_enabled->setValue(false);
+
+            QString  ft_2 = pdsA_irf_2.getValueAt(m_irfPDSA_2_functionType, &ok).toString();
+            if ( ok ) m_irfPDSA_2_functionType->setValue(ft_2);
+            else m_irfPDSA_2_functionType->setValue("GAUSSIAN");
+
+            float intensity_2 = pdsA_irf_2.getValueAt(m_irfPDSA_2_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_2_intensity->setValue(intensity_2);
+            else m_irfPDSA_2_intensity->setValue(1.0);
+
+            float uncertainty_2 = pdsA_irf_2.getValueAt(m_irfPDSA_2_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_2_uncertainty->setValue(uncertainty_2);
+            else m_irfPDSA_2_uncertainty->setValue(0.0849329f);
+
+            float shift_2 = pdsA_irf_2.getValueAt(m_irfPDSA_2_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_2_relativeShift->setValue(shift_2);
+            else m_irfPDSA_2_relativeShift->setValue(0.0f);
+
+            bool  enabled_3 = pdsA_irf_3.getValueAt(m_irfPDSA_3_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSA_3_enabled->setValue(enabled_3);
+            else m_irfPDSA_3_enabled->setValue(false);
+
+            QString  ft_3 = pdsA_irf_3.getValueAt(m_irfPDSA_3_functionType, &ok).toString();
+            if ( ok ) m_irfPDSA_3_functionType->setValue(ft_3);
+            else m_irfPDSA_3_functionType->setValue("GAUSSIAN");
+
+            float intensity_3 = pdsA_irf_3.getValueAt(m_irfPDSA_3_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_3_intensity->setValue(intensity_3);
+            else m_irfPDSA_3_intensity->setValue(1.0);
+
+            float uncertainty_3 = pdsA_irf_3.getValueAt(m_irfPDSA_3_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_3_uncertainty->setValue(uncertainty_3);
+            else m_irfPDSA_3_uncertainty->setValue(0.0849329f);
+
+            float shift_3 = pdsA_irf_3.getValueAt(m_irfPDSA_3_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_3_relativeShift->setValue(shift_3);
+            else m_irfPDSA_3_relativeShift->setValue(0.0f);
+
+            bool  enabled_4 = pdsA_irf_4.getValueAt(m_irfPDSA_4_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSA_4_enabled->setValue(enabled_4);
+            else m_irfPDSA_4_enabled->setValue(false);
+
+            QString  ft_4 = pdsA_irf_4.getValueAt(m_irfPDSA_4_functionType, &ok).toString();
+            if ( ok ) m_irfPDSA_4_functionType->setValue(ft_4);
+            else m_irfPDSA_4_functionType->setValue("GAUSSIAN");
+
+            float intensity_4 = pdsA_irf_4.getValueAt(m_irfPDSA_4_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_4_intensity->setValue(intensity_4);
+            else m_irfPDSA_4_intensity->setValue(1.0);
+
+            float uncertainty_4 = pdsA_irf_4.getValueAt(m_irfPDSA_4_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_4_uncertainty->setValue(uncertainty_4);
+            else m_irfPDSA_4_uncertainty->setValue(0.0849329f);
+
+            float shift_4 = pdsA_irf_4.getValueAt(m_irfPDSA_4_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_4_relativeShift->setValue(shift_4);
+            else m_irfPDSA_4_relativeShift->setValue(0.0f);
+
+            bool  enabled_5 = pdsA_irf_5.getValueAt(m_irfPDSA_5_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSA_5_enabled->setValue(enabled_5);
+            else m_irfPDSA_5_enabled->setValue(false);
+
+            QString  ft_5 = pdsA_irf_5.getValueAt(m_irfPDSA_5_functionType, &ok).toString();
+            if ( ok ) m_irfPDSA_5_functionType->setValue(ft_5);
+            else m_irfPDSA_5_functionType->setValue("GAUSSIAN");
+
+            float intensity_5 = pdsA_irf_5.getValueAt(m_irfPDSA_5_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_5_intensity->setValue(intensity_5);
+            else m_irfPDSA_5_intensity->setValue(1.0);
+
+            float uncertainty_5 = pdsA_irf_5.getValueAt(m_irfPDSA_5_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_5_uncertainty->setValue(uncertainty_5);
+            else m_irfPDSA_5_uncertainty->setValue(0.0849329f);
+
+            float shift_5 = pdsA_irf_5.getValueAt(m_irfPDSA_5_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSA_5_relativeShift->setValue(shift_5);
+            else m_irfPDSA_5_relativeShift->setValue(0.0f);
+
+
+            /* PDS-B */
+            enabled_1 = pdsB_irf_1.getValueAt(m_irfPDSB_1_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSB_1_enabled->setValue(enabled_1);
+            else m_irfPDSB_1_enabled->setValue(false);
+
+            ft_1 = pdsB_irf_1.getValueAt(m_irfPDSB_1_functionType, &ok).toString();
+            if ( ok ) m_irfPDSB_1_functionType->setValue(ft_1);
+            else m_irfPDSB_1_functionType->setValue("GAUSSIAN");
+
+            intensity_1 = pdsB_irf_1.getValueAt(m_irfPDSB_1_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_1_intensity->setValue(intensity_1);
+            else m_irfPDSB_1_intensity->setValue(1.0);
+
+            uncertainty_1 = pdsB_irf_1.getValueAt(m_irfPDSB_1_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_1_uncertainty->setValue(uncertainty_1);
+            else m_irfPDSB_1_uncertainty->setValue(0.0849329f);
+
+            shift_1 = pdsB_irf_1.getValueAt(m_irfPDSB_1_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_1_relativeShift->setValue(shift_1);
+            else m_irfPDSB_1_relativeShift->setValue(0.0f);
+
+            enabled_2 = pdsB_irf_2.getValueAt(m_irfPDSB_2_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSB_2_enabled->setValue(enabled_2);
+            else m_irfPDSB_2_enabled->setValue(false);
+
+            ft_2 = pdsB_irf_2.getValueAt(m_irfPDSB_2_functionType, &ok).toString();
+            if ( ok ) m_irfPDSB_2_functionType->setValue(ft_2);
+            else m_irfPDSB_2_functionType->setValue("GAUSSIAN");
+
+            intensity_2 = pdsB_irf_2.getValueAt(m_irfPDSB_2_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_2_intensity->setValue(intensity_2);
+            else m_irfPDSB_2_intensity->setValue(1.0);
+
+            uncertainty_2 = pdsB_irf_2.getValueAt(m_irfPDSB_2_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_2_uncertainty->setValue(uncertainty_2);
+            else m_irfPDSB_2_uncertainty->setValue(0.0849329f);
+
+            shift_2 = pdsB_irf_2.getValueAt(m_irfPDSB_2_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_2_relativeShift->setValue(shift_2);
+            else m_irfPDSB_2_relativeShift->setValue(0.0f);
+
+            enabled_3 = pdsB_irf_3.getValueAt(m_irfPDSB_3_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSB_3_enabled->setValue(enabled_3);
+            else m_irfPDSB_3_enabled->setValue(false);
+
+            ft_3 = pdsB_irf_3.getValueAt(m_irfPDSB_3_functionType, &ok).toString();
+            if ( ok ) m_irfPDSB_3_functionType->setValue(ft_3);
+            else m_irfPDSB_3_functionType->setValue("GAUSSIAN");
+
+            intensity_3 = pdsB_irf_3.getValueAt(m_irfPDSB_3_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_3_intensity->setValue(intensity_3);
+            else m_irfPDSB_3_intensity->setValue(1.0);
+
+            uncertainty_3 = pdsB_irf_3.getValueAt(m_irfPDSB_3_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_3_uncertainty->setValue(uncertainty_3);
+            else m_irfPDSB_3_uncertainty->setValue(0.0849329f);
+
+            shift_3 = pdsB_irf_3.getValueAt(m_irfPDSB_3_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_3_relativeShift->setValue(shift_3);
+            else m_irfPDSB_3_relativeShift->setValue(0.0f);
+
+            enabled_4 = pdsB_irf_4.getValueAt(m_irfPDSB_4_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSB_4_enabled->setValue(enabled_4);
+            else m_irfPDSB_4_enabled->setValue(false);
+
+            ft_4 = pdsB_irf_4.getValueAt(m_irfPDSB_4_functionType, &ok).toString();
+            if ( ok ) m_irfPDSB_4_functionType->setValue(ft_4);
+            else m_irfPDSB_4_functionType->setValue("GAUSSIAN");
+
+            intensity_4 = pdsB_irf_4.getValueAt(m_irfPDSB_4_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_4_intensity->setValue(intensity_4);
+            else m_irfPDSB_4_intensity->setValue(1.0);
+
+            uncertainty_4 = pdsB_irf_4.getValueAt(m_irfPDSB_4_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_4_uncertainty->setValue(uncertainty_4);
+            else m_irfPDSB_4_uncertainty->setValue(0.0849329f);
+
+            shift_4 = pdsB_irf_4.getValueAt(m_irfPDSB_4_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_4_relativeShift->setValue(shift_4);
+            else m_irfPDSB_4_relativeShift->setValue(0.0f);
+
+            enabled_5 = pdsB_irf_5.getValueAt(m_irfPDSB_5_enabled, &ok).toBool();
+            if ( ok ) m_irfPDSB_5_enabled->setValue(enabled_5);
+            else m_irfPDSB_5_enabled->setValue(false);
+
+            ft_5 = pdsB_irf_5.getValueAt(m_irfPDSB_5_functionType, &ok).toString();
+            if ( ok ) m_irfPDSB_5_functionType->setValue(ft_5);
+            else m_irfPDSB_5_functionType->setValue("GAUSSIAN");
+
+            intensity_5 = pdsB_irf_5.getValueAt(m_irfPDSB_5_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_5_intensity->setValue(intensity_5);
+            else m_irfPDSB_5_intensity->setValue(1.0);
+
+            uncertainty_5 = pdsB_irf_5.getValueAt(m_irfPDSB_5_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_5_uncertainty->setValue(uncertainty_5);
+            else m_irfPDSB_5_uncertainty->setValue(0.0849329f);
+
+            shift_5 = pdsB_irf_5.getValueAt(m_irfPDSB_5_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfPDSB_5_relativeShift->setValue(shift_5);
+            else m_irfPDSB_5_relativeShift->setValue(0.0f);
+
+
+            /* MU */
+            enabled_1 = mu_irf_1.getValueAt(m_irfMU_1_enabled, &ok).toBool();
+            if ( ok ) m_irfMU_1_enabled->setValue(enabled_1);
+            else m_irfMU_1_enabled->setValue(false);
+
+            ft_1 = mu_irf_1.getValueAt(m_irfMU_1_functionType, &ok).toString();
+            if ( ok ) m_irfMU_1_functionType->setValue(ft_1);
+            else m_irfMU_1_functionType->setValue("GAUSSIAN");
+
+            intensity_1 = mu_irf_1.getValueAt(m_irfMU_1_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_1_intensity->setValue(intensity_1);
+            else m_irfMU_1_intensity->setValue(1.0);
+
+            uncertainty_1 = mu_irf_1.getValueAt(m_irfMU_1_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_1_uncertainty->setValue(uncertainty_1);
+            else m_irfMU_1_uncertainty->setValue(0.0025f);
+
+            shift_1 = mu_irf_1.getValueAt(m_irfMU_1_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_1_relativeShift->setValue(shift_1);
+            else m_irfMU_1_relativeShift->setValue(0.0f);
+
+            enabled_2 = mu_irf_2.getValueAt(m_irfMU_2_enabled, &ok).toBool();
+            if ( ok ) m_irfMU_2_enabled->setValue(enabled_2);
+            else m_irfMU_2_enabled->setValue(false);
+
+            ft_2 = mu_irf_2.getValueAt(m_irfMU_2_functionType, &ok).toString();
+            if ( ok ) m_irfMU_2_functionType->setValue(ft_2);
+            else m_irfMU_2_functionType->setValue("GAUSSIAN");
+
+            intensity_2 = mu_irf_2.getValueAt(m_irfMU_2_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_2_intensity->setValue(intensity_2);
+            else m_irfMU_2_intensity->setValue(1.0);
+
+            uncertainty_2 = mu_irf_2.getValueAt(m_irfMU_2_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_2_uncertainty->setValue(uncertainty_2);
+            else m_irfMU_2_uncertainty->setValue(0.0025f);
+
+            shift_2 = mu_irf_2.getValueAt(m_irfMU_2_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_2_relativeShift->setValue(shift_2);
+            else m_irfMU_2_relativeShift->setValue(0.0f);
+
+            enabled_3 = mu_irf_3.getValueAt(m_irfMU_3_enabled, &ok).toBool();
+            if ( ok ) m_irfMU_3_enabled->setValue(enabled_3);
+            else m_irfMU_3_enabled->setValue(false);
+
+            ft_3 = mu_irf_3.getValueAt(m_irfMU_3_functionType, &ok).toString();
+            if ( ok ) m_irfMU_3_functionType->setValue(ft_3);
+            else m_irfMU_3_functionType->setValue("GAUSSIAN");
+
+            intensity_3 = mu_irf_3.getValueAt(m_irfMU_3_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_3_intensity->setValue(intensity_3);
+            else m_irfMU_3_intensity->setValue(1.0);
+
+            uncertainty_3 = mu_irf_3.getValueAt(m_irfMU_3_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_3_uncertainty->setValue(uncertainty_3);
+            else m_irfMU_3_uncertainty->setValue(0.0025f);
+
+            shift_3 = mu_irf_3.getValueAt(m_irfMU_3_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_3_relativeShift->setValue(shift_3);
+            else m_irfMU_3_relativeShift->setValue(0.0f);
+
+            enabled_4 = mu_irf_4.getValueAt(m_irfMU_4_enabled, &ok).toBool();
+            if ( ok ) m_irfMU_4_enabled->setValue(enabled_4);
+            else m_irfMU_4_enabled->setValue(false);
+
+            ft_4 = mu_irf_4.getValueAt(m_irfMU_4_functionType, &ok).toString();
+            if ( ok ) m_irfMU_4_functionType->setValue(ft_4);
+            else m_irfMU_4_functionType->setValue("GAUSSIAN");
+
+            intensity_4 = mu_irf_4.getValueAt(m_irfMU_4_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_4_intensity->setValue(intensity_4);
+            else m_irfMU_4_intensity->setValue(1.0);
+
+            uncertainty_4 = mu_irf_4.getValueAt(m_irfMU_4_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_4_uncertainty->setValue(uncertainty_4);
+            else m_irfMU_4_uncertainty->setValue(0.0025f);
+
+            shift_4 = mu_irf_4.getValueAt(m_irfMU_4_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_4_relativeShift->setValue(shift_4);
+            else m_irfMU_4_relativeShift->setValue(0.0f);
+
+            enabled_5 = mu_irf_5.getValueAt(m_irfMU_5_enabled, &ok).toBool();
+            if ( ok ) m_irfMU_5_enabled->setValue(enabled_5);
+            else m_irfMU_5_enabled->setValue(false);
+
+            ft_5 = mu_irf_5.getValueAt(m_irfMU_5_functionType, &ok).toString();
+            if ( ok ) m_irfMU_5_functionType->setValue(ft_5);
+            else m_irfMU_5_functionType->setValue("GAUSSIAN");
+
+            intensity_5 = mu_irf_5.getValueAt(m_irfMU_5_intensity, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_5_intensity->setValue(intensity_5);
+            else m_irfMU_5_intensity->setValue(1.0);
+
+            uncertainty_5 = mu_irf_5.getValueAt(m_irfMU_5_uncertainty, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_5_uncertainty->setValue(uncertainty_5);
+            else m_irfMU_5_uncertainty->setValue(0.0025f);
+
+            shift_5 = mu_irf_5.getValueAt(m_irfMU_5_relativeShift, &ok).toFloat(&ok);
+            if ( ok ) m_irfMU_5_relativeShift->setValue(shift_5);
+            else m_irfMU_5_relativeShift->setValue(0.0f);
+        }
     }
     /* -----> /Electronic Settings <-----*/
 
@@ -719,7 +1478,7 @@ bool DRS4SimulationSettingsManager::save(const QString &path)
     return ok;
 }
 
-float DRS4SimulationSettingsManager::ttsDetectorAInNs() const
+/*float DRS4SimulationSettingsManager::ttsDetectorAInNs() const
 {
     QMutexLocker locker(&m_mutex);
 
@@ -738,6 +1497,531 @@ float DRS4SimulationSettingsManager::timingResolutionMeasurementUnitInNs() const
     QMutexLocker locker(&m_mutex);
 
     return m_timingResolution_boardInNsNode->getValue().toFloat();
+}*/
+
+bool DRS4SimulationSettingsManager::detectorA_irf_1_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_1_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorA_irf_1_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_1_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_1_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_1_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_1_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_1_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_1_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_1_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorA_irf_2_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_2_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorA_irf_2_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_2_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_2_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_2_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_2_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_2_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_2_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_2_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorA_irf_3_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_3_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorA_irf_3_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_3_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_3_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_3_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_3_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_3_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_3_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_3_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorA_irf_4_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_4_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorA_irf_4_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_4_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_4_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_4_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_4_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_4_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_4_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_4_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorA_irf_5_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_5_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorA_irf_5_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_5_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_5_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_5_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_5_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_5_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorA_irf_5_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSA_5_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorB_irf_1_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_1_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorB_irf_1_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_1_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_1_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_1_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_1_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_1_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_1_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_1_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorB_irf_2_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_2_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorB_irf_2_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_2_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_2_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_2_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_2_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_2_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_2_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_2_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorB_irf_3_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_3_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorB_irf_3_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_3_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_3_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_3_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_3_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_3_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_3_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_3_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorB_irf_4_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_4_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorB_irf_4_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_4_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_4_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_4_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_4_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_4_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_4_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_4_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::detectorB_irf_5_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_5_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::detectorB_irf_5_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_5_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_5_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_5_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_5_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_5_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::detectorB_irf_5_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfPDSB_5_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::mu_irf_1_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_1_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::mu_irf_1_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_1_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_1_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_1_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_1_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_1_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_1_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_1_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::mu_irf_2_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_2_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::mu_irf_2_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_2_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_2_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_2_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_2_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_2_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_2_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_2_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::mu_irf_3_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_3_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::mu_irf_3_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_3_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_3_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_3_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_3_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_3_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_3_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_3_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::mu_irf_4_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_4_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::mu_irf_4_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_4_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_4_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_4_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_4_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_4_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_4_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_4_relativeShift->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::mu_irf_5_enabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_5_enabled->getValue().toBool();
+}
+
+QString DRS4SimulationSettingsManager::mu_irf_5_functionType() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_5_functionType->getValue().toString();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_5_intensity() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_5_intensity->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_5_uncertainty() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_5_uncertainty->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::mu_irf_5_shift() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_irfMU_5_relativeShift->getValue().toFloat();
 }
 
 float DRS4SimulationSettingsManager::sigmaPHS511keV_A() const
