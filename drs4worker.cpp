@@ -3904,7 +3904,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 const float valYA = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, inputData.m_tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA)):(tkSplineA(inputData.m_tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA))):(alglib::barycentriccalc(baryCentricInterpolantA, inputData.m_tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA));
                 const float valYB = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, inputData.m_tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB)):(tkSplineB(inputData.m_tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB))):(alglib::barycentriccalc(baryCentricInterpolantB, inputData.m_tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB));
 
-                /* modify min/max to calculate the CFD in  high accuracy, subsequently */
+                /* modify min/max to calculate the CFD in high accuracy, subsequently */
                 yMaxA = qMax(yMaxA, valYA);
                 yMaxB = qMax(yMaxB, valYB);
 

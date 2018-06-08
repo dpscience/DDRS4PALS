@@ -32,7 +32,7 @@
 ***********************************************************************************************/
 
 /* For the compilation as static or linked library set COMPILE_AS_LIBRARY = 1 */
-#define COMPILE_AS_LIBRARY					   0
+#define COMPILE_AS_LIBRARY					   1
 
 #ifndef DLTPULSEGENERATOR_H
 #define DLTPULSEGENERATOR_H
@@ -101,13 +101,7 @@ typedef struct {
 	bool isPositiveSignalPolarity; // (isPositiveSignalPolarity == true) ? A = |A| : A = -A
 } DLTPULSEGENERATOR_EXPORT DLTPulse;
 
-/** Simplified setup consisting of:
-**
-** - Photo-Detection System (PDS) 
-** - Measure-Unit (MU)
-**
-**  The uncertainties are represented by a Gaussian distribution function.
-**/
+
 typedef struct {
 	bool enabled;
 	DLTDistributionFunction::Function functionType;
@@ -117,6 +111,7 @@ typedef struct {
 	double param;			// [a.u.] -> reserved for future implementations.
 } DLTPULSEGENERATOR_EXPORT DLTIRF;
 
+/* The Intrument response function (IRF) of PDS A (B) can be described by a linear combination of up to five functions. */
 typedef struct {
 	DLTIRF irf1PDS;
 	DLTIRF irf2PDS;
@@ -125,6 +120,7 @@ typedef struct {
 	DLTIRF irf5PDS;
 } DLTPULSEGENERATOR_EXPORT DLTIRF_PDS;
 
+/* The Intrument response function (IRF) of MU can be described by a linear combination of up to five functions. */
 typedef struct {
 	DLTIRF irf1MU;
 	DLTIRF irf2MU;
@@ -133,9 +129,14 @@ typedef struct {
 	DLTIRF irf5MU;
 } DLTPULSEGENERATOR_EXPORT DLTIRF_MU;
 
+/** Simplified setup consisting of:
+**
+** - Photo Detection System (PDS)
+** - Measure Unit			(MU)
+**/
 typedef struct {
-	DLTIRF_PDS irfA;		// Intrument response function of Photo - Detection System (PDS) - Detector A
-	DLTIRF_PDS irfB;		// Intrument response function of Photo - Detection System (PDS) - Detector B
+	DLTIRF_PDS irfA;		// Intrument response function (IRF) of Photo - Detection System (PDS) - Detector A
+	DLTIRF_PDS irfB;		// Intrument response function (IRF) of Photo - Detection System (PDS) - Detector B
 
 	DLTIRF_MU irfMU;		// Intrument response function of Measure - Unit (MU)
 	
@@ -169,7 +170,7 @@ typedef struct {
 
 /** Each component to be simulated must be enabled by setting the related variable ltX_activated true. 
 **  The sum of all enabled intensities must be equal one.
-**  The lifetimes are generated to receive the start- and stop-pulses alternately from detector A and B by setting:
+**  The lifetimes are generated to receive the start and stop pulses alternately from detector A and B by setting:
 **  isStartStopAlternating = true.
 **/
 typedef struct {
@@ -332,10 +333,10 @@ private:
 } //end namespace
 
 
-/** The class DLT_C_WRAPPER is used as singleton-pattern class to access from Ansi C-functions:
-**	This provides the access to other programming languages such as matlab (mex-compiler) or python (ctypes-library).
+/** The class DLT_C_WRAPPER is used as a singleton pattern class to access from Ansi C functions:
+**	This provides the access from other programming languages such as matlab (mex-compiler) or python (ctypes-library).
 **  
-**	An example how to access the class DLTPulseGenerator via class DLT_C_WRAPPER is given in python:
+**	An example how to use class DLTPulseGenerator in combination with class DLT_C_WRAPPER is given in python:
 **	
 **  - pyDLTPulseGenerator -
 **/
@@ -356,14 +357,14 @@ public:
 	bool emitPulse(double trigger_in_mV_A, double trigger_in_mV_B);
 
 public:
-	DLifeTime::DLTPHS			m_phsDistribution;
-	DLifeTime::DLTSetup			m_setupInfo;
-	DLifeTime::DLTPulse			m_pulseInfo;
+	DLifeTime::DLTPHS			  m_phsDistribution;
+	DLifeTime::DLTSetup			  m_setupInfo;
+	DLifeTime::DLTPulse			  m_pulseInfo;
 	DLifeTime::DLTSimulationInput m_simulationInput;
 
-	DLifeTime::DLTPulseF	   *m_pulseA, *m_pulseB;
+	DLifeTime::DLTPulseF	     *m_pulseA, *m_pulseB;
 
-	DLifeTime::DLTError			m_lastError;
+	DLifeTime::DLTError			  m_lastError;
 };
 
 DLTPULSEGENERATOR_EXPORT_C extern bool emitPulse(double trigger_in_mV_A, double trigger_in_mV_B); //call this to generate a new pulse!
@@ -382,8 +383,26 @@ DLTPULSEGENERATOR_EXPORT_C extern void init();
 DLTPULSEGENERATOR_EXPORT_C extern void update();
 
 //equivalent to DLTSetup:
-DLTPULSEGENERATOR_EXPORT_C extern void setUncertaintyOfPDSDetectors(double TTS_detector_A_in_nanoSeconds, double TTS_detector_B_in_nanoSeconds);
-DLTPULSEGENERATOR_EXPORT_C extern void setUncertaintyOfMU(double electronicsResolution_in_nanoSeconds);
+DLTPULSEGENERATOR_EXPORT_C extern void manipulate(DLifeTime::DLTIRF *irf, bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_A_1(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_A_2(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_A_3(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_A_4(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_A_5(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_B_1(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_B_2(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_B_3(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_B_4(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_B_5(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_MU_1(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_MU_2(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_MU_3(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_MU_4(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+DLTPULSEGENERATOR_EXPORT_C extern void setIRF_MU_5(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
+
 DLTPULSEGENERATOR_EXPORT_C extern void setATS(double ATS_in_nanoSeconds);
 DLTPULSEGENERATOR_EXPORT_C extern void setSweep(double sweep_in_nanoSeconds);
 DLTPULSEGENERATOR_EXPORT_C extern void setNumberOfCells(int numberOfCells);
