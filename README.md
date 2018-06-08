@@ -1,7 +1,7 @@
 # DDRS4PALS  <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 Copyright (c) 2016-2018 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
-<b>DDRS4PALS</b> - A Software for the Acquisition of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
+<b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
 
 # How to cite this Software?
 
