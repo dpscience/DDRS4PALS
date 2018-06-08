@@ -85,13 +85,17 @@ QString DRS4PulseGenerator::getErrorString() const
             errorStr += "<li><font color=\"Red\">misfit of amplitude and PHS</font></li>";
         if ((m_error & DLTErrorType::INVALID_LIFETIME_DISTRIBUTION_INPUT))
             errorStr += "<li><font color=\"Red\">invalid lifetime distribution input</font></li>";
+        if ((m_error & DLTErrorType::INVALID_SUM_OF_PDS_IRF_INTENSITIES))
+            errorStr += "<li><font color=\"Red\">invalid sum of irf intensities: PDS</font></li>";
+        if ((m_error & DLTErrorType::INVALID_SUM_OF_MU_IRF_INTENSITIES))
+            errorStr += "<li><font color=\"Red\">invalid sum of irf intensities: MU</font></li>";
     }
 
     errorStr += "</b></lu>";
 
     return errorStr;
 }
-
+#include <QDebug>
 void DRS4PulseGenerator::update()
 {
     QMutexLocker locker(&m_mutex);
@@ -110,12 +114,326 @@ void DRS4PulseGenerator::update()
     m_phsDistribution.stddevOfStopB = DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_B();
 
     //Device-Info:
-    m_deviceInfo.ATS = DRS4SimulationSettingsManager::sharedInstance()->arrivalTimeSpreadInNs();
-    m_deviceInfo.MUUncertainty = DRS4SimulationSettingsManager::sharedInstance()->timingResolutionMeasurementUnitInNs();
-    m_deviceInfo.numberOfCells = 1024; //fixed
+    m_deviceInfo.ATS = DRS4SimulationSettingsManager::sharedInstance()->arrivalTimeSpreadInNs();    
+    m_deviceInfo.numberOfCells = kNumberOfBins; //fixed
     m_deviceInfo.sweep = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
-    m_deviceInfo.PDSUncertaintyA = DRS4SimulationSettingsManager::sharedInstance()->ttsDetectorAInNs();
-    m_deviceInfo.PDSUncertaintyB = DRS4SimulationSettingsManager::sharedInstance()->ttsDetectorBInNs();
+
+    /* PDS-A-1 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_enabled() ) {
+        m_deviceInfo.irfA.irf1PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_enabled();
+        m_deviceInfo.irfA.irf1PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_intensity();
+        m_deviceInfo.irfA.irf1PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_shift();
+        m_deviceInfo.irfA.irf1PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfA.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfA.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_functionType() == "CAUCHY" )
+            m_deviceInfo.irfA.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_1_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfA.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+           m_deviceInfo.irfA.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+         m_deviceInfo.irfA.irf1PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-A-2 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_enabled() ) {
+        m_deviceInfo.irfA.irf2PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_enabled();
+        m_deviceInfo.irfA.irf2PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_intensity();
+        m_deviceInfo.irfA.irf2PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_shift();
+        m_deviceInfo.irfA.irf2PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfA.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfA.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_functionType() == "CAUCHY" )
+            m_deviceInfo.irfA.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_2_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfA.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+           m_deviceInfo.irfA.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+         m_deviceInfo.irfA.irf2PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-A-3 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_enabled() ) {
+        m_deviceInfo.irfA.irf3PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_enabled();
+        m_deviceInfo.irfA.irf3PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_intensity();
+        m_deviceInfo.irfA.irf3PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_shift();
+        m_deviceInfo.irfA.irf3PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfA.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfA.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_functionType() == "CAUCHY" )
+            m_deviceInfo.irfA.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_3_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfA.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfA.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfA.irf3PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-A-4 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_enabled() ) {
+        m_deviceInfo.irfA.irf4PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_enabled();
+        m_deviceInfo.irfA.irf4PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_intensity();
+        m_deviceInfo.irfA.irf4PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_shift();
+        m_deviceInfo.irfA.irf4PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfA.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfA.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_functionType() == "CAUCHY" )
+            m_deviceInfo.irfA.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_4_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfA.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfA.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfA.irf4PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-A-5 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_enabled() ) {
+        m_deviceInfo.irfA.irf5PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_enabled();
+        m_deviceInfo.irfA.irf5PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_intensity();
+        m_deviceInfo.irfA.irf5PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_shift();
+        m_deviceInfo.irfA.irf5PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfA.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfA.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_functionType() == "CAUCHY" )
+            m_deviceInfo.irfA.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorA_irf_5_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfA.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfA.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfA.irf5PDS = IGNORE_DLTIRF;
+    }
+
+
+    /* PDS-B-1 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_enabled() ) {
+        m_deviceInfo.irfB.irf1PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_enabled();
+        m_deviceInfo.irfB.irf1PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_intensity();
+        m_deviceInfo.irfB.irf1PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_shift();
+        m_deviceInfo.irfB.irf1PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfB.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfB.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_functionType() == "CAUCHY" )
+            m_deviceInfo.irfB.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_1_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfB.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfB.irf1PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfB.irf1PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-B-2 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_enabled() ) {
+        m_deviceInfo.irfB.irf2PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_enabled();
+        m_deviceInfo.irfB.irf2PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_intensity();
+        m_deviceInfo.irfB.irf2PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_shift();
+        m_deviceInfo.irfB.irf2PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfB.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfB.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_functionType() == "CAUCHY" )
+            m_deviceInfo.irfB.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_2_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfB.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfB.irf2PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfB.irf2PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-B-3 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_enabled() ) {
+        m_deviceInfo.irfB.irf3PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_enabled();
+        m_deviceInfo.irfB.irf3PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_intensity();
+        m_deviceInfo.irfB.irf3PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_shift();
+        m_deviceInfo.irfB.irf3PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfB.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfB.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_functionType() == "CAUCHY" )
+            m_deviceInfo.irfB.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_3_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfB.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfB.irf3PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfB.irf3PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-B-4 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_enabled() ) {
+        m_deviceInfo.irfB.irf4PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_enabled();
+        m_deviceInfo.irfB.irf4PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_intensity();
+        m_deviceInfo.irfB.irf4PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_shift();
+        m_deviceInfo.irfB.irf4PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfB.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfB.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_functionType() == "CAUCHY" )
+            m_deviceInfo.irfB.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_4_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfB.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfB.irf4PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfB.irf4PDS = IGNORE_DLTIRF;
+    }
+
+    /* PDS-B-5 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_enabled() ) {
+        m_deviceInfo.irfB.irf5PDS.enabled = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_enabled();
+        m_deviceInfo.irfB.irf5PDS.intensity = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_intensity();
+        m_deviceInfo.irfB.irf5PDS.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_shift();
+        m_deviceInfo.irfB.irf5PDS.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfB.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfB.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_functionType() == "CAUCHY" )
+            m_deviceInfo.irfB.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->detectorB_irf_5_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfB.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfB.irf5PDS.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfB.irf5PDS = IGNORE_DLTIRF;
+    }
+
+
+    /* MU-1 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_enabled() ) {
+        m_deviceInfo.irfMU.irf1MU.enabled = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_enabled();
+        m_deviceInfo.irfMU.irf1MU.intensity = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_intensity();
+        m_deviceInfo.irfMU.irf1MU.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_shift();
+        m_deviceInfo.irfMU.irf1MU.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfMU.irf1MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfMU.irf1MU.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_functionType() == "CAUCHY" )
+            m_deviceInfo.irfMU.irf1MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_1_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfMU.irf1MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfMU.irf1MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfMU.irf1MU = IGNORE_DLTIRF;
+    }
+
+    /* MU-2 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_enabled() ) {
+        m_deviceInfo.irfMU.irf2MU.enabled = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_enabled();
+        m_deviceInfo.irfMU.irf2MU.intensity = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_intensity();
+        m_deviceInfo.irfMU.irf2MU.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_shift();
+        m_deviceInfo.irfMU.irf2MU.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfMU.irf2MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfMU.irf2MU.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_functionType() == "CAUCHY" )
+            m_deviceInfo.irfMU.irf2MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_2_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfMU.irf2MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfMU.irf2MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfMU.irf2MU = IGNORE_DLTIRF;
+    }
+
+    /* MU-3 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_enabled() ) {
+        m_deviceInfo.irfMU.irf3MU.enabled = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_enabled();
+        m_deviceInfo.irfMU.irf3MU.intensity = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_intensity();
+        m_deviceInfo.irfMU.irf3MU.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_shift();
+        m_deviceInfo.irfMU.irf3MU.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfMU.irf3MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfMU.irf3MU.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_functionType() == "CAUCHY" )
+            m_deviceInfo.irfMU.irf3MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_3_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfMU.irf3MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfMU.irf3MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfMU.irf3MU = IGNORE_DLTIRF;
+    }
+
+    /* MU-4 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_enabled() ) {
+        m_deviceInfo.irfMU.irf4MU.enabled = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_enabled();
+        m_deviceInfo.irfMU.irf4MU.intensity = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_intensity();
+        m_deviceInfo.irfMU.irf4MU.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_shift();
+        m_deviceInfo.irfMU.irf4MU.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfMU.irf4MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfMU.irf4MU.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_functionType() == "CAUCHY" )
+            m_deviceInfo.irfMU.irf4MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_4_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfMU.irf4MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfMU.irf4MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfMU.irf4MU = IGNORE_DLTIRF;
+    }
+
+    /* MU-5 */
+    if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_enabled() ) {
+        m_deviceInfo.irfMU.irf5MU.enabled = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_enabled();
+        m_deviceInfo.irfMU.irf5MU.intensity = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_intensity();
+        m_deviceInfo.irfMU.irf5MU.relativeShift = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_shift();
+        m_deviceInfo.irfMU.irf5MU.uncertainty = DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_uncertainty();
+
+        if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_functionType() == "GAUSSIAN" )
+            m_deviceInfo.irfMU.irf5MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_functionType() == "LOGNORMAL" )
+            m_deviceInfo.irfMU.irf5MU.functionType = DLifeTime::DLTDistributionFunction::Function::LOG_NORMAL;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_functionType() == "CAUCHY" )
+            m_deviceInfo.irfMU.irf5MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else if ( DRS4SimulationSettingsManager::sharedInstance()->mu_irf_5_functionType() == "LORENTZIAN" )
+            m_deviceInfo.irfMU.irf5MU.functionType = DLifeTime::DLTDistributionFunction::Function::LORENTZIAN_CAUCHY;
+        else
+            m_deviceInfo.irfMU.irf5MU.functionType = DLifeTime::DLTDistributionFunction::Function::GAUSSIAN;
+    } else {
+        m_deviceInfo.irfMU.irf5MU = IGNORE_DLTIRF;
+    }
 
     //Pulse-Info:
     m_pulseInfo.amplitude = 500.0f; //fixed

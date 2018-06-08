@@ -40,6 +40,134 @@ class DRS4SimulationSettingsManager
     DSimpleXMLNode *m_parentNode;
 
     DSimpleXMLNode *m_electronicsNode;
+
+    /* irf-A */
+        DSimpleXMLNode *m_irfPDSA_parentNode;
+            DSimpleXMLNode *m_irfPDSA_1_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSA_1_enabled;
+                    DSimpleXMLNode *m_irfPDSA_1_functionType;
+                    DSimpleXMLNode *m_irfPDSA_1_intensity;
+                    DSimpleXMLNode *m_irfPDSA_1_uncertainty;
+                    DSimpleXMLNode *m_irfPDSA_1_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSA_2_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSA_2_enabled;
+                    DSimpleXMLNode *m_irfPDSA_2_functionType;
+                    DSimpleXMLNode *m_irfPDSA_2_intensity;
+                    DSimpleXMLNode *m_irfPDSA_2_uncertainty;
+                    DSimpleXMLNode *m_irfPDSA_2_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSA_3_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSA_3_enabled;
+                    DSimpleXMLNode *m_irfPDSA_3_functionType;
+                    DSimpleXMLNode *m_irfPDSA_3_intensity;
+                    DSimpleXMLNode *m_irfPDSA_3_uncertainty;
+                    DSimpleXMLNode *m_irfPDSA_3_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSA_4_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSA_4_enabled;
+                    DSimpleXMLNode *m_irfPDSA_4_functionType;
+                    DSimpleXMLNode *m_irfPDSA_4_intensity;
+                    DSimpleXMLNode *m_irfPDSA_4_uncertainty;
+                    DSimpleXMLNode *m_irfPDSA_4_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSA_5_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSA_5_enabled;
+                    DSimpleXMLNode *m_irfPDSA_5_functionType;
+                    DSimpleXMLNode *m_irfPDSA_5_intensity;
+                    DSimpleXMLNode *m_irfPDSA_5_uncertainty;
+                    DSimpleXMLNode *m_irfPDSA_5_relativeShift;
+
+     /* irf-B */
+        DSimpleXMLNode *m_irfPDSB_parentNode;
+            DSimpleXMLNode *m_irfPDSB_1_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSB_1_enabled;
+                    DSimpleXMLNode *m_irfPDSB_1_functionType;
+                    DSimpleXMLNode *m_irfPDSB_1_intensity;
+                    DSimpleXMLNode *m_irfPDSB_1_uncertainty;
+                    DSimpleXMLNode *m_irfPDSB_1_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSB_2_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSB_2_enabled;
+                    DSimpleXMLNode *m_irfPDSB_2_functionType;
+                    DSimpleXMLNode *m_irfPDSB_2_intensity;
+                    DSimpleXMLNode *m_irfPDSB_2_uncertainty;
+                    DSimpleXMLNode *m_irfPDSB_2_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSB_3_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSB_3_enabled;
+                    DSimpleXMLNode *m_irfPDSB_3_functionType;
+                    DSimpleXMLNode *m_irfPDSB_3_intensity;
+                    DSimpleXMLNode *m_irfPDSB_3_uncertainty;
+                    DSimpleXMLNode *m_irfPDSB_3_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSB_4_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSB_4_enabled;
+                    DSimpleXMLNode *m_irfPDSB_4_functionType;
+                    DSimpleXMLNode *m_irfPDSB_4_intensity;
+                    DSimpleXMLNode *m_irfPDSB_4_uncertainty;
+                    DSimpleXMLNode *m_irfPDSB_4_relativeShift;
+
+            DSimpleXMLNode *m_irfPDSB_5_parentNode;
+
+                    DSimpleXMLNode *m_irfPDSB_5_enabled;
+                    DSimpleXMLNode *m_irfPDSB_5_functionType;
+                    DSimpleXMLNode *m_irfPDSB_5_intensity;
+                    DSimpleXMLNode *m_irfPDSB_5_uncertainty;
+                    DSimpleXMLNode *m_irfPDSB_5_relativeShift;
+
+      /* irf-MU */
+         DSimpleXMLNode *m_irfMU_parentNode;
+
+             DSimpleXMLNode *m_irfMU_1_parentNode;
+
+                     DSimpleXMLNode *m_irfMU_1_enabled;
+                     DSimpleXMLNode *m_irfMU_1_functionType;
+                     DSimpleXMLNode *m_irfMU_1_intensity;
+                     DSimpleXMLNode *m_irfMU_1_uncertainty;
+                     DSimpleXMLNode *m_irfMU_1_relativeShift;
+
+             DSimpleXMLNode *m_irfMU_2_parentNode;
+
+                     DSimpleXMLNode *m_irfMU_2_enabled;
+                     DSimpleXMLNode *m_irfMU_2_functionType;
+                     DSimpleXMLNode *m_irfMU_2_intensity;
+                     DSimpleXMLNode *m_irfMU_2_uncertainty;
+                     DSimpleXMLNode *m_irfMU_2_relativeShift;
+
+             DSimpleXMLNode *m_irfMU_3_parentNode;
+
+                     DSimpleXMLNode *m_irfMU_3_enabled;
+                     DSimpleXMLNode *m_irfMU_3_functionType;
+                     DSimpleXMLNode *m_irfMU_3_intensity;
+                     DSimpleXMLNode *m_irfMU_3_uncertainty;
+                     DSimpleXMLNode *m_irfMU_3_relativeShift;
+
+              DSimpleXMLNode *m_irfMU_4_parentNode;
+
+                     DSimpleXMLNode *m_irfMU_4_enabled;
+                     DSimpleXMLNode *m_irfMU_4_functionType;
+                     DSimpleXMLNode *m_irfMU_4_intensity;
+                     DSimpleXMLNode *m_irfMU_4_uncertainty;
+                     DSimpleXMLNode *m_irfMU_4_relativeShift;
+
+              DSimpleXMLNode *m_irfMU_5_parentNode;
+
+                     DSimpleXMLNode *m_irfMU_5_enabled;
+                     DSimpleXMLNode *m_irfMU_5_functionType;
+                     DSimpleXMLNode *m_irfMU_5_intensity;
+                     DSimpleXMLNode *m_irfMU_5_uncertainty;
+                     DSimpleXMLNode *m_irfMU_5_relativeShift;
+
     DSimpleXMLNode *m_phsParentNode;
     DSimpleXMLNode *m_pulseShapeParentNode;
 
@@ -51,9 +179,9 @@ class DRS4SimulationSettingsManager
     DSimpleXMLNode *m_ltDistr5ParentNode;
 
     //electronics:
-    DSimpleXMLNode *m_tts_detectorAInNsNode;
+    /*DSimpleXMLNode *m_tts_detectorAInNsNode;
     DSimpleXMLNode *m_tts_detectorBInNsNode;
-    DSimpleXMLNode *m_timingResolution_boardInNsNode;
+    DSimpleXMLNode *m_timingResolution_boardInNsNode;*/
 
     //phs:
     DSimpleXMLNode *m_sigmaPHS_A_511Node;
@@ -140,9 +268,99 @@ public:
     bool load(const QString& path);
     bool save(const QString& path);
 
-    float ttsDetectorAInNs() const;
+    /*float ttsDetectorAInNs() const;
     float ttsDetectorBInNs() const;
-    float timingResolutionMeasurementUnitInNs() const;
+    float timingResolutionMeasurementUnitInNs() const;*/
+
+    bool detectorA_irf_1_enabled() const;
+    QString detectorA_irf_1_functionType() const;
+    float detectorA_irf_1_intensity() const;
+    float detectorA_irf_1_uncertainty() const;
+    float detectorA_irf_1_shift() const;
+
+    bool detectorA_irf_2_enabled() const;
+    QString detectorA_irf_2_functionType() const;
+    float detectorA_irf_2_intensity() const;
+    float detectorA_irf_2_uncertainty() const;
+    float detectorA_irf_2_shift() const;
+
+    bool detectorA_irf_3_enabled() const;
+    QString detectorA_irf_3_functionType() const;
+    float detectorA_irf_3_intensity() const;
+    float detectorA_irf_3_uncertainty() const;
+    float detectorA_irf_3_shift() const;
+
+    bool detectorA_irf_4_enabled() const;
+    QString detectorA_irf_4_functionType() const;
+    float detectorA_irf_4_intensity() const;
+    float detectorA_irf_4_uncertainty() const;
+    float detectorA_irf_4_shift() const;
+
+    bool detectorA_irf_5_enabled() const;
+    QString detectorA_irf_5_functionType() const;
+    float detectorA_irf_5_intensity() const;
+    float detectorA_irf_5_uncertainty() const;
+    float detectorA_irf_5_shift() const;
+
+    bool detectorB_irf_1_enabled() const;
+    QString detectorB_irf_1_functionType() const;
+    float detectorB_irf_1_intensity() const;
+    float detectorB_irf_1_uncertainty() const;
+    float detectorB_irf_1_shift() const;
+
+    bool detectorB_irf_2_enabled() const;
+    QString detectorB_irf_2_functionType() const;
+    float detectorB_irf_2_intensity() const;
+    float detectorB_irf_2_uncertainty() const;
+    float detectorB_irf_2_shift() const;
+
+    bool detectorB_irf_3_enabled() const;
+    QString detectorB_irf_3_functionType() const;
+    float detectorB_irf_3_intensity() const;
+    float detectorB_irf_3_uncertainty() const;
+    float detectorB_irf_3_shift() const;
+
+    bool detectorB_irf_4_enabled() const;
+    QString detectorB_irf_4_functionType() const;
+    float detectorB_irf_4_intensity() const;
+    float detectorB_irf_4_uncertainty() const;
+    float detectorB_irf_4_shift() const;
+
+    bool detectorB_irf_5_enabled() const;
+    QString detectorB_irf_5_functionType() const;
+    float detectorB_irf_5_intensity() const;
+    float detectorB_irf_5_uncertainty() const;
+    float detectorB_irf_5_shift() const;
+
+    bool mu_irf_1_enabled() const;
+    QString mu_irf_1_functionType() const;
+    float mu_irf_1_intensity() const;
+    float mu_irf_1_uncertainty() const;
+    float mu_irf_1_shift() const;
+
+    bool mu_irf_2_enabled() const;
+    QString mu_irf_2_functionType() const;
+    float mu_irf_2_intensity() const;
+    float mu_irf_2_uncertainty() const;
+    float mu_irf_2_shift() const;
+
+    bool mu_irf_3_enabled() const;
+    QString mu_irf_3_functionType() const;
+    float mu_irf_3_intensity() const;
+    float mu_irf_3_uncertainty() const;
+    float mu_irf_3_shift() const;
+
+    bool mu_irf_4_enabled() const;
+    QString mu_irf_4_functionType() const;
+    float mu_irf_4_intensity() const;
+    float mu_irf_4_uncertainty() const;
+    float mu_irf_4_shift() const;
+
+    bool mu_irf_5_enabled() const;
+    QString mu_irf_5_functionType() const;
+    float mu_irf_5_intensity() const;
+    float mu_irf_5_uncertainty() const;
+    float mu_irf_5_shift() const;
 
     float sigmaPHS511keV_A() const;
     float meanPHS511keV_A() const;
