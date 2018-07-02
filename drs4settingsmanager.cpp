@@ -94,7 +94,17 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_persistance_leftBInNs(2.0f),
     m_persistance_rightAInNs(2.0f),
     m_persistance_rightBInNs(2.0f),
-    m_persistanceEnabled(false)
+    m_persistanceEnabled(false),
+    m_riseTimeFilterIsPlotEnabled(false),
+    m_riseTimeFilterIsActivated(false),
+    m_riseTimeFilter_scaleInNs_A(5.0f),
+    m_riseTimeFilter_scaleInNs_B(5.0f),
+    m_riseTimeFilter_scaleBinningCnt_A(1000),
+    m_riseTimeFilter_scaleBinningCnt_B(1000),
+    m_riseTimeFilter_leftWindow_A(20),
+    m_riseTimeFilter_leftWindow_B(20),
+    m_riseTimeFilter_rightWindow_A(980),
+    m_riseTimeFilter_rightWindow_B(980)
 {
     m_parentNode = new DSimpleXMLNode("DDRS4PALS");
 
@@ -151,6 +161,7 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_promptSpecNode = new DSimpleXMLNode("spectrum-Prompt");
     m_areaFilterSettingsNode = new DSimpleXMLNode("area-filter-settings");
     m_medianFilterSettingsNode = new DSimpleXMLNode("median-filter-settings");
+    m_riseTimeFilterSettingsNode = new DSimpleXMLNode("rise-time-filter-settings");
     m_persistancePlotSettingsNode = new DSimpleXMLNode("persistance-plot-settings");
 
     m_burstModeNode = new DSimpleXMLNode("burst-mode?");
@@ -339,6 +350,41 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_persistance_rightBInNs_Node = new DSimpleXMLNode("persistance-plot-right-of-maxValue-in-ns-B");
     m_persistance_rightBInNs_Node->setValue(m_persistance_rightBInNs);
 
+    m_riseTimeFilterIsPlotEnabled_Node = new DSimpleXMLNode("rise-time-filter-plot?");
+    m_riseTimeFilterIsPlotEnabled_Node->setValue(m_riseTimeFilterIsPlotEnabled);
+    m_riseTimeFilterIsActivated_Node = new DSimpleXMLNode("rise-time-filter?");
+    m_riseTimeFilterIsActivated_Node->setValue(m_riseTimeFilterIsActivated);
+
+    m_riseTimeFilter_scaleInNs_A_Node = new DSimpleXMLNode("rise-time-filter-scale-in-ns-A");
+    m_riseTimeFilter_scaleInNs_A_Node->setValue(m_riseTimeFilter_scaleInNs_A);
+    m_riseTimeFilter_scaleInNs_B_Node = new DSimpleXMLNode("rise-time-filter-scale-in-ns-B");
+    m_riseTimeFilter_scaleInNs_B_Node->setValue(m_riseTimeFilter_scaleInNs_B);
+
+    m_riseTimeFilter_scaleBinningCnt_A_Node = new DSimpleXMLNode("rise-time-filter-number-of-bins-A");
+    m_riseTimeFilter_scaleBinningCnt_A_Node->setValue(m_riseTimeFilter_scaleBinningCnt_A);
+    m_riseTimeFilter_scaleBinningCnt_B_Node = new DSimpleXMLNode("rise-time-filter-number-of-bins-B");
+    m_riseTimeFilter_scaleBinningCnt_B_Node->setValue(m_riseTimeFilter_scaleBinningCnt_B);
+
+    m_riseTimeFilter_leftWindow_A_Node = new DSimpleXMLNode("rise-time-filter-left-bin-A");
+    m_riseTimeFilter_leftWindow_A_Node->setValue(m_riseTimeFilter_leftWindow_A);
+    m_riseTimeFilter_leftWindow_B_Node = new DSimpleXMLNode("rise-time-filter-left-bin-B");
+    m_riseTimeFilter_leftWindow_B_Node->setValue(m_riseTimeFilter_leftWindow_B);
+
+    m_riseTimeFilter_rightWindow_A_Node = new DSimpleXMLNode("rise-time-filter-right-bin-A");
+    m_riseTimeFilter_rightWindow_A_Node->setValue(m_riseTimeFilter_rightWindow_A);
+    m_riseTimeFilter_rightWindow_B_Node = new DSimpleXMLNode("rise-time-filter-right-bin-B");
+    m_riseTimeFilter_rightWindow_B_Node->setValue(m_riseTimeFilter_rightWindow_B);
+
+    (*m_riseTimeFilterSettingsNode) << m_riseTimeFilterIsActivated_Node
+                                    << m_riseTimeFilterIsPlotEnabled_Node
+                                    << m_riseTimeFilter_scaleInNs_A_Node
+                                    << m_riseTimeFilter_scaleBinningCnt_A_Node
+                                    << m_riseTimeFilter_leftWindow_A_Node
+                                    << m_riseTimeFilter_rightWindow_A_Node
+                                    <<  m_riseTimeFilter_scaleInNs_B_Node
+                                    << m_riseTimeFilter_scaleBinningCnt_B_Node
+                                    << m_riseTimeFilter_leftWindow_B_Node
+                                    << m_riseTimeFilter_rightWindow_B_Node;
 
     (*m_parentNode) << m_lastSaveDateNode
                     << m_versionNode
@@ -438,6 +484,7 @@ DRS4SettingsManager::DRS4SettingsManager() :
                     << m_spectrumSettingsNode
                     << m_areaFilterSettingsNode
                     << m_medianFilterSettingsNode
+                    << m_riseTimeFilterSettingsNode
                     << m_persistancePlotSettingsNode;
 }
 
@@ -576,8 +623,42 @@ bool DRS4SettingsManager::load(const QString &path)
         if (!ok)
             m_versionNode->setValue((int)VERSION_SETTINGS_FILE);
         else {
-            if (versionInt != VERSION_SETTINGS_FILE) {
-                /* nothing TODO yet! */
+            if ( versionInt == 2 ) {
+                /* Rise time filter (since version 1.05 / settings version 2.0) */
+                const DSimpleXMLTag pRiseTimeFilterSettingsTag = pTag.getTag(m_riseTimeFilterSettingsNode, &ok);
+
+                if ( !ok )
+                    return false;
+
+                m_riseTimeFilterIsActivated_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilterIsActivated_Node, &ok));
+                if (!ok) m_riseTimeFilterIsActivated_Node->setValue(m_riseTimeFilterIsActivated);
+
+                m_riseTimeFilterIsPlotEnabled_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilterIsPlotEnabled_Node, &ok));
+                if (!ok) m_riseTimeFilterIsPlotEnabled_Node->setValue(m_riseTimeFilterIsPlotEnabled);
+
+                m_riseTimeFilter_scaleInNs_A_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_scaleInNs_A_Node, &ok));
+                if (!ok) m_riseTimeFilter_scaleInNs_A_Node->setValue(m_riseTimeFilter_scaleInNs_A);
+
+                m_riseTimeFilter_scaleInNs_B_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_scaleInNs_B_Node, &ok));
+                if (!ok) m_riseTimeFilter_scaleInNs_B_Node->setValue(m_riseTimeFilter_scaleInNs_B);
+
+                m_riseTimeFilter_scaleBinningCnt_A_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_scaleBinningCnt_A_Node, &ok));
+                if (!ok) m_riseTimeFilter_scaleBinningCnt_A_Node->setValue(m_riseTimeFilter_scaleBinningCnt_A);
+
+                m_riseTimeFilter_scaleBinningCnt_B_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_scaleBinningCnt_B_Node, &ok));
+                if (!ok) m_riseTimeFilter_scaleBinningCnt_B_Node->setValue(m_riseTimeFilter_scaleBinningCnt_B);
+
+                m_riseTimeFilter_leftWindow_A_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_leftWindow_A_Node, &ok));
+                if (!ok) m_riseTimeFilter_leftWindow_A_Node->setValue(m_riseTimeFilter_leftWindow_A);
+
+                m_riseTimeFilter_leftWindow_B_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_leftWindow_B_Node, &ok));
+                if (!ok) m_riseTimeFilter_leftWindow_B_Node->setValue(m_riseTimeFilter_leftWindow_B);
+
+                m_riseTimeFilter_rightWindow_A_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_rightWindow_A_Node, &ok));
+                if (!ok) m_riseTimeFilter_rightWindow_A_Node->setValue(m_riseTimeFilter_rightWindow_A);
+
+                m_riseTimeFilter_rightWindow_B_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_rightWindow_B_Node, &ok));
+                if (!ok) m_riseTimeFilter_rightWindow_B_Node->setValue(m_riseTimeFilter_rightWindow_B);
             }
         }
     }
@@ -1363,6 +1444,86 @@ void DRS4SettingsManager::setPulseAreaFilterLimitLowerRightB(double value)
     m_pulseAreaRightLower_B_Node->setValue(value);
 }
 
+void DRS4SettingsManager::setRiseTimeFilterEnabled(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilterIsActivated = enabled;
+    m_riseTimeFilterIsActivated_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterPlotEnabled(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilterIsPlotEnabled = enabled;
+    m_riseTimeFilterIsPlotEnabled_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterScaleInNanosecondsOfA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_scaleInNs_A = value;
+    m_riseTimeFilter_scaleInNs_A_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterScaleInNanosecondsOfB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_scaleInNs_B = value;
+    m_riseTimeFilter_scaleInNs_B_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterBinningOfA(int value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_scaleBinningCnt_A = value;
+    m_riseTimeFilter_scaleBinningCnt_A_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterBinningOfB(int value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_scaleBinningCnt_B = value;
+    m_riseTimeFilter_scaleBinningCnt_B_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterLeftWindowOfA(int value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_leftWindow_A = value;
+    m_riseTimeFilter_leftWindow_A_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterLeftWindowOfB(int value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_leftWindow_B = value;
+    m_riseTimeFilter_leftWindow_B_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterRightWindowOfA(int value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_rightWindow_A = value;
+    m_riseTimeFilter_rightWindow_A_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setRiseTimeFilterRightWindowOfB(int value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilter_rightWindow_B = value;
+    m_riseTimeFilter_rightWindow_B_Node->setValue(value);
+}
+
 void DRS4SettingsManager::setPersistanceEnabled(bool activated)
 {
     QMutexLocker locker(&m_mutex);
@@ -1740,6 +1901,76 @@ double DRS4SettingsManager::pulseAreaFilterLimitLowerRightB() const
     QMutexLocker locker(&m_mutex);
 
     return m_pulseAreaRightLower_B_Node->getValue().toDouble();
+}
+
+bool DRS4SettingsManager::isRiseTimeFilterEnabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilterIsActivated_Node->getValue().toBool();
+}
+
+bool DRS4SettingsManager::isRiseTimeFilterPlotEnabled() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilterIsPlotEnabled_Node->getValue().toBool();
+}
+
+double DRS4SettingsManager::riseTimeFilterScaleInNanosecondsOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_scaleInNs_A_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::riseTimeFilterScaleInNanosecondsOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_scaleInNs_B_Node->getValue().toDouble();
+}
+
+int DRS4SettingsManager::riseTimeFilterBinningOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_scaleBinningCnt_A_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::riseTimeFilterBinningOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_scaleBinningCnt_B_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::riseTimeFilterLeftWindowOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_leftWindow_A_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::riseTimeFilterLeftWindowOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_leftWindow_B_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::riseTimeFilterRightWindowOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_rightWindow_A_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::riseTimeFilterRightWindowOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_riseTimeFilter_rightWindow_B_Node->getValue().toInt();
 }
 
 void DRS4SettingsManager::setPulseAreaFilterEnabled(bool enabled)

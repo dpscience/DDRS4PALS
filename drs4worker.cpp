@@ -46,6 +46,9 @@ DRS4Worker::DRS4Worker(DRS4WorkerDataExchange *dataExchange, QObject *parent) :
     resetAreaFilterA();
     resetAreaFilterB();
 
+    resetRiseTimeFilterA();
+    resetRiseTimeFilterB();
+
     resetMergedSpectrum();
 
     resetLifetimeEfficiencyCounter();
@@ -245,6 +248,52 @@ QVector<QPointF> *DRS4Worker::areaFilterBData()
     QMutexLocker locker(&m_mutex);
 
     return &m_areaFilterDataB;
+}
+
+void DRS4Worker::resetRiseTimeFilterA()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilterACounter = 0;
+    m_maxY_RiseTimeSpectrumA = 0;
+    m_riseTimeFilterDataA.fill(-1, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA());
+}
+
+void DRS4Worker::resetRiseTimeFilterB()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_riseTimeFilterBCounter = 0;
+    m_maxY_RiseTimeSpectrumB = 0;
+    m_riseTimeFilterDataB.fill(-1, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB());
+}
+
+QVector<int> *DRS4Worker::riseTimeFilterAData()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_riseTimeFilterDataA;
+}
+
+QVector<int> *DRS4Worker::riseTimeFilterBData()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_riseTimeFilterDataB;
+}
+
+int DRS4Worker::riseTimeFilterADataMax()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_maxY_RiseTimeSpectrumA;
+}
+
+int DRS4Worker::riseTimeFilterBDataMax()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_maxY_RiseTimeSpectrumB;
 }
 
 void DRS4Worker::resetABSpectrum()
@@ -1673,8 +1722,11 @@ void DRS4Worker::runSingleThreaded()
         const double cfdB = DRS4SettingsManager::sharedInstance()->cfdLevelB();
         const bool bBurstMode = DRS4SettingsManager::sharedInstance()->isBurstMode();
         const double sweep = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
+
         const bool bPulseAreaPlot = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled();
         const bool bPulseAreaFilter = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterEnabled();
+        /* const bool bPulseRiseTimePlot = DRS4SettingsManager::sharedInstance()->isRiseTimeFilterPlotEnabled(); */
+        const bool bPulseRiseTimeFilter = DRS4SettingsManager::sharedInstance()->isRiseTimeFilterEnabled();
 
         const DRS4InterpolationType::type interpolationType = DRS4SettingsManager::sharedInstance()->interpolationType();
         const DRS4SplineInterpolationType::type splineInterpolationType = DRS4SettingsManager::sharedInstance()->splineInterpolationType();
@@ -1927,6 +1979,14 @@ void DRS4Worker::runSingleThreaded()
         const int pulseAreaFilterBinningB = DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB();
         const double pulseAreaFilterNormA = DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationA();
         const double pulseAreaFilterNormB = DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationB();
+        const double riseTimeFilterAScale = DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfA();
+        const double riseTimeFilterBScale = DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfB();
+        const int riseTimeFilterABinning = DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA();
+        const int riseTimeFilterBBinning = DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB();
+        const int riseTimeFilterWindowLeftA = DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfA();
+        const int riseTimeFilterWindowLeftB = DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfB();
+        const int riseTimeFilterWindowRightA = DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfA();
+        const int riseTimeFilterWindowRightB = DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfB();
         const int channelCntAB = DRS4SettingsManager::sharedInstance()->channelCntAB();
         const int channelCntBA = DRS4SettingsManager::sharedInstance()->channelCntBA();
         const int channelCntPrompt = DRS4SettingsManager::sharedInstance()->channelCntCoincindence();
@@ -2055,6 +2115,21 @@ void DRS4Worker::runSingleThreaded()
             areaA = areaA/(pulseAreaFilterNormA*rat);
             areaB = areaB/(pulseAreaFilterNormB*rat);
         }
+
+        double timeAForYMax = -1;
+        double timeBForYMax = -1;
+
+        if (positiveSignal) {
+            timeAForYMax = tChannel0[cellYAMax];
+            timeBForYMax = tChannel1[cellYBMax];
+        }
+        else {
+            timeAForYMax = tChannel0[cellYAMin];
+            timeBForYMax = tChannel1[cellYBMin];
+        }
+
+        if (qFuzzyCompare(timeAForYMax, -1) || qFuzzyCompare(timeBForYMax, -1))
+            continue;
 
         /* store/write pulses and interpolations to ASCII file */
         if (!bBurstMode) {
@@ -2333,6 +2408,27 @@ void DRS4Worker::runSingleThreaded()
             }
         }
 
+        /* rise-time Filter */
+        if (/*!bBurstMode
+                && bPulseRiseTimePlot*/true) {
+            const int binA = (int)((double)riseTimeFilterABinning*(timeAForYMax-timeStampA)/riseTimeFilterAScale);
+            const int binB = (int)((double)riseTimeFilterBBinning*(timeBForYMax-timeStampB)/riseTimeFilterBScale);
+
+            if ( !(binA < 0
+                 || binB < 0
+                 || binA >= riseTimeFilterABinning
+                 || binB >= riseTimeFilterBBinning) ) {
+                m_riseTimeFilterDataA[binA] ++;
+                m_riseTimeFilterDataB[binB] ++;
+
+                m_riseTimeFilterACounter ++;
+                m_riseTimeFilterBCounter ++;
+
+                m_maxY_RiseTimeSpectrumA = qMax(m_maxY_RiseTimeSpectrumA, m_riseTimeFilterDataA[binA]);
+                m_maxY_RiseTimeSpectrumB = qMax(m_maxY_RiseTimeSpectrumB, m_riseTimeFilterDataB[binB]);
+            }
+        }
+
         /* determine start and stop branches */
         bool bIsStart_A = false;
         bool bIsStop_A = false;
@@ -2375,6 +2471,24 @@ void DRS4Worker::runSingleThreaded()
             const bool y_BInside = (multB >= yLowerB && multB <=yUpperB);
 
             if ( !y_AInside || !y_BInside )
+                continue;
+        }
+
+        /* apply rise time-filter and reject pulses if one of both appears outside the windows */
+        if (bPulseRiseTimeFilter) {
+            const int binA = (int)((double)riseTimeFilterABinning*(timeAForYMax-timeStampA)/riseTimeFilterAScale);
+            const int binB = (int)((double)riseTimeFilterBBinning*(timeBForYMax-timeStampB)/riseTimeFilterBScale);
+
+            bool bAcceptedA = false;
+            bool bAcceptedB = false;
+
+            if (binA >= riseTimeFilterWindowLeftA && binA <= riseTimeFilterWindowRightA)
+                bAcceptedA = true;
+
+            if (binB >= riseTimeFilterWindowLeftB && binB <= riseTimeFilterWindowRightB)
+                bAcceptedB = true;
+
+            if (!bAcceptedA || !bAcceptedB)
                 continue;
         }
 
@@ -3424,6 +3538,7 @@ void DRS4Worker::runMultiThreaded()
         inputData.m_sweep = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
         inputData.m_bPulseAreaPlot = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled();
         inputData.m_bPulseAreaFilter = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterEnabled();
+        inputData.m_bPulseRiseTimeFilter = DRS4SettingsManager::sharedInstance()->isRiseTimeFilterEnabled();
 
         inputData.m_interpolationType = DRS4SettingsManager::sharedInstance()->interpolationType();
         inputData.m_splineInterpolationType = DRS4SettingsManager::sharedInstance()->splineInterpolationType();
@@ -3450,6 +3565,18 @@ void DRS4Worker::runMultiThreaded()
 
         inputData.m_areaFilterBSlopeLower = *m_dataExchange->m_areaFilterBSlopeLower;
         inputData.m_areaFilterBInterceptLower = *m_dataExchange->m_areaFilterBInterceptLower;
+
+        inputData.m_riseTimeFilterARangeInNanoseconds = DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfA();
+        inputData.m_riseTimeFilterBRangeInNanoseconds = DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfB();
+
+        inputData.m_riseTimeFilterBinningA = DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA();
+        inputData.m_riseTimeFilterBinningB = DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB();
+
+        inputData.m_riseTimeFilterLeftWindowA = DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfA();
+        inputData.m_riseTimeFilterLeftWindowB = DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfB();
+
+        inputData.m_riseTimeFilterRightWindowA = DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfA();
+        inputData.m_riseTimeFilterRightWindowB = DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfB();
 
         inputData.m_channelCntAB = DRS4SettingsManager::sharedInstance()->channelCntAB();
         inputData.m_channelCntBA = DRS4SettingsManager::sharedInstance()->channelCntBA();
@@ -3883,6 +4010,21 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             areaB = areaB/(inputData.m_pulseAreaFilterNormB*rat);
         }
 
+        double timeAForYMax = -1;
+        double timeBForYMax = -1;
+
+        if (inputData.m_positiveSignal) {
+            timeAForYMax = inputData.m_tChannel0[cellYAMax];
+            timeBForYMax = inputData.m_tChannel1[cellYBMax];
+        }
+        else {
+            timeAForYMax = inputData.m_tChannel0[cellYAMin];
+            timeBForYMax = inputData.m_tChannel1[cellYBMin];
+        }
+
+        if (qFuzzyCompare(timeAForYMax, -1) || qFuzzyCompare(timeBForYMax, -1))
+            continue;
+
         /* determine max/min more precisely */
         if (!inputData.m_bUsingLinearInterpol) {
             const int cell_interpolRangeA_start = inputData.m_positiveSignal?(cellYAMax-1):(cellYAMin-1);
@@ -4111,6 +4253,21 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             }
         }
 
+        /* rise-time Filter */
+        if (/*!bBurstMode
+                && bPulseRiseTimePlot*/true) {
+            const int binA = (int)((double)inputData.m_riseTimeFilterBinningA*(timeAForYMax-timeStampA)/inputData.m_riseTimeFilterARangeInNanoseconds);
+            const int binB = (int)((double)inputData.m_riseTimeFilterBinningB*(timeBForYMax-timeStampB)/inputData.m_riseTimeFilterBRangeInNanoseconds);
+
+            if ( !(binA < 0
+                 || binB < 0
+                 || binA >= inputData.m_riseTimeFilterBinningA
+                 || binB >= inputData.m_riseTimeFilterBinningB) ) {
+                outputData.m_riseTimeFilterDataA.append(binA);
+                outputData.m_riseTimeFilterDataB.append(binB);
+            }
+        }
+
         /* determine start and stop branches */
         bool bIsStart_A = false;
         bool bIsStop_A = false;
@@ -4153,6 +4310,24 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             const bool y_BInside = (multB >= yLowerB && multB <=yUpperB);
 
             if ( !y_AInside || !y_BInside )
+                continue;
+        }
+
+        /* apply rise time-filter and reject pulses if one of both appears outside the windows */
+        if (inputData.m_bPulseRiseTimeFilter) {
+            const int binA = (int)((double)inputData.m_riseTimeFilterBinningA*(timeAForYMax-timeStampA)/inputData.m_riseTimeFilterARangeInNanoseconds);
+            const int binB = (int)((double)inputData.m_riseTimeFilterBinningB*(timeBForYMax-timeStampB)/inputData.m_riseTimeFilterBRangeInNanoseconds);
+
+            bool bAcceptedA = false;
+            bool bAcceptedB = false;
+
+            if (binA >= inputData.m_riseTimeFilterLeftWindowA && binA <= inputData.m_riseTimeFilterRightWindowA)
+                bAcceptedA = true;
+
+            if (binB >= inputData.m_riseTimeFilterLeftWindowB && binB <= inputData.m_riseTimeFilterRightWindowB)
+                bAcceptedB = true;
+
+            if (!bAcceptedA || !bAcceptedB)
                 continue;
         }
 
@@ -5093,6 +5268,23 @@ void DRS4WorkerConcurrentManager::merge()
 
             index ++;
         }
+
+        /* Rise - Time Filter */
+        for ( int i = 0 ; i < outputData.m_riseTimeFilterDataA.size() ; ++ i ) {
+            m_worker->m_riseTimeFilterDataA[outputData.m_riseTimeFilterDataA[i]] ++;
+
+            m_worker->m_maxY_RiseTimeSpectrumA = qMax(m_worker->m_maxY_RiseTimeSpectrumA, m_worker->m_riseTimeFilterDataA[outputData.m_riseTimeFilterDataA[i]]);
+        }
+
+        m_worker->m_riseTimeFilterACounter += outputData.m_riseTimeFilterDataA.size();
+
+        for ( int i = 0 ; i < outputData.m_riseTimeFilterDataB.size() ; ++ i ) {
+            m_worker->m_riseTimeFilterDataB[outputData.m_riseTimeFilterDataB[i]] ++;
+
+            m_worker->m_maxY_RiseTimeSpectrumB = qMax(m_worker->m_maxY_RiseTimeSpectrumB, m_worker->m_riseTimeFilterDataB[outputData.m_riseTimeFilterDataB[i]]);
+        }
+
+        m_worker->m_riseTimeFilterBCounter += outputData.m_riseTimeFilterDataB.size();
     }
 }
 

@@ -189,6 +189,7 @@ public:
     double m_sweep;
     bool m_bPulseAreaPlot;
     bool m_bPulseAreaFilter;
+    bool m_bPulseRiseTimeFilter;
 
     DRS4InterpolationType::type m_interpolationType;
     DRS4SplineInterpolationType::type m_splineInterpolationType;
@@ -215,6 +216,18 @@ public:
 
     double m_areaFilterBSlopeLower;
     double m_areaFilterBInterceptLower;
+
+    double m_riseTimeFilterARangeInNanoseconds;
+    double m_riseTimeFilterBRangeInNanoseconds;
+
+    int m_riseTimeFilterBinningA;
+    int m_riseTimeFilterBinningB;
+
+    int m_riseTimeFilterLeftWindowA;
+    int m_riseTimeFilterLeftWindowB;
+
+    int m_riseTimeFilterRightWindowA;
+    int m_riseTimeFilterRightWindowB;
 
     bool m_bMedianFilterA;
     bool m_bMedianFilterB;
@@ -267,6 +280,9 @@ public:
 
     /* Area-Filter */
     QVector<QPointF> m_areaFilterDataA, m_areaFilterDataB;
+
+    /* Rise-Time Filter */
+    QVector<int> m_riseTimeFilterDataA, m_riseTimeFilterDataB;
 
     /* input data */
     int m_channelCntCoincindence;
@@ -388,6 +404,15 @@ public:
     int m_areaFilterACounter;
     int m_areaFilterBCounter;
 
+    /* Rise-Time Filter */
+    QVector<int> m_riseTimeFilterDataA;
+    QVector<int> m_riseTimeFilterDataB;
+
+    int m_riseTimeFilterACounter;
+    int m_riseTimeFilterBCounter;
+
+    int m_maxY_RiseTimeSpectrumA, m_maxY_RiseTimeSpectrumB;
+
     /* Lifetime-Spectra */
     QVector<int> m_lifeTimeDataAB, m_lifeTimeDataBA, m_lifeTimeDataCoincidence, m_lifeTimeDataMerged;
     int m_abCounts, m_baCounts, m_mergedCounts, m_coincidenceCounts;
@@ -475,6 +500,16 @@ public:
 
     QVector<QPointF>* areaFilterAData();
     QVector<QPointF>* areaFilterBData();
+
+    /* Rise-Time Filter */
+    void resetRiseTimeFilterA();
+    void resetRiseTimeFilterB();
+
+    QVector<int>* riseTimeFilterAData();
+    QVector<int> *riseTimeFilterBData();
+
+    int riseTimeFilterADataMax();
+    int riseTimeFilterBDataMax();
 
     /* Lifetime-Spectra */
     void resetABSpectrum();
