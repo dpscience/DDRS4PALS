@@ -58,10 +58,10 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     /* Check if DQuickLTFit Software is available? */
     QFile file("DQuickLTFit.exe");
-    const bool dquickExists = file.exists();
-    ui->menuSpectrum_Analysis->setEnabled(dquickExists);
+    const bool bDQuickExists = file.exists();
+    ui->menuSpectrum_Analysis->setEnabled(bDQuickExists);
 
-    if ( dquickExists ) {
+    if ( bDQuickExists ) {
         connect(ui->actionRun_DQuickLTFit, SIGNAL(triggered()), this, SLOT(runDQuickLTFit()));
         ui->actionRun_DQuickLTFit->setIcon(QIcon(":/images/images/IconPNGRounded.png"));
     }
@@ -160,10 +160,17 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     connect(m_phsRequestTimer, SIGNAL(timeout()), this, SLOT(plotPHS()), Qt::QueuedConnection);
 
+    /* Area-Filter */
     m_areaRequestTimer = new QTimer;
     m_areaRequestTimer->setInterval(50);
 
     connect(m_areaRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseAreaFilterData()), Qt::QueuedConnection);
+
+    /* Rise-Time Filter */
+    m_riseTimeRequestTimer = new QTimer;
+    m_riseTimeRequestTimer->setInterval(50);
+
+    connect(m_riseTimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotRiseTimeFilterData()), Qt::QueuedConnection);
 
     /* Lifetime-Spectra */
     m_lifetimeRequestTimer = new QTimer;
@@ -211,6 +218,8 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     initBoardTPlot();
     initPulseAreaFilterA();
     initPulseAreaFilterB();
+    initPulseRiseTimeFilterA();
+    initPulseRiseTimeFilterB();
     initPersistancePlots();
 
     ui->verticalSlider_triggerLevelA->setRange(-500, 500);
@@ -327,6 +336,31 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->checkBox_activateAreaFilter->setChecked(false);
     ui->checkBox_enableAreaFilter->setChecked(true);
 
+    ui->checkBox_activateRiseTimeFilter->setChecked(false);
+    ui->checkBox_enableRiseTimeFilter->setChecked(false);
+
+    ui->doubleSpinBox_riseTimeFilterTimeScaleA->setRange(0, 50000.0);
+    ui->doubleSpinBox_riseTimeFilterTimeScaleA->setValue(5.0);
+
+    ui->doubleSpinBox_riseTimeFilterTimeScaleB->setRange(0, 50000.0);
+    ui->doubleSpinBox_riseTimeFilterTimeScaleB->setValue(5.0);
+
+    ui->spinBox_riseTimeFilter_binningA->setRange(100, 1000000);
+    ui->spinBox_riseTimeFilter_binningA->setValue(1000);
+
+    ui->spinBox_riseTimeFilter_binningB->setRange(100, 1000000);
+    ui->spinBox_riseTimeFilter_binningB->setValue(1000);
+
+    ui->spinBox_riseTimerFilterLeftA->setRange(0, 1000);
+    ui->spinBox_riseTimerFilterLeftA->setValue(20);
+    ui->spinBox_riseTimeFilterRightA->setRange(0, 1000);
+    ui->spinBox_riseTimeFilterRightA->setValue(980);
+
+    ui->spinBox_riseTimerFilterLeftB->setRange(0, 1000);
+    ui->spinBox_riseTimerFilterLeftB->setValue(20);
+    ui->spinBox_riseTimeFilterRightB->setRange(0, 1000);
+    ui->spinBox_riseTimeFilterRightB->setValue(980);
+
     ui->checkBox_medianFilterAActivate->setChecked(false);
     ui->checkBox_medianFilterBActivate->setChecked(false);
 
@@ -380,6 +414,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->pushButton_resetAreaFilterA, SIGNAL(clicked()), this, SLOT(resetAreaPlotAByPushButton()));
     connect(ui->pushButton_resetAreaFilterB, SIGNAL(clicked()), this, SLOT(resetAreaPlotBByPushButton()));
 
+    connect(ui->pushButton_resetRiseTimeFilterA, SIGNAL(clicked()), this, SLOT(resetRiseTimePlotAByPushButton()));
+    connect(ui->pushButton_resetRiseTimeFilterB, SIGNAL(clicked()), this, SLOT(resetRiseTimePlotBByPushButton()));
+
     connect(ui->verticalSlider_triggerLevelA, SIGNAL(valueChanged(int)), this, SLOT(changeTriggerLevelA(int)));
     connect(ui->verticalSlider_triggerLevelB, SIGNAL(valueChanged(int)), this, SLOT(changeTriggerLevelB(int)));
 
@@ -402,8 +439,10 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->checkBox_activateAreaFilter, SIGNAL(clicked(bool)), this, SLOT(changePulseAreaFilterEnabled(bool)));
     connect(ui->checkBox_medianFilterAActivate, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterAEnabled(bool)));
     connect(ui->checkBox_medianFilterBActivate, SIGNAL(clicked(bool)), this, SLOT(changeMedianFilterBEnabled(bool)));
+    connect(ui->checkBox_activateRiseTimeFilter, SIGNAL(clicked(bool)), this, SLOT(changeRiseTimeFilterEnabled(bool)));
 
     connect(ui->checkBox_enableAreaFilter, SIGNAL(clicked(bool)), this, SLOT(changePulseAreaFilterPlotEnabled(bool)));
+    connect(ui->checkBox_enableRiseTimeFilter, SIGNAL(clicked(bool)), this, SLOT(changeRiseTimeFilterPlotEnabled(bool)));
     connect(ui->checkBox_enablePersistance, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotEnabled(bool)));
     connect(ui->checkBox_usingCFDB_A, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotUsingCFDB_For_A(bool)));
     connect(ui->checkBox_usingCFDA_B, SIGNAL(clicked(bool)), this, SLOT(changePersistancePlotUsingCFDA_For_B(bool)));
@@ -456,6 +495,18 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->doubleSpinBox_areaFilter_rightB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
     connect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
     connect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
+
+    connect(ui->doubleSpinBox_riseTimeFilterTimeScaleA, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsA(double)));
+    connect(ui->doubleSpinBox_riseTimeFilterTimeScaleB, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsB(double)));
+
+    connect(ui->spinBox_riseTimeFilter_binningA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterBinningCountA(int)));
+    connect(ui->spinBox_riseTimeFilter_binningB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterBinningCountB(int)));
+
+    connect(ui->spinBox_riseTimerFilterLeftA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowA(int)));
+    connect(ui->spinBox_riseTimeFilterRightA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowA(int)));
+
+    connect(ui->spinBox_riseTimerFilterLeftB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowB(int)));
+    connect(ui->spinBox_riseTimeFilterRightB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowB(int)));
 
     connect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
     connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
@@ -598,6 +649,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     m_pulseRequestTimer->start();
     m_phsRequestTimer->start();
     m_areaRequestTimer->start();
+    m_riseTimeRequestTimer->start();
     m_lifetimeRequestTimer->start();
     m_persistanceRequestTimer->start();
 
@@ -659,6 +711,7 @@ DRS4ScopeDlg::~DRS4ScopeDlg()
     DDELETE_SAFETY(m_phsRequestTimer);
     DDELETE_SAFETY(m_lifetimeRequestTimer);
     DDELETE_SAFETY(m_areaRequestTimer);
+    DDELETE_SAFETY(m_riseTimeRequestTimer);
     DDELETE_SAFETY(m_persistanceRequestTimer);
     DDELETE_SAFETY(m_burstModeTimer);
     DDELETE_SAFETY(m_autoSaveSpectraTimer);
@@ -1192,6 +1245,100 @@ void DRS4ScopeDlg::initPulseAreaFilterB()
     ui->widget_plotAreaFilterB->yLeft()->setAxisLabelText("Norm. A");
 
     updatePulseAreaFilterBLimits();
+}
+
+void DRS4ScopeDlg::initPulseRiseTimeFilterA()
+{
+    //A:
+    ui->widget_plotrRiseTimeFilterA->showXBottomGrid(false);
+    ui->widget_plotrRiseTimeFilterA->showXTopGrid(false);
+    ui->widget_plotrRiseTimeFilterA->showYLeftGrid(false);
+    ui->widget_plotrRiseTimeFilterA->showYRightGrid(false);
+
+    ui->widget_plotrRiseTimeFilterA->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_plotrRiseTimeFilterA->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
+
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisDistribution(1);
+    ui->widget_plotrRiseTimeFilterA->xBottom()->setAxisDistribution(11);
+
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisRange(0, 1000);
+    ui->widget_plotrRiseTimeFilterA->xBottom()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA());
+    ui->widget_plotrRiseTimeFilterA->xBottom()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_plotrRiseTimeFilterA->xBottom()->setNumberPrecision(0);
+
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisScaling(plot2DXAxis::linear);
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setNumberPrecision(0);
+
+    ui->widget_plotrRiseTimeFilterA->yLeft()->showHelpIncrements(false);
+    ui->widget_plotrRiseTimeFilterA->xBottom()->showHelpIncrements(false);
+
+    //data:
+    ui->widget_plotrRiseTimeFilterA->curve().at(0)->setCurveStyle(plot2DXCurve::circle);
+    ui->widget_plotrRiseTimeFilterA->curve().at(0)->setCurveWidth(4);
+    ui->widget_plotrRiseTimeFilterA->curve().at(0)->setCurveColor(Qt::blue);
+
+    //left window:
+    ui->widget_plotrRiseTimeFilterA->curve().at(1)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotrRiseTimeFilterA->curve().at(1)->setCurveWidth(4);
+    ui->widget_plotrRiseTimeFilterA->curve().at(1)->setCurveColor(Qt::red);
+
+    //right window:
+    ui->widget_plotrRiseTimeFilterA->curve().at(2)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotrRiseTimeFilterA->curve().at(2)->setCurveWidth(4);
+    ui->widget_plotrRiseTimeFilterA->curve().at(2)->setCurveColor(Qt::green);
+
+    ui->widget_plotrRiseTimeFilterA->xBottom()->setAxisLabelText("rise-time binning [#]");
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisLabelText("counts [#]");
+
+    updateRiseTimeFilterALimits();
+}
+
+void DRS4ScopeDlg::initPulseRiseTimeFilterB()
+{
+    //B:
+    ui->widget_plotrRiseTimeFilterB->showXBottomGrid(false);
+    ui->widget_plotrRiseTimeFilterB->showXTopGrid(false);
+    ui->widget_plotrRiseTimeFilterB->showYLeftGrid(false);
+    ui->widget_plotrRiseTimeFilterB->showYRightGrid(false);
+
+    ui->widget_plotrRiseTimeFilterB->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_plotrRiseTimeFilterB->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
+
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisDistribution(1);
+    ui->widget_plotrRiseTimeFilterB->xBottom()->setAxisDistribution(11);
+
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisRange(0, 1000);
+    ui->widget_plotrRiseTimeFilterB->xBottom()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB());
+    ui->widget_plotrRiseTimeFilterB->xBottom()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_plotrRiseTimeFilterB->xBottom()->setNumberPrecision(0);
+
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisScaling(plot2DXAxis::linear);
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setNumberPrecision(0);
+
+    ui->widget_plotrRiseTimeFilterB->yLeft()->showHelpIncrements(false);
+    ui->widget_plotrRiseTimeFilterB->xBottom()->showHelpIncrements(false);
+
+    //data:
+    ui->widget_plotrRiseTimeFilterB->curve().at(0)->setCurveStyle(plot2DXCurve::circle);
+    ui->widget_plotrRiseTimeFilterB->curve().at(0)->setCurveWidth(4);
+    ui->widget_plotrRiseTimeFilterB->curve().at(0)->setCurveColor(Qt::blue);
+
+    //left window:
+    ui->widget_plotrRiseTimeFilterB->curve().at(1)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotrRiseTimeFilterB->curve().at(1)->setCurveWidth(4);
+    ui->widget_plotrRiseTimeFilterB->curve().at(1)->setCurveColor(Qt::red);
+
+    //right window:
+    ui->widget_plotrRiseTimeFilterB->curve().at(2)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotrRiseTimeFilterB->curve().at(2)->setCurveWidth(4);
+    ui->widget_plotrRiseTimeFilterB->curve().at(2)->setCurveColor(Qt::green);
+
+    ui->widget_plotrRiseTimeFilterB->xBottom()->setAxisLabelText("rise-time binning [#]");
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisLabelText("counts [#]");
+
+    updateRiseTimeFilterBLimits();
 }
 
 bool DRS4ScopeDlg::loadSimulationToolSettingsFromExtern(const QString &path, bool checkForExtension)
@@ -2544,6 +2691,52 @@ void DRS4ScopeDlg::plotPulseAreaFilterData()
     m_areaRequestTimer->start();
 }
 
+void DRS4ScopeDlg::plotRiseTimeFilterData()
+{
+    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
+        return;
+
+    if ( !DRS4SettingsManager::sharedInstance()->isRiseTimeFilterPlotEnabled() )
+        return;
+
+    if (!m_worker)
+        return;
+
+    m_riseTimeRequestTimer->stop();
+
+    ui->widget_plotrRiseTimeFilterA->curve().at(0)->clearCurveContent();
+    ui->widget_plotrRiseTimeFilterB->curve().at(0)->clearCurveContent();
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    ui->widget_plotrRiseTimeFilterA->curve().at(0)->addDataVec(*m_worker->riseTimeFilterAData());
+    ui->widget_plotrRiseTimeFilterB->curve().at(0)->addDataVec(*m_worker->riseTimeFilterBData());
+
+    m_worker->setBusy(false);
+
+    const int valA = m_worker->riseTimeFilterADataMax();
+    const int valB = m_worker->riseTimeFilterBDataMax();
+
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisRange(0, valA<=/*1000?1000*/10?10:valA);
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisRange(0, valB<=/*1000?1000*/10?10:valB);
+
+    updateRiseTimeFilterALimits();
+    updateRiseTimeFilterBLimits();
+
+    const double resA = DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfA()/(double)DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA();
+    const double resB = DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfB()/(double)DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB();
+
+    ui->label_riseTimeChannelWidthA->setNum(resA);
+    ui->label_riseTimeWindowA->setNum(((double)DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfA()-(double)DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfA())*resA);
+
+    ui->label_riseTimeChannelWidthB->setNum(resB);
+    ui->label_riseTimeWindowB->setNum(((double)DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfB()-(double)DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfB())*resB);
+
+    m_riseTimeRequestTimer->start();
+}
+
 void DRS4ScopeDlg::plotLifetimeSpectra()
 {
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
@@ -2806,7 +2999,7 @@ void DRS4ScopeDlg::resetPHSB(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetAllLTSpectraByPushButton(const FunctionSource &source)
 {
-    const QString text = "Are you sure to reset the following Spectra?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Prompt/IRF</li><li>Persistance</li><li>Filter</li></lu></b>";
+    const QString text = "Are you sure to reset the following Spectra?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Prompt/IRF</li><li>Persistance</li><li>Filters</li></lu></b>";
 
     const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset all Spectra?", text, QMessageBox::Yes|QMessageBox::No);
 
@@ -2860,6 +3053,22 @@ void DRS4ScopeDlg::resetAreaPlotBByPushButton(const FunctionSource &source)
 
     if ( reply == QMessageBox::Yes )
         resetAreaPlotB(source);
+}
+
+void DRS4ScopeDlg::resetRiseTimePlotAByPushButton(const FunctionSource &source)
+{
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset Rise-Time Filter Plot A?", "Reset Rise-Time Filter Plot A?", QMessageBox::Yes|QMessageBox::No);
+
+    if ( reply == QMessageBox::Yes )
+        resetRiseTimePlotA(source);
+}
+
+void DRS4ScopeDlg::resetRiseTimePlotBByPushButton(const FunctionSource &source)
+{
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset Rise-Time Filter Plot B?", "Reset Rise-Time Filter Plot B?", QMessageBox::Yes|QMessageBox::No);
+
+    if ( reply == QMessageBox::Yes )
+        resetRiseTimePlotB(source);
 }
 
 void DRS4ScopeDlg::resetPersistancePlotAByPushButton(const FunctionSource &source)
@@ -2969,6 +3178,9 @@ void DRS4ScopeDlg::resetAllLTSpectra(const FunctionSource &source)
 
     resetAreaPlotA(source);
     resetAreaPlotB(source);
+
+    resetRiseTimePlotA(source);
+    resetRiseTimePlotB(source);
 
     m_worker->setBusy(false);
 }
@@ -3105,6 +3317,246 @@ void DRS4ScopeDlg::resetAreaPlotB(const FunctionSource &source)
     ui->widget_plotAreaFilterB->replot();
 
     updatePulseAreaFilterBLimits();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterEnabled(bool on, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_activateRiseTimeFilter->setChecked(on);
+        ui->checkBox_activateRiseTimeFilter->setChecked(on);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterEnabled(on);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterPlotEnabled(bool on, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_enableRiseTimeFilter->clicked(on);
+        ui->checkBox_enableRiseTimeFilter->setChecked(on);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterPlotEnabled(on);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterScaleInNanosecondsA(double value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_riseTimeFilterTimeScaleA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterScaleInNanosecondsOfA(value);
+
+    resetRiseTimePlotA(source);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterScaleInNanosecondsB(double value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_riseTimeFilterTimeScaleB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterScaleInNanosecondsOfB(value);
+
+    resetRiseTimePlotB(source);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterBinningCountA(int value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_riseTimeFilter_binningA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterBinningOfA(value);
+
+    resetRiseTimePlotA(source);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterBinningCountB(int value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_riseTimeFilter_binningB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterBinningOfB(value);
+
+    resetRiseTimePlotB(source);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterLeftWindowA(int value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_riseTimerFilterLeftA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterLeftWindowOfA(value);
+
+    updateRiseTimeFilterALimits();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterLeftWindowB(int value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_riseTimerFilterLeftB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterLeftWindowOfB(value);
+
+    updateRiseTimeFilterBLimits();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterRightWindowA(int value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_riseTimeFilterRightA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterRightWindowOfA(value);
+
+    updateRiseTimeFilterALimits();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRiseTimeFilterRightWindowB(int value, const FunctionSource &source)
+{
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_riseTimeFilterRightB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setRiseTimeFilterRightWindowOfB(value);
+
+    updateRiseTimeFilterBLimits();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::resetRiseTimePlotA(const FunctionSource &source)
+{
+    if (!m_worker)
+        return;
+
+    QMutexLocker locker(&m_mutex);
+
+    DUNUSED_PARAM(source);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_worker->resetRiseTimeFilterA();
+
+    ui->widget_plotrRiseTimeFilterA->curve().at(0)->clearCurveContent();
+    ui->widget_plotrRiseTimeFilterA->replot();
+
+    updateRiseTimeFilterALimits();
+
+    ui->widget_plotrRiseTimeFilterA->xBottom()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA());
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::resetRiseTimePlotB(const FunctionSource &source)
+{
+    if (!m_worker)
+        return;
+
+    QMutexLocker locker(&m_mutex);
+
+    DUNUSED_PARAM(source);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_worker->resetRiseTimeFilterB();
+
+    ui->widget_plotrRiseTimeFilterB->curve().at(0)->clearCurveContent();
+    ui->widget_plotrRiseTimeFilterB->replot();
+
+    updateRiseTimeFilterBLimits();
+
+    ui->widget_plotrRiseTimeFilterB->xBottom()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB());
 
     m_worker->setBusy(false);
 }
@@ -3691,60 +4143,6 @@ void DRS4ScopeDlg::updatePulseAreaFilterALimits()
     m_worker->setBusy(false);
 }
 
-/*void DRS4ScopeDlg::calcSlopeInterceptAreaFilterA()
-{
-    double x1_lower = 0;
-    double y1_lower = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerLeftA();
-
-    double x2_lower = kNumberOfBins-1;
-    double y2_lower = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerRightA();
-
-    double x1_upper = 0;
-    double y1_upper = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperLeftA();
-
-    double x2_upper = kNumberOfBins-1;
-    double y2_upper = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperRightA();
-
-    double slope_lower = (y2_lower-y1_lower)/(x2_lower-x1_lower);
-    double intercept_lower = y1_lower-slope_lower*x1_lower;
-
-    double slope_upper = (y2_upper-y1_upper)/(x2_upper-x1_upper);
-    double intercept_upper = y1_upper-slope_upper*x1_upper;
-
-    m_areaFilterASlopeLower = slope_lower;
-    m_areaFilterAInterceptLower = intercept_lower;
-
-    m_areaFilterASlopeUpper = slope_upper;
-    m_areaFilterAInterceptUpper = intercept_upper;
-}
-
-void DRS4ScopeDlg::calcSlopeInterceptAreaFilterB()
-{
-    double x1_lower = 0;
-    double y1_lower = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerLeftB();
-
-    double x2_lower = kNumberOfBins-1;
-    double y2_lower = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerRightB();
-
-    double x1_upper = 0;
-    double y1_upper = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperLeftB();
-
-    double x2_upper = kNumberOfBins-1;
-    double y2_upper = DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperRightB();
-
-    double slope_lower = (y2_lower-y1_lower)/(x2_lower-x1_lower);
-    double intercept_lower = y1_lower-slope_lower*x1_lower;
-
-    double slope_upper = (y2_upper-y1_upper)/(x2_upper-x1_upper);
-    double intercept_upper = y1_upper-slope_upper*x1_upper;
-
-    m_areaFilterBSlopeLower = slope_lower;
-    m_areaFilterBInterceptLower = intercept_lower;
-
-    m_areaFilterBSlopeUpper = slope_upper;
-    m_areaFilterBInterceptUpper = intercept_upper;
-}*/
-
 void DRS4ScopeDlg::updatePulseAreaFilterBLimits()
 {
     if (!m_worker)
@@ -3833,6 +4231,88 @@ void DRS4ScopeDlg::updatePulseAreaFilterBLimits()
     ui->widget_plotAreaFilterB->curve().at(2)->addData(limitsLower);
 
     ui->widget_plotAreaFilterB->replot();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::updateRiseTimeFilterALimits()
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    int yMax = m_worker->riseTimeFilterADataMax();
+
+    const QPointF leftWindow_1(DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfA(), 1);
+    const QPointF leftWindow_2(DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfA(), yMax<=/*999?999*/10?10:yMax-1);
+
+    QVector<QPointF> leftLimits;
+    leftLimits.append(leftWindow_1);
+    leftLimits.append(leftWindow_2);
+    leftLimits.append(leftWindow_1);
+
+    const QPointF rightWindow_1(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfA(), 1);
+    const QPointF rightWindow_2(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfA(), yMax<=/*999?999*/10?10:yMax-1);
+
+    QVector<QPointF> rightLimits;
+    rightLimits.append(rightWindow_1);
+    rightLimits.append(rightWindow_2);
+    rightLimits.append(rightWindow_1);
+
+    ui->widget_plotrRiseTimeFilterA->curve().at(1)->clearCurveContent();
+    ui->widget_plotrRiseTimeFilterA->curve().at(1)->addData(leftLimits);
+
+    ui->widget_plotrRiseTimeFilterA->curve().at(2)->clearCurveContent();
+    ui->widget_plotrRiseTimeFilterA->curve().at(2)->addData(rightLimits);
+
+    ui->widget_plotrRiseTimeFilterA->replot();
+
+    ui->spinBox_riseTimerFilterLeftA->setRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA());
+    ui->spinBox_riseTimeFilterRightA->setRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA());
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::updateRiseTimeFilterBLimits()
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    const int yMax = m_worker->riseTimeFilterBDataMax();
+
+    const QPointF leftWindow_1(DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfB(), 1);
+    const QPointF leftWindow_2(DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfB(), yMax<=/*999?999*/10?10:yMax-1);
+
+    QVector<QPointF> leftLimits;
+    leftLimits.append(leftWindow_1);
+    leftLimits.append(leftWindow_2);
+    leftLimits.append(leftWindow_1);
+
+    const QPointF rightWindow_1(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfB(), 1);
+    const QPointF rightWindow_2(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfB(), yMax<=/*999?999*/10?10:yMax-1);
+
+    QVector<QPointF> rightLimits;
+    rightLimits.append(rightWindow_1);
+    rightLimits.append(rightWindow_2);
+    rightLimits.append(rightWindow_1);
+
+    ui->widget_plotrRiseTimeFilterB->curve().at(1)->clearCurveContent();
+    ui->widget_plotrRiseTimeFilterB->curve().at(1)->addData(leftLimits);
+
+    ui->widget_plotrRiseTimeFilterB->curve().at(2)->clearCurveContent();
+    ui->widget_plotrRiseTimeFilterB->curve().at(2)->addData(rightLimits);
+
+    ui->widget_plotrRiseTimeFilterB->replot();
+
+    ui->spinBox_riseTimerFilterLeftB->setRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB());
+    ui->spinBox_riseTimeFilterRightB->setRange(0, DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB());
 
     m_worker->setBusy(false);
 }
@@ -4895,6 +5375,15 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     disconnect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
     disconnect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
 
+    disconnect(ui->doubleSpinBox_riseTimeFilterTimeScaleA, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsA(double)));
+    disconnect(ui->doubleSpinBox_riseTimeFilterTimeScaleB, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsB(double)));
+    disconnect(ui->spinBox_riseTimeFilter_binningA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterBinningCountA(int)));
+    disconnect(ui->spinBox_riseTimeFilter_binningB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterBinningCountB(int)));
+    disconnect(ui->spinBox_riseTimerFilterLeftA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowA(int)));
+    disconnect(ui->spinBox_riseTimeFilterRightA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowA(int)));
+    disconnect(ui->spinBox_riseTimerFilterLeftB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowB(int)));
+    disconnect(ui->spinBox_riseTimeFilterRightB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowB(int)));
+
     disconnect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
     disconnect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
 
@@ -4942,6 +5431,15 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
         ui->doubleSpinBox_areaFilter_rightB_lower->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerRightB());
         ui->doubleSpinBox_areaFilter_leftB_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperLeftB());
         ui->doubleSpinBox_areaFilter_rightB_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperRightB());
+
+        ui->doubleSpinBox_riseTimeFilterTimeScaleA->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfA());
+        ui->doubleSpinBox_riseTimeFilterTimeScaleB->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfB());
+        ui->spinBox_riseTimeFilter_binningA->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA());
+        ui->spinBox_riseTimeFilter_binningB->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB());
+        ui->spinBox_riseTimerFilterLeftA->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfA());
+        ui->spinBox_riseTimeFilterRightA->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfA());
+        ui->spinBox_riseTimerFilterLeftB->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfB());
+        ui->spinBox_riseTimeFilterRightB->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfB());
 
         ui->spinBox_medianFilterWindowSizeA->setValue(DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA());
         ui->spinBox_medianFilterWindowSizeB->setValue(DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB());
@@ -4991,6 +5489,15 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     connect(ui->doubleSpinBox_areaFilter_rightB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
     connect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
     connect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
+
+    connect(ui->doubleSpinBox_riseTimeFilterTimeScaleA, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsA(double)));
+    connect(ui->doubleSpinBox_riseTimeFilterTimeScaleB, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsB(double)));
+    connect(ui->spinBox_riseTimeFilter_binningA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterBinningCountA(int)));
+    connect(ui->spinBox_riseTimeFilter_binningB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterBinningCountB(int)));
+    connect(ui->spinBox_riseTimerFilterLeftA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowA(int)));
+    connect(ui->spinBox_riseTimeFilterRightA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowA(int)));
+    connect(ui->spinBox_riseTimerFilterLeftB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowB(int)));
+    connect(ui->spinBox_riseTimeFilterRightB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowB(int)));
 
     connect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
     connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
@@ -5045,6 +5552,9 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     ui->checkBox_activateAreaFilter->setChecked(DRS4SettingsManager::sharedInstance()->isPulseAreaFilterEnabled());
     ui->checkBox_enableAreaFilter->setChecked(DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled());
 
+    ui->checkBox_activateRiseTimeFilter->setChecked(DRS4SettingsManager::sharedInstance()->isRiseTimeFilterEnabled());
+    ui->checkBox_enableRiseTimeFilter->setChecked(DRS4SettingsManager::sharedInstance()->isRiseTimeFilterPlotEnabled());
+
     ui->checkBox_medianFilterAActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterAEnabled());
     ui->checkBox_medianFilterBActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterBEnabled());
 
@@ -5075,6 +5585,9 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
 
     resetAreaPlotA();
     resetAreaPlotB();
+
+    resetRiseTimePlotA();
+    resetRiseTimePlotB();
 
     resetPersistancePlotA();
     resetPersistancePlotB();

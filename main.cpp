@@ -41,8 +41,7 @@ int main(int argc, char *argv[])
 {
     QSharedMemory mem("ckdkhfvakdjvhabsdfcjanöspofiäpansoucfdhbusvbdhfcPOIUXÄI");
 
-    if ( !mem.create(1) )
-    {
+    if ( !mem.create(1) ) {
         MSGBOX("An instance of DDRS4PALS is already running!");
         exit(0);
     }
@@ -81,8 +80,7 @@ int main(int argc, char *argv[])
     DRS4ScopeDlg scopeDlg(startType, &connectionNotPossible);
 
     if ( startType != ProgramStartType::Simulation
-         && connectionNotPossible )
-    {
+         && connectionNotPossible ) {
         MSGBOX("Please connect your DRS4-Board and restart this Software!");
         return a.exit();
     }

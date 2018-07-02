@@ -54,4 +54,3 @@ These files containing documentation, drivers, applications, C/C++ source code a
 
 # Manual
 - The full documentation can be found [here](https://github.com/dpscience/DDRS4PALS/wiki).
-

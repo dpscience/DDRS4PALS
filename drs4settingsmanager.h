@@ -156,6 +156,21 @@ class DRS4SettingsManager
 
     bool m_persistanceEnabled;
 
+    bool m_riseTimeFilterIsPlotEnabled;
+    bool m_riseTimeFilterIsActivated;
+
+    double m_riseTimeFilter_scaleInNs_A;
+    double m_riseTimeFilter_scaleInNs_B;
+
+    int m_riseTimeFilter_scaleBinningCnt_A;
+    int m_riseTimeFilter_scaleBinningCnt_B;
+
+    int m_riseTimeFilter_leftWindow_A;
+    int m_riseTimeFilter_leftWindow_B;
+
+    int m_riseTimeFilter_rightWindow_A;
+    int m_riseTimeFilter_rightWindow_B;
+
     DSimpleXMLNode *m_parentNode;
     DSimpleXMLNode *m_versionNode;
     DSimpleXMLNode *m_generalSettingsNode;
@@ -183,6 +198,7 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_abSpecNode, *m_baSpecNode, *m_mergedSpecNode, *m_promptSpecNode;
     DSimpleXMLNode *m_areaFilterSettingsNode;
     DSimpleXMLNode *m_medianFilterSettingsNode;
+    DSimpleXMLNode *m_riseTimeFilterSettingsNode;
     DSimpleXMLNode *m_persistancePlotSettingsNode;
     DSimpleXMLNode *m_startAChannelMinNode, *m_startAChannelMaxNode;
     DSimpleXMLNode *m_startBChannelMinNode, *m_startBChannelMaxNode;
@@ -250,6 +266,16 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_persistance_rightAInNs_Node;
     DSimpleXMLNode *m_persistance_rightBInNs_Node;
     DSimpleXMLNode *m_persistanceEnabled_Node;
+    DSimpleXMLNode *m_riseTimeFilterIsPlotEnabled_Node;
+    DSimpleXMLNode *m_riseTimeFilterIsActivated_Node;
+    DSimpleXMLNode *m_riseTimeFilter_scaleInNs_A_Node;
+    DSimpleXMLNode *m_riseTimeFilter_scaleInNs_B_Node;
+    DSimpleXMLNode *m_riseTimeFilter_scaleBinningCnt_A_Node;
+    DSimpleXMLNode *m_riseTimeFilter_scaleBinningCnt_B_Node;
+    DSimpleXMLNode *m_riseTimeFilter_leftWindow_A_Node;
+    DSimpleXMLNode *m_riseTimeFilter_leftWindow_B_Node;
+    DSimpleXMLNode *m_riseTimeFilter_rightWindow_A_Node;
+    DSimpleXMLNode *m_riseTimeFilter_rightWindow_B_Node;
 
     mutable QMutex m_mutex;
 
@@ -352,6 +378,19 @@ public:
     void setPulseAreaFilterLimitLowerLeftB(double value);
     void setPulseAreaFilterLimitLowerRightB(double value);
 
+    void setRiseTimeFilterEnabled(bool enabled);
+    void setRiseTimeFilterPlotEnabled(bool enabled);
+
+    void setRiseTimeFilterScaleInNanosecondsOfA(double value);
+    void setRiseTimeFilterScaleInNanosecondsOfB(double value);
+    void setRiseTimeFilterBinningOfA(int value);
+    void setRiseTimeFilterBinningOfB(int value);
+
+    void setRiseTimeFilterLeftWindowOfA(int value);
+    void setRiseTimeFilterLeftWindowOfB(int value);
+    void setRiseTimeFilterRightWindowOfA(int value);
+    void setRiseTimeFilterRightWindowOfB(int value);
+
     void setPersistanceEnabled(bool activated);
     void setPersistanceLeftInNsOfA(double value);
     void setPersistanceLeftInNsOfB(double value);
@@ -410,6 +449,19 @@ public:
     double pulseAreaFilterLimitUpperRightB() const;
     double pulseAreaFilterLimitLowerLeftB() const;
     double pulseAreaFilterLimitLowerRightB() const;
+
+    bool isRiseTimeFilterEnabled() const;
+    bool isRiseTimeFilterPlotEnabled() const;
+
+    double riseTimeFilterScaleInNanosecondsOfA() const;
+    double riseTimeFilterScaleInNanosecondsOfB() const;
+    int riseTimeFilterBinningOfA() const;
+    int riseTimeFilterBinningOfB() const;
+
+    int riseTimeFilterLeftWindowOfA() const;
+    int riseTimeFilterLeftWindowOfB() const;
+    int riseTimeFilterRightWindowOfA() const;
+    int riseTimeFilterRightWindowOfB() const;
 
     bool isPositiveSignal() const;
     bool isNegativeLTAccepted() const;

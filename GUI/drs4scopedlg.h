@@ -84,7 +84,6 @@ class DRS4ScopeDlg : public QMainWindow, public DRSCallback
     friend class DRS4ScriptingEngineAccessManager;
     friend class DRS4StreamDataLoader;
     friend class DRS4StreamManager;
-    friend class DRS4DopplerDlg;
 public:
     explicit DRS4ScopeDlg(const ProgramStartType& startType, bool *connectionLost, QWidget *parent = 0);
     virtual ~DRS4ScopeDlg();
@@ -108,6 +107,8 @@ private:
     void initBoardTPlot();
     void initPulseAreaFilterA();
     void initPulseAreaFilterB();
+    void initPulseRiseTimeFilterA();
+    void initPulseRiseTimeFilterB();
     void initPersistancePlots();
 
     void adaptPersistancePlotA();
@@ -148,6 +149,9 @@ private slots:
     void updatePulseAreaFilterALimits();
     void updatePulseAreaFilterBLimits();
 
+    void updateRiseTimeFilterALimits();
+    void updateRiseTimeFilterBLimits();
+
     void updateCurrentFileLabelFromScript(const QString& currentFile);
     void updateInfoDlgFromScript(const QString& comment);
     void updateThreadRunning(const QString& state, const QString& styleSheet);
@@ -164,6 +168,8 @@ private slots:
     void resetLTSpectrumMergedByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void resetAreaPlotAByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void resetAreaPlotBByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void resetRiseTimePlotAByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void resetRiseTimePlotBByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void resetPersistancePlotAByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void resetPersistancePlotBByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
 
@@ -220,6 +226,7 @@ private slots:
     void plotPHS();
     void plotPHSWindows();
     void plotPulseAreaFilterData();
+    void plotRiseTimeFilterData();
     void plotLifetimeSpectra();
     void plotPersistance();
 
@@ -338,6 +345,25 @@ public slots:
     void ACCESSED_BY_SCRIPT_AND_GUI resetAreaPlotA(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI resetAreaPlotB(const FunctionSource& source = FunctionSource::AccessFromGUI);
 
+    /* Rise - Time - Filter */
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterEnabled(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterPlotEnabled(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterScaleInNanosecondsA(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterScaleInNanosecondsB(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterBinningCountA(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterBinningCountB(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterLeftWindowA(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterLeftWindowB(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterRightWindowA(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRiseTimeFilterRightWindowB(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI resetRiseTimePlotA(const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI resetRiseTimePlotB(const FunctionSource& source = FunctionSource::AccessFromGUI);
+
     /* Median - Filter */
     void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterAEnabled(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeMedianFilterBEnabled(bool on, const FunctionSource& source = FunctionSource::AccessFromGUI);
@@ -431,6 +457,9 @@ private:
 
     /* Area - Filter */
     QTimer *m_areaRequestTimer;
+
+    /* Rise-Time Filter */
+    QTimer *m_riseTimeRequestTimer;
 
     /* Lifetime-Spectra */
     QTimer *m_lifetimeRequestTimer;
