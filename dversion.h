@@ -37,9 +37,9 @@
 
 #define NAME                       QString("DDRS4PALS")
 #define MAJOR_VERSION       QString("1")
-#define MINOR_VERSION    QString("05")
+#define MINOR_VERSION    QString("06")
 #define VERSION_EXTENSION QString("(official)")
-#define DATE_EXTENSION  QString("02.07.2018")
+#define DATE_EXTENSION  QString("25.09.2018")
 
 #define DATA_STREAM_VERSION 1
 
@@ -53,7 +53,7 @@
 //Extension for settings-file:
 #define EXT_LT_SETTINGS_FILE   QString(".drs4LTSettings")
 
-#define VERSION_SETTINGS_FILE 2
+#define VERSION_SETTINGS_FILE 3 /* 25.09.2018 */
 
 //Extension for simulation-input-file:
 #define EXT_SIMULATION_INPUT_FILE QString(".drs4SimulationInputFile")
@@ -78,16 +78,17 @@
 
 #define MSGBOX(__text__) DMSGBOX2(__text__, PROGRAM_NAME);
 
-#define SHOW_ABOUT() {const QString text = PROGRAM_NAME + "<br><br>(C) Copyright 2016-2018 by Danny Petschke<br>All rights reserved.<br><br>"; \
+#define SHOW_ABOUT() { const QString text = PROGRAM_NAME + "<br><br>(C) Copyright 2016-2018 by Danny Petschke<br>All rights reserved.<br><br>"; \
     const QString contact = "contact: <a href=\"danny.petschke@uni-wuerzburg.de\">danny.petschke@uni-wuerzburg.de</a><br><br>"; \
     const QString license = "<nobr>Fit Algorithm by: <br><a href=\"https://www.physics.wisc.edu/~craigm/idl/cmpfit.html\">MPFIT</a>: A MINPACK-1 Least Squares Fitting Library in C</nobr><br><br>"; \
     const QString license2 = "<nobr>CFD Interpolation by:<br><a href=\"http://www.alglib.net/\">ALGLIB</a>: A Numerical Analysis and Data Processing Library</nobr><br>and<br><a href=\"http://kluge.in-chemnitz.de/opensource/spline/\">Tino Kluge</a>: Cubic Spline Interpolation in C++<br><br>"; \
     const QString license2_1 = "<nobr>Spike Removal by:<br><a href=\"http://www.sergejusz.com/engineering_tips/median_filter.htm/\">S. Zabinskis</a>: A Fast Median Filter in C++<br><br>";\
-    const QString license4 = "<nobr>Logo designed by: Hannah Heil</nobr>"; \
+    const QString license4 = "<nobr>Logo designed by: <br><a href=\"https://www.researchgate.net/profile/Hannah_Heil\">Hannah Heil</a></nobr><br><br><br>"; \
+    const QString acknowlegment = "<b>Acknowledgment:</b><br><br><nobr>I thank Jakub Cizek (Charles University in Prague)<br><a href=\"https://www.researchgate.net/profile/Jakub_Cizek\">Jakub Cizek</a><br><br> and Martin Petriska (Slovak University of Technology in Bratislava)<br><a href=\"https://www.researchgate.net/profile/Martin_Petriska\">Martin Petriska</a><br><br> for fruitful discussions concerning pulse shape filtering and digital positron lifetime spectroscopy on the <a href=\"https://www.bgsu.edu/events/icpa-18.html\">ICPA-18</a>.</nobr><br><br>Furthermore, I thank <a href=\"https://www.researchgate.net/profile/Ricardo_Helm\">Ricardo Helm</a> for extensively testing this software."; \
     QString versionStr; \
     versionStr = QString("v%1.%2").arg(DLTPULSEGENERATOR_MAJOR_VERSION).arg(DLTPULSEGENERATOR_MINOR_VERSION); \
-    const QString license3 = "<nobr><a href=\"https://github.com/dpscience/DLTPulseGenerator\">DLTPulseGenerator</a> " + versionStr + " for Spectra-Simulation by: <br>Danny Petschke</nobr><br><br>"; \
-    QMessageBox::about(this, PROGRAM_NAME, text + contact + license + license2 + license2_1 + license3 + license4);}
+    const QString license3 = "<nobr><a href=\"https://github.com/dpscience/DLTPulseGenerator\">DLTPulseGenerator</a> " + versionStr + " for Spectra-Simulation by: <br><a href=\"https://www.researchgate.net/profile/Danny_Petschke\">Danny Petschke</a></nobr><br><br>"; \
+    QMessageBox::about(this, PROGRAM_NAME, "<b>" + text + "</b>" + contact + license + license2 + license2_1 + license3 + license4 + acknowlegment); }
 
 enum class ProgramStartType {
     Unknown,

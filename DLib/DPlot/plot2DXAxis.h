@@ -81,7 +81,8 @@ public:
       **/
     typedef enum{
         linear = 0,
-        logarithmic = 1
+        logarithmic = 1,
+        errorfunction = 2
     }axisScaling;
 
     /**

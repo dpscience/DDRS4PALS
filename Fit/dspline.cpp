@@ -32,12 +32,15 @@
  *
 *****************************************************************************/
 
-#ifndef DSPLINE_H
-#define DSPLINE_H
+#include "dspline.h"
 
-#include <cstdio>
-#include <vector>
-#include <algorithm>
+// ---------------------------------------------------------------------
+// implementation part, which could be separated into a cpp file
+// ---------------------------------------------------------------------
+
+
+// band_matrix implementation
+// -------------------------
 
 // band matrix solver
 class band_matrix
@@ -72,132 +75,6 @@ public:
                                  bool is_lu_decomposed=false);
 
 };
-
-// spline interpolation
-class spline
-{
-public:
-    enum bd_type {
-        first_deriv = 1,
-        second_deriv = 2
-    };
-
-private:
-    std::vector<double> m_x,m_y;            // x,y coordinates of points
-    // interpolation parameters
-    // f(x) = a*(x-x_i)^3 + b*(x-x_i)^2 + c*(x-x_i) + y_i
-    std::vector<double> m_a,m_b,m_c;        // spline coefficients
-    double  m_b0, m_c0;                     // for left extrapol
-    bd_type m_left, m_right;
-    double  m_left_value, m_right_value;
-    bool    m_force_linear_extrapolation;
-
-public:
-    // set default boundary condition to be zero curvature at both ends
-    spline(): m_left(second_deriv), m_right(second_deriv),
-        m_left_value(0.0), m_right_value(0.0),
-        m_force_linear_extrapolation(false)
-    {
-        ;
-    }
-
-    // optional, but if called it has to come be before set_points()
-    void set_boundary(bd_type left, double left_value,
-                      bd_type right, double right_value,
-                      bool force_linear_extrapolation=false);
-    void set_points(const std::vector<double>& x,
-                    const std::vector<double>& y, bool cubic_spline=true);
-    double operator() (double x) const;
-};
-
-class akimaSpline
-{
-private:
-    std::vector<double> m_x, m_y, m_xm, m_z;   // x,y coordinates of points
-
-public:
-    akimaSpline() {}
-
-    void set_points(const std::vector<double>& x,
-                    const std::vector<double>& y);
-    double operator() (double x) const;
-};
-
-enum class SplineType
-{
-    Linear,
-    Cubic,
-    Akima
-};
-
-class DSpline
-{
-    SplineType m_type;
-
-    spline m_cubicAndLinearSpline;
-    akimaSpline m_akimaSpline;
-
-public:
-    DSpline() :
-        m_type(SplineType::Linear) {}
-
-    DSpline(const SplineType& type) {
-        m_type = type;
-    }
-
-    void setType(const SplineType& type) {
-        m_type = type;
-    }
-
-    void setPoints(const std::vector<double>& x, const std::vector<double>& y) {
-        switch ( m_type )
-        {
-        case SplineType::Linear:
-            m_cubicAndLinearSpline.set_points(x, y, false);
-            break;
-
-        case SplineType::Cubic:
-            m_cubicAndLinearSpline.set_points(x, y, true);
-            break;
-
-        case SplineType::Akima:
-            m_akimaSpline.set_points(x, y);
-            break;
-
-        default:
-            m_cubicAndLinearSpline.set_points(x, y, false);
-            break;
-        }
-    }
-
-    double operator() (double x) const {
-        switch ( m_type ) {
-        case SplineType::Linear:
-            return m_cubicAndLinearSpline(x);
-            break;
-
-        case SplineType::Cubic:
-            return m_cubicAndLinearSpline(x);
-            break;
-
-        case SplineType::Akima:
-            return m_akimaSpline(x);
-            break;
-
-        default:
-            return m_cubicAndLinearSpline(x);
-            break;
-        }
-    }
-};
-
-// ---------------------------------------------------------------------
-// implementation part, which could be separated into a cpp file
-// ---------------------------------------------------------------------
-
-
-// band_matrix implementation
-// -------------------------
 
 band_matrix::band_matrix(int dim, int n_u, int n_l)
 {
@@ -332,8 +209,6 @@ std::vector<double> band_matrix::lu_solve(const std::vector<double>& b,
 }
 
 
-
-
 // spline implementation
 // -----------------------
 
@@ -395,15 +270,25 @@ void akimaSpline::set_points(const std::vector<double>& x,
     }
 }
 
+void akimaSpline::set_pointsArray(float x[], float y[], int size)
+{
+    std::vector<double> xVec, yVec;
+    xVec.resize(size);
+    yVec.resize(size);
+
+    for (int i = 0 ; i < size ; ++ i) {
+        xVec[i] = x[i];
+        yVec[i] = y[i];
+    }
+
+    set_points(xVec, yVec);
+}
+
 double akimaSpline::operator() (double xx) const
 {
     const int iv = m_x.size()-1;
 
     double yy = 0.0;
-
-    //special case xx=0
-    if ( xx == 0.0 )
-        return yy;
 
     //Check to see if interpolation point is correct
     if ( xx < m_x[1] || xx >= m_x[iv-3] )
@@ -421,6 +306,21 @@ double akimaSpline::operator() (double xx) const
     yy=yy+(m_z[idx]+m_z[idx+1]-2.0*m_xm[idx+2])*a*a*a/(b*b);
 
     return yy;
+}
+
+void spline::set_pointsArray(float x[],
+                        float y[], int size, bool cubic_spline)
+{
+    std::vector<double> xVec, yVec;
+    xVec.resize(size);
+    yVec.resize(size);
+
+    for (int i = 0 ; i < size ; ++ i) {
+        xVec[i] = x[i];
+        yVec[i] = y[i];
+    }
+
+    set_points(xVec, yVec, cubic_spline);
 }
 
 void spline::set_points(const std::vector<double>& x,
@@ -534,5 +434,3 @@ double spline::operator() (double x) const
     }
     return interpol;
 }
-
-#endif // DSPLINE_H

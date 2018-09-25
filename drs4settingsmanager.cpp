@@ -27,6 +27,151 @@
 
 #include "drs4settingsmanager.h"
 
+DRS4PulseShapeFilterData& DRS4PulseShapeFilterData::operator=(const DRS4PulseShapeFilterData &copy)
+{
+    m_meanTrace = copy.mean();
+    m_stdDevTrace = copy.stddev();
+
+    m_meanTraceDataX = copy.m_meanTraceDataX;
+    m_meanTraceDataY = copy.m_meanTraceDataY;
+
+    m_stdDevTraceDataX = copy.m_stdDevTraceDataX;
+    m_stdDevTraceDataY = copy.m_stdDevTraceDataY;
+
+    m_meanTraceSpline = copy.m_meanTraceSpline;
+    m_stddevTraceSpline = copy.m_stddevTraceSpline;
+
+    if (m_meanTraceDataXArray) {
+        delete [] m_meanTraceDataXArray;
+        m_meanTraceDataXArray = nullptr;
+    }
+
+    if (m_meanTraceDataYArray) {
+        delete [] m_meanTraceDataYArray;
+        m_meanTraceDataYArray = nullptr;
+    }
+
+    if (m_stdDevTraceDataXArray) {
+        delete [] m_stdDevTraceDataXArray;
+        m_stdDevTraceDataXArray = nullptr;
+    }
+
+    if (m_stdDevTraceDataYArray) {
+        delete [] m_stdDevTraceDataYArray;
+        m_stdDevTraceDataYArray = nullptr;
+    }
+
+    m_meanTraceDataXArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    m_meanTraceDataYArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    m_stdDevTraceDataXArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    m_stdDevTraceDataYArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+
+    std::fill(m_meanTraceDataXArray, m_meanTraceDataXArray + sizeof(m_meanTraceDataXArray)*m_sizeOfFloat, 0);
+    std::fill(m_meanTraceDataYArray, m_meanTraceDataYArray + sizeof(m_meanTraceDataYArray)*m_sizeOfFloat, 0);
+    std::fill(m_stdDevTraceDataXArray, m_stdDevTraceDataXArray + sizeof(m_stdDevTraceDataXArray)*m_sizeOfFloat, 0);
+    std::fill(m_stdDevTraceDataYArray, m_stdDevTraceDataYArray + sizeof(m_stdDevTraceDataYArray)*m_sizeOfFloat, 0);
+
+    if (copy.m_meanTraceDataXArray)
+        memcpy(m_meanTraceDataXArray, copy.m_meanTraceDataXArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeof(float));
+
+    if (copy.m_meanTraceDataYArray)
+        memcpy(m_meanTraceDataYArray, copy.m_meanTraceDataYArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeof(float));
+
+    if (copy.m_stdDevTraceDataXArray)
+        memcpy(m_stdDevTraceDataXArray, copy.m_stdDevTraceDataXArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeof(float));
+
+    if (copy.m_stdDevTraceDataYArray)
+        memcpy(m_stdDevTraceDataYArray, copy.m_stdDevTraceDataYArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeof(float));
+
+
+    return *this;
+}
+
+void DRS4PulseShapeFilterData::setData(const QVector<QPointF> &mean, const QVector<QPointF> &stddev)
+{
+    setMeanTrace(mean);
+    setStddevTrace(stddev);
+
+    const int size = mean.size();
+
+    m_meanTraceDataX.resize(size);
+    m_meanTraceDataY.resize(size);
+
+    m_stdDevTraceDataX.resize(size);
+    m_stdDevTraceDataY.resize(size);
+
+    int cnt = 0;
+
+    if (m_meanTraceDataXArray) {
+        delete [] m_meanTraceDataXArray;
+        m_meanTraceDataXArray = nullptr;
+    }
+
+    if (m_meanTraceDataYArray) {
+        delete [] m_meanTraceDataYArray;
+        m_meanTraceDataYArray = nullptr;
+    }
+
+    if (m_stdDevTraceDataXArray) {
+        delete [] m_stdDevTraceDataXArray;
+        m_stdDevTraceDataXArray = nullptr;
+    }
+
+    if (m_stdDevTraceDataYArray) {
+        delete [] m_stdDevTraceDataYArray;
+        m_stdDevTraceDataYArray = nullptr;
+    }
+
+    m_meanTraceDataXArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    m_meanTraceDataYArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    m_stdDevTraceDataXArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    m_stdDevTraceDataYArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+
+    std::fill(m_meanTraceDataXArray, m_meanTraceDataXArray + sizeof(m_meanTraceDataXArray)*m_sizeOfFloat, 0);
+    std::fill(m_meanTraceDataYArray, m_meanTraceDataYArray + sizeof(m_meanTraceDataYArray)*m_sizeOfFloat, 0);
+    std::fill(m_stdDevTraceDataXArray, m_stdDevTraceDataXArray + sizeof(m_stdDevTraceDataXArray)*m_sizeOfFloat, 0);
+    std::fill(m_stdDevTraceDataYArray, m_stdDevTraceDataYArray + sizeof(m_stdDevTraceDataYArray)*m_sizeOfFloat, 0);
+
+    for (QPointF p : m_meanTrace) {
+        m_meanTraceDataX[cnt] = p.x();
+        m_meanTraceDataY[cnt] = p.y();
+
+        m_stdDevTraceDataX[cnt] = p.x();
+        m_stdDevTraceDataY[cnt] = m_stdDevTrace.at(cnt).y();
+
+        m_meanTraceDataXArray[cnt] = p.x();
+        m_meanTraceDataYArray[cnt] = p.y();
+
+        m_stdDevTraceDataXArray[cnt] = p.x();
+        m_stdDevTraceDataYArray[cnt] = m_stdDevTrace.at(cnt).y();
+
+        cnt ++;
+    }
+
+    m_meanTraceSpline.setType(SplineType::Cubic);
+    m_stddevTraceSpline.setType(SplineType::Cubic);
+
+    m_meanTraceSpline.setPoints(m_meanTraceDataX, m_meanTraceDataY);
+    m_stddevTraceSpline.setPoints(m_stdDevTraceDataX, m_stdDevTraceDataY);
+}
+
+bool DRS4PulseShapeFilterData::isInsideBounding(const double &x, const double &y, const double &lowerFraction, const double& upperFraction) const
+{
+    if (m_meanTrace.isEmpty() || m_stdDevTrace.isEmpty())
+        return false;
+
+    const double mean = m_meanTraceSpline(x);
+    const double val = m_stddevTraceSpline(x);
+
+    const double stddevUpper = upperFraction*val;
+    const double stddevLower = lowerFraction*val;
+
+    const double upperLimit = (mean + stddevUpper);
+    const double lowerLimit = (mean - stddevLower);
+
+    return (y <= upperLimit) && (y >= lowerLimit);
+}
+
 static DRS4SettingsManager *__sharedInstanceSettingsManager = nullptr;
 
 DRS4SettingsManager::DRS4SettingsManager() :
@@ -104,7 +249,35 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_riseTimeFilter_leftWindow_A(20),
     m_riseTimeFilter_leftWindow_B(20),
     m_riseTimeFilter_rightWindow_A(980),
-    m_riseTimeFilter_rightWindow_B(980)
+    m_riseTimeFilter_rightWindow_B(980),
+    m_pulseShapeFilter_numberOfPulsesAcq_A(10000),
+    m_pulseShapeFilter_numberOfPulsesAcq_B(10000),
+    m_pulseShapeFilter_leftAInNs(2.0f),
+    m_pulseShapeFilter_leftBInNs(2.0f),
+    m_pulseShapeFilter_rightAInNs(2.0f),
+    m_pulseShapeFilter_rightBInNs(2.0f),
+    m_pulseShapeFilter_ROIleftAInNs(1.2f),
+    m_pulseShapeFilter_ROIleftBInNs(1.2f),
+    m_pulseShapeFilter_ROIrightAInNs(1.2f),
+    m_pulseShapeFilter_ROIrightBInNs(1.2f),
+    m_pulseShapeFilter_StdDevUpperFractA(3.0f),
+    m_pulseShapeFilter_StdDevLowerFractA(3.0f),
+    m_pulseShapeFilter_StdDevUpperFractB(3.0f),
+    m_pulseShapeFilter_StdDevLowerFractB(3.0f),
+    m_pulseShapeFilterEnabledA(false),
+    m_pulseShapeFilterEnabledB(false),
+    m_baseLineCorrectionStartCellA(5),
+    m_baseLineCorrectionRegionA(25),
+    m_baseLineCorrectionShiftValueA(0.0),
+    m_baseLineCorrectionEnabledA(false),
+    m_baseLineCorrectionLimitA(3.0),
+    m_baseLineCorrectionLimitExceededRejectA(false),
+    m_baseLineCorrectionStartCellB(5),
+    m_baseLineCorrectionRegionB(25),
+    m_baseLineCorrectionShiftValueB(0.0),
+    m_baseLineCorrectionEnabledB(false),
+    m_baseLineCorrectionLimitB(3.0),
+    m_baseLineCorrectionLimitExceededRejectB(false)
 {
     m_parentNode = new DSimpleXMLNode("DDRS4PALS");
 
@@ -162,6 +335,8 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_areaFilterSettingsNode = new DSimpleXMLNode("area-filter-settings");
     m_medianFilterSettingsNode = new DSimpleXMLNode("median-filter-settings");
     m_riseTimeFilterSettingsNode = new DSimpleXMLNode("rise-time-filter-settings");
+    m_pulseShapeFilterSettingsNode = new DSimpleXMLNode("pulse-shape-filter-settings");
+    m_baseLineFilterSettingsNode = new DSimpleXMLNode("baseline-jitter-correction-settings");
     m_persistancePlotSettingsNode = new DSimpleXMLNode("persistance-plot-settings");
 
     m_burstModeNode = new DSimpleXMLNode("burst-mode?");
@@ -375,6 +550,121 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_riseTimeFilter_rightWindow_B_Node = new DSimpleXMLNode("rise-time-filter-right-bin-B");
     m_riseTimeFilter_rightWindow_B_Node->setValue(m_riseTimeFilter_rightWindow_B);
 
+    m_pulseShapeFilterEnabledA_Node = new DSimpleXMLNode("pulse-shape-filter-A-enabled?");
+    m_pulseShapeFilterEnabledA_Node->setValue(m_pulseShapeFilterEnabledA);
+
+    m_pulseShapeFilterEnabledB_Node = new DSimpleXMLNode("pulse-shape-filter-B-enabled?");
+    m_pulseShapeFilterEnabledB_Node->setValue(m_pulseShapeFilterEnabledB);
+
+    m_pulseShapeFilter_numberOfPulsesAcq_A_Node = new DSimpleXMLNode("pulse-shape-filter-number-of-pulses-to-be-recorded-A");
+    m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_A);
+    m_pulseShapeFilter_numberOfPulsesAcq_B_Node = new DSimpleXMLNode("pulse-shape-filter-number-of-pulses-to-be-recorded-B");
+    m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_B);
+
+    m_pulseShapeFilter_leftAInNs_Node = new DSimpleXMLNode("pulse-shape-filter-plot-left-of-CFD-in-ns-A");
+    m_pulseShapeFilter_leftAInNs_Node->setValue(m_pulseShapeFilter_leftAInNs);
+
+    m_pulseShapeFilter_leftBInNs_Node = new DSimpleXMLNode("pulse-shape-filter-plot-left-of-CFD-in-ns-B");
+    m_pulseShapeFilter_leftBInNs_Node->setValue(m_pulseShapeFilter_leftBInNs);
+
+    m_pulseShapeFilter_rightAInNs_Node = new DSimpleXMLNode("pulse-shape-filter-plot-right-of-CFD-in-ns-A");
+    m_pulseShapeFilter_rightAInNs_Node->setValue(m_pulseShapeFilter_rightAInNs);
+
+    m_pulseShapeFilter_rightBInNs_Node = new DSimpleXMLNode("pulse-shape-filter-plot-right-of-CFD-in-ns-B");
+    m_pulseShapeFilter_rightBInNs_Node->setValue(m_pulseShapeFilter_rightBInNs);
+
+    m_pulseShapeFilter_ROIleftAInNs_Node = new DSimpleXMLNode("pulse-shape-filter-ROI-left-of-CFD-in-ns-A");
+    m_pulseShapeFilter_ROIleftAInNs_Node->setValue(m_pulseShapeFilter_ROIleftAInNs);
+
+    m_pulseShapeFilter_ROIleftBInNs_Node = new DSimpleXMLNode("pulse-shape-filter-ROI-left-of-CFD-in-ns-B");
+    m_pulseShapeFilter_ROIleftBInNs_Node->setValue(m_pulseShapeFilter_ROIleftBInNs);
+
+    m_pulseShapeFilter_ROIrightAInNs_Node = new DSimpleXMLNode("pulse-shape-filter-ROI-right-of-CFD-in-ns-A");
+    m_pulseShapeFilter_ROIrightAInNs_Node->setValue(m_pulseShapeFilter_ROIrightAInNs);
+
+    m_pulseShapeFilter_ROIrightBInNs_Node = new DSimpleXMLNode("pulse-shape-filter-ROI-right-of-CFD-in-ns-B");
+    m_pulseShapeFilter_ROIrightBInNs_Node->setValue(m_pulseShapeFilter_ROIrightBInNs);
+
+    m_pulseShapeFilter_StdDevUpperFractA_Node = new DSimpleXMLNode("pulse-shape-filter-upper-level-stddev-fraction-A");
+    m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(m_pulseShapeFilter_StdDevUpperFractA);
+    m_pulseShapeFilter_StdDevUpperFractB_Node = new DSimpleXMLNode("pulse-shape-filter-upper-level-stddev-fraction-B");
+    m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(m_pulseShapeFilter_StdDevUpperFractB);
+
+    m_pulseShapeFilter_StdDevLowerFractA_Node = new DSimpleXMLNode("pulse-shape-filter-lower-level-stddev-fraction-A");
+    m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(m_pulseShapeFilter_StdDevLowerFractA);
+    m_pulseShapeFilter_StdDevLowerFractB_Node = new DSimpleXMLNode("pulse-shape-filter-lower-level-stddev-fraction-B");
+    m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(m_pulseShapeFilter_StdDevLowerFractB);
+
+    m_pulseShapeFilter_contentDataA_Node = new DSimpleXMLNode("pulse-shape-filter-content-A");
+    m_pulseShapeFilter_contentDataB_Node = new DSimpleXMLNode("pulse-shape-filter-content-B");
+
+    m_pulseShapeFilter_meanDataA_Node = new DSimpleXMLNode("pulse-shape-filter-content-mean-trace-A");
+    m_pulseShapeFilter_meanDataA_Node->setValue("");
+
+    m_pulseShapeFilter_stddevDataA_Node = new DSimpleXMLNode("pulse-shape-filter-content-stddev-trace-A");
+    m_pulseShapeFilter_stddevDataA_Node->setValue("");
+
+    m_pulseShapeFilter_meanDataB_Node = new DSimpleXMLNode("pulse-shape-filter-content-mean-trace-B");
+    m_pulseShapeFilter_meanDataB_Node->setValue("");
+
+    m_pulseShapeFilter_stddevDataB_Node = new DSimpleXMLNode("pulse-shape-filter-content-stddev-trace-B");
+    m_pulseShapeFilter_stddevDataB_Node->setValue("");
+
+    m_baseLineCorrectionStartCellA_Node = new DSimpleXMLNode("baseline-jitter-correction-start-cell-A");
+    m_baseLineCorrectionStartCellA_Node->setValue(m_baseLineCorrectionStartCellA);
+    m_baseLineCorrectionRegionA_Node = new DSimpleXMLNode("baseline-jitter-correction-cell-region-A");
+    m_baseLineCorrectionRegionA_Node->setValue(m_baseLineCorrectionRegionA);
+    m_baseLineCorrectionShiftValueA_Node = new DSimpleXMLNode("baseline-jitter-correction-baseline-value-in-mV-A");
+    m_baseLineCorrectionShiftValueA_Node->setValue(m_baseLineCorrectionShiftValueA);
+    m_baseLineCorrectionEnabledA_Node = new DSimpleXMLNode("baseline-jitter-correction-enabled-A?");
+    m_baseLineCorrectionEnabledA_Node->setValue(m_baseLineCorrectionEnabledA);
+    m_baseLineCorrectionLimitA_Node = new DSimpleXMLNode("baseline-filter-rejection-limit-in-%-A");
+    m_baseLineCorrectionLimitA_Node->setValue(m_baseLineCorrectionLimitA);
+    m_baseLineCorrectionLimitExceededRejectA_Node = new DSimpleXMLNode("baseline-filter-enabled-A?");
+    m_baseLineCorrectionLimitExceededRejectA_Node->setValue(m_baseLineCorrectionLimitExceededRejectA);
+
+    m_baseLineCorrectionStartCellB_Node = new DSimpleXMLNode("baseline-jitter-correction-start-cell-B");
+    m_baseLineCorrectionStartCellB_Node->setValue(m_baseLineCorrectionStartCellB);
+    m_baseLineCorrectionRegionB_Node = new DSimpleXMLNode("baseline-jitter-correction-cell-region-B");
+    m_baseLineCorrectionRegionB_Node->setValue(m_baseLineCorrectionRegionB);
+    m_baseLineCorrectionShiftValueB_Node = new DSimpleXMLNode("baseline-jitter-correction-baseline-value-in-mV-B");
+    m_baseLineCorrectionShiftValueB_Node->setValue(m_baseLineCorrectionShiftValueB);
+    m_baseLineCorrectionEnabledB_Node = new DSimpleXMLNode("baseline-jitter-correction-enabled-B?");
+    m_baseLineCorrectionEnabledB_Node->setValue(m_baseLineCorrectionEnabledB);
+    m_baseLineCorrectionLimitB_Node = new DSimpleXMLNode("baseline-filter-rejection-limit-in-%-B");
+    m_baseLineCorrectionLimitB_Node->setValue(m_baseLineCorrectionLimitB);
+    m_baseLineCorrectionLimitExceededRejectB_Node = new DSimpleXMLNode("baseline-filter-enabled-B?");
+    m_baseLineCorrectionLimitExceededRejectB_Node->setValue(m_baseLineCorrectionLimitExceededRejectB);
+
+    (*m_baseLineFilterSettingsNode) << m_baseLineCorrectionEnabledA_Node << m_baseLineCorrectionEnabledB_Node
+                                    << m_baseLineCorrectionStartCellA_Node << m_baseLineCorrectionStartCellB_Node
+                                    << m_baseLineCorrectionRegionA_Node << m_baseLineCorrectionRegionB_Node
+                                    << m_baseLineCorrectionShiftValueA_Node << m_baseLineCorrectionShiftValueB_Node
+                                    << m_baseLineCorrectionLimitA_Node << m_baseLineCorrectionLimitB_Node
+                                    << m_baseLineCorrectionLimitExceededRejectA_Node << m_baseLineCorrectionLimitExceededRejectB_Node;
+
+    (*m_pulseShapeFilter_contentDataA_Node) << m_pulseShapeFilter_meanDataA_Node << m_pulseShapeFilter_stddevDataA_Node;
+    (*m_pulseShapeFilter_contentDataB_Node) << m_pulseShapeFilter_meanDataB_Node << m_pulseShapeFilter_stddevDataB_Node;
+
+    (*m_pulseShapeFilterSettingsNode) << m_pulseShapeFilterEnabledA_Node
+                                      << m_pulseShapeFilterEnabledB_Node
+                                      << m_pulseShapeFilter_numberOfPulsesAcq_A_Node
+                                      << m_pulseShapeFilter_numberOfPulsesAcq_B_Node
+                                      << m_pulseShapeFilter_leftAInNs_Node
+                                      << m_pulseShapeFilter_leftBInNs_Node
+                                      << m_pulseShapeFilter_rightAInNs_Node
+                                      << m_pulseShapeFilter_rightBInNs_Node
+                                      << m_pulseShapeFilter_ROIleftAInNs_Node
+                                      << m_pulseShapeFilter_ROIleftBInNs_Node
+                                      << m_pulseShapeFilter_ROIrightAInNs_Node
+                                      << m_pulseShapeFilter_ROIrightBInNs_Node
+                                      << m_pulseShapeFilter_StdDevUpperFractA_Node
+                                      << m_pulseShapeFilter_StdDevUpperFractB_Node
+                                      << m_pulseShapeFilter_StdDevLowerFractA_Node
+                                      << m_pulseShapeFilter_StdDevLowerFractB_Node
+                                      << m_pulseShapeFilter_contentDataA_Node
+                                      << m_pulseShapeFilter_contentDataB_Node;
+
     (*m_riseTimeFilterSettingsNode) << m_riseTimeFilterIsActivated_Node
                                     << m_riseTimeFilterIsPlotEnabled_Node
                                     << m_riseTimeFilter_scaleInNs_A_Node
@@ -485,6 +775,8 @@ DRS4SettingsManager::DRS4SettingsManager() :
                     << m_areaFilterSettingsNode
                     << m_medianFilterSettingsNode
                     << m_riseTimeFilterSettingsNode
+                    << m_pulseShapeFilterSettingsNode
+                    << m_baseLineFilterSettingsNode
                     << m_persistancePlotSettingsNode;
 }
 
@@ -616,15 +908,18 @@ bool DRS4SettingsManager::load(const QString &path)
 
     QVariant version = pTag.getValueAt(m_versionNode, &ok);
 
-    if (!ok)
+    if (!ok) {
         m_versionNode->setValue((int)VERSION_SETTINGS_FILE);
+    }
     else {
         const int versionInt = version.toInt(&ok);
-        if (!ok)
+
+        if (!ok) {
             m_versionNode->setValue((int)VERSION_SETTINGS_FILE);
+        }
         else {
-            if ( versionInt == 2 ) {
-                /* Rise time filter (since version 1.05 / settings version 2.0) */
+            if ( versionInt >= 2 ) {
+                /* rise time filter (since version 1.05 / settings version 2.0) */
                 const DSimpleXMLTag pRiseTimeFilterSettingsTag = pTag.getTag(m_riseTimeFilterSettingsNode, &ok);
 
                 if ( !ok )
@@ -659,6 +954,219 @@ bool DRS4SettingsManager::load(const QString &path)
 
                 m_riseTimeFilter_rightWindow_B_Node->setValue(pRiseTimeFilterSettingsTag.getValueAt(m_riseTimeFilter_rightWindow_B_Node, &ok));
                 if (!ok) m_riseTimeFilter_rightWindow_B_Node->setValue(m_riseTimeFilter_rightWindow_B);
+            }
+
+            if ( versionInt >= 3 ) {
+                /* pulse shape filter + baseline jitter correction (since version 1.06 / settings version 3.0) */
+                const DSimpleXMLTag pPulseShapeFilterSettingsTag = pTag.getTag(m_pulseShapeFilterSettingsNode, &ok);
+
+                if (!ok) {
+                   m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_A);
+                   m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_B);
+                   m_pulseShapeFilter_leftAInNs_Node->setValue(m_pulseShapeFilter_leftAInNs);
+                   m_pulseShapeFilter_leftBInNs_Node->setValue(m_pulseShapeFilter_leftBInNs);
+                   m_pulseShapeFilter_rightAInNs_Node->setValue(m_pulseShapeFilter_rightAInNs);
+                   m_pulseShapeFilter_rightBInNs_Node->setValue(m_pulseShapeFilter_rightBInNs);
+                   m_pulseShapeFilter_ROIleftAInNs_Node->setValue(m_pulseShapeFilter_ROIleftAInNs);
+                   m_pulseShapeFilter_ROIleftBInNs_Node->setValue(m_pulseShapeFilter_ROIleftBInNs);
+                   m_pulseShapeFilter_ROIrightAInNs_Node->setValue(m_pulseShapeFilter_ROIrightAInNs);
+                   m_pulseShapeFilter_ROIrightBInNs_Node->setValue(m_pulseShapeFilter_ROIrightBInNs);
+                   m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(m_pulseShapeFilter_StdDevLowerFractA);
+                   m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(m_pulseShapeFilter_StdDevUpperFractA);
+                   m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(m_pulseShapeFilter_StdDevLowerFractB);
+                   m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(m_pulseShapeFilter_StdDevUpperFractB);
+
+                   setPulseShapeFilterDataA(DRS4PulseShapeFilterData(), false);
+                   setPulseShapeFilterDataB(DRS4PulseShapeFilterData(), false);
+
+                   m_pulseShapeFilterEnabledA_Node->setValue(false);
+                   m_pulseShapeFilterEnabledB_Node->setValue(false);
+                }
+                else {
+                    m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_numberOfPulsesAcq_A_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_A);
+
+                    m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_numberOfPulsesAcq_B_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_B);
+
+                    m_pulseShapeFilter_leftAInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_leftAInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_leftAInNs_Node->setValue(m_pulseShapeFilter_leftAInNs);
+
+                    m_pulseShapeFilter_leftBInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_leftBInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_leftBInNs_Node->setValue(m_pulseShapeFilter_leftBInNs);
+
+                    m_pulseShapeFilter_rightAInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_rightAInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_rightAInNs_Node->setValue(m_pulseShapeFilter_rightAInNs);
+
+                    m_pulseShapeFilter_rightBInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_rightBInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_rightBInNs_Node->setValue(m_pulseShapeFilter_rightBInNs);
+
+                    m_pulseShapeFilter_ROIleftAInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_ROIleftAInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_ROIleftAInNs_Node->setValue(m_pulseShapeFilter_ROIleftAInNs);
+
+                    m_pulseShapeFilter_ROIleftBInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_ROIleftBInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_ROIleftBInNs_Node->setValue(m_pulseShapeFilter_ROIleftBInNs);
+
+                    m_pulseShapeFilter_ROIrightAInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_ROIrightAInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_ROIrightAInNs_Node->setValue(m_pulseShapeFilter_ROIrightAInNs);
+
+                    m_pulseShapeFilter_ROIrightBInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_ROIrightBInNs_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_ROIrightBInNs_Node->setValue(m_pulseShapeFilter_ROIrightBInNs);
+
+                    m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_StdDevLowerFractA_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(m_pulseShapeFilter_StdDevLowerFractA);
+
+                    m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_StdDevUpperFractA_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(m_pulseShapeFilter_StdDevUpperFractA);
+
+                    m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_StdDevLowerFractB_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(m_pulseShapeFilter_StdDevLowerFractB);
+
+                    m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_StdDevUpperFractB_Node, &ok));
+                    if (!ok) m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(m_pulseShapeFilter_StdDevUpperFractB);
+
+
+                    const DSimpleXMLTag pPulseShapeFilterContentATag = pPulseShapeFilterSettingsTag.getTag(m_pulseShapeFilter_contentDataA_Node, &ok);
+
+                    if (!ok) {
+                        setPulseShapeFilterDataA(DRS4PulseShapeFilterData(), false);
+
+                        m_pulseShapeFilterEnabledA_Node->setValue(false);
+                    }
+                    else {
+                        bool ok_1 = false, ok_2 = false;
+
+                        m_pulseShapeFilter_meanDataA_Node->setValue(pPulseShapeFilterContentATag.getValueAt(m_pulseShapeFilter_meanDataA_Node, &ok_1));
+                        m_pulseShapeFilter_stddevDataA_Node->setValue(pPulseShapeFilterContentATag.getValueAt(m_pulseShapeFilter_stddevDataA_Node, &ok_2));
+
+                        QVector<QPointF> meanData;
+                        QVector<QPointF> stdDevData;
+
+                        if (!ok_1 || !ok_2) {
+                            setPulseShapeFilterDataA(DRS4PulseShapeFilterData(), false);
+
+                            m_pulseShapeFilterEnabledA_Node->setValue(false);
+                        }
+                        else {
+                            parsePulseShapeData(m_pulseShapeFilter_meanDataA_Node, &meanData);
+                            parsePulseShapeData(m_pulseShapeFilter_stddevDataA_Node, &stdDevData);
+
+                            if (meanData.isEmpty() || stdDevData.isEmpty()) {
+                                setPulseShapeFilterDataA(DRS4PulseShapeFilterData(), false);
+
+                                m_pulseShapeFilterEnabledA_Node->setValue(false);
+                            }
+                            else {
+                                DRS4PulseShapeFilterData filterData;
+                                filterData.setData(meanData, stdDevData);
+
+                                setPulseShapeFilterDataA(filterData, false);
+
+                                m_pulseShapeFilterEnabledA_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilterEnabledA_Node, &ok));
+                                if (!ok) m_pulseShapeFilterEnabledA_Node->setValue(m_pulseShapeFilterEnabledA);
+                            }
+                        }
+                    }
+
+
+                    const DSimpleXMLTag pPulseShapeFilterContentBTag = pPulseShapeFilterSettingsTag.getTag(m_pulseShapeFilter_contentDataB_Node, &ok);
+
+                    if (!ok) {
+                        setPulseShapeFilterDataB(DRS4PulseShapeFilterData(), false);
+
+                        m_pulseShapeFilterEnabledB_Node->setValue(false);
+                    }
+                    else {
+                        bool ok_1 = false, ok_2 = false;
+
+                        m_pulseShapeFilter_meanDataB_Node->setValue(pPulseShapeFilterContentBTag.getValueAt(m_pulseShapeFilter_meanDataB_Node, &ok_1));
+                        m_pulseShapeFilter_stddevDataB_Node->setValue(pPulseShapeFilterContentBTag.getValueAt(m_pulseShapeFilter_stddevDataB_Node, &ok_2));
+
+                        QVector<QPointF> meanData;
+                        QVector<QPointF> stdDevData;
+
+                        if (!ok_1 || !ok_2) {
+                            setPulseShapeFilterDataB(DRS4PulseShapeFilterData(), false);
+
+                            m_pulseShapeFilterEnabledB_Node->setValue(false);
+                        }
+                        else {
+                            parsePulseShapeData(m_pulseShapeFilter_meanDataB_Node, &meanData);
+                            parsePulseShapeData(m_pulseShapeFilter_stddevDataB_Node, &stdDevData);
+
+                            if (meanData.isEmpty() || stdDevData.isEmpty()) {
+                                setPulseShapeFilterDataB(DRS4PulseShapeFilterData(), false);
+
+                                m_pulseShapeFilterEnabledB_Node->setValue(false);
+                            }
+                            else {
+                                DRS4PulseShapeFilterData filterData;
+                                filterData.setData(meanData, stdDevData);
+
+                                setPulseShapeFilterDataB(filterData, false);
+
+                                m_pulseShapeFilterEnabledB_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilterEnabledB_Node, &ok));
+                                if (!ok) m_pulseShapeFilterEnabledB_Node->setValue(m_pulseShapeFilterEnabledB);
+                            }
+                        }
+                    }
+                }
+
+                const DSimpleXMLTag pBaselineCorrectionSettingsTag = pTag.getTag(m_baseLineFilterSettingsNode, &ok);
+
+                if (!ok) {
+                    m_baseLineCorrectionEnabledA_Node->setValue(m_baseLineCorrectionEnabledA);
+                    m_baseLineCorrectionStartCellA_Node->setValue(m_baseLineCorrectionStartCellA);
+                    m_baseLineCorrectionRegionA_Node->setValue(m_baseLineCorrectionRegionA);
+                    m_baseLineCorrectionShiftValueA_Node->setValue(m_baseLineCorrectionShiftValueA);
+                    m_baseLineCorrectionLimitA_Node->setValue(m_baseLineCorrectionLimitA);
+                    m_baseLineCorrectionLimitExceededRejectA_Node->setValue(m_baseLineCorrectionLimitExceededRejectA);
+
+                    m_baseLineCorrectionEnabledB_Node->setValue(m_baseLineCorrectionEnabledB);
+                    m_baseLineCorrectionStartCellB_Node->setValue(m_baseLineCorrectionStartCellB);
+                    m_baseLineCorrectionRegionB_Node->setValue(m_baseLineCorrectionRegionB);
+                    m_baseLineCorrectionShiftValueB_Node->setValue(m_baseLineCorrectionShiftValueB);
+                    m_baseLineCorrectionLimitB_Node->setValue(m_baseLineCorrectionLimitB);
+                    m_baseLineCorrectionLimitExceededRejectB_Node->setValue(m_baseLineCorrectionLimitExceededRejectB);
+                }
+                else {
+                    m_baseLineCorrectionEnabledA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionEnabledA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionEnabledA_Node->setValue(m_baseLineCorrectionEnabledA);
+
+                    m_baseLineCorrectionStartCellA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionStartCellA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionStartCellA_Node->setValue(m_baseLineCorrectionStartCellA);
+
+                    m_baseLineCorrectionRegionA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionRegionA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionRegionA_Node->setValue(m_baseLineCorrectionRegionA);
+
+                    m_baseLineCorrectionShiftValueA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionShiftValueA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionShiftValueA_Node->setValue(m_baseLineCorrectionShiftValueA);
+
+                    m_baseLineCorrectionLimitA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionLimitA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionLimitA_Node->setValue(m_baseLineCorrectionLimitA);
+
+                    m_baseLineCorrectionLimitExceededRejectA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionLimitExceededRejectA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionLimitExceededRejectA_Node->setValue(m_baseLineCorrectionLimitExceededRejectA);
+
+
+                    m_baseLineCorrectionEnabledB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionEnabledB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionEnabledB_Node->setValue(m_baseLineCorrectionEnabledB);
+
+                    m_baseLineCorrectionStartCellB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionStartCellB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionStartCellB_Node->setValue(m_baseLineCorrectionStartCellB);
+
+                    m_baseLineCorrectionRegionB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionRegionB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionRegionB_Node->setValue(m_baseLineCorrectionRegionB);
+
+                    m_baseLineCorrectionShiftValueB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionShiftValueB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionShiftValueB_Node->setValue(m_baseLineCorrectionShiftValueB);
+
+                    m_baseLineCorrectionLimitB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionLimitB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionLimitB_Node->setValue(m_baseLineCorrectionLimitB);
+
+                    m_baseLineCorrectionLimitExceededRejectB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionLimitExceededRejectB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionLimitExceededRejectB_Node->setValue(m_baseLineCorrectionLimitExceededRejectB);
+                }
             }
         }
     }
@@ -945,6 +1453,77 @@ bool DRS4SettingsManager::save(const QString &path, bool autosave)
         m_fileName = path;
 
     return ok;
+}
+
+void DRS4SettingsManager::parsePulseShapeData(DSimpleXMLNode *node, QVector<QPointF> *filterData)
+{
+    if (!node || !filterData)
+        return;
+
+    const DString nodeText = (DString)(node->getValue().toString());
+
+    if (nodeText.isEmpty()) {
+        filterData->clear();
+
+        return;
+    }
+
+    const QStringList list = nodeText.parseBetween2("{", "}");
+
+    if (list.size() <= 0) {
+        filterData->clear();
+
+        return;
+    }
+
+    QVector<QPointF> data;
+
+    for ( int i = 0 ; i < list.size() ; ++ i ) {
+        const QString val = list.at(i);
+
+        if (val.isEmpty()) {
+            filterData->clear();
+
+            return;
+        }
+
+        const QStringList values = val.split(";");
+
+        if (values.size() != 2) {
+            filterData->clear();
+
+            return;
+        }
+
+        bool ok = false;
+
+        const double x = QVariant(values.at(0)).toDouble(&ok);
+
+        if (!ok) {
+            filterData->clear();
+
+            return;
+        }
+
+        const double y = QVariant(values.at(1)).toDouble(&ok);
+
+        if (!ok) {
+            filterData->clear();
+
+            return;
+        }
+
+        data.append(QPointF(x, y));
+    }
+
+    if (data.isEmpty()) {
+        filterData->clear();
+
+        return;
+    }
+
+    filterData->clear();
+    filterData->append(data);
 }
 
 DSimpleXMLNode *DRS4SettingsManager::parentNode() const
@@ -1667,6 +2246,466 @@ void DRS4SettingsManager::setMedianFilterWindowSizeB(int size)
     QMutexLocker locker(&m_mutex);
 
     m_medianFilterWindowSize_B_Node->setValue(size);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterNumberOfPulsesToBeRecordedA(int number)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(number);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterNumberOfPulsesToBeRecordedB(int number)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(number);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterLeftInNsOfA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_leftAInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterLeftInNsOfB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_leftBInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterRightInNsOfA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_rightAInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterRightInNsOfB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_rightBInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterROILeftInNsOfA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_ROIleftAInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterROILeftInNsOfB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_ROIleftBInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterROIRightInNsOfA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_ROIrightAInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterROIRightInNsOfB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_ROIrightBInNs_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterStdDevUpperFractionA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterStdDevLowerFractionA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterStdDevUpperFractionB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterStdDevLowerFractionB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterDataA(const DRS4PulseShapeFilterData &data, bool lockMutex)
+{
+    if (lockMutex)
+        QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilterDataA = data;
+
+    QString valueMean = "";
+    QString valueStdDev = "";
+
+    for (int i = 0 ; i < m_pulseShapeFilterDataA.mean().size() ; ++ i) {
+        valueMean.append("{" + QVariant(m_pulseShapeFilterDataA.mean().at(i).x()).toString() + ";" + QVariant(m_pulseShapeFilterDataA.mean().at(i).y()).toString() + "}");
+        valueStdDev.append("{" + QVariant(m_pulseShapeFilterDataA.stddev().at(i).x()).toString() + ";" + QVariant(m_pulseShapeFilterDataA.stddev().at(i).y()).toString() + "}");
+    }
+
+    m_pulseShapeFilter_meanDataA_Node->setValue(valueMean);
+    m_pulseShapeFilter_stddevDataA_Node->setValue(valueStdDev);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterDataB(const DRS4PulseShapeFilterData &data, bool lockMutex)
+{
+    if (lockMutex)
+        QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilterDataB = data;
+
+    QString valueMean = "";
+    QString valueStdDev = "";
+
+    for (int i = 0 ; i < m_pulseShapeFilterDataB.mean().size() ; ++ i) {
+        valueMean.append("{" + QVariant(m_pulseShapeFilterDataB.mean().at(i).x()).toString() + ";" + QVariant(m_pulseShapeFilterDataB.mean().at(i).y()).toString() + "}");
+        valueStdDev.append("{" + QVariant(m_pulseShapeFilterDataB.stddev().at(i).x()).toString() + ";" + QVariant(m_pulseShapeFilterDataB.stddev().at(i).y()).toString() + "}");
+    }
+
+    m_pulseShapeFilter_meanDataB_Node->setValue(valueMean);
+    m_pulseShapeFilter_stddevDataB_Node->setValue(valueStdDev);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterEnabledA(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilterEnabledA_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setPulseShapeFilterEnabledB(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_pulseShapeFilterEnabledB_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationStartCellA(int cell)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionStartCellA_Node->setValue(cell);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationRegionA(int region)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionRegionA_Node->setValue(region);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationEnabledA(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionEnabledA_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationShiftValueInMVA(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionShiftValueA_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationLimitInPercentageA(double limit)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionLimitA_Node->setValue(limit);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationLimitRejectLimitA(bool reject)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionLimitExceededRejectA_Node->setValue(reject);
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationStartCellA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionStartCellA_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationRegionA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionRegionA_Node->getValue().toInt();
+}
+
+bool DRS4SettingsManager::baselineCorrectionCalculationEnabledA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionEnabledA_Node->getValue().toBool();
+}
+
+double DRS4SettingsManager::baselineCorrectionCalculationShiftValueInMVA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionShiftValueA_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::baselineCorrectionCalculationLimitInPercentageA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionLimitA_Node->getValue().toDouble();
+}
+
+bool DRS4SettingsManager::baselineCorrectionCalculationLimitRejectLimitA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionLimitExceededRejectA_Node->getValue().toBool();
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationStartCellB(int cell)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionStartCellB_Node->setValue(cell);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationRegionB(int region)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionRegionB_Node->setValue(region);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationEnabledB(bool enabled)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionEnabledB_Node->setValue(enabled);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationShiftValueInMVB(double value)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionShiftValueB_Node->setValue(value);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationLimitInPercentageB(double limit)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionLimitB_Node->setValue(limit);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationLimitRejectLimitB(bool reject)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_baseLineCorrectionLimitExceededRejectB_Node->setValue(reject);
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationStartCellB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionStartCellB_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationRegionB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionRegionB_Node->getValue().toInt();
+}
+
+bool DRS4SettingsManager::baselineCorrectionCalculationEnabledB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionEnabledB_Node->getValue().toBool();
+}
+
+double DRS4SettingsManager::baselineCorrectionCalculationShiftValueInMVB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionShiftValueB_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::baselineCorrectionCalculationLimitInPercentageB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionLimitB_Node->getValue().toDouble();
+}
+
+bool DRS4SettingsManager::baselineCorrectionCalculationLimitRejectLimitB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_baseLineCorrectionLimitExceededRejectB_Node->getValue().toBool();
+}
+
+bool DRS4SettingsManager::pulseShapeFilterEnabledA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilterEnabledA_Node->getValue().toBool();
+}
+
+bool DRS4SettingsManager::pulseShapeFilterEnabledB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilterEnabledB_Node->getValue().toBool();
+}
+
+int DRS4SettingsManager::pulseShapeFilterNumberOfPulsesToBeRecordedA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_numberOfPulsesAcq_A_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::pulseShapeFilterNumberOfPulsesToBeRecordedB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_numberOfPulsesAcq_B_Node->getValue().toInt();
+}
+
+double DRS4SettingsManager::pulseShapeFilterLeftInNsOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_leftAInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterLeftInNsOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_leftBInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterRightInNsOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_rightAInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterRightInNsOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_rightBInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterROILeftInNsOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_ROIleftAInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterROILeftInNsOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_ROIleftBInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterROIRightInNsOfA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_ROIrightAInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterROIRightInNsOfB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_ROIrightBInNs_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterStdDevUpperFractionA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_StdDevUpperFractA_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterStdDevLowerFractionA() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_StdDevLowerFractA_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterStdDevUpperFractionB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_StdDevUpperFractB_Node->getValue().toDouble();
+}
+
+double DRS4SettingsManager::pulseShapeFilterStdDevLowerFractionB() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilter_StdDevLowerFractB_Node->getValue().toDouble();
+}
+
+DRS4PulseShapeFilterData DRS4SettingsManager::pulseShapeFilterDataA(bool lockMutex) const
+{
+    if (lockMutex)
+        QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilterDataA;
+}
+
+DRS4PulseShapeFilterData DRS4SettingsManager::pulseShapeFilterDataB(bool lockMutex) const
+{
+    if (lockMutex)
+        QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeFilterDataB;
+}
+
+DRS4PulseShapeFilterData *DRS4SettingsManager::pulseShapeFilterDataPtrA()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_pulseShapeFilterDataA;
+}
+
+DRS4PulseShapeFilterData *DRS4SettingsManager::pulseShapeFilterDataPtrB()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_pulseShapeFilterDataB;
 }
 
 bool DRS4SettingsManager::medianFilterAEnabled() const

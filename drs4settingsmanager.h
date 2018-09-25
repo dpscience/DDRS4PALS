@@ -34,8 +34,176 @@
 #include <QMutexLocker>
 
 #include "DLib.h"
-
+#include "Fit/dspline.h"
 #include "dversion.h"
+
+#include "alglib.h"
+
+
+#define __PULSESHAPEFILTER_LEFT_MAX -30.0 /* [ns] */
+#define __PULSESHAPEFILTER_RIGHT_MAX 100.0 /* [ns] */
+
+#define __PULSESHAPEFILTER_REGION 130.0 /* [ns] */
+
+#define __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER 1424
+
+class DRS4PulseShapeFilterData
+{
+    QVector<QPointF> m_meanTrace;
+    QVector<QPointF> m_stdDevTrace;
+
+    std::vector<double> m_meanTraceDataX, m_meanTraceDataY;
+    std::vector<double> m_stdDevTraceDataX, m_stdDevTraceDataY;
+
+    float *m_meanTraceDataXArray;
+    float *m_meanTraceDataYArray;
+
+    float *m_stdDevTraceDataXArray;
+    float *m_stdDevTraceDataYArray;
+
+    int m_sizeOfFloat;
+
+    DSpline m_meanTraceSpline;
+    DSpline m_stddevTraceSpline;
+
+public:
+    DRS4PulseShapeFilterData() {
+        m_sizeOfFloat = 1/sizeof(float);
+
+        m_meanTraceDataXArray = nullptr;
+        m_meanTraceDataYArray = nullptr;
+        m_stdDevTraceDataXArray = nullptr;
+        m_stdDevTraceDataYArray = nullptr;
+
+        m_meanTrace.clear();
+        m_stdDevTrace.clear();
+
+        m_meanTraceDataX.clear();
+        m_stdDevTraceDataX.clear();
+
+        m_meanTraceDataY.clear();
+        m_stdDevTraceDataY.clear();
+    }
+
+    virtual ~DRS4PulseShapeFilterData() {
+        if (m_meanTraceDataXArray) {
+            delete [] m_meanTraceDataXArray;
+            m_meanTraceDataXArray = nullptr;
+        }
+
+        if (m_meanTraceDataYArray) {
+            delete [] m_meanTraceDataYArray;
+            m_meanTraceDataYArray = nullptr;
+        }
+
+        if (m_stdDevTraceDataXArray) {
+            delete [] m_stdDevTraceDataXArray;
+            m_stdDevTraceDataXArray = nullptr;
+        }
+
+        if (m_stdDevTraceDataYArray) {
+            delete [] m_stdDevTraceDataYArray;
+            m_stdDevTraceDataYArray = nullptr;
+        }
+    }
+
+    DRS4PulseShapeFilterData& operator=(const DRS4PulseShapeFilterData& copy);
+
+public:
+    void setData(const QVector<QPointF>& mean, const QVector<QPointF>& stddev);
+    bool isInsideBounding(const double& x, const double& y, const double& lowerFraction, const double &upperFraction) const;
+
+    double getMeanAt(unsigned int index) const {
+        if (index >= m_meanTrace.size())
+            return 0.0;
+
+       return m_meanTrace.at(index).y();
+    }
+
+    double getStdDevAt(unsigned int index) const {
+        if (index >= m_stdDevTrace.size())
+            return 0.0;
+
+        return m_stdDevTrace.at(index).y();
+    }
+
+    double getFractUpperStdDevValueAt(unsigned int index, const double& fraction = 1.0f) const {
+        const double mean = getMeanAt(index);
+        const double stddev = getStdDevAt(index);
+
+        return (mean + fraction*stddev);
+    }
+
+    double getFractLowerStdDevValueAt(unsigned int index, const double& fraction = 1.0f) const {
+        const double mean = getMeanAt(index);
+        const double stddev = getStdDevAt(index);
+
+        return (mean - fraction*stddev);
+    }
+
+    QVector<QPointF> mean() const {
+        return m_meanTrace;
+    }
+
+    QVector<QPointF> stddev() const {
+        return m_stdDevTrace;
+    }
+
+    void meanCpy(float x[], float y[]) {
+        if (!x || !y)
+            return;
+
+        const int sizeOfFloat = sizeof(float);
+
+        if (m_meanTraceDataXArray)
+            memcpy(x, m_meanTraceDataXArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeOfFloat);
+
+        if (m_meanTraceDataYArray)
+            memcpy(y, m_meanTraceDataYArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeOfFloat);
+    }
+
+    void stddevCpy(float x[], float y[]) {
+        if (!x || !y)
+            return;
+
+        const int sizeOfFloat = sizeof(float);
+
+        if (m_stdDevTraceDataXArray)
+            memcpy(x, m_stdDevTraceDataXArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeOfFloat);
+
+        if (m_stdDevTraceDataYArray)
+            memcpy(y, m_stdDevTraceDataYArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeOfFloat);
+    }
+
+    QVector<QPointF> stddevUpper(const double& fraction = 1.0) const {
+        QVector<QPointF> vec;
+        for (int i = 0 ; i < m_meanTrace.size() ; ++ i) {
+            vec.append(QPointF(m_meanTrace.at(i).x(), getFractUpperStdDevValueAt(i, fraction)));
+        }
+
+        return vec;
+    }
+
+    QVector<QPointF> stddevLower(const double& fraction = 1.0) const {
+        QVector<QPointF> vec;
+        for (int i = 0 ; i < m_meanTrace.size() ; ++ i) {
+            vec.append(QPointF(m_meanTrace.at(i).x(), getFractLowerStdDevValueAt(i, fraction)));
+        }
+
+        return vec;
+    }
+
+private:
+    void setMeanTrace(const QVector<QPointF>& vec) {
+        m_meanTrace.clear();
+        m_meanTrace.append(vec);
+    }
+
+    void setStddevTrace(const QVector<QPointF>& vec) {
+        m_stdDevTrace.clear();
+        m_stdDevTrace.append(vec);
+    }
+};
 
 typedef struct {
 public:
@@ -171,6 +339,39 @@ class DRS4SettingsManager
     int m_riseTimeFilter_rightWindow_A;
     int m_riseTimeFilter_rightWindow_B;
 
+    int m_pulseShapeFilter_numberOfPulsesAcq_A;
+    int m_pulseShapeFilter_numberOfPulsesAcq_B;
+
+    double m_pulseShapeFilter_leftAInNs, m_pulseShapeFilter_rightAInNs;
+    double m_pulseShapeFilter_leftBInNs, m_pulseShapeFilter_rightBInNs;
+
+    double m_pulseShapeFilter_ROIleftAInNs, m_pulseShapeFilter_ROIrightAInNs;
+    double m_pulseShapeFilter_ROIleftBInNs, m_pulseShapeFilter_ROIrightBInNs;
+
+    double m_pulseShapeFilter_StdDevUpperFractA;
+    double m_pulseShapeFilter_StdDevLowerFractA;
+
+    double m_pulseShapeFilter_StdDevUpperFractB;
+    double m_pulseShapeFilter_StdDevLowerFractB;
+
+    DRS4PulseShapeFilterData m_pulseShapeFilterDataA, m_pulseShapeFilterDataB;
+
+    bool m_pulseShapeFilterEnabledA, m_pulseShapeFilterEnabledB;
+
+    int m_baseLineCorrectionStartCellA;
+    int m_baseLineCorrectionRegionA;
+    double m_baseLineCorrectionShiftValueA;
+    bool m_baseLineCorrectionEnabledA;
+    double m_baseLineCorrectionLimitA;
+    bool m_baseLineCorrectionLimitExceededRejectA;
+
+    int m_baseLineCorrectionStartCellB;
+    int m_baseLineCorrectionRegionB;
+    double m_baseLineCorrectionShiftValueB;
+    bool m_baseLineCorrectionEnabledB;
+    double m_baseLineCorrectionLimitB;
+    bool m_baseLineCorrectionLimitExceededRejectB;
+
     DSimpleXMLNode *m_parentNode;
     DSimpleXMLNode *m_versionNode;
     DSimpleXMLNode *m_generalSettingsNode;
@@ -199,6 +400,7 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_areaFilterSettingsNode;
     DSimpleXMLNode *m_medianFilterSettingsNode;
     DSimpleXMLNode *m_riseTimeFilterSettingsNode;
+    DSimpleXMLNode *m_pulseShapeFilterSettingsNode;
     DSimpleXMLNode *m_persistancePlotSettingsNode;
     DSimpleXMLNode *m_startAChannelMinNode, *m_startAChannelMaxNode;
     DSimpleXMLNode *m_startBChannelMinNode, *m_startBChannelMaxNode;
@@ -277,6 +479,53 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_riseTimeFilter_rightWindow_A_Node;
     DSimpleXMLNode *m_riseTimeFilter_rightWindow_B_Node;
 
+    DSimpleXMLNode *m_pulseShapeFilter_numberOfPulsesAcq_A_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_numberOfPulsesAcq_B_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilter_leftAInNs_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_leftBInNs_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_rightAInNs_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_rightBInNs_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilter_ROIleftAInNs_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_ROIleftBInNs_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_ROIrightAInNs_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_ROIrightBInNs_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilter_StdDevUpperFractA_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_StdDevLowerFractA_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilter_StdDevUpperFractB_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_StdDevLowerFractB_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilter_contentDataA_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_contentDataB_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilter_meanDataA_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_meanDataB_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilter_stddevDataA_Node;
+    DSimpleXMLNode *m_pulseShapeFilter_stddevDataB_Node;
+
+    DSimpleXMLNode *m_pulseShapeFilterEnabledA_Node;
+    DSimpleXMLNode *m_pulseShapeFilterEnabledB_Node;
+
+    DSimpleXMLNode *m_baseLineFilterSettingsNode;
+
+    DSimpleXMLNode *m_baseLineCorrectionStartCellA_Node;
+    DSimpleXMLNode *m_baseLineCorrectionRegionA_Node;
+    DSimpleXMLNode *m_baseLineCorrectionShiftValueA_Node;
+    DSimpleXMLNode *m_baseLineCorrectionEnabledA_Node;
+    DSimpleXMLNode *m_baseLineCorrectionLimitA_Node;
+    DSimpleXMLNode *m_baseLineCorrectionLimitExceededRejectA_Node;
+
+    DSimpleXMLNode *m_baseLineCorrectionStartCellB_Node;
+    DSimpleXMLNode *m_baseLineCorrectionRegionB_Node;
+    DSimpleXMLNode *m_baseLineCorrectionShiftValueB_Node;
+    DSimpleXMLNode *m_baseLineCorrectionEnabledB_Node;
+    DSimpleXMLNode *m_baseLineCorrectionLimitB_Node;
+    DSimpleXMLNode *m_baseLineCorrectionLimitExceededRejectB_Node;
+
     mutable QMutex m_mutex;
 
 public:
@@ -288,6 +537,9 @@ public:
     DSimpleXMLNode *parentNode() const;
 
 public:
+    void parsePulseShapeData(DSimpleXMLNode *node, QVector<QPointF> *filterData);
+
+
     void setForceCoincidence(bool force);
 
     void setBurstMode(bool on);
@@ -410,6 +662,87 @@ public:
 
     void setMedianFilterWindowSizeA(int size);
     void setMedianFilterWindowSizeB(int size);
+
+    void setPulseShapeFilterNumberOfPulsesToBeRecordedA(int number);
+    void setPulseShapeFilterNumberOfPulsesToBeRecordedB(int number);
+
+    void setPulseShapeFilterLeftInNsOfA(double value);
+    void setPulseShapeFilterLeftInNsOfB(double value);
+    void setPulseShapeFilterRightInNsOfA(double value);
+    void setPulseShapeFilterRightInNsOfB(double value);
+
+    void setPulseShapeFilterROILeftInNsOfA(double value);
+    void setPulseShapeFilterROILeftInNsOfB(double value);
+    void setPulseShapeFilterROIRightInNsOfA(double value);
+    void setPulseShapeFilterROIRightInNsOfB(double value);
+
+    void setPulseShapeFilterStdDevUpperFractionA(double value);
+    void setPulseShapeFilterStdDevLowerFractionA(double value);
+
+    void setPulseShapeFilterStdDevUpperFractionB(double value);
+    void setPulseShapeFilterStdDevLowerFractionB(double value);
+
+    void setPulseShapeFilterDataA(const DRS4PulseShapeFilterData& data, bool lockMutex = true);
+    void setPulseShapeFilterDataB(const DRS4PulseShapeFilterData& data, bool lockMutex = true);
+
+    void setPulseShapeFilterEnabledA(bool enabled);
+    void setPulseShapeFilterEnabledB(bool enabled);
+
+    void setBaselineCorrectionCalculationStartCellA(int cell);
+    void setBaselineCorrectionCalculationRegionA(int region);
+    void setBaselineCorrectionCalculationEnabledA(bool enabled);
+    void setBaselineCorrectionCalculationShiftValueInMVA(double value);
+    void setBaselineCorrectionCalculationLimitInPercentageA(double limit);
+    void setBaselineCorrectionCalculationLimitRejectLimitA(bool reject);
+
+    int baselineCorrectionCalculationStartCellA() const;
+    int baselineCorrectionCalculationRegionA() const;
+    bool baselineCorrectionCalculationEnabledA() const;
+    double baselineCorrectionCalculationShiftValueInMVA() const;
+    double baselineCorrectionCalculationLimitInPercentageA() const;
+    bool baselineCorrectionCalculationLimitRejectLimitA() const;
+
+    void setBaselineCorrectionCalculationStartCellB(int cell);
+    void setBaselineCorrectionCalculationRegionB(int region);
+    void setBaselineCorrectionCalculationEnabledB(bool enabled);
+    void setBaselineCorrectionCalculationShiftValueInMVB(double value);
+    void setBaselineCorrectionCalculationLimitInPercentageB(double limit);
+    void setBaselineCorrectionCalculationLimitRejectLimitB(bool reject);
+
+    int baselineCorrectionCalculationStartCellB() const;
+    int baselineCorrectionCalculationRegionB() const;
+    bool baselineCorrectionCalculationEnabledB() const;
+    double baselineCorrectionCalculationShiftValueInMVB() const;
+    double baselineCorrectionCalculationLimitInPercentageB() const;
+    bool baselineCorrectionCalculationLimitRejectLimitB() const;
+
+    bool pulseShapeFilterEnabledA() const;
+    bool pulseShapeFilterEnabledB() const;
+
+    int pulseShapeFilterNumberOfPulsesToBeRecordedA() const;
+    int pulseShapeFilterNumberOfPulsesToBeRecordedB() const;
+
+    double pulseShapeFilterLeftInNsOfA() const;
+    double pulseShapeFilterLeftInNsOfB() const;
+    double pulseShapeFilterRightInNsOfA() const;
+    double pulseShapeFilterRightInNsOfB() const;
+
+    double pulseShapeFilterROILeftInNsOfA() const;
+    double pulseShapeFilterROILeftInNsOfB() const;
+    double pulseShapeFilterROIRightInNsOfA() const;
+    double pulseShapeFilterROIRightInNsOfB() const;
+
+    double pulseShapeFilterStdDevUpperFractionA() const;
+    double pulseShapeFilterStdDevLowerFractionA() const;
+
+    double pulseShapeFilterStdDevUpperFractionB() const;
+    double pulseShapeFilterStdDevLowerFractionB() const;
+
+    DRS4PulseShapeFilterData pulseShapeFilterDataA(bool lockMutex = true) const;
+    DRS4PulseShapeFilterData pulseShapeFilterDataB(bool lockMutex = true) const;
+
+    DRS4PulseShapeFilterData* pulseShapeFilterDataPtrA();
+    DRS4PulseShapeFilterData* pulseShapeFilterDataPtrB();
 
     bool medianFilterAEnabled() const;
     bool medianFilterBEnabled() const;

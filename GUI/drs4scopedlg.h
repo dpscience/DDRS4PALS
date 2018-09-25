@@ -62,7 +62,7 @@
 
 #include "alglib.h"
 
-#define ACCESSED_BY_SCRIPT_AND_GUI  /*Function is accessed by GUI and Script!*/
+#define ACCESSED_BY_SCRIPT_AND_GUI  /*Function can be accessed by GUI and Script!*/
 
 typedef enum
 {
@@ -71,7 +71,6 @@ typedef enum
 } FunctionSource;
 
 class DRS4ScriptDlg;
-class DRS4DopplerDlg;
 
 namespace Ui {
 class DRS4ScopeDlg;
@@ -110,6 +109,7 @@ private:
     void initPulseRiseTimeFilterA();
     void initPulseRiseTimeFilterB();
     void initPersistancePlots();
+    void initPulseShapeFilterPlots();
 
     void adaptPersistancePlotA();
     void adaptPersistancePlotB();
@@ -160,6 +160,64 @@ private slots:
     void startStopThread();
     void startThread();
     void stopThread();
+
+    void startAcquisitionOfPulseShapeFilterDataA();
+    void stopAcquisitionOfPulseShapeFilterDataA();
+
+    void resetPulseShapeFilterProgressA();
+    void incrementPulseShapeFilterProgressA();
+
+    void swapPulseShapeFilterDataA();
+
+    void startAcquisitionOfPulseShapeFilterDataB();
+    void stopAcquisitionOfPulseShapeFilterDataB();
+
+    void resetPulseShapeFilterProgressB();
+    void incrementPulseShapeFilterProgressB();
+
+    void swapPulseShapeFilterDataB();
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changePulseShapeFilterPulseRecordNumberA(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changePulseShapeFilterPulseRecordNumberB(int value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeLeftAPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeLeftBPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRightAPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeRightBPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeROILeftAPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeROILeftBPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeROIRightAPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeROIRightBPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeLowerStdDevFractionAPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeUpperStdDevFractionAPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeLowerStdDevFractionBPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeUpperStdDevFractionBPulseShapeFilter(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void adaptPulseShapeFilterPlotA();
+    void adaptPulseShapeFilterPlotB();
+
+    void calculatePulseShapeFilterSplineA();
+    void calculatePulseShapeFilterSplineB();
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changePulseShapeFilterEnabledA(bool activate, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changePulseShapeFilterEnabledB(bool activate, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineStartCellA(int startCell, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineRegionA(int region, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineShiftValueA(double baseline, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterRejectionLimitA(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineCorrectionEnabledA(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterEnabledA(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineStartCellB(int startCell, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineRegionB(int region, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineShiftValueB(double baseline, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterRejectionLimitB(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineCorrectionEnabledB(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterEnabledB(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
 
     void resetAllLTSpectraByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void resetLTSpectrumABByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
@@ -467,6 +525,16 @@ private:
     /* Persistance - Plot */
     QTimer *m_persistanceRequestTimer;
     bool m_bSwapDirection;
+
+    /* Pulse Shape Filter (during recording) */
+    QTimer *m_pulseShapeFilterTimerA;
+    QTimer *m_pulseShapeFilterTimerB;
+
+    QVector<QPointF> m_pulseShapeDataA;
+    QVector<QPointF> m_pulseShapeDataB;
+
+    DRS4PulseShapeFilterData m_pulseShapeSplineDataA;
+    DRS4PulseShapeFilterData m_pulseShapeSplineDataB;
 
    /* Fit - Data */
     QVector<QPointF> m_fitPoints;

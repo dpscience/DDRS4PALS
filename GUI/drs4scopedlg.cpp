@@ -38,6 +38,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     m_pulseRequestTimer(nullptr),
     m_phsRequestTimer(nullptr),
     m_areaRequestTimer(nullptr),
+    m_riseTimeRequestTimer(nullptr),
+    m_pulseShapeFilterTimerA(nullptr),
+    m_pulseShapeFilterTimerB(nullptr),
     m_lifetimeRequestTimer(nullptr),
     m_temperatureTimer(nullptr),
     m_autoSaveTimer(nullptr),
@@ -221,6 +224,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     initPulseRiseTimeFilterA();
     initPulseRiseTimeFilterB();
     initPersistancePlots();
+    initPulseShapeFilterPlots();
 
     ui->verticalSlider_triggerLevelA->setRange(-500, 500);
     ui->verticalSlider_triggerLevelA->setValue(-15);
@@ -275,7 +279,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     m_boardInfoDlg = new DRS4BoardInfoDlg(nullptr, m_worker);
     m_boardInfoDlg->hide();
 
-    ui->widget->init(m_worker);
+    ui->widget_info->init(m_worker);
 
     m_pulseSaveRangeDlg = new DRS4PulseSaveRangeDlg(m_worker);
     m_pulseSaveRangeDlg->hide();
@@ -382,7 +386,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
         ui->actionSave_next_N_Pulses->setEnabled(false);
         ui->actionSave_next_N_Pulses_in_Range->setEnabled(false);
         ui->tabWidget_persistanceB->setEnabled(false);
-        ui->tabWidget_persistanceB->setEnabled(false);
         ui->checkBox_enablePersistance->setEnabled(false);
     }
 
@@ -412,7 +415,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->pushButton_resetPersistanceB, SIGNAL(clicked()), this, SLOT(resetPersistancePlotB()));
 
     connect(ui->pushButton_resetAreaFilterA, SIGNAL(clicked()), this, SLOT(resetAreaPlotAByPushButton()));
-    connect(ui->pushButton_resetAreaFilterB, SIGNAL(clicked()), this, SLOT(resetAreaPlotBByPushButton()));
+    connect(ui->pushButton_resetAreaFilterB_2, SIGNAL(clicked()), this, SLOT(resetAreaPlotBByPushButton()));
 
     connect(ui->pushButton_resetRiseTimeFilterA, SIGNAL(clicked()), this, SLOT(resetRiseTimePlotAByPushButton()));
     connect(ui->pushButton_resetRiseTimeFilterB, SIGNAL(clicked()), this, SLOT(resetRiseTimePlotBByPushButton()));
@@ -466,6 +469,11 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->doubleSpinBox_scalerCoincidence, SIGNAL(valueChanged(double)), this, SLOT(changeChannelSettingsCoincidence(double)));
     connect(ui->doubleSpinBox_scalerMerged, SIGNAL(valueChanged(double)), this, SLOT(changeChannelSettingsMerged(double)));
 
+    ui->doubleSpinBox_persistanceLeftA->setRange(0, 2000);
+    ui->doubleSpinBox_persistanceLeftB->setRange(0, 2000);
+    ui->doubleSpinBox_persistanceRightA->setRange(0, 2000);
+    ui->doubleSpinBox_persistanceRightB->setRange(0, 2000);
+
     connect(ui->doubleSpinBox_persistanceLeftA, SIGNAL(valueChanged(double)), this, SLOT(changeLeftAPersistance(double)));
     connect(ui->doubleSpinBox_persistanceLeftB, SIGNAL(valueChanged(double)), this, SLOT(changeLeftBPersistance(double)));
     connect(ui->doubleSpinBox_persistanceRightA, SIGNAL(valueChanged(double)), this, SLOT(changeRightAPersistance(double)));
@@ -481,20 +489,20 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->doubleSpinBox_meanCoincidence, SIGNAL(valueChanged(double)), this, SLOT(changeMeanCableDelayPs(double)));
 
     connect(ui->doubleSpinBox_areaANorm, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterA(double)));
-    connect(ui->doubleSpinBox_areaBNorm, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterB(double)));
+    connect(ui->doubleSpinBox_areaBNorm_2, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterB(double)));
 
     connect(ui->spinBox_areaBinningCntA, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterA(int)));
-    connect(ui->spinBox_areaBinningCntB, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterB(int)));
+    connect(ui->spinBox_areaBinningCntB_2, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterB(int)));
 
     connect(ui->doubleSpinBox_areaFilter_leftA_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftA(double)));
     connect(ui->doubleSpinBox_areaFilter_rightA_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightA(double)));
     connect(ui->doubleSpinBox_areaFilter_leftA_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftA(double)));
     connect(ui->doubleSpinBox_areaFilter_rightA_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightA(double)));
 
-    connect(ui->doubleSpinBox_areaFilter_leftB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftB(double)));
-    connect(ui->doubleSpinBox_areaFilter_rightB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
-    connect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
-    connect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
+    connect(ui->doubleSpinBox_areaFilter_leftB_lower_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftB(double)));
+    connect(ui->doubleSpinBox_areaFilter_rightB_lower_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
+    connect(ui->doubleSpinBox_areaFilter_leftB_upper_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
+    connect(ui->doubleSpinBox_areaFilter_rightB_upper_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
 
     connect(ui->doubleSpinBox_riseTimeFilterTimeScaleA, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsA(double)));
     connect(ui->doubleSpinBox_riseTimeFilterTimeScaleB, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsB(double)));
@@ -645,6 +653,212 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     ui->widget_stop->enableWidget(false);
 
+
+    /* Pulse-Shape Filter */
+    m_pulseShapeFilterTimerA = new QTimer;
+    m_pulseShapeFilterTimerA->setInterval(35);
+
+    m_pulseShapeFilterTimerB = new QTimer;
+    m_pulseShapeFilterTimerB->setInterval(35);
+
+    connect(m_pulseShapeFilterTimerA, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressA()));
+    connect(m_pulseShapeFilterTimerB, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressB()));
+
+    ui->widget_playPulseShapeFilterA->setLiteralSVG(":/images/images/play");
+    ui->widget_playPulseShapeFilterB->setLiteralSVG(":/images/images/play");
+
+    ui->widget_stopPulseShapeFilterA->setLiteralSVG(":/images/images/stop");
+    ui->widget_stopPulseShapeFilterB->setLiteralSVG(":/images/images/stop");
+
+    ui->widget_stopPulseShapeFilterA->enableWidget(false);
+    ui->widget_stopPulseShapeFilterB->enableWidget(false);
+
+    connect(ui->widget_playPulseShapeFilterA, SIGNAL(clicked()), this, SLOT(startAcquisitionOfPulseShapeFilterDataA()));
+    connect(ui->widget_playPulseShapeFilterB, SIGNAL(clicked()), this, SLOT(startAcquisitionOfPulseShapeFilterDataB()));
+
+    connect(ui->widget_stopPulseShapeFilterA, SIGNAL(clicked()), this, SLOT(stopAcquisitionOfPulseShapeFilterDataA()));
+    connect(ui->widget_stopPulseShapeFilterB, SIGNAL(clicked()), this, SLOT(stopAcquisitionOfPulseShapeFilterDataB()));
+
+    ui->progressBar_daqShapeFilterA->setValue(0);
+    ui->progressBar_daqShapeFilterB->setValue(0);
+
+    ui->progressBar_daqShapeFilterA->setDisabled(true);
+    ui->progressBar_daqShapeFilterB->setDisabled(true);
+
+    ui->spinBox_NPulsesShapeFilterA->setRange(50, 95000); // << that limit is given by the plot view widget!!!
+    ui->spinBox_NPulsesShapeFilterA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA());
+
+    ui->spinBox_NPulsesShapeFilterB->setRange(50, 95000); // << that limit is given by the plot view widget!!!
+    ui->spinBox_NPulsesShapeFilterB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB());
+
+    ui->checkBox_activatePulseShapeFilterA->setChecked(DRS4SettingsManager::sharedInstance()->pulseShapeFilterEnabledA());
+    ui->checkBox_activatePulseShapeFilterB->setChecked(DRS4SettingsManager::sharedInstance()->pulseShapeFilterEnabledB());
+
+    connect(ui->checkBox_activatePulseShapeFilterA, SIGNAL(clicked(bool)), this, SLOT(changePulseShapeFilterEnabledA(bool)));
+    connect(ui->checkBox_activatePulseShapeFilterB, SIGNAL(clicked(bool)), this, SLOT(changePulseShapeFilterEnabledB(bool)));
+
+    connect(ui->spinBox_NPulsesShapeFilterA, SIGNAL(valueChanged(int)), this, SLOT(changePulseShapeFilterPulseRecordNumberA(int)));
+    connect(ui->spinBox_NPulsesShapeFilterB, SIGNAL(valueChanged(int)), this, SLOT(changePulseShapeFilterPulseRecordNumberB(int)));
+
+    changePulseShapeFilterPulseRecordNumberA(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA());
+    changePulseShapeFilterPulseRecordNumberB(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB());
+
+    ui->doubleSpinBox_shapeFilterLeftCFDA->setRange(0.0, -__PULSESHAPEFILTER_LEFT_MAX);
+    ui->doubleSpinBox_shapeFilterRightCFDA->setRange(0.0, __PULSESHAPEFILTER_RIGHT_MAX);
+
+    ui->doubleSpinBox_shapeFilterLeftCFDA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfA());
+    ui->doubleSpinBox_shapeFilterRightCFDA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfA());
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDA, SIGNAL(valueChanged(double)), this, SLOT(changeLeftAPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDA, SIGNAL(valueChanged(double)), this, SLOT(changeRightAPulseShapeFilter(double)));
+
+    changeLeftAPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfA());
+    changeRightAPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfA());
+
+    ui->doubleSpinBox_shapeFilterLeftCFDB->setRange(0.0, -__PULSESHAPEFILTER_LEFT_MAX);
+    ui->doubleSpinBox_shapeFilterRightCFDB->setRange(0.0, __PULSESHAPEFILTER_RIGHT_MAX);
+
+    ui->doubleSpinBox_shapeFilterLeftCFDB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfB());
+    ui->doubleSpinBox_shapeFilterRightCFDB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfB());
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDB, SIGNAL(valueChanged(double)), this, SLOT(changeLeftBPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDB, SIGNAL(valueChanged(double)), this, SLOT(changeRightBPulseShapeFilter(double)));
+
+    changeLeftBPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfB());
+    changeRightBPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfB());
+
+    ui->doubleSpinBox_shapeFilterLeftCFDROIA->setRange(0.0, -__PULSESHAPEFILTER_LEFT_MAX);
+    ui->doubleSpinBox_shapeFilterRightCFDROIA->setRange(0.0, __PULSESHAPEFILTER_RIGHT_MAX);
+
+    ui->doubleSpinBox_shapeFilterLeftCFDROIA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfA());
+    ui->doubleSpinBox_shapeFilterRightCFDROIA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfA());
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDROIA, SIGNAL(valueChanged(double)), this, SLOT(changeROILeftAPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDROIA, SIGNAL(valueChanged(double)), this, SLOT(changeROIRightAPulseShapeFilter(double)));
+
+    changeROILeftAPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfA());
+    changeROIRightAPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfA());
+
+    ui->doubleSpinBox_shapeFilterLeftCFDROIB->setRange(0.0, -__PULSESHAPEFILTER_LEFT_MAX);
+    ui->doubleSpinBox_shapeFilterRightCFDROIB->setRange(0.0, __PULSESHAPEFILTER_RIGHT_MAX);
+
+    ui->doubleSpinBox_shapeFilterLeftCFDROIB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfB());
+    ui->doubleSpinBox_shapeFilterRightCFDROIB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfB());
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDROIB, SIGNAL(valueChanged(double)), this, SLOT(changeROILeftBPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDROIB, SIGNAL(valueChanged(double)), this, SLOT(changeROIRightBPulseShapeFilter(double)));
+
+    changeROILeftBPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfB());
+    changeROIRightBPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfB());
+
+    connect(ui->pushButton_shapeFilterCalcA, SIGNAL(clicked()), this, SLOT(calculatePulseShapeFilterSplineA()));
+    connect(ui->pushButton_shapeFilterCalcB, SIGNAL(clicked()), this, SLOT(calculatePulseShapeFilterSplineB()));
+
+    ui->doubleSpinBox_shapeFilterLLStddevA->setRange(0.1, 15.0);
+    ui->doubleSpinBox_shapeFilterULStddevA->setRange(0.1, 15.0);
+
+    ui->doubleSpinBox_shapeFilterLLStddevA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionA());
+    ui->doubleSpinBox_shapeFilterULStddevA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionA());
+
+    connect(ui->doubleSpinBox_shapeFilterLLStddevA,SIGNAL(valueChanged(double)), this, SLOT(changeLowerStdDevFractionAPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterULStddevA,SIGNAL(valueChanged(double)), this, SLOT(changeUpperStdDevFractionAPulseShapeFilter(double)));
+
+    changeLowerStdDevFractionAPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionA());
+    changeUpperStdDevFractionAPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionA());
+
+    ui->doubleSpinBox_shapeFilterLLStddevB->setRange(0.1, 15.0);
+    ui->doubleSpinBox_shapeFilterULStddevB->setRange(0.1, 15.0);
+
+    ui->doubleSpinBox_shapeFilterLLStddevB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionB());
+    ui->doubleSpinBox_shapeFilterULStddevB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionB());
+
+    connect(ui->doubleSpinBox_shapeFilterLLStddevB,SIGNAL(valueChanged(double)), this, SLOT(changeLowerStdDevFractionBPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterULStddevB,SIGNAL(valueChanged(double)), this, SLOT(changeUpperStdDevFractionBPulseShapeFilter(double)));
+
+    changeLowerStdDevFractionBPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionB());
+    changeUpperStdDevFractionBPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionB());
+
+    /* Baseline Jitter Correction/Filter */
+    ui->spinBox_baseLineStartCell_A->setRange(0, 700);
+    ui->spinBox_baseLineStartCell_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellA());
+
+    connect(ui->spinBox_baseLineStartCell_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellA(int)));
+
+    changeBaselineStartCellA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellA());
+
+    ui->spinBox_baseLine_region_A->setRange(2, 324);
+    ui->spinBox_baseLine_region_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionA());
+
+    connect(ui->spinBox_baseLine_region_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionA(int)));
+
+    changeBaselineRegionA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionA());
+
+    ui->doubleSpinBox_baseLineValue_A->setRange(-499.0, 499.0);
+    ui->doubleSpinBox_baseLineValue_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVA());
+
+    connect(ui->doubleSpinBox_baseLineValue_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueA(double)));
+
+    changeBaselineShiftValueA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVA());
+
+    ui->doubleSpinBox_baseLineLimit_A->setRange(0.0, 100.0);
+    ui->doubleSpinBox_baseLineLimit_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageA());
+
+    connect(ui->doubleSpinBox_baseLineLimit_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineFilterRejectionLimitA(double)));
+
+    changeBaselineFilterRejectionLimitA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageA());
+
+    ui->checkBox_activateBaselineCorrection_A->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledA());
+
+    connect(ui->checkBox_activateBaselineCorrection_A, SIGNAL(clicked(bool)), this, SLOT(changeBaselineCorrectionEnabledA(bool)));
+
+    changeBaselineCorrectionEnabledA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledA());
+
+    ui->checkBox_baseLineReject_A->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitA());
+
+    connect(ui->checkBox_baseLineReject_A, SIGNAL(clicked(bool)), this, SLOT(changeBaselineFilterEnabledA(bool)));
+
+    changeBaselineFilterEnabledA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitA());
+
+    ui->spinBox_baseLineStartCell_B->setRange(0, 700);
+    ui->spinBox_baseLineStartCell_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellB());
+
+    connect(ui->spinBox_baseLineStartCell_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellB(int)));
+
+    changeBaselineStartCellB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellB());
+
+    ui->spinBox_baseLine_region_B->setRange(2, 324);
+    ui->spinBox_baseLine_region_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionB());
+
+    connect(ui->spinBox_baseLine_region_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionB(int)));
+
+    changeBaselineRegionB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionB());
+
+    ui->doubleSpinBox_baseLineValue_B->setRange(-499.0, 499.0);
+    ui->doubleSpinBox_baseLineValue_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVB());
+
+    connect(ui->doubleSpinBox_baseLineValue_B, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueB(double)));
+
+    changeBaselineShiftValueB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVB());
+
+    ui->doubleSpinBox_baseLineLimit_B->setRange(0.1, 100.0);
+    ui->doubleSpinBox_baseLineLimit_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageB());
+
+    connect(ui->doubleSpinBox_baseLineLimit_B, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineFilterRejectionLimitB(double)));
+
+    changeBaselineFilterRejectionLimitB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageB());
+
+    ui->checkBox_activateBaselineCorrection_B->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledB());
+
+    connect(ui->checkBox_activateBaselineCorrection_B, SIGNAL(clicked(bool)), this, SLOT(changeBaselineCorrectionEnabledB(bool)));
+
+    changeBaselineCorrectionEnabledB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledB());
+
+    ui->checkBox_baseLineReject_B->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitB());
+
+    connect(ui->checkBox_baseLineReject_B, SIGNAL(clicked(bool)), this, SLOT(changeBaselineFilterEnabledB(bool)));
+
+    changeBaselineFilterEnabledB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitB());
+
     /* update - Timer */
     m_pulseRequestTimer->start();
     m_phsRequestTimer->start();
@@ -691,6 +905,12 @@ DRS4ScopeDlg::~DRS4ScopeDlg()
     m_calculatorDlg->close();
     DDELETE_SAFETY(m_calculatorDlg);
 
+    if ( m_worker->isRecordingForPulseShapeFilterA() )
+        stopAcquisitionOfPulseShapeFilterDataA();
+
+    if ( m_worker->isRecordingForPulseShapeFilterB() )
+        stopAcquisitionOfPulseShapeFilterDataB();
+
     if ( m_workerThread ) {
         if ( m_workerThread->isRunning() )
             m_workerThread->exit(0);
@@ -715,6 +935,8 @@ DRS4ScopeDlg::~DRS4ScopeDlg()
     DDELETE_SAFETY(m_persistanceRequestTimer);
     DDELETE_SAFETY(m_burstModeTimer);
     DDELETE_SAFETY(m_autoSaveSpectraTimer);
+    DDELETE_SAFETY(m_pulseShapeFilterTimerA);
+    DDELETE_SAFETY(m_pulseShapeFilterTimerB);
 
     DDELETE_SAFETY(ui);
 }
@@ -1138,6 +1360,113 @@ void DRS4ScopeDlg::initPersistancePlots()
     ui->widget_persistanceB->yLeft()->setAxisLabelText("CFD");
 }
 
+void DRS4ScopeDlg::initPulseShapeFilterPlots()
+{
+    //A:
+    ui->widget_ShapeFilterPlotA->showXBottomGrid(false);
+    ui->widget_ShapeFilterPlotA->showXTopGrid(false);
+    ui->widget_ShapeFilterPlotA->showYLeftGrid(false);
+    ui->widget_ShapeFilterPlotA->showYRightGrid(false);
+
+    ui->widget_ShapeFilterPlotA->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_ShapeFilterPlotA->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
+
+    ui->widget_ShapeFilterPlotA->yLeft()->setAxisDistribution(5);
+    ui->widget_ShapeFilterPlotA->xBottom()->setAxisDistribution(9);
+
+    ui->widget_ShapeFilterPlotA->yLeft()->setAxisRange(-0.3f, 1.2f);
+
+    ui->widget_ShapeFilterPlotA->yLeft()->setAxisScaling(plot2DXAxis::linear);
+
+    /* pulses */
+    ui->widget_ShapeFilterPlotA->curve().at(0)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotA->curve().at(0)->setCurveWidth(1);
+    ui->widget_ShapeFilterPlotA->curve().at(0)->setCurveColor(Qt::gray);
+
+    /* left - ROI */
+    ui->widget_ShapeFilterPlotA->curve().at(1)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotA->curve().at(1)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotA->curve().at(1)->setCurveColor(Qt::red);
+
+    /* right - ROI */
+    ui->widget_ShapeFilterPlotA->curve().at(2)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotA->curve().at(2)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotA->curve().at(2)->setCurveColor(Qt::green);
+
+    /* spline - mean */
+    ui->widget_ShapeFilterPlotA->curve().at(3)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotA->curve().at(3)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotA->curve().at(3)->setCurveColor(Qt::red);
+
+    ui->widget_ShapeFilterPlotA->xBottom()->setAxisLabelText("Time [ns]");
+    ui->widget_ShapeFilterPlotA->yLeft()->setAxisLabelText("Norm. Pulse");
+
+    /* spline - upper stddev */
+    ui->widget_ShapeFilterPlotA->curve().at(4)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotA->curve().at(4)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotA->curve().at(4)->setCurveColor(Qt::blue);
+
+    /* spline - lower stddev */
+    ui->widget_ShapeFilterPlotA->curve().at(5)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotA->curve().at(5)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotA->curve().at(5)->setCurveColor(Qt::blue);
+
+    ui->widget_ShapeFilterPlotA->xBottom()->setAxisLabelText("Time [ns]");
+    ui->widget_ShapeFilterPlotA->yLeft()->setAxisLabelText("Norm. Pulse");
+
+    //B:
+    ui->widget_ShapeFilterPlotB->showXBottomGrid(false);
+    ui->widget_ShapeFilterPlotB->showXTopGrid(false);
+    ui->widget_ShapeFilterPlotB->showYLeftGrid(false);
+    ui->widget_ShapeFilterPlotB->showYRightGrid(false);
+
+    ui->widget_ShapeFilterPlotB->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_ShapeFilterPlotB->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
+
+    ui->widget_ShapeFilterPlotB->yLeft()->setAxisDistribution(5);
+    ui->widget_ShapeFilterPlotB->xBottom()->setAxisDistribution(9);
+
+    ui->widget_ShapeFilterPlotB->yLeft()->setAxisRange(-0.3f, 1.2f);
+
+    ui->widget_ShapeFilterPlotB->yLeft()->setAxisScaling(plot2DXAxis::linear);
+
+    /* pulses */
+    ui->widget_ShapeFilterPlotB->curve().at(0)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotB->curve().at(0)->setCurveWidth(1);
+    ui->widget_ShapeFilterPlotB->curve().at(0)->setCurveColor(Qt::gray);
+
+    /* left - ROI */
+    ui->widget_ShapeFilterPlotB->curve().at(1)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotB->curve().at(1)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotB->curve().at(1)->setCurveColor(Qt::red);
+
+    /* right - ROI */
+    ui->widget_ShapeFilterPlotB->curve().at(2)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotB->curve().at(2)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotB->curve().at(2)->setCurveColor(Qt::green);
+
+    /* spline - mean */
+    ui->widget_ShapeFilterPlotB->curve().at(3)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotB->curve().at(3)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotB->curve().at(3)->setCurveColor(Qt::red);
+
+    ui->widget_ShapeFilterPlotB->xBottom()->setAxisLabelText("Time [ns]");
+    ui->widget_ShapeFilterPlotB->yLeft()->setAxisLabelText("Norm. Pulse");
+
+    /* spline - upper stddev */
+    ui->widget_ShapeFilterPlotB->curve().at(4)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotB->curve().at(4)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotB->curve().at(4)->setCurveColor(Qt::blue);
+
+    /* spline - lower stddev */
+    ui->widget_ShapeFilterPlotB->curve().at(5)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_ShapeFilterPlotB->curve().at(5)->setCurveWidth(2);
+    ui->widget_ShapeFilterPlotB->curve().at(5)->setCurveColor(Qt::blue);
+
+    ui->widget_ShapeFilterPlotB->xBottom()->setAxisLabelText("Time [ns]");
+    ui->widget_ShapeFilterPlotB->yLeft()->setAxisLabelText("Norm. Pulse");
+}
+
 void DRS4ScopeDlg::adaptPersistancePlotA()
 {
     ui->widget_persistanceA->yLeft()->setAxisRange(-0.2f, 1.2f);
@@ -1202,47 +1531,47 @@ void DRS4ScopeDlg::initPulseAreaFilterA()
 void DRS4ScopeDlg::initPulseAreaFilterB()
 {
     //B:
-    ui->widget_plotAreaFilterB->showXBottomGrid(false);
-    ui->widget_plotAreaFilterB->showXTopGrid(false);
-    ui->widget_plotAreaFilterB->showYLeftGrid(false);
-    ui->widget_plotAreaFilterB->showYRightGrid(false);
+    ui->widget_plotAreaFilterB_2->showXBottomGrid(false);
+    ui->widget_plotAreaFilterB_2->showXTopGrid(false);
+    ui->widget_plotAreaFilterB_2->showYLeftGrid(false);
+    ui->widget_plotAreaFilterB_2->showYRightGrid(false);
 
-    ui->widget_plotAreaFilterB->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
-    ui->widget_plotAreaFilterB->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_plotAreaFilterB_2->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_plotAreaFilterB_2->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
 
-    ui->widget_plotAreaFilterB->yLeft()->setAxisDistribution(1);
-    ui->widget_plotAreaFilterB->xBottom()->setAxisDistribution(1);
+    ui->widget_plotAreaFilterB_2->yLeft()->setAxisDistribution(1);
+    ui->widget_plotAreaFilterB_2->xBottom()->setAxisDistribution(1);
 
-    ui->widget_plotAreaFilterB->yLeft()->showHelpIncrements(false);
-    ui->widget_plotAreaFilterB->xBottom()->showHelpIncrements(false);
+    ui->widget_plotAreaFilterB_2->yLeft()->showHelpIncrements(false);
+    ui->widget_plotAreaFilterB_2->xBottom()->showHelpIncrements(false);
 
-    ui->widget_plotAreaFilterB->yLeft()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB());
-    ui->widget_plotAreaFilterB->xBottom()->setAxisRange(0, kNumberOfBins);
+    ui->widget_plotAreaFilterB_2->yLeft()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB());
+    ui->widget_plotAreaFilterB_2->xBottom()->setAxisRange(0, kNumberOfBins);
 
-    ui->widget_plotAreaFilterB->xBottom()->setNumberFormat(plot2DXAxis::floating);
-    ui->widget_plotAreaFilterB->xBottom()->setNumberPrecision(0);
+    ui->widget_plotAreaFilterB_2->xBottom()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_plotAreaFilterB_2->xBottom()->setNumberPrecision(0);
 
-    ui->widget_plotAreaFilterB->yLeft()->setAxisScaling(plot2DXAxis::linear);
-    ui->widget_plotAreaFilterB->yLeft()->setNumberFormat(plot2DXAxis::floating);
-    ui->widget_plotAreaFilterB->yLeft()->setNumberPrecision(0);
+    ui->widget_plotAreaFilterB_2->yLeft()->setAxisScaling(plot2DXAxis::linear);
+    ui->widget_plotAreaFilterB_2->yLeft()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_plotAreaFilterB_2->yLeft()->setNumberPrecision(0);
 
     //data:
-    ui->widget_plotAreaFilterB->curve().at(0)->setCurveStyle(plot2DXCurve::cross);
-    ui->widget_plotAreaFilterB->curve().at(0)->setCurveWidth(4);
-    ui->widget_plotAreaFilterB->curve().at(0)->setCurveColor(Qt::blue);
+    ui->widget_plotAreaFilterB_2->curve().at(0)->setCurveStyle(plot2DXCurve::cross);
+    ui->widget_plotAreaFilterB_2->curve().at(0)->setCurveWidth(4);
+    ui->widget_plotAreaFilterB_2->curve().at(0)->setCurveColor(Qt::blue);
 
     //upper limit:
-    ui->widget_plotAreaFilterB->curve().at(1)->setCurveStyle(plot2DXCurve::line);
-    ui->widget_plotAreaFilterB->curve().at(1)->setCurveWidth(4);
-    ui->widget_plotAreaFilterB->curve().at(1)->setCurveColor(Qt::red);
+    ui->widget_plotAreaFilterB_2->curve().at(1)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterB_2->curve().at(1)->setCurveWidth(4);
+    ui->widget_plotAreaFilterB_2->curve().at(1)->setCurveColor(Qt::red);
 
     //lower limit:
-    ui->widget_plotAreaFilterB->curve().at(2)->setCurveStyle(plot2DXCurve::line);
-    ui->widget_plotAreaFilterB->curve().at(2)->setCurveWidth(4);
-    ui->widget_plotAreaFilterB->curve().at(2)->setCurveColor(Qt::green);
+    ui->widget_plotAreaFilterB_2->curve().at(2)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterB_2->curve().at(2)->setCurveWidth(4);
+    ui->widget_plotAreaFilterB_2->curve().at(2)->setCurveColor(Qt::green);
 
-    ui->widget_plotAreaFilterB->xBottom()->setAxisLabelText("Pulse-Height - Channel B [0.488mV]");
-    ui->widget_plotAreaFilterB->yLeft()->setAxisLabelText("Norm. A");
+    ui->widget_plotAreaFilterB_2->xBottom()->setAxisLabelText("Pulse-Height - Channel B [0.488mV]");
+    ui->widget_plotAreaFilterB_2->yLeft()->setAxisLabelText("Norm. A");
 
     updatePulseAreaFilterBLimits();
 }
@@ -1994,6 +2323,9 @@ void DRS4ScopeDlg::updateCurrentFileLabelFromScript(const QString &currentFile)
 void DRS4ScopeDlg::updateInfoDlgFromScript(const QString &comment)
 {
     m_addInfoDlg->setAddInfo(comment);
+
+    ui->pushButton_shapeFilterCalcA->setText(QString("calculate (0)"));
+    ui->pushButton_shapeFilterCalcB->setText(QString("calculate (0)"));
 }
 
 void DRS4ScopeDlg::updateThreadRunning(const QString &state, const QString &styleSheet)
@@ -2079,6 +2411,12 @@ void DRS4ScopeDlg::stopThread()
     if (DRS4TextFileStreamManager::sharedInstance()->isArmed())
         DRS4TextFileStreamManager::sharedInstance()->abort();
 
+    if (m_worker->isRecordingForPulseShapeFilterA())
+        m_worker->stopRecordingForShapeFilterA();
+
+    if (m_worker->isRecordingForPulseShapeFilterB())
+        m_worker->stopRecordingForShapeFilterB();
+
     if ( m_pulseSaveDlg->isVisible() ) {
         m_pulseSaveDlg->close();
         DDELETE_SAFETY(m_pulseSaveDlg);
@@ -2138,6 +2476,958 @@ void DRS4ScopeDlg::stopThread()
     else {
         emit signalUpdateThreadRunning(QString("State: Idle"), QString("color: blue"));
     }
+}
+
+void DRS4ScopeDlg::startAcquisitionOfPulseShapeFilterDataA()
+{
+    if (!isAcquisitionRunning())
+        return;
+
+    resetPulseShapeFilterProgressA();
+
+    ui->progressBar_daqShapeFilterA->setDisabled(false);
+
+    ui->spinBox_NPulsesShapeFilterA->setDisabled(true);    
+    ui->pushButton_shapeFilterCalcA->setDisabled(true);
+    ui->pushButton_shapeFilterCalcB->setDisabled(true);
+
+    ui->widget_playPulseShapeFilterA->enableWidget(false);
+    ui->widget_stopPulseShapeFilterA->enableWidget(true);
+
+    ui->tabWidget_3->widget(0)->setDisabled(true);
+
+    ui->label_pulseShapeFilterDaqStateA->setText("Running");
+    ui->label_pulseShapeFilterDaqStateA->setStyleSheet("color: green");
+
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_worker->startRecordingForShapeFilterA(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA());
+
+    m_worker->setBusy(false);
+
+    m_pulseShapeFilterTimerA->start();
+}
+
+void DRS4ScopeDlg::stopAcquisitionOfPulseShapeFilterDataA()
+{
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_worker->stopRecordingForShapeFilterA();
+
+    m_worker->setBusy(false);
+
+
+    m_pulseShapeFilterTimerA->stop();
+
+    resetPulseShapeFilterProgressA();
+
+    ui->spinBox_NPulsesShapeFilterA->setDisabled(false);
+
+    if (!m_worker->isRecordingForPulseShapeFilterB()) {
+        ui->pushButton_shapeFilterCalcA->setDisabled(false);
+        ui->pushButton_shapeFilterCalcB->setDisabled(false);
+    }
+
+    if (!DRS4SettingsManager::sharedInstance()->isBurstMode())
+        ui->widget_playPulseShapeFilterA->enableWidget(true);
+
+    ui->widget_stopPulseShapeFilterA->enableWidget(false);
+
+    ui->tabWidget_3->widget(0)->setDisabled(false);
+
+    ui->label_pulseShapeFilterDaqStateA->setText("Idle");
+    ui->label_pulseShapeFilterDaqStateA->setStyleSheet("color: blue");
+
+    swapPulseShapeFilterDataA();
+}
+
+void DRS4ScopeDlg::resetPulseShapeFilterProgressA()
+{
+    ui->progressBar_daqShapeFilterA->setDisabled(true);
+    ui->progressBar_daqShapeFilterA->setRange(0, DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA());
+    ui->progressBar_daqShapeFilterA->setValue(0);
+
+    ui->label_remainingPulsesA->setText(QString(QVariant(0).toString() % "/" % QVariant(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA()).toString()));
+}
+
+void DRS4ScopeDlg::incrementPulseShapeFilterProgressA()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    ui->progressBar_daqShapeFilterA->setValue(m_worker->pulseShapeFilterRecordingProgressA());
+    ui->label_remainingPulsesA->setText(QString(QVariant(m_worker->pulseShapeFilterRecordingProgressA() - 1).toString() % "/" % QVariant(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA()).toString()));
+
+    if (!m_worker->isRecordingForPulseShapeFilterA())
+        stopAcquisitionOfPulseShapeFilterDataA();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::swapPulseShapeFilterDataA()
+{
+    m_pulseShapeDataA.clear();
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_pulseShapeDataA.append(*m_worker->pulseShapeDataA());
+
+     m_worker->setBusy(false);
+
+    ui->pushButton_shapeFilterCalcA->setText(QString(QString("calculate (") % QVariant(m_worker->pulseShapeFilterRecordingProgressA() - 1).toString() % QString(")")));
+
+    adaptPulseShapeFilterPlotA();
+}
+
+void DRS4ScopeDlg::changePulseShapeFilterPulseRecordNumberA(int value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_NPulsesShapeFilterA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterNumberOfPulsesToBeRecordedA(value);
+
+    m_worker->setBusy(false);
+
+    ui->label_remainingPulsesA->setText(QString(QVariant(0).toString() % "/" % QVariant(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA()).toString()));
+}
+
+void DRS4ScopeDlg::startAcquisitionOfPulseShapeFilterDataB()
+{
+    if (!isAcquisitionRunning())
+        return;
+
+    resetPulseShapeFilterProgressB();
+
+    ui->progressBar_daqShapeFilterB->setDisabled(false);
+
+    ui->spinBox_NPulsesShapeFilterB->setDisabled(true);
+    ui->pushButton_shapeFilterCalcA->setDisabled(true);
+    ui->pushButton_shapeFilterCalcB->setDisabled(true);
+
+    ui->widget_playPulseShapeFilterB->enableWidget(false);
+    ui->widget_stopPulseShapeFilterB->enableWidget(true);
+
+    ui->tabWidget_3->widget(0)->setDisabled(true);
+
+    ui->label_pulseShapeFilterDaqStateB->setText("Running");
+    ui->label_pulseShapeFilterDaqStateB->setStyleSheet("color: green");
+
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_worker->startRecordingForShapeFilterB(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB());
+
+    m_worker->setBusy(false);
+
+    m_pulseShapeFilterTimerB->start();
+}
+
+void DRS4ScopeDlg::stopAcquisitionOfPulseShapeFilterDataB()
+{
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_worker->stopRecordingForShapeFilterB();
+
+    m_worker->setBusy(false);
+
+
+    m_pulseShapeFilterTimerB->stop();
+
+    resetPulseShapeFilterProgressB();
+
+    ui->spinBox_NPulsesShapeFilterB->setDisabled(false);
+
+    if (!m_worker->isRecordingForPulseShapeFilterA()) {
+        ui->pushButton_shapeFilterCalcA->setDisabled(false);
+        ui->pushButton_shapeFilterCalcB->setDisabled(false);
+    }
+
+    if (!DRS4SettingsManager::sharedInstance()->isBurstMode())
+        ui->widget_playPulseShapeFilterB->enableWidget(true);
+
+    ui->widget_stopPulseShapeFilterB->enableWidget(false);
+
+    ui->tabWidget_3->widget(0)->setDisabled(false);
+
+    ui->label_pulseShapeFilterDaqStateB->setText("Idle");
+    ui->label_pulseShapeFilterDaqStateB->setStyleSheet("color: blue");
+
+    swapPulseShapeFilterDataB();
+}
+
+void DRS4ScopeDlg::resetPulseShapeFilterProgressB()
+{
+    ui->progressBar_daqShapeFilterB->setDisabled(true);
+    ui->progressBar_daqShapeFilterB->setRange(0, DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB());
+    ui->progressBar_daqShapeFilterB->setValue(0);
+
+    ui->label_remainingPulsesB->setText(QString(QVariant(0).toString() % "/" % QVariant(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB()).toString()));
+}
+
+void DRS4ScopeDlg::incrementPulseShapeFilterProgressB()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    ui->progressBar_daqShapeFilterB->setValue(m_worker->pulseShapeFilterRecordingProgressB());
+    ui->label_remainingPulsesB->setText(QString(QVariant(m_worker->pulseShapeFilterRecordingProgressB() - 1).toString() % "/" % QVariant(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB()).toString()));
+
+    if (!m_worker->isRecordingForPulseShapeFilterB())
+        stopAcquisitionOfPulseShapeFilterDataB();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::swapPulseShapeFilterDataB()
+{
+    m_pulseShapeDataB.clear();
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_pulseShapeDataB.append(*m_worker->pulseShapeDataB());
+
+     m_worker->setBusy(false);
+
+    ui->pushButton_shapeFilterCalcB->setText(QString(QString("calculate (") % QVariant(m_worker->pulseShapeFilterRecordingProgressB() - 1).toString() % QString(")")));
+
+    adaptPulseShapeFilterPlotB();
+}
+
+void DRS4ScopeDlg::changePulseShapeFilterPulseRecordNumberB(int value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_NPulsesShapeFilterB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterNumberOfPulsesToBeRecordedB(value);
+
+    m_worker->setBusy(false);
+
+    ui->label_remainingPulsesB->setText(QString(QVariant(0).toString() % "/" % QVariant(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB()).toString()));
+}
+
+void DRS4ScopeDlg::changeLeftAPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterLeftCFDA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterLeftInNsOfA(value);
+
+    adaptPulseShapeFilterPlotA();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeLeftBPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterLeftCFDB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterLeftInNsOfB(value);
+
+    adaptPulseShapeFilterPlotB();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRightAPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterRightCFDA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterRightInNsOfA(value);
+
+    adaptPulseShapeFilterPlotA();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeRightBPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterRightCFDB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterRightInNsOfB(value);
+
+    adaptPulseShapeFilterPlotB();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeROILeftAPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterLeftCFDROIA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterROILeftInNsOfA(value);
+
+    adaptPulseShapeFilterPlotA();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeROILeftBPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterLeftCFDROIB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterROILeftInNsOfB(value);
+
+    adaptPulseShapeFilterPlotB();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeROIRightAPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterRightCFDROIA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterROIRightInNsOfA(value);
+
+    adaptPulseShapeFilterPlotA();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeROIRightBPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterRightCFDROIB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterROIRightInNsOfB(value);
+
+    adaptPulseShapeFilterPlotB();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeLowerStdDevFractionAPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterLLStddevA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterStdDevLowerFractionA(value);
+
+    adaptPulseShapeFilterPlotA();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeUpperStdDevFractionAPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterULStddevA->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterStdDevUpperFractionA(value);
+
+    adaptPulseShapeFilterPlotA();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeLowerStdDevFractionBPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterLLStddevB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterStdDevLowerFractionB(value);
+
+    adaptPulseShapeFilterPlotB();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeUpperStdDevFractionBPulseShapeFilter(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_shapeFilterULStddevB->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterStdDevUpperFractionB(value);
+
+    adaptPulseShapeFilterPlotB();
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::adaptPulseShapeFilterPlotA()
+{
+    ui->widget_ShapeFilterPlotA->yLeft()->setAxisRange(-0.3f, 1.2f);
+    ui->widget_ShapeFilterPlotA->xBottom()->setAxisRange(-DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfA(), DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfA());
+    ui->widget_ShapeFilterPlotA->updatePlotView();
+
+    ui->widget_ShapeFilterPlotA->curve().at(0)->clearCurveCache();
+    ui->widget_ShapeFilterPlotA->curve().at(0)->clearCurveContent();
+
+     ui->widget_ShapeFilterPlotA->curve().at(1)->clearCurveCache();
+     ui->widget_ShapeFilterPlotA->curve().at(1)->clearCurveContent();
+
+     ui->widget_ShapeFilterPlotA->curve().at(2)->clearCurveCache();
+     ui->widget_ShapeFilterPlotA->curve().at(2)->clearCurveContent();
+
+     QPointF p1L(-DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfA(), -0.1);
+     QPointF p2L(-DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfA(), 1.1);
+
+     QPointF p1R(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfA(), -0.1);
+     QPointF p2R(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfA(), 1.1);
+
+     ui->widget_ShapeFilterPlotA->curve().at(0)->addData(m_pulseShapeDataA);
+
+     ui->widget_ShapeFilterPlotA->curve().at(1)->addData(p1L);
+     ui->widget_ShapeFilterPlotA->curve().at(1)->addData(p2L);
+
+     ui->widget_ShapeFilterPlotA->curve().at(2)->addData(p1R);
+     ui->widget_ShapeFilterPlotA->curve().at(2)->addData(p2R);
+
+     if ( !m_pulseShapeSplineDataA.mean().isEmpty() ) {
+         ui->widget_ShapeFilterPlotA->curve().at(3)->clearCurveCache();
+         ui->widget_ShapeFilterPlotA->curve().at(3)->clearCurveContent();
+
+         ui->widget_ShapeFilterPlotA->curve().at(4)->clearCurveCache();
+         ui->widget_ShapeFilterPlotA->curve().at(4)->clearCurveContent();
+
+         ui->widget_ShapeFilterPlotA->curve().at(5)->clearCurveCache();
+         ui->widget_ShapeFilterPlotA->curve().at(5)->clearCurveContent();
+
+         ui->widget_ShapeFilterPlotA->curve().at(3)->addData(DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrA()->mean());
+         ui->widget_ShapeFilterPlotA->curve().at(4)->addData(DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrA()->stddevUpper(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionA()));
+         ui->widget_ShapeFilterPlotA->curve().at(5)->addData(DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrA()->stddevLower(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionA()));
+     }
+
+    ui->widget_ShapeFilterPlotA->replot();
+}
+
+void DRS4ScopeDlg::adaptPulseShapeFilterPlotB()
+{
+    ui->widget_ShapeFilterPlotB->yLeft()->setAxisRange(-0.3f, 1.2f);
+    ui->widget_ShapeFilterPlotB->xBottom()->setAxisRange(-DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfB(), DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfB());
+    ui->widget_ShapeFilterPlotB->updatePlotView();
+
+    ui->widget_ShapeFilterPlotB->curve().at(0)->clearCurveCache();
+    ui->widget_ShapeFilterPlotB->curve().at(0)->clearCurveContent();
+
+     ui->widget_ShapeFilterPlotB->curve().at(1)->clearCurveCache();
+     ui->widget_ShapeFilterPlotB->curve().at(1)->clearCurveContent();
+
+     ui->widget_ShapeFilterPlotB->curve().at(2)->clearCurveCache();
+     ui->widget_ShapeFilterPlotB->curve().at(2)->clearCurveContent();
+
+     QPointF p1L(-DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfB(), -0.1);
+     QPointF p2L(-DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfB(), 1.1);
+
+     QPointF p1R(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfB(), -0.1);
+     QPointF p2R(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfB(), 1.1);
+
+     ui->widget_ShapeFilterPlotB->curve().at(0)->addData(m_pulseShapeDataB);
+
+     ui->widget_ShapeFilterPlotB->curve().at(1)->addData(p1L);
+     ui->widget_ShapeFilterPlotB->curve().at(1)->addData(p2L);
+
+     ui->widget_ShapeFilterPlotB->curve().at(2)->addData(p1R);
+     ui->widget_ShapeFilterPlotB->curve().at(2)->addData(p2R);
+
+     if ( !m_pulseShapeSplineDataB.mean().isEmpty() ) {
+         ui->widget_ShapeFilterPlotB->curve().at(3)->clearCurveCache();
+         ui->widget_ShapeFilterPlotB->curve().at(3)->clearCurveContent();
+
+         ui->widget_ShapeFilterPlotB->curve().at(4)->clearCurveCache();
+         ui->widget_ShapeFilterPlotB->curve().at(4)->clearCurveContent();
+
+         ui->widget_ShapeFilterPlotB->curve().at(5)->clearCurveCache();
+         ui->widget_ShapeFilterPlotB->curve().at(5)->clearCurveContent();
+
+         ui->widget_ShapeFilterPlotB->curve().at(3)->addData(DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrB()->mean());
+         ui->widget_ShapeFilterPlotB->curve().at(4)->addData(DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrB()->stddevUpper(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionB()));
+         ui->widget_ShapeFilterPlotB->curve().at(5)->addData(DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrB()->stddevLower(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionB()));
+     }
+
+    ui->widget_ShapeFilterPlotB->replot();
+}
+
+void DRS4ScopeDlg::calculatePulseShapeFilterSplineA()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_pulseShapeDataA = *m_worker->pulseShapeDataA();
+
+    if (m_pulseShapeDataA.isEmpty()) {
+        m_worker->setBusy(false);
+
+        return;
+    }
+
+    m_pulseShapeSplineDataA = m_worker->pulseShapeFilterSplineDataA();
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterDataA(m_pulseShapeSplineDataA);
+
+    m_worker->setBusy(false);
+
+    adaptPulseShapeFilterPlotA();
+}
+
+void DRS4ScopeDlg::calculatePulseShapeFilterSplineB()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    m_pulseShapeDataB = *m_worker->pulseShapeDataB();
+
+    if (m_pulseShapeDataB.isEmpty()) {
+        m_worker->setBusy(false);
+
+        return;
+    }
+
+    m_pulseShapeSplineDataB = m_worker->pulseShapeFilterSplineDataB();
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterDataB(m_pulseShapeSplineDataB);
+
+    m_worker->setBusy(false);
+
+    adaptPulseShapeFilterPlotB();
+}
+
+void DRS4ScopeDlg::changePulseShapeFilterEnabledA(bool activate, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (m_pulseShapeSplineDataA.mean().isEmpty()) {
+        if (ui->checkBox_activatePulseShapeFilterA->isChecked())
+            ui->checkBox_activatePulseShapeFilterA->setChecked(false);
+        else
+            ui->checkBox_activatePulseShapeFilterA->setChecked(true);
+
+        return;
+    }
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_activatePulseShapeFilterA->clicked(activate);
+        ui->checkBox_activatePulseShapeFilterA->setChecked(activate);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterEnabledA(activate);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changePulseShapeFilterEnabledB(bool activate, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (m_pulseShapeSplineDataB.mean().isEmpty()) {
+        if (ui->checkBox_activatePulseShapeFilterB->isChecked())
+            ui->checkBox_activatePulseShapeFilterB->setChecked(false);
+        else
+            ui->checkBox_activatePulseShapeFilterB->setChecked(true);
+
+        return;
+    }
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_activatePulseShapeFilterB->clicked(activate);
+        ui->checkBox_activatePulseShapeFilterB->setChecked(activate);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterEnabledB(activate);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineStartCellA(int startCell, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLineStartCell_A->setValue(startCell);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationStartCellA(startCell);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineRegionA(int region, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLine_region_A->setValue(region);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationRegionA(region);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineShiftValueA(double baseline, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_baseLineValue_A->setValue(baseline);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationShiftValueInMVA(baseline);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineFilterRejectionLimitA(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_baseLineLimit_A->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationLimitInPercentageA(value);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineCorrectionEnabledA(bool enabled, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_activateBaselineCorrection_A->clicked(enabled);
+        ui->checkBox_activateBaselineCorrection_A->setChecked(enabled);
+        return;
+    }
+
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationEnabledA(enabled);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineFilterEnabledA(bool enabled, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_baseLineReject_A->clicked(enabled);
+        ui->checkBox_baseLineReject_A->setChecked(enabled);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationLimitRejectLimitA(enabled);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineStartCellB(int startCell, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLineStartCell_B->setValue(startCell);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationStartCellB(startCell);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineRegionB(int region, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLine_region_B->setValue(region);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationRegionB(region);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineShiftValueB(double baseline, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_baseLineValue_B->setValue(baseline);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationShiftValueInMVB(baseline);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineFilterRejectionLimitB(double value, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->doubleSpinBox_baseLineLimit_B->setValue(value);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationLimitInPercentageB(value);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineCorrectionEnabledB(bool enabled, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_activateBaselineCorrection_B->clicked(enabled);
+        ui->checkBox_activateBaselineCorrection_B->setChecked(enabled);
+        return;
+    }
+
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationEnabledB(enabled);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineFilterEnabledB(bool enabled, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        emit ui->checkBox_baseLineReject_B->clicked(enabled);
+        ui->checkBox_baseLineReject_B->setChecked(enabled);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationLimitRejectLimitB(enabled);
+
+    m_worker->setBusy(false);
 }
 
 void DRS4ScopeDlg::changePHSStartMinA(int value, const FunctionSource &source)
@@ -2387,7 +3677,7 @@ void DRS4ScopeDlg::changeNormalizationForPulseAreaFilterB(double value, const Fu
 {
     if ( source == FunctionSource::AccessFromScript )
     {
-        ui->doubleSpinBox_areaBNorm->setValue(value);
+        ui->doubleSpinBox_areaBNorm_2->setValue(value);
         return;
     }
 
@@ -2482,7 +3772,7 @@ void DRS4ScopeDlg::changePulseAreaFilterLimitsUpperLeftB(double value, const Fun
 {
     if ( source == FunctionSource::AccessFromScript )
     {
-        ui->doubleSpinBox_areaFilter_leftB_upper->setValue(value);
+        ui->doubleSpinBox_areaFilter_leftB_upper_2->setValue(value);
         return;
     }
 
@@ -2501,7 +3791,7 @@ void DRS4ScopeDlg::changePulseAreaFilterLimitsLowerLeftB(double value, const Fun
 {
     if ( source == FunctionSource::AccessFromScript )
     {
-        ui->doubleSpinBox_areaFilter_leftB_lower->setValue(value);
+        ui->doubleSpinBox_areaFilter_leftB_lower_2->setValue(value);
         return;
     }
 
@@ -2520,7 +3810,7 @@ void DRS4ScopeDlg::changePulseAreaFilterLimitsUpperRightB(double value, const Fu
 {
     if ( source == FunctionSource::AccessFromScript )
     {
-        ui->doubleSpinBox_areaFilter_rightB_upper->setValue(value);
+        ui->doubleSpinBox_areaFilter_rightB_upper_2->setValue(value);
         return;
     }
 
@@ -2539,7 +3829,7 @@ void DRS4ScopeDlg::changePulseAreaFilterLimitsLowerRightB(double value, const Fu
 {
     if ( source == FunctionSource::AccessFromScript )
     {
-        ui->doubleSpinBox_areaFilter_rightB_lower->setValue(value);
+        ui->doubleSpinBox_areaFilter_rightB_lower_2->setValue(value);
         return;
     }
 
@@ -2577,7 +3867,7 @@ void DRS4ScopeDlg::changePulseAreaFilterB(int value, const FunctionSource &sourc
 {
     if ( source == FunctionSource::AccessFromScript )
     {
-        ui->spinBox_areaBinningCntB->setValue(value);
+        ui->spinBox_areaBinningCntB_2->setValue(value);
         return;
     }
 
@@ -2671,19 +3961,19 @@ void DRS4ScopeDlg::plotPulseAreaFilterData()
     m_areaRequestTimer->stop();
 
     ui->widget_plotAreaFilterA->curve().at(0)->clearCurveContent();
-    ui->widget_plotAreaFilterB->curve().at(0)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(0)->clearCurveContent();
 
     m_worker->setBusy(true);
 
     while(!m_worker->isBlocking()) {}
 
     ui->widget_plotAreaFilterA->curve().at(0)->addData(*m_worker->areaFilterAData());
-    ui->widget_plotAreaFilterB->curve().at(0)->addData(*m_worker->areaFilterBData());
+    ui->widget_plotAreaFilterB_2->curve().at(0)->addData(*m_worker->areaFilterBData());
 
     m_worker->setBusy(false);
 
     ui->widget_plotAreaFilterA->yLeft()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA());
-    ui->widget_plotAreaFilterB->yLeft()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB());
+    ui->widget_plotAreaFilterB_2->yLeft()->setAxisRange(0, DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB());
 
     updatePulseAreaFilterALimits();
     updatePulseAreaFilterBLimits();
@@ -3313,8 +4603,8 @@ void DRS4ScopeDlg::resetAreaPlotB(const FunctionSource &source)
 
     m_worker->resetAreaFilterB();
 
-    ui->widget_plotAreaFilterB->curve().at(0)->clearCurveContent();
-    ui->widget_plotAreaFilterB->replot();
+    ui->widget_plotAreaFilterB_2->curve().at(0)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->replot();
 
     updatePulseAreaFilterBLimits();
 
@@ -4224,13 +5514,13 @@ void DRS4ScopeDlg::updatePulseAreaFilterBLimits()
     limitsLower.append(QPointF(x1_lower, y1_lower));
     limitsLower.append(QPointF(x2_lower, y2_lower));
 
-    ui->widget_plotAreaFilterB->curve().at(1)->clearCurveContent();
-    ui->widget_plotAreaFilterB->curve().at(1)->addData(limitsUpper);
+    ui->widget_plotAreaFilterB_2->curve().at(1)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(1)->addData(limitsUpper);
 
-    ui->widget_plotAreaFilterB->curve().at(2)->clearCurveContent();
-    ui->widget_plotAreaFilterB->curve().at(2)->addData(limitsLower);
+    ui->widget_plotAreaFilterB_2->curve().at(2)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(2)->addData(limitsLower);
 
-    ui->widget_plotAreaFilterB->replot();
+    ui->widget_plotAreaFilterB_2->replot();
 
     m_worker->setBusy(false);
 }
@@ -4955,13 +6245,39 @@ void DRS4ScopeDlg::changeBurstModeEnabled(bool on, const FunctionSource &source)
 
     while(!m_worker->isBlocking()) {}
 
+    if ( on ) {
+        if ( m_worker->isRecordingForPulseShapeFilterA() ) {
+            m_worker->stopRecordingForShapeFilterA();
+        }
+
+        if ( m_worker->isRecordingForPulseShapeFilterB() ) {
+            m_worker->stopRecordingForShapeFilterB();
+        }
+    }
+
     for ( int i = 0 ; i < ui->tabWidget->count() ; ++ i ) {
         if ( !ui->tabWidget->widget(i) )
             continue;
 
-        if ( ui->tabWidget->widget(i) != ui->tab_9 )
-            ui->tabWidget->widget(i)->setEnabled(!on);
+        ui->tabWidget->widget(i)->setEnabled(!on);
     }
+
+    ui->tab_14->setEnabled(!on); //Persistence A
+    ui->tab_15->setEnabled(!on); //Persistence B
+
+    ui->tab_22->setEnabled(!on); //Intrinsic Filters
+
+    ui->widget_playPulseShapeFilterA->enableWidget(!on);
+
+    if (on)
+        ui->widget_stopPulseShapeFilterA->enableWidget(!on);
+
+    ui->widget_playPulseShapeFilterB->enableWidget(!on);
+
+    if (on)
+        ui->widget_stopPulseShapeFilterB->enableWidget(!on);
+
+    ui->tab_23->setEnabled(!on); //External Filters
 
     DRS4SettingsManager::sharedInstance()->setBurstMode(on);
 
@@ -4987,6 +6303,7 @@ void DRS4ScopeDlg::changeBurstModeEnabled(bool on, const FunctionSource &source)
         m_phsRequestTimer->stop();
         m_areaRequestTimer->stop();
         m_lifetimeRequestTimer->stop();
+        m_riseTimeRequestTimer->stop();
         m_persistanceRequestTimer->stop();
 
         m_burstModeTimer->start();
@@ -4998,6 +6315,7 @@ void DRS4ScopeDlg::changeBurstModeEnabled(bool on, const FunctionSource &source)
         m_phsRequestTimer->start();
         m_areaRequestTimer->start();
         m_lifetimeRequestTimer->start();
+        m_riseTimeRequestTimer->start();
         m_persistanceRequestTimer->start();
     }
 
@@ -5360,20 +6678,20 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     disconnect(ui->spinBox_stopMaxB, SIGNAL(valueChanged(int)), this, SLOT(changePHSStopMaxB(int)));
 
     disconnect(ui->doubleSpinBox_areaANorm, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterA(double)));
-    disconnect(ui->doubleSpinBox_areaBNorm, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterB(double)));
+    disconnect(ui->doubleSpinBox_areaBNorm_2, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterB(double)));
 
     disconnect(ui->spinBox_areaBinningCntA, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterA(int)));
-    disconnect(ui->spinBox_areaBinningCntB, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterB(int)));
+    disconnect(ui->spinBox_areaBinningCntB_2, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterB(int)));
 
     disconnect(ui->doubleSpinBox_areaFilter_leftA_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftA(double)));
     disconnect(ui->doubleSpinBox_areaFilter_rightA_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightA(double)));
     disconnect(ui->doubleSpinBox_areaFilter_leftA_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftA(double)));
     disconnect(ui->doubleSpinBox_areaFilter_rightA_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightA(double)));
 
-    disconnect(ui->doubleSpinBox_areaFilter_leftB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftB(double)));
-    disconnect(ui->doubleSpinBox_areaFilter_rightB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
-    disconnect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
-    disconnect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
+    disconnect(ui->doubleSpinBox_areaFilter_leftB_lower_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftB(double)));
+    disconnect(ui->doubleSpinBox_areaFilter_rightB_lower_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
+    disconnect(ui->doubleSpinBox_areaFilter_leftB_upper_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
+    disconnect(ui->doubleSpinBox_areaFilter_rightB_upper_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
 
     disconnect(ui->doubleSpinBox_riseTimeFilterTimeScaleA, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsA(double)));
     disconnect(ui->doubleSpinBox_riseTimeFilterTimeScaleB, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsB(double)));
@@ -5383,6 +6701,37 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     disconnect(ui->spinBox_riseTimeFilterRightA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowA(int)));
     disconnect(ui->spinBox_riseTimerFilterLeftB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowB(int)));
     disconnect(ui->spinBox_riseTimeFilterRightB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowB(int)));
+
+    disconnect(ui->spinBox_NPulsesShapeFilterA, SIGNAL(valueChanged(int)), this, SLOT(changePulseShapeFilterPulseRecordNumberA(int)));
+    disconnect(ui->spinBox_NPulsesShapeFilterB, SIGNAL(valueChanged(int)), this, SLOT(changePulseShapeFilterPulseRecordNumberB(int)));
+
+    disconnect(ui->doubleSpinBox_shapeFilterLeftCFDA, SIGNAL(valueChanged(double)), this, SLOT(changeLeftAPulseShapeFilter(double)));
+    disconnect(ui->doubleSpinBox_shapeFilterRightCFDA, SIGNAL(valueChanged(double)), this, SLOT(changeRightAPulseShapeFilter(double)));
+
+    disconnect(ui->doubleSpinBox_shapeFilterLeftCFDROIA, SIGNAL(valueChanged(double)), this, SLOT(changeROILeftAPulseShapeFilter(double)));
+    disconnect(ui->doubleSpinBox_shapeFilterRightCFDROIA, SIGNAL(valueChanged(double)), this, SLOT(changeROIRightAPulseShapeFilter(double)));
+
+    disconnect(ui->doubleSpinBox_shapeFilterLeftCFDB, SIGNAL(valueChanged(double)), this, SLOT(changeLeftBPulseShapeFilter(double)));
+    disconnect(ui->doubleSpinBox_shapeFilterRightCFDB, SIGNAL(valueChanged(double)), this, SLOT(changeRightBPulseShapeFilter(double)));
+
+    disconnect(ui->doubleSpinBox_shapeFilterLeftCFDROIB, SIGNAL(valueChanged(double)), this, SLOT(changeROILeftBPulseShapeFilter(double)));
+    disconnect(ui->doubleSpinBox_shapeFilterRightCFDROIB, SIGNAL(valueChanged(double)), this, SLOT(changeROIRightBPulseShapeFilter(double)));
+
+    disconnect(ui->doubleSpinBox_shapeFilterLLStddevA, SIGNAL(valueChanged(double)), this, SLOT(changeLowerStdDevFractionAPulseShapeFilter(double)));
+    disconnect(ui->doubleSpinBox_shapeFilterULStddevA, SIGNAL(valueChanged(double)), this, SLOT(changeUpperStdDevFractionAPulseShapeFilter(double)));
+
+    disconnect(ui->doubleSpinBox_shapeFilterLLStddevB, SIGNAL(valueChanged(double)), this, SLOT(changeLowerStdDevFractionBPulseShapeFilter(double)));
+    disconnect(ui->doubleSpinBox_shapeFilterULStddevB, SIGNAL(valueChanged(double)), this, SLOT(changeUpperStdDevFractionBPulseShapeFilter(double)));
+
+    disconnect(ui->spinBox_baseLineStartCell_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellA(int)));
+    disconnect(ui->spinBox_baseLine_region_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionA(int)));
+    disconnect(ui->doubleSpinBox_baseLineValue_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueA(double)));
+    disconnect(ui->doubleSpinBox_baseLineLimit_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineFilterRejectionLimitA(double)));
+
+    disconnect(ui->spinBox_baseLineStartCell_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellB(int)));
+    disconnect(ui->spinBox_baseLine_region_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionB(int)));
+    disconnect(ui->doubleSpinBox_baseLineValue_B, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueB(double)));
+    disconnect(ui->doubleSpinBox_baseLineLimit_B, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineFilterRejectionLimitB(double)));
 
     disconnect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
     disconnect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
@@ -5418,19 +6767,19 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
         ui->spinBox_stopMaxB->setValue(DRS4SettingsManager::sharedInstance()->stopChanneBMax());
 
         ui->doubleSpinBox_areaANorm->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationA());
-        ui->doubleSpinBox_areaBNorm->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationB());
+        ui->doubleSpinBox_areaBNorm_2->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationB());
 
         ui->spinBox_areaBinningCntA->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA());
-        ui->spinBox_areaBinningCntB->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB());
+        ui->spinBox_areaBinningCntB_2->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB());
 
         ui->doubleSpinBox_areaFilter_leftA_lower->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerLeftA());
         ui->doubleSpinBox_areaFilter_rightA_lower->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerRightA());
         ui->doubleSpinBox_areaFilter_leftA_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperLeftA());
         ui->doubleSpinBox_areaFilter_rightA_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperRightA());
-        ui->doubleSpinBox_areaFilter_leftB_lower->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerLeftB());
-        ui->doubleSpinBox_areaFilter_rightB_lower->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerRightB());
-        ui->doubleSpinBox_areaFilter_leftB_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperLeftB());
-        ui->doubleSpinBox_areaFilter_rightB_upper->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperRightB());
+        ui->doubleSpinBox_areaFilter_leftB_lower_2->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerLeftB());
+        ui->doubleSpinBox_areaFilter_rightB_lower_2->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitLowerRightB());
+        ui->doubleSpinBox_areaFilter_leftB_upper_2->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperLeftB());
+        ui->doubleSpinBox_areaFilter_rightB_upper_2->setValue(DRS4SettingsManager::sharedInstance()->pulseAreaFilterLimitUpperRightB());
 
         ui->doubleSpinBox_riseTimeFilterTimeScaleA->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfA());
         ui->doubleSpinBox_riseTimeFilterTimeScaleB->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfB());
@@ -5440,6 +6789,40 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
         ui->spinBox_riseTimeFilterRightA->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfA());
         ui->spinBox_riseTimerFilterLeftB->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterLeftWindowOfB());
         ui->spinBox_riseTimeFilterRightB->setValue(DRS4SettingsManager::sharedInstance()->riseTimeFilterRightWindowOfB());
+
+        ui->spinBox_NPulsesShapeFilterA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedA());
+        ui->spinBox_NPulsesShapeFilterB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterNumberOfPulsesToBeRecordedB());
+
+        ui->doubleSpinBox_shapeFilterLeftCFDA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfA());
+        ui->doubleSpinBox_shapeFilterRightCFDA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfA());
+
+        ui->doubleSpinBox_shapeFilterLeftCFDROIA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfA());
+        ui->doubleSpinBox_shapeFilterRightCFDROIA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfA());
+
+        ui->doubleSpinBox_shapeFilterLeftCFDB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterLeftInNsOfB());
+        ui->doubleSpinBox_shapeFilterRightCFDB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterRightInNsOfB());
+
+        ui->doubleSpinBox_shapeFilterLeftCFDROIB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROILeftInNsOfB());
+        ui->doubleSpinBox_shapeFilterRightCFDROIB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterROIRightInNsOfB());
+
+        ui->doubleSpinBox_shapeFilterLLStddevA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionA());
+        ui->doubleSpinBox_shapeFilterULStddevA->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionA());
+
+        ui->doubleSpinBox_shapeFilterLLStddevB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionB());
+        ui->doubleSpinBox_shapeFilterULStddevB->setValue(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionB());
+
+        m_pulseShapeSplineDataA = *DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrA();
+        m_pulseShapeSplineDataB = *DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrB();
+
+        ui->spinBox_baseLineStartCell_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellA());
+        ui->spinBox_baseLine_region_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionA());
+        ui->doubleSpinBox_baseLineValue_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVA());
+        ui->doubleSpinBox_baseLineLimit_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageA());
+
+        ui->spinBox_baseLineStartCell_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellB());
+        ui->spinBox_baseLine_region_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionB());
+        ui->doubleSpinBox_baseLineValue_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVB());
+        ui->doubleSpinBox_baseLineLimit_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageB());
 
         ui->spinBox_medianFilterWindowSizeA->setValue(DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeA());
         ui->spinBox_medianFilterWindowSizeB->setValue(DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB());
@@ -5475,20 +6858,20 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     connect(ui->spinBox_stopMaxB, SIGNAL(valueChanged(int)), this, SLOT(changePHSStopMaxB(int)));
 
     connect(ui->doubleSpinBox_areaANorm, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterA(double)));
-    connect(ui->doubleSpinBox_areaBNorm, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterB(double)));
+    connect(ui->doubleSpinBox_areaBNorm_2, SIGNAL(valueChanged(double)), this, SLOT(changeNormalizationForPulseAreaFilterB(double)));
 
     connect(ui->spinBox_areaBinningCntA, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterA(int)));
-    connect(ui->spinBox_areaBinningCntB, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterB(int)));
+    connect(ui->spinBox_areaBinningCntB_2, SIGNAL(valueChanged(int)), this, SLOT(changePulseAreaFilterB(int)));
 
     connect(ui->doubleSpinBox_areaFilter_leftA_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftA(double)));
     connect(ui->doubleSpinBox_areaFilter_rightA_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightA(double)));
     connect(ui->doubleSpinBox_areaFilter_leftA_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftA(double)));
     connect(ui->doubleSpinBox_areaFilter_rightA_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightA(double)));
 
-    connect(ui->doubleSpinBox_areaFilter_leftB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftB(double)));
-    connect(ui->doubleSpinBox_areaFilter_rightB_lower, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
-    connect(ui->doubleSpinBox_areaFilter_leftB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
-    connect(ui->doubleSpinBox_areaFilter_rightB_upper, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
+    connect(ui->doubleSpinBox_areaFilter_leftB_lower_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerLeftB(double)));
+    connect(ui->doubleSpinBox_areaFilter_rightB_lower_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsLowerRightB(double)));
+    connect(ui->doubleSpinBox_areaFilter_leftB_upper_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperLeftB(double)));
+    connect(ui->doubleSpinBox_areaFilter_rightB_upper_2, SIGNAL(valueChanged(double)), this, SLOT(changePulseAreaFilterLimitsUpperRightB(double)));
 
     connect(ui->doubleSpinBox_riseTimeFilterTimeScaleA, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsA(double)));
     connect(ui->doubleSpinBox_riseTimeFilterTimeScaleB, SIGNAL(valueChanged(double)), this, SLOT(changeRiseTimeFilterScaleInNanosecondsB(double)));
@@ -5498,6 +6881,37 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     connect(ui->spinBox_riseTimeFilterRightA, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowA(int)));
     connect(ui->spinBox_riseTimerFilterLeftB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterLeftWindowB(int)));
     connect(ui->spinBox_riseTimeFilterRightB, SIGNAL(valueChanged(int)), this, SLOT(changeRiseTimeFilterRightWindowB(int)));
+
+    connect(ui->spinBox_NPulsesShapeFilterA, SIGNAL(valueChanged(int)), SLOT(changePulseShapeFilterPulseRecordNumberA(int)));
+    connect(ui->spinBox_NPulsesShapeFilterB, SIGNAL(valueChanged(int)), SLOT(changePulseShapeFilterPulseRecordNumberB(int)));
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDA, SIGNAL(valueChanged(double)), SLOT(changeLeftAPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDA, SIGNAL(valueChanged(double)), SLOT(changeRightAPulseShapeFilter(double)));
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDROIA, SIGNAL(valueChanged(double)), SLOT(changeROILeftAPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDROIA, SIGNAL(valueChanged(double)), SLOT(changeROIRightAPulseShapeFilter(double)));
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDB, SIGNAL(valueChanged(double)), SLOT(changeLeftBPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDB, SIGNAL(valueChanged(double)), SLOT(changeRightBPulseShapeFilter(double)));
+
+    connect(ui->doubleSpinBox_shapeFilterLeftCFDROIB, SIGNAL(valueChanged(double)), SLOT(changeROILeftBPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterRightCFDROIB, SIGNAL(valueChanged(double)), SLOT(changeROIRightBPulseShapeFilter(double)));
+
+    connect(ui->doubleSpinBox_shapeFilterLLStddevA, SIGNAL(valueChanged(double)), SLOT(changeLowerStdDevFractionAPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterULStddevA, SIGNAL(valueChanged(double)), SLOT(changeUpperStdDevFractionAPulseShapeFilter(double)));
+
+    connect(ui->doubleSpinBox_shapeFilterLLStddevB, SIGNAL(valueChanged(double)), SLOT(changeLowerStdDevFractionBPulseShapeFilter(double)));
+    connect(ui->doubleSpinBox_shapeFilterULStddevB, SIGNAL(valueChanged(double)), SLOT(changeUpperStdDevFractionBPulseShapeFilter(double)));
+
+    connect(ui->spinBox_baseLineStartCell_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellA(int)));
+    connect(ui->spinBox_baseLine_region_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionA(int)));
+    connect(ui->doubleSpinBox_baseLineValue_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueA(double)));
+    connect(ui->doubleSpinBox_baseLineLimit_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineFilterRejectionLimitA(double)));
+
+    connect(ui->spinBox_baseLineStartCell_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellB(int)));
+    connect(ui->spinBox_baseLine_region_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionB(int)));
+    connect(ui->doubleSpinBox_baseLineValue_B, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueB(double)));
+    connect(ui->doubleSpinBox_baseLineLimit_B, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineFilterRejectionLimitB(double)));
 
     connect(ui->spinBox_medianFilterWindowSizeA, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeA(int)));
     connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
@@ -5558,6 +6972,15 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     ui->checkBox_medianFilterAActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterAEnabled());
     ui->checkBox_medianFilterBActivate->setChecked(DRS4SettingsManager::sharedInstance()->medianFilterBEnabled());
 
+    ui->checkBox_activatePulseShapeFilterA->setChecked(DRS4SettingsManager::sharedInstance()->pulseShapeFilterEnabledA());
+    ui->checkBox_activatePulseShapeFilterB->setChecked(DRS4SettingsManager::sharedInstance()->pulseShapeFilterEnabledB());
+
+    ui->checkBox_activateBaselineCorrection_A->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledA());
+    ui->checkBox_baseLineReject_A->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitA());
+
+    ui->checkBox_activateBaselineCorrection_B->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledB());
+    ui->checkBox_baseLineReject_B->setChecked(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitB());
+
     ui->checkBox_enablePersistance->setChecked(DRS4SettingsManager::sharedInstance()->isPersistanceEnabled());
     ui->checkBox_usingCFDB_A->setChecked(DRS4SettingsManager::sharedInstance()->persistanceUsingCFDBAsRefForA());
     ui->checkBox_usingCFDA_B->setChecked(DRS4SettingsManager::sharedInstance()->persistanceUsingCFDAAsRefForB());
@@ -5595,10 +7018,17 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     adaptPersistancePlotA();
     adaptPersistancePlotB();
 
+    adaptPulseShapeFilterPlotA();
+    adaptPulseShapeFilterPlotB();
+
     if ( DRS4ScriptManager::sharedInstance()->isArmed() )
         emit signalUpdateInfoDlgFromScript(DRS4SettingsManager::sharedInstance()->comment());
-    else
+    else {
+        ui->pushButton_shapeFilterCalcA->setText(QString("calculate (0)"));
+        ui->pushButton_shapeFilterCalcB->setText(QString("calculate (0)"));
+
         m_addInfoDlg->setAddInfo(DRS4SettingsManager::sharedInstance()->comment());
+    }
 
     changeChannelSettingsAB(0);
     changeChannelSettingsBA(0);

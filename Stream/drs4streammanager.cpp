@@ -512,7 +512,7 @@ void DRS4TextFileStreamRangeManager::abort()
     emit finished();
 }
 
-void DRS4TextFileStreamRangeManager::writePulses(QVector<QPointF> *pulseA, QVector<QPointF> *pulseB)
+void DRS4TextFileStreamRangeManager::writePulses(QVector<QPointF> *pulseA, QVector<QPointF> *pulseB, const double& cfdValueA, const double& cfdValueB)
 {
     if ( !isArmed() )
         return;
@@ -536,12 +536,28 @@ void DRS4TextFileStreamRangeManager::writePulses(QVector<QPointF> *pulseA, QVect
     if ( m_file->open(QIODevice::WriteOnly) )
     {
         stream << "time [ns] (Pulse A)\tvoltage [mV] (Pulse A)\t";
-        stream << "time [ns] (Pulse B)\tvoltage [mV] (Pulse B)\n";
+        stream << "time [ns] (Pulse B)\tvoltage [mV] (Pulse B)\t";
+        stream << "cfd-Value A [ns]\tmax. amplitude A [mV]\t";
+        stream << "cfd-Value B [ns]\tmax. amplitude B [mV]\n";
 
         for ( int i = 0 ; i < pulseA->size() ; ++ i )
         {
-            stream << QString::number(pulseA->at(i).x(), 'f', 6) + "\t" + QString::number(pulseA->at(i).y(), 'f', 6) << "\t";
-            stream << QString::number(pulseB->at(i).x(), 'f', 6) + "\t" + QString::number(pulseB->at(i).y(), 'f', 6);
+            if ( i == 0 ) {
+                stream << QString::number(pulseA->at(i).x(), 'f', 6) + "\t" + QString::number(pulseA->at(i).y(), 'f', 6) << "\t";
+                stream << QString::number(pulseB->at(i).x(), 'f', 6) + "\t" + QString::number(pulseB->at(i).y(), 'f', 6) << "\t";
+                stream << QString::number(cfdValueA, 'f', 6) << "\t" << "-500.0" << "\t";
+                stream << QString::number(cfdValueB, 'f', 6) << "\t" << "-500.0";
+            }
+            else if ( i == 1 ) {
+                stream << QString::number(pulseA->at(i).x(), 'f', 6) + "\t" + QString::number(pulseA->at(i).y(), 'f', 6) << "\t";
+                stream << QString::number(pulseB->at(i).x(), 'f', 6) + "\t" + QString::number(pulseB->at(i).y(), 'f', 6) << "\t";
+                stream << QString::number(cfdValueA, 'f', 6) << "\t" << "500.0" << "\t";
+                stream << QString::number(cfdValueB, 'f', 6) << "\t" << "500.0";
+            }
+            else {
+                stream << QString::number(pulseA->at(i).x(), 'f', 6) + "\t" + QString::number(pulseA->at(i).y(), 'f', 6) << "\t";
+                stream << QString::number(pulseB->at(i).x(), 'f', 6) + "\t" + QString::number(pulseB->at(i).y(), 'f', 6);
+            }
 
             stream << "\n";
         }

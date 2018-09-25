@@ -44,7 +44,6 @@
 #include "DLib/DGUI/horizontalrangedoubleslider.h"
 #include "DLib/DGUI/verticalrangedoubleslider.h"
 #include "DLib/DGUI/mathconsoletextbox.h"
-#include "DLib/DGUI/d2dsplinewidget.h"
 
 #include "DLib/DPlot/plot2DXWidget.h"
 #include "DLib/DPlot/plot2DXCurve.h"

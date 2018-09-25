@@ -1,14 +1,14 @@
 <DDRS4PALS>
-    <last-save-date>Do Apr 12 14:47:27 2018</last-save-date>
-    <file-version>1</file-version>
+    <last-save-date>Di Sep 25 11:13:43 2018</last-save-date>
+    <file-version>3</file-version>
     <burst-mode?>false</burst-mode?>
     <negative-lifetimes?>true</negative-lifetimes?>
     <force-stop-stop-Prompt-spectrum>false</force-stop-stop-Prompt-spectrum>
     <user-comment><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
 p, li { white-space: pre-wrap; }
-</style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:8.1pt; font-weight:600; font-style:normal;">
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This software is written by Danny Petschke. Copyright 2016-2018. All rights reserved.</p></body></html></user-comment>
+</style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:7.875pt; font-weight:600; font-style:normal;">
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:8.1pt;">This software is written by Danny Petschke. Copyright 2016-2018. All rights reserved.</span></p></body></html></user-comment>
     <general-board-settings>
         <analog-input-channel-A>0</analog-input-channel-A>
         <analog-input-channel-B>1</analog-input-channel-B>
@@ -109,11 +109,63 @@ p, li { white-space: pre-wrap; }
         <pulse-area-filter-lower-right-bounding-B>96</pulse-area-filter-lower-right-bounding-B>
     </area-filter-settings>
     <median-filter-settings>
-         <median-filter-A?>false</median-filter-A?>
-         <median-filter-window-size-A>3</median-filter-window-size-A>
-         <median-filter-B?>false</median-filter-B?>
-         <median-filter-window-size-B>3</median-filter-window-size-B>
+        <median-filter-A?>false</median-filter-A?>
+        <median-filter-window-size-A>3</median-filter-window-size-A>
+        <median-filter-B?>false</median-filter-B?>
+        <median-filter-window-size-B>3</median-filter-window-size-B>
     </median-filter-settings>
+    <rise-time-filter-settings>
+        <rise-time-filter?>false</rise-time-filter?>
+        <rise-time-filter-plot?>false</rise-time-filter-plot?>
+        <rise-time-filter-scale-in-ns-A>5</rise-time-filter-scale-in-ns-A>
+        <rise-time-filter-number-of-bins-A>1000</rise-time-filter-number-of-bins-A>
+        <rise-time-filter-left-bin-A>20</rise-time-filter-left-bin-A>
+        <rise-time-filter-right-bin-A>980</rise-time-filter-right-bin-A>
+        <rise-time-filter-scale-in-ns-B>5</rise-time-filter-scale-in-ns-B>
+        <rise-time-filter-number-of-bins-B>1000</rise-time-filter-number-of-bins-B>
+        <rise-time-filter-left-bin-B>20</rise-time-filter-left-bin-B>
+        <rise-time-filter-right-bin-B>980</rise-time-filter-right-bin-B>
+    </rise-time-filter-settings>
+    <pulse-shape-filter-settings>
+        <pulse-shape-filter-A-enabled?>false</pulse-shape-filter-A-enabled?>
+        <pulse-shape-filter-B-enabled?>false</pulse-shape-filter-B-enabled?>
+        <pulse-shape-filter-number-of-pulses-to-be-recorded-A>10000</pulse-shape-filter-number-of-pulses-to-be-recorded-A>
+        <pulse-shape-filter-number-of-pulses-to-be-recorded-B>10000</pulse-shape-filter-number-of-pulses-to-be-recorded-B>
+        <pulse-shape-filter-plot-left-of-CFD-in-ns-A>2</pulse-shape-filter-plot-left-of-CFD-in-ns-A>
+        <pulse-shape-filter-plot-left-of-CFD-in-ns-B>2</pulse-shape-filter-plot-left-of-CFD-in-ns-B>
+        <pulse-shape-filter-plot-right-of-CFD-in-ns-A>2</pulse-shape-filter-plot-right-of-CFD-in-ns-A>
+        <pulse-shape-filter-plot-right-of-CFD-in-ns-B>2</pulse-shape-filter-plot-right-of-CFD-in-ns-B>
+        <pulse-shape-filter-ROI-left-of-CFD-in-ns-A>1.2000000476837158</pulse-shape-filter-ROI-left-of-CFD-in-ns-A>
+        <pulse-shape-filter-ROI-left-of-CFD-in-ns-B>1.2000000476837158</pulse-shape-filter-ROI-left-of-CFD-in-ns-B>
+        <pulse-shape-filter-ROI-right-of-CFD-in-ns-A>1.2000000476837158</pulse-shape-filter-ROI-right-of-CFD-in-ns-A>
+        <pulse-shape-filter-ROI-right-of-CFD-in-ns-B>1.2000000476837158</pulse-shape-filter-ROI-right-of-CFD-in-ns-B>
+        <pulse-shape-filter-upper-level-stddev-fraction-A>3</pulse-shape-filter-upper-level-stddev-fraction-A>
+        <pulse-shape-filter-upper-level-stddev-fraction-B>3</pulse-shape-filter-upper-level-stddev-fraction-B>
+        <pulse-shape-filter-lower-level-stddev-fraction-A>3</pulse-shape-filter-lower-level-stddev-fraction-A>
+        <pulse-shape-filter-lower-level-stddev-fraction-B>3</pulse-shape-filter-lower-level-stddev-fraction-B>
+        <pulse-shape-filter-content-A>
+            <pulse-shape-filter-content-mean-trace-A></pulse-shape-filter-content-mean-trace-A>
+            <pulse-shape-filter-content-stddev-trace-A></pulse-shape-filter-content-stddev-trace-A>
+        </pulse-shape-filter-content-A>
+        <pulse-shape-filter-content-B>
+            <pulse-shape-filter-content-mean-trace-B></pulse-shape-filter-content-mean-trace-B>
+            <pulse-shape-filter-content-stddev-trace-B></pulse-shape-filter-content-stddev-trace-B>
+        </pulse-shape-filter-content-B>
+    </pulse-shape-filter-settings>
+    <baseline-jitter-correction-settings>
+        <baseline-jitter-correction-enabled-A?>false</baseline-jitter-correction-enabled-A?>
+        <baseline-jitter-correction-enabled-B?>false</baseline-jitter-correction-enabled-B?>
+        <baseline-jitter-correction-start-cell-A>5</baseline-jitter-correction-start-cell-A>
+        <baseline-jitter-correction-start-cell-B>5</baseline-jitter-correction-start-cell-B>
+        <baseline-jitter-correction-cell-region-A>25</baseline-jitter-correction-cell-region-A>
+        <baseline-jitter-correction-cell-region-B>25</baseline-jitter-correction-cell-region-B>
+        <baseline-jitter-correction-baseline-value-in-mV-A>0</baseline-jitter-correction-baseline-value-in-mV-A>
+        <baseline-jitter-correction-baseline-value-in-mV-B>0</baseline-jitter-correction-baseline-value-in-mV-B>
+        <baseline-filter-rejection-limit-in-%-A>3</baseline-filter-rejection-limit-in-%-A>
+        <baseline-filter-rejection-limit-in-%-B>3</baseline-filter-rejection-limit-in-%-B>
+        <baseline-filter-enabled-A?>false</baseline-filter-enabled-A?>
+        <baseline-filter-enabled-B?>false</baseline-filter-enabled-B?>
+    </baseline-jitter-correction-settings>
     <persistance-plot-settings>
         <persistance-plot?>false</persistance-plot?>
         <persistance-plot-using-CFD-B-as-reference-A?>false</persistance-plot-using-CFD-B-as-reference-A?>

@@ -159,7 +159,7 @@ public slots:
     void start(const QString& fileName, int n, bool pulseAB, bool pulseBA);
     void abort();
 
-    void writePulses(QVector<QPointF> *pulseA, QVector<QPointF> *pulseB);
+    void writePulses(QVector<QPointF> *pulseA, QVector<QPointF> *pulseB, const double &cfdValueA, const double &cfdValueB);
 
     void setLTRangeMinAB(double val);
     void setLTRangeMaxAB(double val);
