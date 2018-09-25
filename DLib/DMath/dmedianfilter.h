@@ -154,7 +154,7 @@ class DMedianFilter
     virtual ~DMedianFilter();
 
 public:
-    static bool apply(float *data_1d, float *data_1d_source, int size, int windowSize);
+    static bool apply(float *data_1d, int size, int windowSize);
 };
 
 #endif // DMEDIANFILTER_H

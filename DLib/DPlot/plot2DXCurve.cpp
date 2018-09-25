@@ -34,7 +34,7 @@
 #define DEFAULT_CURVE_COLOR     Qt::red
 #define DEFAULT_CURVE_WIDTH     2
 
-#define CONTAINER_MAX_VALUE     1000000 //maximum count of data-pairs <double,double> the container contains
+#define CONTAINER_MAX_VALUE     100000000 //maximum count of data-pairs <double,double> the container contains
 
 plot2DXCurve::plot2DXCurve() :
     m_scale(yLeft_xBottom),

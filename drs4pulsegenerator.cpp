@@ -580,6 +580,8 @@ void DRS4PulseGenerator::update()
 
     DDELETE_SAFETY(m_generator);
     m_generator = new DLTPulseGenerator(m_simulationInput, m_phsDistribution, m_deviceInfo, m_pulseInfo, this);
+
+    /*m_generator->m_sampleScaleFactor = 250000/1024.0f;*/
 }
 
 bool DRS4PulseGenerator::receiveGeneratedPulsePair(float *pulseATime, float *pulseAVoltage, float *pulseBTime, float *pulseBVoltage)

@@ -8,7 +8,7 @@ QT       += core gui concurrent script printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = DDRS4PALS_1_0_0
+TARGET = DDRS4PALS_1_0_6
 TEMPLATE = app
 
 RC_FILE = softwareIcon.rc
@@ -35,6 +35,7 @@ SOURCES += main.cpp\
     drs4settingsmanager.cpp \
     Fit/mpfit.c \
     Fit/fitengine.cpp \
+    Fit/dspline.cpp \
     GUI/drs4addinfodlg.cpp \
     GUI/drs4boardinfodlg.cpp \
     Stream/drs4streammanager.cpp \
@@ -66,6 +67,7 @@ HEADERS  += DRS/DRS.h \
     drs4settingsmanager.h \
     Fit/mpfit.h \
     Fit/fitengine.h \
+    Fit/dspline.h \
     GUI/drs4addinfodlg.h \
     GUI/drs4boardinfodlg.h \
     Stream/drs4streammanager.h \

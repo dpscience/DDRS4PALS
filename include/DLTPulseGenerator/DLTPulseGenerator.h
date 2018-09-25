@@ -296,9 +296,10 @@ class DLTPULSEGENERATOR_EXPORT DLTPulseGenerator
 
     DLTSimulationInput m_simulationInput;
 
-	double			   m_sampleScaleFactor;
-
 public:
+    double			   m_sampleScaleFactor;
+
+public:    
 	DLTPulseGenerator(const DLTSimulationInput& simulationInput, 
 					  const DLTPHS& phsDistribution, 
 					  const DLTSetup& setupInfo, 

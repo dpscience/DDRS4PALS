@@ -31,6 +31,7 @@
 #include <QObject>
 #include <QPointF>
 #include <QList>
+#include <QVector>
 #include <QMetaType>
 #include <QApplication>
 
@@ -56,9 +57,15 @@
 
 #include "Stream/drs4streammanager.h"
 
+#include "Fit/dspline.h"
+
 using namespace QtConcurrent;
 
+class DSpline;
+
 class DRS4WorkerConcurrentManager;
+class DRS4ConcurrentCopyInputData;
+class DRS4ConcurrentCopyOutputData;
 class DRS4WorkerDataExchange;
 class DRS4Worker;
 
@@ -229,6 +236,36 @@ public:
     int m_riseTimeFilterRightWindowA;
     int m_riseTimeFilterRightWindowB;
 
+    bool m_pulseShapeFilterEnabledA;
+    bool m_pulseShapeFilterEnabledB;
+
+    double m_pulseShapeFilterLeftInNsROIA;
+    double m_pulseShapeFilterRightInNsROIA;
+
+    double m_pulseShapeFilterLeftInNsROIB;
+    double m_pulseShapeFilterRightInNsROIB;
+
+    double m_pulseShapeFilterFractOfStdDevUpperA;
+    double m_pulseShapeFilterFractOfStdDevLowerA;
+
+    double m_pulseShapeFilterFractOfStdDevUpperB;
+    double m_pulseShapeFilterFractOfStdDevLowerB;
+
+    bool m_pulseShapeFilterAIsRecording;
+    bool m_pulseShapeFilterBIsRecording;
+
+    float m_pulseShapeFilterDataMeanTraceA_X[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    float m_pulseShapeFilterDataMeanTraceA_Y[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+
+    float m_pulseShapeFilterDataMeanTraceB_X[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    float m_pulseShapeFilterDataMeanTraceB_Y[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+
+    float m_pulseShapeFilterDataStdDevTraceA_X[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    float m_pulseShapeFilterDataStdDevTraceA_Y[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+
+    float m_pulseShapeFilterDataStdDevTraceB_X[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+    float m_pulseShapeFilterDataStdDevTraceB_Y[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
+
     bool m_bMedianFilterA;
     bool m_bMedianFilterB;
 
@@ -268,45 +305,6 @@ public:
     float m_waveChannel1[kNumberOfBins];
 };
 
-class DRS4ConcurrentCopyOutputData final {
-public:
-    /* data to be manipulated */
-
-    /* PHS */
-    QVector<int> m_phsA, m_phsB; /* stores the index */
-
-    /* Lifetime-Spectra */
-    QVector<int> m_lifeTimeDataAB, m_lifeTimeDataBA, m_lifeTimeDataCoincidence, m_lifeTimeDataMerged; /* stores the index */
-
-    /* Area-Filter */
-    QVector<QPointF> m_areaFilterDataA, m_areaFilterDataB;
-
-    /* Rise-Time Filter */
-    QVector<int> m_riseTimeFilterDataA, m_riseTimeFilterDataB;
-
-    /* input data */
-    int m_channelCntCoincindence;
-    int m_channelCntAB;
-    int m_channelCntBA;
-    int m_channelCntMerged;
-
-    bool m_bReject;
-
-    DRS4ConcurrentCopyOutputData() : m_bReject(true) {}
-    DRS4ConcurrentCopyOutputData(int channelCntCoincindence, int channelCntAB, int channelCntBA, int channelCntMerged, bool bReject = true) :
-        m_channelCntCoincindence(channelCntCoincindence),
-        m_channelCntAB(channelCntAB),
-        m_channelCntBA(channelCntBA),
-        m_channelCntMerged(channelCntMerged),
-        m_bReject(bReject) {}
-
-    virtual ~DRS4ConcurrentCopyOutputData() {}
-
-    inline bool rejectData() const {
-        return m_bReject;
-    }
-};
-
 class DRS4WorkerDataExchange final
 {
 public:
@@ -344,8 +342,6 @@ public:
 
     DRS4WorkerDataExchange::~DRS4WorkerDataExchange() {}
 };
-
-DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInputData>& copyDataVec);
 
 class DRS4Worker : public QObject
 {
@@ -433,11 +429,27 @@ public:
     QVector<QPointF> m_persistanceDataA;
     QVector<QPointF> m_persistanceDataB;
 
+    /* Pulse Shape - Data */
+    QVector<QPointF> m_pulseShapeDataA;
+    QVector<QPointF> m_pulseShapeDataB;
+
+    QVector<DSpline> m_pulseShapeDataSplineA;
+    QVector<DSpline> m_pulseShapeDataSplineB;
+
+    int m_pulseShapeDataACounter;
+    int m_pulseShapeDataBCounter;
+
+    int m_pulseShapeDataAmountA;
+    int m_pulseShapeDataAmountB;
+
+    bool m_isRecordingForShapeFilterA;
+    bool m_isRecordingForShapeFilterB;
+
 public:
     explicit DRS4Worker(DRS4WorkerDataExchange *dataExchange, QObject *parent = 0);
     virtual ~DRS4Worker();
 
-    //handshaking between the threads!!!
+    /* handshaking between threads */
     bool nextSignal() const;
     bool isBlocking() const;
 
@@ -447,10 +459,38 @@ signals:
     void started();
     void stopped();
 
+    void startedRecordingForPulseShapeFilterA();
+    void startedRecordingForPulseShapeFilterB();
+
+    void stoppedRecordingForPulseShapeFilterA();
+    void stoppedRecordingForPulseShapeFilterB();
+
 public slots:
     void initDRS4Worker();
     void start();
     void stop();
+
+    /* Pulse - Shape Filter */
+    void startRecordingForShapeFilterA(int numberOfPulses);
+    void startRecordingForShapeFilterB(int numberOfPulses);
+
+    void recordPulseShapeData(bool positiveSignal, double timeStampA, double timeStampB, double yMinA, double yMaxA, double yMinB, double yMaxB);
+
+    QVector<QPointF> calculateMeanTraceA() const;
+    QVector<QPointF> calculateMeanTraceB() const;
+
+    QVector<QPointF> calculateStdDevTraceA(const QVector<QPointF>& meanTrace) const;
+    QVector<QPointF> calculateStdDevTraceB(const QVector<QPointF>& meanTrace) const;
+
+    void stopRecordingForShapeFilterA();
+    void stopRecordingForShapeFilterB();
+
+    bool isRecordingForPulseShapeFilterA();
+    bool isRecordingForPulseShapeFilterB();
+
+    int pulseShapeFilterRecordingProgressA();
+    int pulseShapeFilterRecordingProgressB();
+
 
     void setBusy(bool busy);
 
@@ -548,9 +588,67 @@ public:
     QVector<QPointF> *persistanceDataA();
     QVector<QPointF> *persistanceDataB();
 
+    /* Pulse Shape - Data */
+    void resetPulseShapeFilterA();
+    void resetPulseShapeFilterB();
+
+    QVector<QPointF> *pulseShapeDataA();
+    QVector<QPointF> *pulseShapeDataB();
+
+    DRS4PulseShapeFilterData pulseShapeFilterSplineDataA() const;
+    DRS4PulseShapeFilterData pulseShapeFilterSplineDataB() const;
+
     int activeThreads() const;
     int maxThreads() const;
 };
+
+class DRS4ConcurrentCopyOutputData final {
+public:
+    /* data to be manipulated */
+
+    /* PHS */
+    QVector<int> m_phsA, m_phsB; /* stores the index */
+
+    /* Lifetime-Spectra */
+    QVector<int> m_lifeTimeDataAB, m_lifeTimeDataBA, m_lifeTimeDataCoincidence, m_lifeTimeDataMerged; /* stores the index */
+
+    /* Area-Filter */
+    QVector<QPointF> m_areaFilterDataA, m_areaFilterDataB;
+
+    /* Rise-Time Filter */
+    QVector<int> m_riseTimeFilterDataA, m_riseTimeFilterDataB;
+
+    /* Pulse Shape - Data */
+    QVector<QVector<QPointF> > m_pulseShapeDataA;
+    QVector<QVector<QPointF> > m_pulseShapeDataB;
+
+    QVector<DSpline> m_pulseShapeDataSplineA;
+    QVector<DSpline> m_pulseShapeDataSplineB;
+
+    /* input data */
+    int m_channelCntCoincindence;
+    int m_channelCntAB;
+    int m_channelCntBA;
+    int m_channelCntMerged;
+
+    bool m_bReject;
+
+    DRS4ConcurrentCopyOutputData() : m_bReject(true) {}
+    DRS4ConcurrentCopyOutputData(int channelCntCoincindence, int channelCntAB, int channelCntBA, int channelCntMerged, bool bReject = true) :
+        m_channelCntCoincindence(channelCntCoincindence),
+        m_channelCntAB(channelCntAB),
+        m_channelCntBA(channelCntBA),
+        m_channelCntMerged(channelCntMerged),
+        m_bReject(bReject) {}
+
+    virtual ~DRS4ConcurrentCopyOutputData() {}
+
+    inline bool rejectData() const {
+        return m_bReject;
+    }
+};
+
+DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInputData>& copyDataVec);
 
 class DRS4WorkerConcurrentManager : public QObject
 {
