@@ -1,6 +1,9 @@
+Support this project and keep always updated about recent software releases, bug fixes and major improvements by [following on researchgate](https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board) or [github](https://github.com/dpscience?tab=followers).<br><br>
+
 # DDRS4PALS  <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 Copyright (c) 2016-2018 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
+
 <b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
 
 # How to cite this Software?
