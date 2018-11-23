@@ -22,7 +22,7 @@ DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 <b>DDRS4PALS</b> is written in C++ using [Qt-Framework](https://www.qt.io/) (licensed under the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0))
 
-The following 3rd party libraries used by <b>DDRS4PALS</b> software.<br>
+The following 3rd party libraries are used by <b>DDRS4PALS</b> software.<br>
 
 ### ALGLIB
 - [ALGLIB: A cross-platform numerical analysis and data processing library](http://www.alglib.net/)<br><br>License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
