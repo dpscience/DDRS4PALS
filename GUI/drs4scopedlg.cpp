@@ -550,7 +550,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     ui->comboBox_triggerLogic->setCurrentIndex(2);
 
-    /* hardcoded Board-Specs (see manual) */
+    /* board-specs (see manual) */
     ui->comboBox_sampleSpeed->addItem("5.12GHz (200ns)");
     ui->comboBox_sampleSpeed->addItem("2.00GHz (500ns)");
     ui->comboBox_sampleSpeed->addItem("1.00GHz (1000ns)");
@@ -561,9 +561,18 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->comboBox_triggerLogic, SIGNAL(currentIndexChanged(int)), this, SLOT(changeTriggerLogic(int)));
     connect(ui->comboBox_sampleSpeed, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSampleSpeed(int)));
 
-
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         DRS4BoardManager::sharedInstance()->currentBoard()->SetTriggerSource(DRS4SettingsManager::sharedInstance()->triggerSource());
+
+    /* pulse shape filter record scheme */
+    ui->comboBox_pulseShapeFilterRecordScheme->addItem("AB: A (start) - B (stop)");
+    ui->comboBox_pulseShapeFilterRecordScheme->addItem("BA: B (start) - A (stop)");
+    ui->comboBox_pulseShapeFilterRecordScheme->addItem("prompt: A (stop) - B (stop)");
+
+    ui->comboBox_pulseShapeFilterRecordScheme->setCurrentIndex(DRS4PulseShapeFilterRecordScheme::Scheme::RC_AB);
+
+    connect(ui->comboBox_pulseShapeFilterRecordScheme, SIGNAL(currentIndexChanged(int)), this, SLOT(changePulseShapeFilterRecordScheme(int)));
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterRecordScheme(DRS4PulseShapeFilterRecordScheme::Scheme::RC_AB);
 
     ui->doubleSpinBox_cfdA->setValue(25);
     ui->doubleSpinBox_cfdB->setValue(25);
@@ -2306,9 +2315,10 @@ void DRS4ScopeDlg::runDQuickLTFit()
 
     while(!m_worker->isBlocking()) {}
 
-    const int retVal = QProcess::execute(QString("start " + QFileInfo(QCoreApplication::applicationFilePath()).absolutePath() + "/DQuickLTFit.exe"));
+    HINSTANCE retVal = ShellExecuteA(NULL, "open", (LPCSTR)(QString(QFileInfo(QCoreApplication::applicationFilePath()).absolutePath() + "/DQuickLTFit.exe").toStdString().c_str()), NULL, NULL, SW_SHOWDEFAULT);
+    MSGBOX(QString(QFileInfo(QCoreApplication::applicationFilePath()).absolutePath() + "/DQuickLTFit.exe"));
 
-    if ( retVal != 0 ) {
+    if ( ((int)retVal) < 32 ) {
         MSGBOX("Cannot run DQuickLTFit.");
     }
 
@@ -3192,6 +3202,19 @@ void DRS4ScopeDlg::changePulseShapeFilterEnabledB(bool activate, const FunctionS
     while(!m_worker->isBlocking()) {}
 
     DRS4SettingsManager::sharedInstance()->setPulseShapeFilterEnabledB(activate);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changePulseShapeFilterRecordScheme(int index)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setPulseShapeFilterRecordScheme((DRS4PulseShapeFilterRecordScheme::Scheme)index);
 
     m_worker->setBusy(false);
 }
@@ -6608,8 +6631,7 @@ void DRS4ScopeDlg::loadSettings()
 
     DRS4ProgramSettingsManager::sharedInstance()->setSettingsFilePath(fileName);
 
-    if ( !DRS4SettingsManager::sharedInstance()->load(fileName) )
-    {
+    if ( !DRS4SettingsManager::sharedInstance()->load(fileName) ) {
         MSGBOX("An Error occurred while loading DRS4 settings!");
         m_worker->setBusy(false);
         return;
@@ -6957,6 +6979,8 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     default:
         break;
     }
+
+    ui->comboBox_pulseShapeFilterRecordScheme->setCurrentIndex((int)DRS4SettingsManager::sharedInstance()->pulseShapeFilterRecordScheme());
 
     ui->checkBox_forceStopStopCoincindence->setChecked(DRS4SettingsManager::sharedInstance()->isforceCoincidence());
 
@@ -7813,7 +7837,7 @@ int DRS4ScopeDlg::countsOfABSpectrum() const
     if (!m_worker)
         return -1;
 
-    QMutexLocker locker(&m_mutex);
+    //QMutexLocker locker(&m_mutex);
 
     m_worker->setBusy(true);
 
@@ -7831,7 +7855,7 @@ int DRS4ScopeDlg::countsOfBASpectrum() const
     if (!m_worker)
         return -1;
 
-    QMutexLocker locker(&m_mutex);
+    //QMutexLocker locker(&m_mutex);
 
     m_worker->setBusy(true);
 
@@ -7849,7 +7873,7 @@ int DRS4ScopeDlg::countsOfMergedSpectrum() const
     if (!m_worker)
         return -1;
 
-    QMutexLocker locker(&m_mutex);
+    //QMutexLocker locker(&m_mutex);
 
     m_worker->setBusy(true);
 
@@ -7867,7 +7891,7 @@ int DRS4ScopeDlg::countsOfCoincidenceSpectrum() const
     if (!m_worker)
         return -1;
 
-    QMutexLocker locker(&m_mutex);
+    //QMutexLocker locker(&m_mutex);
 
     m_worker->setBusy(true);
 

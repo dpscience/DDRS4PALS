@@ -151,6 +151,11 @@ public:
     void changeBurstMode(bool burstMode);
     bool isBurstModeRunning();
 
+    bool waitForCountsAB(int counts);
+    bool waitForCountsBA(int counts);
+    bool waitForCountsMerged(int counts);
+    bool waitForCountsPrompt(int counts);
+
     void changeUsingPositiveTriggerPolarity(bool positive);
     void changeToHavingPositiveSignal(bool positive);
 

@@ -37,9 +37,9 @@
 
 #define NAME                       QString("DDRS4PALS")
 #define MAJOR_VERSION       QString("1")
-#define MINOR_VERSION    QString("06")
+#define MINOR_VERSION    QString("07")
 #define VERSION_EXTENSION QString("(official)")
-#define DATE_EXTENSION  QString("25.09.2018")
+#define DATE_EXTENSION  QString("23.11.2018")
 
 #define DATA_STREAM_VERSION 1
 
@@ -53,7 +53,7 @@
 //Extension for settings-file:
 #define EXT_LT_SETTINGS_FILE   QString(".drs4LTSettings")
 
-#define VERSION_SETTINGS_FILE 3 /* 25.09.2018 */
+#define VERSION_SETTINGS_FILE 4 /* 23.11.2018 */
 
 //Extension for simulation-input-file:
 #define EXT_SIMULATION_INPUT_FILE QString(".drs4SimulationInputFile")

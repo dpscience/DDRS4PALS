@@ -738,6 +738,46 @@ bool DRS4ScriptingEngineAccessManager::isBurstModeRunning()
     return m_dlgAccess->isBurstModeRunning();
 }
 
+bool DRS4ScriptingEngineAccessManager::waitForCountsAB(int counts)
+{
+    if ( !m_dlgAccess )
+        return false;
+
+    while (m_dlgAccess->countsOfABSpectrum() < counts) {}
+
+    return true;
+}
+
+bool DRS4ScriptingEngineAccessManager::waitForCountsBA(int counts)
+{
+    if ( !m_dlgAccess )
+        return false;
+
+    while (m_dlgAccess->countsOfBASpectrum() < counts) {}
+
+    return true;
+}
+
+bool DRS4ScriptingEngineAccessManager::waitForCountsMerged(int counts)
+{
+    if ( !m_dlgAccess )
+        return false;
+
+    while (m_dlgAccess->countsOfMergedSpectrum() < counts) {}
+
+    return true;
+}
+
+bool DRS4ScriptingEngineAccessManager::waitForCountsPrompt(int counts)
+{
+    if ( !m_dlgAccess )
+        return false;
+
+    while (m_dlgAccess->countsOfCoincidenceSpectrum() < counts) {}
+
+    return true;
+}
+
 void DRS4ScriptingEngineAccessManager::changeUsingPositiveTriggerPolarity(bool positive)
 {
     QMutexLocker locker(&m_mutex);

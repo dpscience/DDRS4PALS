@@ -39,13 +39,20 @@
 
 #include "alglib.h"
 
-
 #define __PULSESHAPEFILTER_LEFT_MAX -30.0 /* [ns] */
 #define __PULSESHAPEFILTER_RIGHT_MAX 100.0 /* [ns] */
 
 #define __PULSESHAPEFILTER_REGION 130.0 /* [ns] */
 
 #define __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER 1424
+
+struct DRS4PulseShapeFilterRecordScheme {
+    enum Scheme : int {
+        RC_AB = 0,
+        RC_BA = 1,
+        RC_Prompt = 2
+    };
+};
 
 class DRS4PulseShapeFilterData
 {
@@ -358,6 +365,8 @@ class DRS4SettingsManager
 
     bool m_pulseShapeFilterEnabledA, m_pulseShapeFilterEnabledB;
 
+    DRS4PulseShapeFilterRecordScheme::Scheme m_pulseShapeFilterRecordScheme;
+
     int m_baseLineCorrectionStartCellA;
     int m_baseLineCorrectionRegionA;
     double m_baseLineCorrectionShiftValueA;
@@ -510,6 +519,9 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_pulseShapeFilterEnabledA_Node;
     DSimpleXMLNode *m_pulseShapeFilterEnabledB_Node;
 
+    DSimpleXMLNode *m_pulseShapeFilterRecordScheme_Node;
+
+
     DSimpleXMLNode *m_baseLineFilterSettingsNode;
 
     DSimpleXMLNode *m_baseLineCorrectionStartCellA_Node;
@@ -535,6 +547,8 @@ public:
     bool save(const QString& path, bool autosave = false);
 
     DSimpleXMLNode *parentNode() const;
+
+    QMutex *mutex();
 
 public:
     void parsePulseShapeData(DSimpleXMLNode *node, QVector<QPointF> *filterData);
@@ -688,6 +702,8 @@ public:
     void setPulseShapeFilterEnabledA(bool enabled);
     void setPulseShapeFilterEnabledB(bool enabled);
 
+    void setPulseShapeFilterRecordScheme(const DRS4PulseShapeFilterRecordScheme::Scheme& rc);
+
     void setBaselineCorrectionCalculationStartCellA(int cell);
     void setBaselineCorrectionCalculationRegionA(int region);
     void setBaselineCorrectionCalculationEnabledA(bool enabled);
@@ -718,6 +734,8 @@ public:
 
     bool pulseShapeFilterEnabledA() const;
     bool pulseShapeFilterEnabledB() const;
+
+    DRS4PulseShapeFilterRecordScheme::Scheme pulseShapeFilterRecordScheme() const;
 
     int pulseShapeFilterNumberOfPulsesToBeRecordedA() const;
     int pulseShapeFilterNumberOfPulsesToBeRecordedB() const;

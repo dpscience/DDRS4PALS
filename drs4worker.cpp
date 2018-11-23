@@ -161,7 +161,7 @@ void DRS4Worker::recordPulseShapeData(bool positiveSignal, double timeStampA, do
                     if (bROIA) {
                         const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
 
-                        m_pulseShapeDataA.append(QPointF(tA, yA)); // >> shift channel A relative to CFD-%(t0) of A
+                        m_pulseShapeDataA.append(QPointF(tA, yA));
 
                         xSplineA.push_back(tA);
                         ySplineA.push_back(yA);
@@ -178,7 +178,7 @@ void DRS4Worker::recordPulseShapeData(bool positiveSignal, double timeStampA, do
                     if (bROIA) {
                         const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
 
-                        m_pulseShapeDataA.append(QPointF(tA, yA)); // >> shift channel A relative to CFD-%(t0) of A
+                        m_pulseShapeDataA.append(QPointF(tA, yA));
 
                         xSplineA.push_back(tA);
                         ySplineA.push_back(yA);
@@ -201,7 +201,7 @@ void DRS4Worker::recordPulseShapeData(bool positiveSignal, double timeStampA, do
                     if (bROIB) {
                         const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
 
-                        m_pulseShapeDataB.append(QPointF(tB, yB)); // >> shift channel B relative to CFD-%(t0) of B
+                        m_pulseShapeDataB.append(QPointF(tB, yB));
 
                         xSplineB.push_back(tB);
                         ySplineB.push_back(yB);
@@ -218,7 +218,7 @@ void DRS4Worker::recordPulseShapeData(bool positiveSignal, double timeStampA, do
                     if (bROIB) {
                         const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
 
-                        m_pulseShapeDataB.append(QPointF(tB, yB)); // >> shift channel B relative to CFD-%(t0) of B
+                        m_pulseShapeDataB.append(QPointF(tB, yB));
 
                         xSplineB.push_back(tB);
                         ySplineB.push_back(yB);
@@ -1960,7 +1960,7 @@ void DRS4Worker::runSingleThreaded()
         if (!bDemoMode) {
             try {
                  // just 2 waves are necessary! Place them next to each other like (Chn1 & Chn2) to reduce sampling!
-                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 2);
+                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 3);
             }
             catch (...) {
                 continue;
@@ -2070,7 +2070,7 @@ void DRS4Worker::runSingleThreaded()
         /* statistics: */
         time(&stop);
         const double diffTime = difftime(stop, start);
-        if ( diffTime >= 1.0f ) {
+        if ( diffTime >= __STATISTIC_AVG_TIME ) {
             m_currentPulseCountRateInSeconds = ((double)m_pulseCounterCnt)/diffTime;
             m_summedPulseCountRateInSeconds += m_currentPulseCountRateInSeconds;
             m_avgPulseCountRateInSeconds = (m_pulseCounterCntAvg==0)?m_currentPulseCountRateInSeconds:(m_summedPulseCountRateInSeconds/(double)m_pulseCounterCntAvg);
@@ -2125,8 +2125,9 @@ void DRS4Worker::runSingleThreaded()
 
         const bool bPulseAreaPlot = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled();
         const bool bPulseAreaFilter = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterEnabled();
-        /* const bool bPulseRiseTimePlot = DRS4SettingsManager::sharedInstance()->isRiseTimeFilterPlotEnabled(); */
         const bool bPulseRiseTimeFilter = DRS4SettingsManager::sharedInstance()->isRiseTimeFilterEnabled();
+
+        const DRS4PulseShapeFilterRecordScheme::Scheme rcScheme = DRS4SettingsManager::sharedInstance()->pulseShapeFilterRecordScheme();
 
         const DRS4InterpolationType::type interpolationType = DRS4SettingsManager::sharedInstance()->interpolationType();
         const DRS4SplineInterpolationType::type splineInterpolationType = DRS4SettingsManager::sharedInstance()->splineInterpolationType();
@@ -2667,15 +2668,44 @@ void DRS4Worker::runSingleThreaded()
             const double renderIncrementB = (tChannel1[cell_interpolRangeB_stop] - tChannel1[cell_interpolRangeB_start])/((float)intraRenderPoints);
 
             for ( int i = 0 ; i <= intraRenderPoints ; ++ i ) {
-                const float valYA = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantA, tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA)):(tkSplineA(tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA))):(alglib::barycentriccalc(m_baryCentricInterpolantA, tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA));
-                const float valYB = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantB, tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB)):(tkSplineB(tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB))):(alglib::barycentriccalc(m_baryCentricInterpolantB, tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB));
+                const double t_A = tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA;
+                const double t_B = tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB;
 
-                /* modify min/max to calculate the CFD in  high accuracy, subsequently */
-                yMaxA = qMax(yMaxA, valYA);
-                yMaxB = qMax(yMaxB, valYB);
+                const float valYA = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantA, t_A)):(tkSplineA(t_A))):(alglib::barycentriccalc(m_baryCentricInterpolantA, t_A));
+                const float valYB = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantB, t_B)):(tkSplineB(t_B))):(alglib::barycentriccalc(m_baryCentricInterpolantB, t_B));
 
-                yMinA = qMin(yMinA, valYA);
-                yMinB = qMin(yMinB, valYB);
+                /* modify min/max to calculate the CFD in high accuracy, subsequently */
+                if (valYA > yMaxA) {
+                    yMaxA = valYA;
+
+                    if (positiveSignal) {
+                        timeAForYMax = t_A;
+                    }
+                }
+
+                if (valYB > yMaxB) {
+                    yMaxB = valYB;
+
+                    if (positiveSignal) {
+                        timeBForYMax = t_B;
+                    }
+                }
+
+                if (valYA < yMinA) {
+                    yMinA = valYA;
+
+                    if (!positiveSignal) {
+                        timeAForYMax = t_A;
+                    }
+                }
+
+                if (valYB < yMinB) {
+                    yMinB = valYB;
+
+                    if (!positiveSignal) {
+                        timeBForYMax = t_B;
+                    }
+                }
             }
         }
 
@@ -3000,8 +3030,8 @@ void DRS4Worker::runSingleThreaded()
             const double upperStddevFractionB = DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionB();
 
             for ( int j = 0 ; j < size ; ++ j ) {
-                const double tA = (tChannel0[j] - timeStampA); // >> shift channel A relative to CFD-%(t0) of A
-                const double tB =  (tChannel1[j] - timeStampB); // >> shift channel B relative to CFD-%(t0) of B
+                const double tA =  (tChannel0[j] - timeAForYMax);
+                const double tB =  (tChannel1[j] - timeBForYMax);
 
                 const bool bROIA = (tA >= leftOfRefA) && (tA <= rightOfRefA);
                 const bool bROIB = (tB >= leftOfRefB) && (tB <= rightOfRefB);
@@ -3015,6 +3045,9 @@ void DRS4Worker::runSingleThreaded()
                     }
                 }
 
+                if (bPulseShapeFilterIsEnabledA && bRejectA)
+                    break;
+
                 if (bROIB && bPulseShapeFilterIsEnabledB) {
                     const float yB = positiveSignal?(waveChannel1[j]*fractYMaxB):(waveChannel1[j]*fractYMinB);
 
@@ -3023,9 +3056,6 @@ void DRS4Worker::runSingleThreaded()
                             bRejectB = true;
                     }
                 }
-
-                if (bPulseShapeFilterIsEnabledA && bRejectA)
-                    break;
 
                 if (bPulseShapeFilterIsEnabledB && bRejectB)
                     break;
@@ -3036,6 +3066,7 @@ void DRS4Worker::runSingleThreaded()
         }
 
         bool bValidLifetime = false;
+        bool bValidLifetime2 = false;
 
         /* lifetime: A-B - master */
         if ( bIsStart_A
@@ -3056,7 +3087,10 @@ void DRS4Worker::runSingleThreaded()
 
                     m_maxY_ABSpectrum = qMax(m_maxY_ABSpectrum, m_lifeTimeDataAB[binAB]);
 
-                    bValidLifetime = true;
+                    if (rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_AB)
+                        bValidLifetime = true;
+
+                    bValidLifetime2 = true;
                 }
                 else if ( ltdiff >= 0 ) {
                     m_lifeTimeDataAB[binAB] ++;
@@ -3064,12 +3098,15 @@ void DRS4Worker::runSingleThreaded()
 
                     m_maxY_ABSpectrum = qMax(m_maxY_ABSpectrum, m_lifeTimeDataAB[binAB]);
 
-                    bValidLifetime = true;
+                    if (rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_AB)
+                        bValidLifetime = true;
+
+                    bValidLifetime2 = true;
                 }
 
                 m_specABCounterCnt ++;
 
-                if ( bStreamInRangeArmed && bValidLifetime) {
+                if ( bStreamInRangeArmed && bValidLifetime2) {
                     if ( binAB >= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMinAB()
                          && binAB <= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMaxAB() ) {
                         if ( DRS4TextFileStreamRangeManager::sharedInstance()->isABEnabled() )
@@ -3078,8 +3115,7 @@ void DRS4Worker::runSingleThreaded()
                 }
 
                 /* calculate normalized persistance data */
-                if (bPersistance && bValidLifetime
-                        && !bBurstMode) {
+                if (bPersistance && bValidLifetime2 && !bBurstMode) {
                     m_persistanceDataA.clear();
                     m_persistanceDataB.clear();
 
@@ -3104,7 +3140,7 @@ void DRS4Worker::runSingleThreaded()
 
                 /* recording pulse shape data if required */
                 if (!bBurstMode && bValidLifetime)
-                    recordPulseShapeData(positiveSignal, timeStampA, timeStampB, yMinA, yMaxA, yMinB, yMaxB);
+                    recordPulseShapeData(positiveSignal, timeAForYMax, timeBForYMax, yMinA, yMaxA, yMinB, yMaxB);
             }
 
             if ( binMerged < 0 || binMerged >= channelCntMerged )
@@ -3147,7 +3183,10 @@ void DRS4Worker::runSingleThreaded()
 
                     m_maxY_BASpectrum = qMax(m_maxY_BASpectrum, m_lifeTimeDataBA[binBA]);
 
-                    bValidLifetime = true;
+                    if (rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_BA)
+                        bValidLifetime = true;
+
+                    bValidLifetime2 = true;
                 }
                 else if ( ltdiff >= 0 ) {
                     m_lifeTimeDataBA[binBA] ++;
@@ -3155,12 +3194,15 @@ void DRS4Worker::runSingleThreaded()
 
                     m_maxY_BASpectrum = qMax(m_maxY_BASpectrum, m_lifeTimeDataBA[binBA]);
 
-                    bValidLifetime = true;
+                    if (rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_BA)
+                        bValidLifetime = true;
+
+                    bValidLifetime2 = true;
                 }
 
                 m_specBACounterCnt ++;
 
-                if ( bStreamInRangeArmed && bValidLifetime) {
+                if ( bStreamInRangeArmed && bValidLifetime2) {
                     if ( binBA >= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMinBA()
                          && binBA <= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMaxBA() ) {
                         if ( DRS4TextFileStreamRangeManager::sharedInstance()->isBAEnabled() )
@@ -3169,8 +3211,7 @@ void DRS4Worker::runSingleThreaded()
                 }
 
                 /* calculate normalized persistance data */
-                if (bPersistance && bValidLifetime
-                        && !bBurstMode) {
+                if (bPersistance && bValidLifetime2 && !bBurstMode) {
                     m_persistanceDataA.clear();
                     m_persistanceDataB.clear();
 
@@ -3195,7 +3236,7 @@ void DRS4Worker::runSingleThreaded()
 
                 /* recording pulse shape data if required */
                 if (!bBurstMode && bValidLifetime)
-                    recordPulseShapeData(positiveSignal, timeStampA, timeStampB, yMinA, yMaxA, yMinB, yMaxB);
+                    recordPulseShapeData(positiveSignal, timeAForYMax, timeBForYMax, yMinA, yMaxA, yMinB, yMaxB);
             }
 
             if ( binMerged < 0 || binMerged >= channelCntMerged )
@@ -3234,39 +3275,17 @@ void DRS4Worker::runSingleThreaded()
 
                 m_maxY_CoincidenceSpectrum = qMax(m_maxY_CoincidenceSpectrum, m_lifeTimeDataCoincidence[binBA]);
 
+                if (rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_Prompt)
+                    bValidLifetime = true;
+
+                bValidLifetime2 = true;
+
                 m_specCoincidenceCounterCnt ++;
 
-                bValidLifetime = true;
+                /* recording pulse shape data if required */
+                if (!bBurstMode && bValidLifetime)
+                    recordPulseShapeData(positiveSignal, timeAForYMax, timeBForYMax, yMinA, yMaxA, yMinB, yMaxB);
             }
-
-            /* calculate normalized persistance data */
-            if (bPersistance && bValidLifetime
-                    && !bBurstMode) {
-                m_persistanceDataA.clear();
-                m_persistanceDataB.clear();
-
-                m_persistanceDataA.resize(m_pListChannelA.size());
-                m_persistanceDataB.resize(m_pListChannelB.size());
-
-                const float fractYMaxA = 1.0f/yMaxA;
-                const float fractYMaxB = 1.0f/yMaxB;
-
-                const float fractYMinA = 1.0f/yMinA;
-                const float fractYMinB = 1.0f/yMinB;
-
-                const int size = m_persistanceDataA.size();
-                for ( int j = 0 ; j < size ; ++ j ) {
-                    const float yA = positiveSignal?(m_pListChannelA.at(j).y()*fractYMaxA):(m_pListChannelA.at(j).y()*fractYMinA);
-                    const float yB = positiveSignal?(m_pListChannelB.at(j).y()*fractYMaxB):(m_pListChannelB.at(j).y()*fractYMinB);
-
-                    m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
-                    m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
-                }
-            }
-
-            /* recording pulse shape data if required */
-            if (!bBurstMode && bValidLifetime)
-                recordPulseShapeData(positiveSignal, timeStampA, timeStampB, yMinA, yMaxA, yMinB, yMaxB);
         } //end prompt
     }
 }
@@ -3940,7 +3959,7 @@ void DRS4Worker::runMultiThreaded()
         if (!bDemoMode) {
             try {
                  // just 2 waves are necessary! Place them next to each other like (Chn1 & Chn2) to reduce sampling!
-                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 2);
+                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 3);
             }
             catch (...) {
                 continue;
@@ -4052,7 +4071,7 @@ void DRS4Worker::runMultiThreaded()
         /* statistics: */
         time(&stop);
         const double diffTime = difftime(stop, start);
-        if ( diffTime >= 1.0f ) {
+        if ( diffTime >= __STATISTIC_AVG_TIME ) {
             m_currentPulseCountRateInSeconds = ((double)m_pulseCounterCnt)/diffTime;
             m_summedPulseCountRateInSeconds += m_currentPulseCountRateInSeconds;
             m_avgPulseCountRateInSeconds = (m_pulseCounterCntAvg==0)?m_currentPulseCountRateInSeconds:(m_summedPulseCountRateInSeconds/(double)m_pulseCounterCntAvg);
@@ -4162,6 +4181,8 @@ void DRS4Worker::runMultiThreaded()
 
         inputData.m_pulseShapeFilterFractOfStdDevLowerB = DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevLowerFractionB();
         inputData.m_pulseShapeFilterFractOfStdDevUpperB = DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionB();
+
+        inputData.m_rcScheme = DRS4SettingsManager::sharedInstance()->pulseShapeFilterRecordScheme();
 
         if (inputData.m_pulseShapeFilterEnabledA) {
             inputData.m_pulseShapeFilterDataMeanTraceA_X[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER] = {0};
@@ -4762,15 +4783,44 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             const double renderIncrementB = (inputData.m_tChannel1[cell_interpolRangeB_stop] - inputData.m_tChannel1[cell_interpolRangeB_start])/((float)inputData.m_intraRenderPoints);
 
             for ( int i = 0 ; i <= inputData.m_intraRenderPoints ; ++ i ) {
-                const float valYA = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, inputData.m_tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA)):(tkSplineA(inputData.m_tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA))):(alglib::barycentriccalc(baryCentricInterpolantA, inputData.m_tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA));
-                const float valYB = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, inputData.m_tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB)):(tkSplineB(inputData.m_tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB))):(alglib::barycentriccalc(baryCentricInterpolantB, inputData.m_tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB));
+                const double t_A = inputData.m_tChannel0[cell_interpolRangeA_start] + (float)i*renderIncrementA;
+                const double t_B = inputData.m_tChannel1[cell_interpolRangeB_start] + (float)i*renderIncrementB;
+
+                const float valYA = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, t_A)):(tkSplineA(t_A))):(alglib::barycentriccalc(baryCentricInterpolantA, t_A));
+                const float valYB = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, t_B)):(tkSplineB(t_B))):(alglib::barycentriccalc(baryCentricInterpolantB, t_B));
 
                 /* modify min/max to calculate the CFD in high accuracy, subsequently */
-                yMaxA = qMax(yMaxA, valYA);
-                yMaxB = qMax(yMaxB, valYB);
+                if (valYA > yMaxA) {
+                    yMaxA = valYA;
 
-                yMinA = qMin(yMinA, valYA);
-                yMinB = qMin(yMinB, valYB);
+                    if (inputData.m_positiveSignal) {
+                        timeAForYMax = t_A;
+                    }
+                }
+
+                if (valYB > yMaxB) {
+                    yMaxB = valYB;
+
+                    if (inputData.m_positiveSignal) {
+                        timeBForYMax = t_B;
+                    }
+                }
+
+                if (valYA < yMinA) {
+                    yMinA = valYA;
+
+                    if (!inputData.m_positiveSignal) {
+                        timeAForYMax = t_A;
+                    }
+                }
+
+                if (valYB < yMinB) {
+                    yMinB = valYB;
+
+                    if (!inputData.m_positiveSignal) {
+                        timeBForYMax = t_B;
+                    }
+                }
             }
         }
 
@@ -5081,8 +5131,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             }
 
             for ( int j = 0 ; j < size ; ++ j ) {
-                const double tA = (inputData.m_tChannel0[j] - timeStampA); // >> shift channel A relative to CFD-%(t0) of A
-                const double tB = (inputData.m_tChannel1[j] - timeStampB); // >> shift channel B relative to CFD-%(t0) of B
+                const double tA = (inputData.m_tChannel0[j] - timeAForYMax);
+                const double tB = (inputData.m_tChannel1[j] - timeBForYMax);
 
                 const bool bROIA = (tA >= -inputData.m_pulseShapeFilterLeftInNsROIA) && (tA <= inputData.m_pulseShapeFilterRightInNsROIA);
                 const bool bROIB = (tB >= -inputData.m_pulseShapeFilterLeftInNsROIB) && (tB <= inputData.m_pulseShapeFilterRightInNsROIB);
@@ -5105,6 +5155,9 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                         bRejectA = true;
                 }
 
+                if (inputData.m_pulseShapeFilterEnabledA && bRejectA)
+                    break;
+
                 if (bROIB && inputData.m_pulseShapeFilterEnabledB) {
                     const float yB = inputData.m_positiveSignal?(inputData.m_waveChannel1[j]*fractYMaxB):(inputData.m_waveChannel1[j]*fractYMinB);
 
@@ -5123,9 +5176,6 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                         bRejectB = true;
                 }
 
-                if (inputData.m_pulseShapeFilterEnabledA && bRejectA)
-                    break;
-
                 if (inputData.m_pulseShapeFilterEnabledB && bRejectB)
                     break;
             }
@@ -5135,6 +5185,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
         }
 
         bool bValidLifetime = false;
+        bool bValidLifetime2 = false;
 
         /* lifetime: A-B - master */
         if ( bIsStart_A
@@ -5154,7 +5205,79 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 else if ( ltdiff >= 0 )
                     outputData.m_lifeTimeDataAB.append(binAB);
 
-                bValidLifetime = true;
+                if (inputData.m_rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_AB)
+                    bValidLifetime = true;
+
+                bValidLifetime2 = true;
+            }
+
+            /* pulse-shape filter: record */
+            if (inputData.m_pulseShapeFilterAIsRecording && bValidLifetime) {
+                const float fractYMaxA = 1.0f/yMaxA;
+                const float fractYMinA = 1.0f/yMinA;
+
+                DSpline splineA;
+                splineA.setType(SplineType::Cubic);
+                std::vector<double> xSplineA, ySplineA;
+
+                const int size = kNumberOfBins;
+
+                QVector<QPointF> pVecA;
+
+                for ( int j = 0 ; j < size ; ++ j ) {
+                    const double tA = (inputData.m_tChannel0[j] - timeAForYMax);
+                    const bool bROIA = (tA >= __PULSESHAPEFILTER_LEFT_MAX) && (tA <= __PULSESHAPEFILTER_RIGHT_MAX);
+
+                    if (bROIA) {
+                        const float yA = inputData.m_positiveSignal?(inputData.m_waveChannel0[j]*fractYMaxA):(inputData.m_waveChannel0[j]*fractYMinA);
+
+                        pVecA.append(QPointF(tA, yA));
+
+                        xSplineA.push_back(tA);
+                        ySplineA.push_back(yA);
+                    }
+                }
+
+                if (!pVecA.isEmpty()) {
+                    outputData.m_pulseShapeDataA.append(pVecA);
+
+                    splineA.setPoints(xSplineA, ySplineA);
+                    outputData.m_pulseShapeDataSplineA.append(splineA);
+                }
+            }
+
+            if (inputData.m_pulseShapeFilterBIsRecording && bValidLifetime) {
+                const float fractYMinB = 1.0f/yMinB;
+                const float fractYMaxB = 1.0f/yMaxB;
+
+                DSpline splineB;
+                splineB.setType(SplineType::Cubic);
+                std::vector<double> xSplineB, ySplineB;
+
+                const int size = kNumberOfBins;
+
+                QVector<QPointF> pVecB;
+
+                for ( int j = 0 ; j < size ; ++ j ) {
+                    const double tB = (inputData.m_tChannel1[j] - timeBForYMax);
+                    const bool bROIB = (tB >= __PULSESHAPEFILTER_LEFT_MAX) && (tB <= __PULSESHAPEFILTER_RIGHT_MAX);
+
+                    if (bROIB) {
+                        const float yB = inputData.m_positiveSignal?(inputData.m_waveChannel1[j]*fractYMaxB):(inputData.m_waveChannel1[j]*fractYMinB);
+
+                        pVecB.append(QPointF(tB, yB));
+
+                        xSplineB.push_back(tB);
+                        ySplineB.push_back(yB);
+                    }
+                }
+
+                if (!pVecB.isEmpty()) {
+                    outputData.m_pulseShapeDataB.append(pVecB);
+
+                    splineB.setPoints(xSplineB, ySplineB);
+                    outputData.m_pulseShapeDataSplineB.append(splineB);
+                }
             }
 
             if ( binMerged < 0 || binMerged >= inputData.m_channelCntMerged )
@@ -5166,8 +5289,6 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                     outputData.m_lifeTimeDataMerged.append(binMerged);
                 else if ( ltdiff >= 0 )
                     outputData.m_lifeTimeDataMerged.append(binMerged);
-
-                bValidLifetime = true;
             }
         }
         /* lifetime: B-A - master */
@@ -5188,7 +5309,79 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 else if ( ltdiff >= 0 )
                     outputData.m_lifeTimeDataBA.append(binBA);
 
-                bValidLifetime = true;
+                if (inputData.m_rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_BA)
+                    bValidLifetime = true;
+
+                bValidLifetime2 = true;
+            }
+
+            /* pulse-shape filter: record */
+            if (inputData.m_pulseShapeFilterAIsRecording && bValidLifetime) {
+                const float fractYMaxA = 1.0f/yMaxA;
+                const float fractYMinA = 1.0f/yMinA;
+
+                DSpline splineA;
+                splineA.setType(SplineType::Cubic);
+                std::vector<double> xSplineA, ySplineA;
+
+                const int size = kNumberOfBins;
+
+                QVector<QPointF> pVecA;
+
+                for ( int j = 0 ; j < size ; ++ j ) {
+                    const double tA = (inputData.m_tChannel0[j] - timeAForYMax);
+                    const bool bROIA = (tA >= __PULSESHAPEFILTER_LEFT_MAX) && (tA <= __PULSESHAPEFILTER_RIGHT_MAX);
+
+                    if (bROIA) {
+                        const float yA = inputData.m_positiveSignal?(inputData.m_waveChannel0[j]*fractYMaxA):(inputData.m_waveChannel0[j]*fractYMinA);
+
+                        pVecA.append(QPointF(tA, yA));
+
+                        xSplineA.push_back(tA);
+                        ySplineA.push_back(yA);
+                    }
+                }
+
+                if (!pVecA.isEmpty()) {
+                    outputData.m_pulseShapeDataA.append(pVecA);
+
+                    splineA.setPoints(xSplineA, ySplineA);
+                    outputData.m_pulseShapeDataSplineA.append(splineA);
+                }
+            }
+
+            if (inputData.m_pulseShapeFilterBIsRecording && bValidLifetime) {
+                const float fractYMinB = 1.0f/yMinB;
+                const float fractYMaxB = 1.0f/yMaxB;
+
+                DSpline splineB;
+                splineB.setType(SplineType::Cubic);
+                std::vector<double> xSplineB, ySplineB;
+
+                const int size = kNumberOfBins;
+
+                QVector<QPointF> pVecB;
+
+                for ( int j = 0 ; j < size ; ++ j ) {
+                    const double tB = (inputData.m_tChannel1[j] - timeBForYMax);
+                    const bool bROIB = (tB >= __PULSESHAPEFILTER_LEFT_MAX) && (tB <= __PULSESHAPEFILTER_RIGHT_MAX);
+
+                    if (bROIB) {
+                        const float yB = inputData.m_positiveSignal?(inputData.m_waveChannel1[j]*fractYMaxB):(inputData.m_waveChannel1[j]*fractYMinB);
+
+                        pVecB.append(QPointF(tB, yB));
+
+                        xSplineB.push_back(tB);
+                        ySplineB.push_back(yB);
+                    }
+                }
+
+                if (!pVecB.isEmpty()) {
+                    outputData.m_pulseShapeDataB.append(pVecB);
+
+                    splineB.setPoints(xSplineB, ySplineB);
+                    outputData.m_pulseShapeDataSplineB.append(splineB);
+                }
             }
 
             if ( binMerged < 0 || binMerged >= inputData.m_channelCntMerged )
@@ -5200,8 +5393,6 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                     outputData.m_lifeTimeDataMerged.append(binMerged);
                 else if ( ltdiff >= 0 )
                     outputData.m_lifeTimeDataMerged.append(binMerged);
-
-                bValidLifetime = true;
             }
         }
         /* prompt spectrum: A-B of stop - slave */
@@ -5216,76 +5407,79 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                  && binBA < inputData.m_channelCntPrompt ) {
                 outputData.m_lifeTimeDataCoincidence.append(binBA);
 
-                bValidLifetime = true;
+                if (inputData.m_rcScheme == DRS4PulseShapeFilterRecordScheme::Scheme::RC_Prompt)
+                    bValidLifetime = true;
+
+                bValidLifetime2 = true;
             }
-        }
 
-        /* pulse-shape filter: record */
-        if (inputData.m_pulseShapeFilterAIsRecording &&  bValidLifetime) {
-            const float fractYMaxA = 1.0f/yMaxA;
-            const float fractYMinA = 1.0f/yMinA;
+            /* pulse-shape filter: record */
+            if (inputData.m_pulseShapeFilterAIsRecording && bValidLifetime) {
+                const float fractYMaxA = 1.0f/yMaxA;
+                const float fractYMinA = 1.0f/yMinA;
 
-            DSpline splineA;
-            splineA.setType(SplineType::Cubic);
-            std::vector<double> xSplineA, ySplineA;
+                DSpline splineA;
+                splineA.setType(SplineType::Cubic);
+                std::vector<double> xSplineA, ySplineA;
 
-            const int size = kNumberOfBins;
+                const int size = kNumberOfBins;
 
-            QVector<QPointF> pVecA;
+                QVector<QPointF> pVecA;
 
-            for ( int j = 0 ; j < size ; ++ j ) {
-                const double tA = (inputData.m_tChannel0[j] - timeStampA); // >> shift channel A relative to CFD-%(t0) of A
-                const bool bROIA = (tA >= __PULSESHAPEFILTER_LEFT_MAX) && (tA <= __PULSESHAPEFILTER_RIGHT_MAX);
+                for ( int j = 0 ; j < size ; ++ j ) {
+                    const double tA = (inputData.m_tChannel0[j] - timeAForYMax);
+                    const bool bROIA = (tA >= __PULSESHAPEFILTER_LEFT_MAX) && (tA <= __PULSESHAPEFILTER_RIGHT_MAX);
 
-                if (bROIA) {
-                    const float yA = inputData.m_positiveSignal?(inputData.m_waveChannel0[j]*fractYMaxA):(inputData.m_waveChannel0[j]*fractYMinA);
+                    if (bROIA) {
+                        const float yA = inputData.m_positiveSignal?(inputData.m_waveChannel0[j]*fractYMaxA):(inputData.m_waveChannel0[j]*fractYMinA);
 
-                    pVecA.append(QPointF(tA, yA));
+                        pVecA.append(QPointF(tA, yA));
 
-                    xSplineA.push_back(tA);
-                    ySplineA.push_back(yA);
+                        xSplineA.push_back(tA);
+                        ySplineA.push_back(yA);
+                    }
+                }
+
+                if (!pVecA.isEmpty()) {
+                    outputData.m_pulseShapeDataA.append(pVecA);
+
+                    splineA.setPoints(xSplineA, ySplineA);
+                    outputData.m_pulseShapeDataSplineA.append(splineA);
                 }
             }
 
-            if (!pVecA.isEmpty()) {
-                outputData.m_pulseShapeDataA.append(pVecA);
+            if (inputData.m_pulseShapeFilterBIsRecording && bValidLifetime) {
+                const float fractYMinB = 1.0f/yMinB;
+                const float fractYMaxB = 1.0f/yMaxB;
 
-                splineA.setPoints(xSplineA, ySplineA);
-                outputData.m_pulseShapeDataSplineA.append(splineA);
-            }
-        }
+                DSpline splineB;
+                splineB.setType(SplineType::Cubic);
+                std::vector<double> xSplineB, ySplineB;
 
-        if (inputData.m_pulseShapeFilterBIsRecording && bValidLifetime) {
-            const float fractYMinB = 1.0f/yMinB;
-            const float fractYMaxB = 1.0f/yMaxB;
+                const int size = kNumberOfBins;
 
-            DSpline splineB;
-            splineB.setType(SplineType::Cubic);
-            std::vector<double> xSplineB, ySplineB;
+                QVector<QPointF> pVecB;
 
-            const int size = kNumberOfBins;
+                for ( int j = 0 ; j < size ; ++ j ) {
+                    const double tB = (inputData.m_tChannel1[j] - timeBForYMax);
+                    const bool bROIB = (tB >= __PULSESHAPEFILTER_LEFT_MAX) && (tB <= __PULSESHAPEFILTER_RIGHT_MAX);
 
-            QVector<QPointF> pVecB;
+                    if (bROIB) {
+                        const float yB = inputData.m_positiveSignal?(inputData.m_waveChannel1[j]*fractYMaxB):(inputData.m_waveChannel1[j]*fractYMinB);
 
-            for ( int j = 0 ; j < size ; ++ j ) {
-                const double tB = (inputData.m_tChannel1[j] - timeStampB); // >> shift channel A relative to CFD-%(t0) of B
-                const bool bROIB = (tB >= __PULSESHAPEFILTER_LEFT_MAX) && (tB <= __PULSESHAPEFILTER_RIGHT_MAX);
+                        pVecB.append(QPointF(tB, yB));
 
-                if (bROIB) {
-                    const float yB = inputData.m_positiveSignal?(inputData.m_waveChannel1[j]*fractYMaxB):(inputData.m_waveChannel1[j]*fractYMinB);
-
-                    pVecB.append(QPointF(tB, yB));
-
-                    xSplineB.push_back(tB);
-                    ySplineB.push_back(yB);
+                        xSplineB.push_back(tB);
+                        ySplineB.push_back(yB);
+                    }
                 }
-            }
 
-            if (!pVecB.isEmpty()) {
-                outputData.m_pulseShapeDataB.append(pVecB);
+                if (!pVecB.isEmpty()) {
+                    outputData.m_pulseShapeDataB.append(pVecB);
 
-                splineB.setPoints(xSplineB, ySplineB);
-                outputData.m_pulseShapeDataSplineB.append(splineB);
+                    splineB.setPoints(xSplineB, ySplineB);
+                    outputData.m_pulseShapeDataSplineB.append(splineB);
+                }
             }
         }
     }
@@ -6193,12 +6387,12 @@ void DRS4WorkerConcurrentManager::merge()
 
                         if (bdirA) {
                             for ( int j = 0 ; j < size ; ++ j ) {
-                                m_worker->m_pulseShapeDataA.append(outputData.m_pulseShapeDataA.at(i).at(j)); // >> shift channel A relative to CFD-%(t0) of A
+                                m_worker->m_pulseShapeDataA.append(outputData.m_pulseShapeDataA.at(i).at(j));
                             }
                         }
                         else {
                             for ( int j = size-1 ; j >= 0 ; -- j ) {
-                                m_worker->m_pulseShapeDataA.append(outputData.m_pulseShapeDataA.at(i).at(j)); // >> shift channel A relative to CFD-%(t0) of A
+                                m_worker->m_pulseShapeDataA.append(outputData.m_pulseShapeDataA.at(i).at(j));
                             }
                         }
 
@@ -6230,12 +6424,12 @@ void DRS4WorkerConcurrentManager::merge()
 
                         if (bdirB) {
                             for ( int j = 0 ; j < size ; ++ j ) {
-                                m_worker->m_pulseShapeDataB.append(outputData.m_pulseShapeDataB.at(i).at(j)); // >> shift channel A relative to CFD-%(t0) of B
+                                m_worker->m_pulseShapeDataB.append(outputData.m_pulseShapeDataB.at(i).at(j));
                             }
                         }
                         else {
                             for ( int j = size-1 ; j >= 0 ; -- j ) {
-                                m_worker->m_pulseShapeDataB.append(outputData.m_pulseShapeDataB.at(i).at(j)); // >> shift channel A relative to CFD-%(t0) of B
+                                m_worker->m_pulseShapeDataB.append(outputData.m_pulseShapeDataB.at(i).at(j));
                             }
                         }
 

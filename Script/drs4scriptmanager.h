@@ -148,6 +148,11 @@ public slots:
     void changeABDataMaxFitIterations(unsigned int iterations);
     void changeBADataMaxFitIterations(unsigned int iterations);
 
+    bool waitForCountsAB(int counts);
+    bool waitForCountsBA(int counts);
+    bool waitForCountsMerged(int counts);
+    bool waitForCountsPrompt(int counts);
+
     void fitGaussianOnPromtData();
     void fitGaussianOnMergedData();
     void fitGaussianOnABData();

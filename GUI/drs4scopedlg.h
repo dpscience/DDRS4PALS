@@ -161,6 +161,8 @@ private slots:
     void startThread();
     void stopThread();
 
+    /* Pulse Shape Filter */
+
     void startAcquisitionOfPulseShapeFilterDataA();
     void stopAcquisitionOfPulseShapeFilterDataA();
 
@@ -204,6 +206,11 @@ private slots:
 
     void ACCESSED_BY_SCRIPT_AND_GUI changePulseShapeFilterEnabledA(bool activate, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changePulseShapeFilterEnabledB(bool activate, const FunctionSource& source = FunctionSource::AccessFromGUI);
+
+    void changePulseShapeFilterRecordScheme(int index);
+
+
+    /* Baseline Correction/Baseline Filter */
 
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineStartCellA(int startCell, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineRegionA(int region, const FunctionSource& source = FunctionSource::AccessFromGUI);

@@ -59,6 +59,8 @@
 
 #include "Fit/dspline.h"
 
+#define __STATISTIC_AVG_TIME 4.0f // [s]
+
 using namespace QtConcurrent;
 
 class DSpline;
@@ -253,6 +255,8 @@ public:
 
     bool m_pulseShapeFilterAIsRecording;
     bool m_pulseShapeFilterBIsRecording;
+
+    DRS4PulseShapeFilterRecordScheme::Scheme m_rcScheme;
 
     float m_pulseShapeFilterDataMeanTraceA_X[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
     float m_pulseShapeFilterDataMeanTraceA_Y[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];

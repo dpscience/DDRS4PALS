@@ -139,6 +139,11 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
 
     list.append("changePulseAreaFilterEnabled(__bool_areaFilter?__)");
 
+    list.append("waitForCountsAB(__int__counts__) << bool");
+    list.append("waitForCountsBA(__int__counts__) << bool");
+    list.append("waitForCountsMerged(__int__counts__) << bool");
+    list.append("waitForCountsPrompt(__int__counts__) << bool");
+
     list.append("fitGaussianOnPromptData()");
     list.append("fitGaussianOnMergedData()");
     list.append("fitGaussianOnABData()");
@@ -1509,6 +1514,46 @@ void DRS4ScriptEngineCommandCollector::changeBADataMaxFitIterations(unsigned int
     mapMsg("BA LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString(), DRS4LogType::SUCCEED);
 
     DRS4ScriptingEngineAccessManager::sharedInstance()->changeBADataMaxFitIterations(iterations);
+}
+
+bool DRS4ScriptEngineCommandCollector::waitForCountsAB(int counts)
+{
+    if (counts <= 0) {
+        mapMsg("Function call  denied. Invalid Value.", DRS4LogType::FAILED);
+        return false;
+    }
+
+    return DRS4ScriptingEngineAccessManager::sharedInstance()->waitForCountsAB(counts);
+}
+
+bool DRS4ScriptEngineCommandCollector::waitForCountsBA(int counts)
+{
+    if (counts <= 0) {
+        mapMsg("Function call  denied. Invalid Value.", DRS4LogType::FAILED);
+        return false;
+    }
+
+    return DRS4ScriptingEngineAccessManager::sharedInstance()->waitForCountsBA(counts);
+}
+
+bool DRS4ScriptEngineCommandCollector::waitForCountsMerged(int counts)
+{
+    if (counts <= 0) {
+        mapMsg("Function call  denied. Invalid Value.", DRS4LogType::FAILED);
+        return false;
+    }
+
+    return DRS4ScriptingEngineAccessManager::sharedInstance()->waitForCountsMerged(counts);
+}
+
+bool DRS4ScriptEngineCommandCollector::waitForCountsPrompt(int counts)
+{
+    if (counts <= 0) {
+        mapMsg("Function call  denied. Invalid Value.", DRS4LogType::FAILED);
+        return false;
+    }
+
+    return DRS4ScriptingEngineAccessManager::sharedInstance()->waitForCountsPrompt(counts);
 }
 
 void DRS4ScriptEngineCommandCollector::fitGaussianOnPromtData()
