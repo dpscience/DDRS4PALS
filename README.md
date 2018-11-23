@@ -13,7 +13,7 @@ You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This D
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## v1.x
-DDRS4PALS <b>v1.07</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1434714.svg)](https://doi.org/10.5281/zenodo.1434714)<br>
+DDRS4PALS <b>v1.07</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1495099.svg)](https://doi.org/10.5281/zenodo.1495099)<br>
 
 DDRS4PALS <b>v1.06</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1434714.svg)](https://doi.org/10.5281/zenodo.1434714)<br>
 
