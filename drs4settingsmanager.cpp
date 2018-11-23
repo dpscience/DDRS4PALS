@@ -264,6 +264,7 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_pulseShapeFilter_StdDevLowerFractA(3.0f),
     m_pulseShapeFilter_StdDevUpperFractB(3.0f),
     m_pulseShapeFilter_StdDevLowerFractB(3.0f),
+    m_pulseShapeFilterRecordScheme(DRS4PulseShapeFilterRecordScheme::Scheme::RC_AB),
     m_pulseShapeFilterEnabledA(false),
     m_pulseShapeFilterEnabledB(false),
     m_baseLineCorrectionStartCellA(5),
@@ -292,39 +293,39 @@ DRS4SettingsManager::DRS4SettingsManager() :
 
     m_cfdAlgorithmType_polynomialInterpolationNode = new DSimpleXMLNode("type-1-polynomial-interpolation");
 
-        m_polynomialIntraSamplingPointsNode = new DSimpleXMLNode("intra-sampling-points");
-        m_polynomialIntraSamplingPointsNode->setValue(10);
+    m_polynomialIntraSamplingPointsNode = new DSimpleXMLNode("intra-sampling-points");
+    m_polynomialIntraSamplingPointsNode->setValue(10);
 
     m_cfdAlgorithmType_splineAndFittingInterpolationNode = new DSimpleXMLNode("type-2-spline-interpolation");
 
-        m_splineTypeNode = new DSimpleXMLNode("spline-type");
+    m_splineTypeNode = new DSimpleXMLNode("spline-type");
 
-                m_splineTypeLinearNode = new DSimpleXMLNode("linear");
-                    m_splineTypeLinearEnabledNode = new DSimpleXMLNode("enabled?");
-                    m_splineTypeLinearEnabledNode->setValue(true);
+    m_splineTypeLinearNode = new DSimpleXMLNode("linear");
+    m_splineTypeLinearEnabledNode = new DSimpleXMLNode("enabled?");
+    m_splineTypeLinearEnabledNode->setValue(true);
 
-                m_splineTypeCubicNode = new DSimpleXMLNode("alglib-cubic");
-                    m_splineTypeCubicEnabledNode = new DSimpleXMLNode("enabled?");
-                    m_splineTypeCubicEnabledNode->setValue(false);
+    m_splineTypeCubicNode = new DSimpleXMLNode("alglib-cubic");
+    m_splineTypeCubicEnabledNode = new DSimpleXMLNode("enabled?");
+    m_splineTypeCubicEnabledNode->setValue(false);
 
-                m_splineTypeAkimaNode = new DSimpleXMLNode("alglib-akima");
-                    m_splineTypeAkimaEnabledNode = new DSimpleXMLNode("enabled?");
-                    m_splineTypeAkimaEnabledNode->setValue(false);
+    m_splineTypeAkimaNode = new DSimpleXMLNode("alglib-akima");
+    m_splineTypeAkimaEnabledNode = new DSimpleXMLNode("enabled?");
+    m_splineTypeAkimaEnabledNode->setValue(false);
 
-                m_splineTypeCatmullRomNode = new DSimpleXMLNode("alglib-catmull-rom");
-                    m_splineTypeCatmullRomEnabledNode = new DSimpleXMLNode("enabled?");
-                    m_splineTypeCatmullRomEnabledNode->setValue(false);
+    m_splineTypeCatmullRomNode = new DSimpleXMLNode("alglib-catmull-rom");
+    m_splineTypeCatmullRomEnabledNode = new DSimpleXMLNode("enabled?");
+    m_splineTypeCatmullRomEnabledNode->setValue(false);
 
-                m_splineTypeMonotoneNode = new DSimpleXMLNode("alglib-monotone");
-                    m_splineTypeMonotoneEnabledNode = new DSimpleXMLNode("enabled?");
-                    m_splineTypeMonotoneEnabledNode->setValue(false);
+    m_splineTypeMonotoneNode = new DSimpleXMLNode("alglib-monotone");
+    m_splineTypeMonotoneEnabledNode = new DSimpleXMLNode("enabled?");
+    m_splineTypeMonotoneEnabledNode->setValue(false);
 
-                m_splineTypeTKCubicNode = new DSimpleXMLNode("tk-cubic");
-                    m_splineTypeTKCubicEnabledNode = new DSimpleXMLNode("enabled?");
-                    m_splineTypeTKCubicEnabledNode->setValue(false);
+    m_splineTypeTKCubicNode = new DSimpleXMLNode("tk-cubic");
+    m_splineTypeTKCubicEnabledNode = new DSimpleXMLNode("enabled?");
+    m_splineTypeTKCubicEnabledNode->setValue(false);
 
-        m_splineIntraSamplingPointsNode = new DSimpleXMLNode("intra-sampling-points");
-        m_splineIntraSamplingPointsNode->setValue(10);
+    m_splineIntraSamplingPointsNode = new DSimpleXMLNode("intra-sampling-points");
+    m_splineIntraSamplingPointsNode->setValue(10);
 
     m_phsSettingsNode = new DSimpleXMLNode("phs-settings");
     m_spectrumSettingsNode = new DSimpleXMLNode("spectrum-settings");
@@ -556,6 +557,9 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_pulseShapeFilterEnabledB_Node = new DSimpleXMLNode("pulse-shape-filter-B-enabled?");
     m_pulseShapeFilterEnabledB_Node->setValue(m_pulseShapeFilterEnabledB);
 
+    m_pulseShapeFilterRecordScheme_Node = new DSimpleXMLNode("pulse-shape-filter-record-scheme");
+    m_pulseShapeFilterRecordScheme_Node->setValue(m_pulseShapeFilterRecordScheme);
+
     m_pulseShapeFilter_numberOfPulsesAcq_A_Node = new DSimpleXMLNode("pulse-shape-filter-number-of-pulses-to-be-recorded-A");
     m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_A);
     m_pulseShapeFilter_numberOfPulsesAcq_B_Node = new DSimpleXMLNode("pulse-shape-filter-number-of-pulses-to-be-recorded-B");
@@ -648,6 +652,7 @@ DRS4SettingsManager::DRS4SettingsManager() :
 
     (*m_pulseShapeFilterSettingsNode) << m_pulseShapeFilterEnabledA_Node
                                       << m_pulseShapeFilterEnabledB_Node
+                                      << m_pulseShapeFilterRecordScheme_Node
                                       << m_pulseShapeFilter_numberOfPulsesAcq_A_Node
                                       << m_pulseShapeFilter_numberOfPulsesAcq_B_Node
                                       << m_pulseShapeFilter_leftAInNs_Node
@@ -672,9 +677,9 @@ DRS4SettingsManager::DRS4SettingsManager() :
                                     << m_riseTimeFilter_leftWindow_A_Node
                                     << m_riseTimeFilter_rightWindow_A_Node
                                     <<  m_riseTimeFilter_scaleInNs_B_Node
-                                    << m_riseTimeFilter_scaleBinningCnt_B_Node
-                                    << m_riseTimeFilter_leftWindow_B_Node
-                                    << m_riseTimeFilter_rightWindow_B_Node;
+                                     << m_riseTimeFilter_scaleBinningCnt_B_Node
+                                     << m_riseTimeFilter_leftWindow_B_Node
+                                     << m_riseTimeFilter_rightWindow_B_Node;
 
     (*m_parentNode) << m_lastSaveDateNode
                     << m_versionNode
@@ -796,7 +801,9 @@ DRS4SettingsManager *DRS4SettingsManager::sharedInstance()
 
 bool DRS4SettingsManager::load(const QString &path)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     DSimpleXMLReader reader(path);
 
@@ -961,26 +968,27 @@ bool DRS4SettingsManager::load(const QString &path)
                 const DSimpleXMLTag pPulseShapeFilterSettingsTag = pTag.getTag(m_pulseShapeFilterSettingsNode, &ok);
 
                 if (!ok) {
-                   m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_A);
-                   m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_B);
-                   m_pulseShapeFilter_leftAInNs_Node->setValue(m_pulseShapeFilter_leftAInNs);
-                   m_pulseShapeFilter_leftBInNs_Node->setValue(m_pulseShapeFilter_leftBInNs);
-                   m_pulseShapeFilter_rightAInNs_Node->setValue(m_pulseShapeFilter_rightAInNs);
-                   m_pulseShapeFilter_rightBInNs_Node->setValue(m_pulseShapeFilter_rightBInNs);
-                   m_pulseShapeFilter_ROIleftAInNs_Node->setValue(m_pulseShapeFilter_ROIleftAInNs);
-                   m_pulseShapeFilter_ROIleftBInNs_Node->setValue(m_pulseShapeFilter_ROIleftBInNs);
-                   m_pulseShapeFilter_ROIrightAInNs_Node->setValue(m_pulseShapeFilter_ROIrightAInNs);
-                   m_pulseShapeFilter_ROIrightBInNs_Node->setValue(m_pulseShapeFilter_ROIrightBInNs);
-                   m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(m_pulseShapeFilter_StdDevLowerFractA);
-                   m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(m_pulseShapeFilter_StdDevUpperFractA);
-                   m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(m_pulseShapeFilter_StdDevLowerFractB);
-                   m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(m_pulseShapeFilter_StdDevUpperFractB);
+                    m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_A);
+                    m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_B);
+                    m_pulseShapeFilterRecordScheme_Node->setValue(m_pulseShapeFilterRecordScheme);
+                    m_pulseShapeFilter_leftAInNs_Node->setValue(m_pulseShapeFilter_leftAInNs);
+                    m_pulseShapeFilter_leftBInNs_Node->setValue(m_pulseShapeFilter_leftBInNs);
+                    m_pulseShapeFilter_rightAInNs_Node->setValue(m_pulseShapeFilter_rightAInNs);
+                    m_pulseShapeFilter_rightBInNs_Node->setValue(m_pulseShapeFilter_rightBInNs);
+                    m_pulseShapeFilter_ROIleftAInNs_Node->setValue(m_pulseShapeFilter_ROIleftAInNs);
+                    m_pulseShapeFilter_ROIleftBInNs_Node->setValue(m_pulseShapeFilter_ROIleftBInNs);
+                    m_pulseShapeFilter_ROIrightAInNs_Node->setValue(m_pulseShapeFilter_ROIrightAInNs);
+                    m_pulseShapeFilter_ROIrightBInNs_Node->setValue(m_pulseShapeFilter_ROIrightBInNs);
+                    m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(m_pulseShapeFilter_StdDevLowerFractA);
+                    m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(m_pulseShapeFilter_StdDevUpperFractA);
+                    m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(m_pulseShapeFilter_StdDevLowerFractB);
+                    m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(m_pulseShapeFilter_StdDevUpperFractB);
 
-                   setPulseShapeFilterDataA(DRS4PulseShapeFilterData(), false);
-                   setPulseShapeFilterDataB(DRS4PulseShapeFilterData(), false);
+                    setPulseShapeFilterDataA(DRS4PulseShapeFilterData(), false);
+                    setPulseShapeFilterDataB(DRS4PulseShapeFilterData(), false);
 
-                   m_pulseShapeFilterEnabledA_Node->setValue(false);
-                   m_pulseShapeFilterEnabledB_Node->setValue(false);
+                    m_pulseShapeFilterEnabledA_Node->setValue(false);
+                    m_pulseShapeFilterEnabledB_Node->setValue(false);
                 }
                 else {
                     m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_numberOfPulsesAcq_A_Node, &ok));
@@ -988,6 +996,9 @@ bool DRS4SettingsManager::load(const QString &path)
 
                     m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_numberOfPulsesAcq_B_Node, &ok));
                     if (!ok) m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(m_pulseShapeFilter_numberOfPulsesAcq_B);
+
+                    m_pulseShapeFilterRecordScheme_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilterRecordScheme_Node, &ok));
+                    if (!ok) m_pulseShapeFilterRecordScheme_Node->setValue(m_pulseShapeFilterRecordScheme);
 
                     m_pulseShapeFilter_leftAInNs_Node ->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilter_leftAInNs_Node, &ok));
                     if (!ok) m_pulseShapeFilter_leftAInNs_Node->setValue(m_pulseShapeFilter_leftAInNs);
@@ -1443,7 +1454,9 @@ bool DRS4SettingsManager::save(const QString &path, bool autosave)
     /* always override with the latest version */
     m_versionNode->setValue((int)VERSION_SETTINGS_FILE);
 
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     DSimpleXMLWriter writer(path);
 
@@ -1531,9 +1544,16 @@ DSimpleXMLNode *DRS4SettingsManager::parentNode() const
     return m_parentNode;
 }
 
+QMutex *DRS4SettingsManager::mutex()
+{
+    return &m_mutex;
+}
+
 void DRS4SettingsManager::setForceCoincidence(bool force)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_bForceCoincidence = force;
     m_bForceCoincidenceNode->setValue(force);
@@ -1541,7 +1561,9 @@ void DRS4SettingsManager::setForceCoincidence(bool force)
 
 void DRS4SettingsManager::setBurstMode(bool on)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_burstModeNode->setValue(on);
     m_burstMode = on;
@@ -1549,7 +1571,9 @@ void DRS4SettingsManager::setBurstMode(bool on)
 
 void DRS4SettingsManager::setStartCell(int startCell)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_startCellNode->setValue(startCell);
     m_startCell = startCell;
@@ -1557,7 +1581,9 @@ void DRS4SettingsManager::setStartCell(int startCell)
 
 void DRS4SettingsManager::setStopCell(int stopCell)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_stopCellNode->setValue(stopCell);
     m_stopCell = stopCell;
@@ -1565,7 +1591,9 @@ void DRS4SettingsManager::setStopCell(int stopCell)
 
 void DRS4SettingsManager::setPositivSignal(bool positiv)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_isPositivSignalNode->setValue(positiv);
     m_isPositivSignal = positiv;
@@ -1573,7 +1601,9 @@ void DRS4SettingsManager::setPositivSignal(bool positiv)
 
 void DRS4SettingsManager::setNegativeLifetimeAccepted(bool accepted)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_negativeLifetimesNode->setValue(accepted);
     m_negativeLifetimes = accepted;
@@ -1581,7 +1611,9 @@ void DRS4SettingsManager::setNegativeLifetimeAccepted(bool accepted)
 
 void DRS4SettingsManager::setIgnoreBusyState(bool ignore)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_ignoreBusyNode->setValue(ignore);
     m_ignoreBusy = ignore;
@@ -1589,7 +1621,9 @@ void DRS4SettingsManager::setIgnoreBusyState(bool ignore)
 
 void DRS4SettingsManager::setCFDLevelA(double level)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_cfdLevelANode->setValue(level);
     m_cfdLevelA = level;
@@ -1597,7 +1631,9 @@ void DRS4SettingsManager::setCFDLevelA(double level)
 
 void DRS4SettingsManager::setCFDLevelB(double level)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_cfdLevelBNode->setValue(level);
     m_cfdLevelB = level;
@@ -1605,7 +1641,9 @@ void DRS4SettingsManager::setCFDLevelB(double level)
 
 void DRS4SettingsManager::setOffsetInNSAB(double offset)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_offsetNsABNode->setValue(offset);
     m_offsetNsAB = offset;
@@ -1613,7 +1651,9 @@ void DRS4SettingsManager::setOffsetInNSAB(double offset)
 
 void DRS4SettingsManager::setOffsetInNSBA(double offset)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_offsetNsBANode->setValue(offset);
     m_offsetNsBA = offset;
@@ -1621,7 +1661,9 @@ void DRS4SettingsManager::setOffsetInNSBA(double offset)
 
 void DRS4SettingsManager::setOffsetInNSCoincidence(double offset)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_offsetNsCoincidenceNode->setValue(offset);
     m_offsetNsCoincidence = offset;
@@ -1629,7 +1671,9 @@ void DRS4SettingsManager::setOffsetInNSCoincidence(double offset)
 
 void DRS4SettingsManager::setOffsetInNSMerged(double offset)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_offsetNsMergedNode->setValue(offset);
     m_offsetNsMerged = offset;
@@ -1637,7 +1681,9 @@ void DRS4SettingsManager::setOffsetInNSMerged(double offset)
 
 void DRS4SettingsManager::setScalerInNSAB(double scaler)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_scalerNsABNode->setValue(scaler);
     m_scalerNsAB = scaler;
@@ -1645,7 +1691,9 @@ void DRS4SettingsManager::setScalerInNSAB(double scaler)
 
 void DRS4SettingsManager::setScalerInNSBA(double scaler)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_scalerNsBANode->setValue(scaler);
     m_scalerNsBA = scaler;
@@ -1653,7 +1701,9 @@ void DRS4SettingsManager::setScalerInNSBA(double scaler)
 
 void DRS4SettingsManager::setScalerInNSCoincidence(double scaler)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_scalerNsCoincidenceNode->setValue(scaler);
     m_scalerNsCoincidence = scaler;
@@ -1661,7 +1711,9 @@ void DRS4SettingsManager::setScalerInNSCoincidence(double scaler)
 
 void DRS4SettingsManager::setScalerInNSMerged(double scaler)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_scalerNsMergedNode->setValue(scaler);
     m_scalerNsMerged = scaler;
@@ -1669,7 +1721,9 @@ void DRS4SettingsManager::setScalerInNSMerged(double scaler)
 
 void DRS4SettingsManager::setChannelCntAB(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_channelCountABNode->setValue(count);
     m_channelCountAB = count;
@@ -1677,7 +1731,9 @@ void DRS4SettingsManager::setChannelCntAB(int count)
 
 void DRS4SettingsManager::setChannelCntBA(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_channelCountBANode->setValue(count);
     m_channelCountBA = count;
@@ -1685,7 +1741,9 @@ void DRS4SettingsManager::setChannelCntBA(int count)
 
 void DRS4SettingsManager::setChannelCntCoincindence(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_channelCountCoincidenceNode->setValue(count);
     m_channelCountCoincidence = count;
@@ -1693,7 +1751,9 @@ void DRS4SettingsManager::setChannelCntCoincindence(int count)
 
 void DRS4SettingsManager::setChannelCntMerged(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_channelCountMergedNode->setValue(count);
     m_channelCountMerged = count;
@@ -1701,7 +1761,9 @@ void DRS4SettingsManager::setChannelCntMerged(int count)
 
 void DRS4SettingsManager::setTriggerSource(int triggerSource)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_triggerSourceNode->setValue(triggerSource);
     m_triggerSource = triggerSource;
@@ -1709,7 +1771,9 @@ void DRS4SettingsManager::setTriggerSource(int triggerSource)
 
 void DRS4SettingsManager::setTriggerPolarityPositive(bool positive)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_isTriggerPolarityPositiveNode->setValue(positive);
     m_isTriggerPolarityPositive = positive;
@@ -1717,7 +1781,9 @@ void DRS4SettingsManager::setTriggerPolarityPositive(bool positive)
 
 void DRS4SettingsManager::setTriggerLevelAmV(double triggerLevelInmV)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_triggerLevelANode->setValue(triggerLevelInmV);
     m_triggerLevelA = triggerLevelInmV;
@@ -1725,7 +1791,9 @@ void DRS4SettingsManager::setTriggerLevelAmV(double triggerLevelInmV)
 
 void DRS4SettingsManager::setTriggerLevelBmV(double triggerLevelInmV)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_triggerLevelBNode->setValue(triggerLevelInmV);
     m_triggerLevelB = triggerLevelInmV;
@@ -1733,7 +1801,9 @@ void DRS4SettingsManager::setTriggerLevelBmV(double triggerLevelInmV)
 
 void DRS4SettingsManager::setTriggerDelayInNs(double delayInNs)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_triggerDelayInNSNode ->setValue(delayInNs);
     m_triggerDelayInNS = delayInNs;
@@ -1741,7 +1811,9 @@ void DRS4SettingsManager::setTriggerDelayInNs(double delayInNs)
 
 void DRS4SettingsManager::setComment(const QString &comment)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_commentNode->setValue(comment);
     m_comment = comment;
@@ -1749,7 +1821,9 @@ void DRS4SettingsManager::setComment(const QString &comment)
 
 void DRS4SettingsManager::setLastSaveDate(const QString &lastSaveDate)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_lastSaveDateNode->setValue(lastSaveDate);
     m_lastSaveDate = lastSaveDate;
@@ -1757,7 +1831,9 @@ void DRS4SettingsManager::setLastSaveDate(const QString &lastSaveDate)
 
 void DRS4SettingsManager::setChannelNumberA(int channelNumber)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_channelNumberANode->setValue(channelNumber);
     m_channelNumberA = channelNumber;
@@ -1765,7 +1841,9 @@ void DRS4SettingsManager::setChannelNumberA(int channelNumber)
 
 void DRS4SettingsManager::setChannelNumberB(int channelNumber)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_channelNumberBNode->setValue(channelNumber);
     m_channelNumberB = channelNumber;
@@ -1773,7 +1851,9 @@ void DRS4SettingsManager::setChannelNumberB(int channelNumber)
 
 void DRS4SettingsManager::setStartChannelA(int min, int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_startAChannelMin = min;
     m_startAChannelMax = max;
@@ -1784,7 +1864,9 @@ void DRS4SettingsManager::setStartChannelA(int min, int max)
 
 void DRS4SettingsManager::setStartChannelB(int min, int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_startBChannelMin = min;
     m_startBChannelMax = max;
@@ -1795,7 +1877,9 @@ void DRS4SettingsManager::setStartChannelB(int min, int max)
 
 void DRS4SettingsManager::setStopChannelA(int min, int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_stopAChannelMin = min;
     m_stopAChannelMax = max;
@@ -1806,7 +1890,9 @@ void DRS4SettingsManager::setStopChannelA(int min, int max)
 
 void DRS4SettingsManager::setStopChannelB(int min, int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_stopBChannelMin = min;
     m_stopBChannelMax = max;
@@ -1817,7 +1903,9 @@ void DRS4SettingsManager::setStopChannelB(int min, int max)
 
 void DRS4SettingsManager::setStartChannelBMin(int min)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_startBChannelMin = min;
     m_startBChannelMinNode->setValue(min);
@@ -1825,7 +1913,9 @@ void DRS4SettingsManager::setStartChannelBMin(int min)
 
 void DRS4SettingsManager::setStartChannelAMax(int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_startAChannelMax = max;
     m_startAChannelMaxNode->setValue(max);
@@ -1833,7 +1923,9 @@ void DRS4SettingsManager::setStartChannelAMax(int max)
 
 void DRS4SettingsManager::setStartChannelBMax(int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_startBChannelMax = max;
     m_startBChannelMaxNode->setValue(max);
@@ -1841,7 +1933,9 @@ void DRS4SettingsManager::setStartChannelBMax(int max)
 
 void DRS4SettingsManager::setStopChannelAMin(int min)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_stopAChannelMin = min;
     m_stopAChannelMinNode->setValue(min);
@@ -1849,7 +1943,9 @@ void DRS4SettingsManager::setStopChannelAMin(int min)
 
 void DRS4SettingsManager::setStopChannelBMin(int min)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_stopBChannelMin = min;
     m_stopBChannelMinNode->setValue(min);
@@ -1857,7 +1953,9 @@ void DRS4SettingsManager::setStopChannelBMin(int min)
 
 void DRS4SettingsManager::setStopChannelAMax(int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_stopAChannelMax = max;
     m_stopAChannelMaxNode->setValue(max);
@@ -1865,7 +1963,9 @@ void DRS4SettingsManager::setStopChannelAMax(int max)
 
 void DRS4SettingsManager::setStopChannelBMax(int max)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_stopBChannelMax = max;
     m_stopBChannelMaxNode->setValue(max);
@@ -1873,7 +1973,9 @@ void DRS4SettingsManager::setStopChannelBMax(int max)
 
 void DRS4SettingsManager::setMeanCableDelayInNs(double ns)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_meanNs = ns;
     m_meanNSNode->setValue(ns);
@@ -1881,7 +1983,9 @@ void DRS4SettingsManager::setMeanCableDelayInNs(double ns)
 
 void DRS4SettingsManager::setFitIterations(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_fitIter = count;
     m_fitIterNode->setValue(count);
@@ -1889,7 +1993,9 @@ void DRS4SettingsManager::setFitIterations(int count)
 
 void DRS4SettingsManager::setFitIterationsMerged(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_fitIterMerged = count;
     m_fitIterMergedNode->setValue(count);
@@ -1897,7 +2003,9 @@ void DRS4SettingsManager::setFitIterationsMerged(int count)
 
 void DRS4SettingsManager::setFitIterationsAB(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_fitIterAB = count;
     m_fitIterABNode->setValue(count);
@@ -1905,7 +2013,9 @@ void DRS4SettingsManager::setFitIterationsAB(int count)
 
 void DRS4SettingsManager::setFitIterationsBA(int count)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_fitIterBA = count;
     m_fitIterBANode->setValue(count);
@@ -1913,7 +2023,9 @@ void DRS4SettingsManager::setFitIterationsBA(int count)
 
 void DRS4SettingsManager::setSweepInNanoseconds(double ns)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_sweepInNanoSec = ns;
     m_sweepInNanoSecNode->setValue(ns);
@@ -1921,7 +2033,9 @@ void DRS4SettingsManager::setSweepInNanoseconds(double ns)
 
 void DRS4SettingsManager::setSampleSpeedInGHz(double ghz)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_freqInGHz = ghz;
     m_freqInGHzNode->setValue(ghz);
@@ -1929,7 +2043,9 @@ void DRS4SettingsManager::setSampleSpeedInGHz(double ghz)
 
 void DRS4SettingsManager::setPulseAreaFilterNormalizationA(double percentage)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaNormA = percentage;
     m_pulseAreaNormANode->setValue(percentage);
@@ -1937,7 +2053,9 @@ void DRS4SettingsManager::setPulseAreaFilterNormalizationA(double percentage)
 
 void DRS4SettingsManager::setPulseAreaFilterNormalizationB(double percentage)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaNormB = percentage;
     m_pulseAreaNormBNode->setValue(percentage);
@@ -1945,7 +2063,9 @@ void DRS4SettingsManager::setPulseAreaFilterNormalizationB(double percentage)
 
 void DRS4SettingsManager::setPulseAreaFilterBinningA(int binning)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaBinningA = binning;
     m_pulseAreaBinningANode->setValue(binning);
@@ -1953,7 +2073,9 @@ void DRS4SettingsManager::setPulseAreaFilterBinningA(int binning)
 
 void DRS4SettingsManager::setPulseAreaFilterBinningB(int binning)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaBinningB = binning;
     m_pulseAreaBinningBNode->setValue(binning);
@@ -1961,7 +2083,9 @@ void DRS4SettingsManager::setPulseAreaFilterBinningB(int binning)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitUpperLeftA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaLeftUpper_A = value;
     m_pulseAreaLeftUpper_A_Node->setValue(value);
@@ -1969,7 +2093,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitUpperLeftA(double value)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitUpperRightA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaRightUpper_A = value;
     m_pulseAreaRightUpper_A_Node->setValue(value);
@@ -1977,7 +2103,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitUpperRightA(double value)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitLowerLeftA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaLeftLower_A = value;
     m_pulseAreaLeftLower_A_Node->setValue(value);
@@ -1985,7 +2113,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitLowerLeftA(double value)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitLowerRightA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaRightLower_A = value;
     m_pulseAreaRightLower_A_Node->setValue(value);
@@ -1993,7 +2123,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitLowerRightA(double value)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitUpperLeftB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaLeftUpper_B = value;
     m_pulseAreaLeftUpper_B_Node->setValue(value);
@@ -2001,7 +2133,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitUpperLeftB(double value)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitUpperRightB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaRightUpper_B = value;
     m_pulseAreaRightUpper_B_Node->setValue(value);
@@ -2009,7 +2143,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitUpperRightB(double value)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitLowerLeftB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaLeftLower_B = value;
     m_pulseAreaLeftLower_B_Node->setValue(value);
@@ -2017,7 +2153,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitLowerLeftB(double value)
 
 void DRS4SettingsManager::setPulseAreaFilterLimitLowerRightB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseAreaRightLower_B = value;
     m_pulseAreaRightLower_B_Node->setValue(value);
@@ -2025,7 +2163,9 @@ void DRS4SettingsManager::setPulseAreaFilterLimitLowerRightB(double value)
 
 void DRS4SettingsManager::setRiseTimeFilterEnabled(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilterIsActivated = enabled;
     m_riseTimeFilterIsActivated_Node->setValue(enabled);
@@ -2033,7 +2173,9 @@ void DRS4SettingsManager::setRiseTimeFilterEnabled(bool enabled)
 
 void DRS4SettingsManager::setRiseTimeFilterPlotEnabled(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilterIsPlotEnabled = enabled;
     m_riseTimeFilterIsPlotEnabled_Node->setValue(enabled);
@@ -2041,7 +2183,9 @@ void DRS4SettingsManager::setRiseTimeFilterPlotEnabled(bool enabled)
 
 void DRS4SettingsManager::setRiseTimeFilterScaleInNanosecondsOfA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_scaleInNs_A = value;
     m_riseTimeFilter_scaleInNs_A_Node->setValue(value);
@@ -2049,7 +2193,9 @@ void DRS4SettingsManager::setRiseTimeFilterScaleInNanosecondsOfA(double value)
 
 void DRS4SettingsManager::setRiseTimeFilterScaleInNanosecondsOfB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_scaleInNs_B = value;
     m_riseTimeFilter_scaleInNs_B_Node->setValue(value);
@@ -2057,7 +2203,9 @@ void DRS4SettingsManager::setRiseTimeFilterScaleInNanosecondsOfB(double value)
 
 void DRS4SettingsManager::setRiseTimeFilterBinningOfA(int value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_scaleBinningCnt_A = value;
     m_riseTimeFilter_scaleBinningCnt_A_Node->setValue(value);
@@ -2065,7 +2213,9 @@ void DRS4SettingsManager::setRiseTimeFilterBinningOfA(int value)
 
 void DRS4SettingsManager::setRiseTimeFilterBinningOfB(int value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_scaleBinningCnt_B = value;
     m_riseTimeFilter_scaleBinningCnt_B_Node->setValue(value);
@@ -2073,7 +2223,9 @@ void DRS4SettingsManager::setRiseTimeFilterBinningOfB(int value)
 
 void DRS4SettingsManager::setRiseTimeFilterLeftWindowOfA(int value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_leftWindow_A = value;
     m_riseTimeFilter_leftWindow_A_Node->setValue(value);
@@ -2081,7 +2233,9 @@ void DRS4SettingsManager::setRiseTimeFilterLeftWindowOfA(int value)
 
 void DRS4SettingsManager::setRiseTimeFilterLeftWindowOfB(int value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_leftWindow_B = value;
     m_riseTimeFilter_leftWindow_B_Node->setValue(value);
@@ -2089,7 +2243,9 @@ void DRS4SettingsManager::setRiseTimeFilterLeftWindowOfB(int value)
 
 void DRS4SettingsManager::setRiseTimeFilterRightWindowOfA(int value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_rightWindow_A = value;
     m_riseTimeFilter_rightWindow_A_Node->setValue(value);
@@ -2097,7 +2253,9 @@ void DRS4SettingsManager::setRiseTimeFilterRightWindowOfA(int value)
 
 void DRS4SettingsManager::setRiseTimeFilterRightWindowOfB(int value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_riseTimeFilter_rightWindow_B = value;
     m_riseTimeFilter_rightWindow_B_Node->setValue(value);
@@ -2105,7 +2263,9 @@ void DRS4SettingsManager::setRiseTimeFilterRightWindowOfB(int value)
 
 void DRS4SettingsManager::setPersistanceEnabled(bool activated)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_persistanceEnabled = activated;
     m_persistanceEnabled_Node->setValue(activated);
@@ -2113,7 +2273,9 @@ void DRS4SettingsManager::setPersistanceEnabled(bool activated)
 
 void DRS4SettingsManager::setPersistanceLeftInNsOfA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_persistance_leftAInNs = value;
     m_persistance_leftAInNs_Node->setValue(value);
@@ -2121,7 +2283,9 @@ void DRS4SettingsManager::setPersistanceLeftInNsOfA(double value)
 
 void DRS4SettingsManager::setPersistanceLeftInNsOfB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_persistance_leftBInNs = value;
     m_persistance_leftBInNs_Node->setValue(value);
@@ -2129,7 +2293,9 @@ void DRS4SettingsManager::setPersistanceLeftInNsOfB(double value)
 
 void DRS4SettingsManager::setPersistanceRightInNsOfA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_persistance_rightAInNs = value;
     m_persistance_rightAInNs_Node->setValue(value);
@@ -2137,7 +2303,9 @@ void DRS4SettingsManager::setPersistanceRightInNsOfA(double value)
 
 void DRS4SettingsManager::setPersistanceRightInNsOfB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_persistance_rightBInNs = value;
     m_persistance_rightBInNs_Node->setValue(value);
@@ -2145,28 +2313,36 @@ void DRS4SettingsManager::setPersistanceRightInNsOfB(double value)
 
 void DRS4SettingsManager::setPersistanceUsingCFDBAsRefForA(bool on)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_persistanceUsingRefB_A_Node->setValue(on);
 }
 
 void DRS4SettingsManager::setPersistanceUsingCFDAAsRefForB(bool on)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_persistanceUsingRefA_B_Node->setValue(on);
 }
 
 void DRS4SettingsManager::setInterpolationType(const DRS4InterpolationType::type &type)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_cfdAlgorithmTypeNode->setValue(type);
 }
 
 void DRS4SettingsManager::setSplineInterpolationType(const DRS4SplineInterpolationType::type &type)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_splineTypeLinearEnabledNode->setValue(false);
     m_splineTypeCubicEnabledNode->setValue(false);
@@ -2208,140 +2384,180 @@ void DRS4SettingsManager::setSplineInterpolationType(const DRS4SplineInterpolati
 
 void DRS4SettingsManager::setSplineIntraSamplingCounts(int counts)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_splineIntraSamplingPointsNode->setValue(counts);
 }
 
 void DRS4SettingsManager::setPolynomialSamplingCounts(int counts)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_polynomialIntraSamplingPointsNode->setValue(counts);
 }
 
 void DRS4SettingsManager::setMedianFilterAEnabled(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_medianFilterActivated_A_Node->setValue(enabled);
 }
 
 void DRS4SettingsManager::setMedianFilterBEnabled(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_medianFilterActivated_B_Node->setValue(enabled);
 }
 
 void DRS4SettingsManager::setMedianFilterWindowSizeA(int size)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_medianFilterWindowSize_A_Node->setValue(size);
 }
 
 void DRS4SettingsManager::setMedianFilterWindowSizeB(int size)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_medianFilterWindowSize_B_Node->setValue(size);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterNumberOfPulsesToBeRecordedA(int number)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_numberOfPulsesAcq_A_Node->setValue(number);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterNumberOfPulsesToBeRecordedB(int number)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_numberOfPulsesAcq_B_Node->setValue(number);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterLeftInNsOfA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_leftAInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterLeftInNsOfB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_leftBInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterRightInNsOfA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_rightAInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterRightInNsOfB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_rightBInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterROILeftInNsOfA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_ROIleftAInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterROILeftInNsOfB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_ROIleftBInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterROIRightInNsOfA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_ROIrightAInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterROIRightInNsOfB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_ROIrightBInNs_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterStdDevUpperFractionA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_StdDevUpperFractA_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterStdDevLowerFractionA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_StdDevLowerFractA_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterStdDevUpperFractionB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_StdDevUpperFractB_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterStdDevLowerFractionB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilter_StdDevLowerFractB_Node->setValue(value);
 }
@@ -2349,7 +2565,9 @@ void DRS4SettingsManager::setPulseShapeFilterStdDevLowerFractionB(double value)
 void DRS4SettingsManager::setPulseShapeFilterDataA(const DRS4PulseShapeFilterData &data, bool lockMutex)
 {
     if (lockMutex)
+#ifndef __DISABLE_MUTEX_LOCKER
         QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilterDataA = data;
 
@@ -2368,7 +2586,9 @@ void DRS4SettingsManager::setPulseShapeFilterDataA(const DRS4PulseShapeFilterDat
 void DRS4SettingsManager::setPulseShapeFilterDataB(const DRS4PulseShapeFilterData &data, bool lockMutex)
 {
     if (lockMutex)
+#ifndef __DISABLE_MUTEX_LOCKER
         QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilterDataB = data;
 
@@ -2386,294 +2606,396 @@ void DRS4SettingsManager::setPulseShapeFilterDataB(const DRS4PulseShapeFilterDat
 
 void DRS4SettingsManager::setPulseShapeFilterEnabledA(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilterEnabledA_Node->setValue(enabled);
 }
 
 void DRS4SettingsManager::setPulseShapeFilterEnabledB(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_pulseShapeFilterEnabledB_Node->setValue(enabled);
 }
 
+void DRS4SettingsManager::setPulseShapeFilterRecordScheme(const DRS4PulseShapeFilterRecordScheme::Scheme &rc)
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    m_pulseShapeFilterRecordScheme_Node->setValue(rc);
+}
+
 void DRS4SettingsManager::setBaselineCorrectionCalculationStartCellA(int cell)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionStartCellA_Node->setValue(cell);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationRegionA(int region)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionRegionA_Node->setValue(region);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationEnabledA(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionEnabledA_Node->setValue(enabled);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationShiftValueInMVA(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionShiftValueA_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationLimitInPercentageA(double limit)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionLimitA_Node->setValue(limit);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationLimitRejectLimitA(bool reject)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionLimitExceededRejectA_Node->setValue(reject);
 }
 
 int DRS4SettingsManager::baselineCorrectionCalculationStartCellA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionStartCellA_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::baselineCorrectionCalculationRegionA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionRegionA_Node->getValue().toInt();
 }
 
 bool DRS4SettingsManager::baselineCorrectionCalculationEnabledA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionEnabledA_Node->getValue().toBool();
 }
 
 double DRS4SettingsManager::baselineCorrectionCalculationShiftValueInMVA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionShiftValueA_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::baselineCorrectionCalculationLimitInPercentageA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionLimitA_Node->getValue().toDouble();
 }
 
 bool DRS4SettingsManager::baselineCorrectionCalculationLimitRejectLimitA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionLimitExceededRejectA_Node->getValue().toBool();
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationStartCellB(int cell)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionStartCellB_Node->setValue(cell);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationRegionB(int region)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionRegionB_Node->setValue(region);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationEnabledB(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionEnabledB_Node->setValue(enabled);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationShiftValueInMVB(double value)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionShiftValueB_Node->setValue(value);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationLimitInPercentageB(double limit)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionLimitB_Node->setValue(limit);
 }
 
 void DRS4SettingsManager::setBaselineCorrectionCalculationLimitRejectLimitB(bool reject)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_baseLineCorrectionLimitExceededRejectB_Node->setValue(reject);
 }
 
 int DRS4SettingsManager::baselineCorrectionCalculationStartCellB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionStartCellB_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::baselineCorrectionCalculationRegionB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionRegionB_Node->getValue().toInt();
 }
 
 bool DRS4SettingsManager::baselineCorrectionCalculationEnabledB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionEnabledB_Node->getValue().toBool();
 }
 
 double DRS4SettingsManager::baselineCorrectionCalculationShiftValueInMVB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionShiftValueB_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::baselineCorrectionCalculationLimitInPercentageB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionLimitB_Node->getValue().toDouble();
 }
 
 bool DRS4SettingsManager::baselineCorrectionCalculationLimitRejectLimitB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_baseLineCorrectionLimitExceededRejectB_Node->getValue().toBool();
 }
 
 bool DRS4SettingsManager::pulseShapeFilterEnabledA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilterEnabledA_Node->getValue().toBool();
 }
 
 bool DRS4SettingsManager::pulseShapeFilterEnabledB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilterEnabledB_Node->getValue().toBool();
 }
 
+DRS4PulseShapeFilterRecordScheme::Scheme DRS4SettingsManager::pulseShapeFilterRecordScheme() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    return (DRS4PulseShapeFilterRecordScheme::Scheme)(m_pulseShapeFilterRecordScheme_Node->getValue().toInt());
+}
+
 int DRS4SettingsManager::pulseShapeFilterNumberOfPulsesToBeRecordedA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_numberOfPulsesAcq_A_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::pulseShapeFilterNumberOfPulsesToBeRecordedB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_numberOfPulsesAcq_B_Node->getValue().toInt();
 }
 
 double DRS4SettingsManager::pulseShapeFilterLeftInNsOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_leftAInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterLeftInNsOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_leftBInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterRightInNsOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_rightAInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterRightInNsOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_rightBInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterROILeftInNsOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_ROIleftAInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterROILeftInNsOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_ROIleftBInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterROIRightInNsOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_ROIrightAInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterROIRightInNsOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_ROIrightBInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterStdDevUpperFractionA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_StdDevUpperFractA_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterStdDevLowerFractionA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_StdDevLowerFractA_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterStdDevUpperFractionB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_StdDevUpperFractB_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseShapeFilterStdDevLowerFractionB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilter_StdDevLowerFractB_Node->getValue().toDouble();
 }
@@ -2681,7 +3003,9 @@ double DRS4SettingsManager::pulseShapeFilterStdDevLowerFractionB() const
 DRS4PulseShapeFilterData DRS4SettingsManager::pulseShapeFilterDataA(bool lockMutex) const
 {
     if (lockMutex)
+#ifndef __DISABLE_MUTEX_LOCKER
         QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilterDataA;
 }
@@ -2689,56 +3013,72 @@ DRS4PulseShapeFilterData DRS4SettingsManager::pulseShapeFilterDataA(bool lockMut
 DRS4PulseShapeFilterData DRS4SettingsManager::pulseShapeFilterDataB(bool lockMutex) const
 {
     if (lockMutex)
+#ifndef __DISABLE_MUTEX_LOCKER
         QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseShapeFilterDataB;
 }
 
 DRS4PulseShapeFilterData *DRS4SettingsManager::pulseShapeFilterDataPtrA()
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return &m_pulseShapeFilterDataA;
 }
 
 DRS4PulseShapeFilterData *DRS4SettingsManager::pulseShapeFilterDataPtrB()
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return &m_pulseShapeFilterDataB;
 }
 
 bool DRS4SettingsManager::medianFilterAEnabled() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_medianFilterActivated_A_Node->getValue().toBool();
 }
 
 bool DRS4SettingsManager::medianFilterBEnabled() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_medianFilterActivated_B_Node->getValue().toBool();
 }
 
 int DRS4SettingsManager::medianFilterWindowSizeA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_medianFilterWindowSize_A_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::medianFilterWindowSizeB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_medianFilterWindowSize_B_Node->getValue().toInt();
 }
 
 DRS4InterpolationType::type DRS4SettingsManager::interpolationType() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     bool ok = false;
     DRS4InterpolationType::type type = (DRS4InterpolationType::type)m_cfdAlgorithmTypeNode->getValue().toInt(&ok);
@@ -2751,7 +3091,9 @@ DRS4InterpolationType::type DRS4SettingsManager::interpolationType() const
 
 DRS4SplineInterpolationType::type DRS4SettingsManager::splineInterpolationType() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     if ( m_splineTypeLinearEnabledNode->getValue().toBool() )
         return DRS4SplineInterpolationType::type::linear;
@@ -2771,7 +3113,9 @@ DRS4SplineInterpolationType::type DRS4SettingsManager::splineInterpolationType()
 
 int DRS4SettingsManager::splineIntraSamplingCounts() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     bool ok = false;
     int points = m_splineIntraSamplingPointsNode->getValue().toInt(&ok);
@@ -2784,7 +3128,9 @@ int DRS4SettingsManager::splineIntraSamplingCounts() const
 
 int DRS4SettingsManager::polynomialSamplingCounts() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     bool ok = false;
     int points = m_polynomialIntraSamplingPointsNode->getValue().toInt(&ok);
@@ -2797,224 +3143,288 @@ int DRS4SettingsManager::polynomialSamplingCounts() const
 
 bool DRS4SettingsManager::isPersistanceEnabled() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_persistanceEnabled_Node->getValue().toBool();
 }
 
 double DRS4SettingsManager::persistanceLeftInNsOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_persistance_leftAInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::persistanceLeftInNsOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_persistance_leftBInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::persistanceRightInNsOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_persistance_rightAInNs_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::persistanceRightInNsOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_persistance_rightBInNs_Node->getValue().toDouble();
 }
 
 bool DRS4SettingsManager::persistanceUsingCFDBAsRefForA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_persistanceUsingRefB_A_Node->getValue().toBool();
 }
 
 bool DRS4SettingsManager::persistanceUsingCFDAAsRefForB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_persistanceUsingRefA_B_Node->getValue().toBool();
 }
 
 bool DRS4SettingsManager::isPulseAreaFilterEnabled() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaFilerEnabledNode->getValue().toBool();
 }
 
 bool DRS4SettingsManager::isPulseAreaFilterPlotEnabled() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaFilerEnabledPlotNode->getValue().toBool();
 }
 
 double DRS4SettingsManager::pulseAreaFilterNormalizationA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaNormANode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterNormalizationB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaNormBNode->getValue().toDouble();
 }
 
 int DRS4SettingsManager::pulseAreaFilterBinningA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaBinningANode->getValue().toInt();
 }
 
 int DRS4SettingsManager::pulseAreaFilterBinningB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaBinningBNode->getValue().toInt();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitUpperLeftA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaLeftUpper_A_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitUpperRightA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaRightUpper_A_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitLowerLeftA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaLeftLower_A_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitLowerRightA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaRightLower_A_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitUpperLeftB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaLeftUpper_B_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitUpperRightB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaRightUpper_B_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitLowerLeftB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaLeftLower_B_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::pulseAreaFilterLimitLowerRightB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_pulseAreaRightLower_B_Node->getValue().toDouble();
 }
 
 bool DRS4SettingsManager::isRiseTimeFilterEnabled() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilterIsActivated_Node->getValue().toBool();
 }
 
 bool DRS4SettingsManager::isRiseTimeFilterPlotEnabled() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilterIsPlotEnabled_Node->getValue().toBool();
 }
 
 double DRS4SettingsManager::riseTimeFilterScaleInNanosecondsOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_scaleInNs_A_Node->getValue().toDouble();
 }
 
 double DRS4SettingsManager::riseTimeFilterScaleInNanosecondsOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_scaleInNs_B_Node->getValue().toDouble();
 }
 
 int DRS4SettingsManager::riseTimeFilterBinningOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_scaleBinningCnt_A_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::riseTimeFilterBinningOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_scaleBinningCnt_B_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::riseTimeFilterLeftWindowOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_leftWindow_A_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::riseTimeFilterLeftWindowOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_leftWindow_B_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::riseTimeFilterRightWindowOfA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_rightWindow_A_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::riseTimeFilterRightWindowOfB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_riseTimeFilter_rightWindow_B_Node->getValue().toInt();
 }
 
 void DRS4SettingsManager::setPulseAreaFilterEnabled(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_bPulseAreaFilterEnabled = enabled;
     m_pulseAreaFilerEnabledNode->setValue(enabled);
@@ -3022,7 +3432,9 @@ void DRS4SettingsManager::setPulseAreaFilterEnabled(bool enabled)
 
 void DRS4SettingsManager::setPulseAreaFilterPlotEnabled(bool enabled)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_bPulseAreaFilterEnabledPlot = enabled;
     m_pulseAreaFilerEnabledPlotNode->setValue(enabled);
@@ -3030,7 +3442,9 @@ void DRS4SettingsManager::setPulseAreaFilterPlotEnabled(bool enabled)
 
 void DRS4SettingsManager::setStartChannelAMin(int min)
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     m_startAChannelMin = min;
     m_startAChannelMinNode->setValue(min);
@@ -3038,332 +3452,426 @@ void DRS4SettingsManager::setStartChannelAMin(int min)
 
 bool DRS4SettingsManager::isPositiveSignal() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_isPositivSignalNode->getValue().toBool();
 }
 
 bool DRS4SettingsManager::isNegativeLTAccepted() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_negativeLifetimesNode->getValue().toBool();
 }
 
 bool DRS4SettingsManager::ignoreBusyState() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_ignoreBusyNode->getValue().toBool();
 }
 
 double DRS4SettingsManager::cfdLevelA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_cfdLevelANode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::cfdLevelB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_cfdLevelBNode->getValue().toDouble();
 }
 
 int DRS4SettingsManager::startCell() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_startCellNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::stopCell() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_stopCellNode->getValue().toInt();
 }
 
 bool DRS4SettingsManager::isforceCoincidence() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_bForceCoincidenceNode->getValue().toBool();
 }
 
 bool DRS4SettingsManager::isBurstMode() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_burstModeNode->getValue().toBool();
 }
 
 double DRS4SettingsManager::offsetInNSAB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_offsetNsABNode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::offsetInNSBA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_offsetNsBANode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::offsetInNSCoincidence() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_offsetNsCoincidenceNode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::offsetInNSMerged() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_offsetNsMergedNode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::scalerInNSAB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_scalerNsABNode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::scalerInNSBA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_scalerNsBANode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::scalerInNSCoincidence() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_scalerNsCoincidenceNode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::scalerInNSMerged() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_scalerNsMergedNode->getValue().toDouble();
 }
 
 int DRS4SettingsManager::channelCntAB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_channelCountABNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::channelCntBA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_channelCountBANode->getValue().toInt();
 }
 
 int DRS4SettingsManager::channelCntCoincindence() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_channelCountCoincidenceNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::channelCntMerged() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_channelCountMergedNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::triggerSource() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_triggerSourceNode->getValue().toInt();
 }
 
 bool DRS4SettingsManager::isTriggerPolarityPositive() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_isTriggerPolarityPositiveNode->getValue().toBool();
 }
 
 double DRS4SettingsManager::triggerLevelAmV() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_triggerLevelANode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::triggerLevelBmV() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_triggerLevelBNode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::triggerDelayInNs() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_triggerDelayInNSNode->getValue().toDouble();
 }
 
 QString DRS4SettingsManager::comment() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_commentNode->getValue().toString();
 }
 
 QString DRS4SettingsManager::lastSaveDate() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_lastSaveDateNode->getValue().toString();
 }
 
 int DRS4SettingsManager::channelNumberA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_channelNumberANode->getValue().toInt();
 }
 
 int DRS4SettingsManager::channelNumberB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_channelNumberBNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::startChanneAMin() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_startAChannelMinNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::startChanneAMax() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_startAChannelMaxNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::startChanneBMin() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_startBChannelMinNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::startChanneBMax() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_startBChannelMaxNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::stopChanneAMin() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_stopAChannelMinNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::stopChanneAMax() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_stopAChannelMaxNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::stopChanneBMin() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_stopBChannelMinNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::stopChanneBMax() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_stopBChannelMaxNode->getValue().toInt();
 }
 
 double DRS4SettingsManager::meanCableDelay() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_meanNSNode->getValue().toDouble();
 }
 
 int DRS4SettingsManager::fitIterations() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_fitIterNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::fitIterationsMerged() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_fitIterMergedNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::fitIterationsAB() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_fitIterABNode->getValue().toInt();
 }
 
 int DRS4SettingsManager::fitIterationsBA() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_fitIterBANode->getValue().toInt();
 }
 
 double DRS4SettingsManager::sweepInNanoseconds() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_sweepInNanoSecNode->getValue().toDouble();
 }
 
 double DRS4SettingsManager::sampleSpeedInGHz() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_freqInGHzNode->getValue().toDouble();
 }
 
 QString DRS4SettingsManager::fileName() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     return m_fileName;
 }
 
 QString DRS4SettingsManager::xmlContent() const
 {
+#ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
+#endif
 
     if (m_parentNode)
         return (QString)DSimpleXMLString(m_parentNode);
 
-        return QString("");
+    return QString("");
 }
