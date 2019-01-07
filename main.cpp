@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2018 Danny Petschke
+**  Copyright (C) 2016-2019 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     splash.setFont(QFont("Arial", 12));
 #endif
 
-    splash.showMessage((QString(QString("<b>") + PROGRAM_NAME + "</b><br>(C) Copyright 2016-2018 by Danny Petschke. All rights reserved.")), Qt::AlignLeft | Qt::AlignTop, Qt::darkGray);
+    splash.showMessage((QString(QString("<b>") + PROGRAM_NAME + "</b><br>(C) Copyright 2016-2019 by Danny Petschke. All rights reserved.")), Qt::AlignLeft | Qt::AlignTop, Qt::darkGray);
 
     const QTime dieTime= QTime::currentTime().addSecs(3);
     while ( QTime::currentTime() < dieTime )

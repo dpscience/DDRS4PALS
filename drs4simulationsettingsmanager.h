@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2018 Danny Petschke
+**  Copyright (C) 2016-2019 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class DRS4SimulationSettingsManager
     DSimpleXMLNode *m_electronicsNode;
 
     /* irf-A */
-        DSimpleXMLNode *m_irfPDSA_parentNode;
+    DSimpleXMLNode *m_irfPDSA_parentNode;
             DSimpleXMLNode *m_irfPDSA_1_parentNode;
 
                     DSimpleXMLNode *m_irfPDSA_1_enabled;
@@ -84,7 +84,7 @@ class DRS4SimulationSettingsManager
                     DSimpleXMLNode *m_irfPDSA_5_relativeShift;
 
      /* irf-B */
-        DSimpleXMLNode *m_irfPDSB_parentNode;
+     DSimpleXMLNode *m_irfPDSB_parentNode;
             DSimpleXMLNode *m_irfPDSB_1_parentNode;
 
                     DSimpleXMLNode *m_irfPDSB_1_enabled;
@@ -126,7 +126,7 @@ class DRS4SimulationSettingsManager
                     DSimpleXMLNode *m_irfPDSB_5_relativeShift;
 
       /* irf-MU */
-         DSimpleXMLNode *m_irfMU_parentNode;
+      DSimpleXMLNode *m_irfMU_parentNode;
 
              DSimpleXMLNode *m_irfMU_1_parentNode;
 
@@ -168,41 +168,88 @@ class DRS4SimulationSettingsManager
                      DSimpleXMLNode *m_irfMU_5_uncertainty;
                      DSimpleXMLNode *m_irfMU_5_relativeShift;
 
-    DSimpleXMLNode *m_phsParentNode;
+    /* pulse-shape */
     DSimpleXMLNode *m_pulseShapeParentNode;
 
-    DSimpleXMLNode *m_ltParentNode;
-    DSimpleXMLNode *m_ltDistr1ParentNode;
-    DSimpleXMLNode *m_ltDistr2ParentNode;
-    DSimpleXMLNode *m_ltDistr3ParentNode;
-    DSimpleXMLNode *m_ltDistr4ParentNode;
-    DSimpleXMLNode *m_ltDistr5ParentNode;
+        /* digitization */
+        DSimpleXMLNode *m_pulseShapeDigitizationParentNode;
 
-    //electronics:
-    /*DSimpleXMLNode *m_tts_detectorAInNsNode;
-    DSimpleXMLNode *m_tts_detectorBInNsNode;
-    DSimpleXMLNode *m_timingResolution_boardInNsNode;*/
+            DSimpleXMLNode *m_pulseShapeDigitization_enabled_Node;
+            DSimpleXMLNode *m_pulseShapeDigitization_depth_in_bit_Node;
 
-    //phs:
-    DSimpleXMLNode *m_sigmaPHS_A_511Node;
-    DSimpleXMLNode *m_sigmaPHS_B_511Node;
+        /* pulse A */
+        DSimpleXMLNode *m_pulseShape_A_ParentNode;
 
-    DSimpleXMLNode *m_sigmaPHS_A_1274Node;
-    DSimpleXMLNode *m_sigmaPHS_B_1274Node;
+            DSimpleXMLNode *m_pulseShapeRiseTimeInNS_A_Node;
+            DSimpleXMLNode *m_pulseShapeWidthInNS_A_Node;
 
-    DSimpleXMLNode *m_meanPHS_A_511Node;
-    DSimpleXMLNode *m_meanPHS_B_511Node;
+                DSimpleXMLNode *m_pulseShapeBaselineJitter_A_ParentNode;
 
-    DSimpleXMLNode *m_meanPHS_A_1274Node;
-    DSimpleXMLNode *m_meanPHS_B_1274Node;
+                    DSimpleXMLNode *m_pulseShapeBaselineJitter_enabled_A_Node;
+                    DSimpleXMLNode *m_pulseShapeBaselineJitter_mean_A_Node;
+                    DSimpleXMLNode *m_pulseShapeBaselineJitter_stddev_A_Node;
+
+                DSimpleXMLNode *m_pulseShapeRandomNoise_A_ParentNode;
+
+                    DSimpleXMLNode *m_pulseShapeRandomNoise_enabled_A_Node;
+                    DSimpleXMLNode *m_pulseShapeRandomNoise_stddev_A_Node;
+
+                DSimpleXMLNode *m_pulseShapeTimeNonlinearity_A_ParentNode;
+
+                    DSimpleXMLNode *m_pulseShapeNonLinearity_enabled_A_Node;
+                    DSimpleXMLNode *m_pulseShapeNonLinearity_fixedApertureJitter_A_Node;
+                    DSimpleXMLNode *m_pulseShapeNonLinearity_randomApertureJitter_A_Node;
+
+
+          /* pulse B */
+          DSimpleXMLNode *m_pulseShape_B_ParentNode;
+
+             DSimpleXMLNode *m_pulseShapeRiseTimeInNS_B_Node;
+             DSimpleXMLNode *m_pulseShapeWidthInNS_B_Node;
+
+                DSimpleXMLNode *m_pulseShapeBaselineJitter_B_ParentNode;
+
+                     DSimpleXMLNode *m_pulseShapeBaselineJitter_enabled_B_Node;
+                     DSimpleXMLNode *m_pulseShapeBaselineJitter_mean_B_Node;
+                     DSimpleXMLNode *m_pulseShapeBaselineJitter_stddev_B_Node;
+
+                 DSimpleXMLNode *m_pulseShapeRandomNoise_B_ParentNode;
+
+                     DSimpleXMLNode *m_pulseShapeRandomNoise_enabled_B_Node;
+                     DSimpleXMLNode *m_pulseShapeRandomNoise_stddev_B_Node;
+
+                 DSimpleXMLNode *m_pulseShapeTimeNonlinearity_B_ParentNode;
+
+                     DSimpleXMLNode *m_pulseShapeNonLinearity_enabled_B_Node;
+                     DSimpleXMLNode *m_pulseShapeNonLinearity_fixedApertureJitter_B_Node;
+                     DSimpleXMLNode *m_pulseShapeNonLinearity_randomApertureJitter_B_Node;
+
+    /* phs */
+    DSimpleXMLNode *m_phsParentNode;
+
+        DSimpleXMLNode *m_sigmaPHS_A_511Node;
+        DSimpleXMLNode *m_sigmaPHS_B_511Node;
+
+        DSimpleXMLNode *m_sigmaPHS_A_1274Node;
+        DSimpleXMLNode *m_sigmaPHS_B_1274Node;
+
+        DSimpleXMLNode *m_meanPHS_A_511Node;
+        DSimpleXMLNode *m_meanPHS_B_511Node;
+
+        DSimpleXMLNode *m_meanPHS_A_1274Node;
+        DSimpleXMLNode *m_meanPHS_B_1274Node;
 
     DSimpleXMLNode *m_arrivalTimeSpreadInNsNode;
 
-    //log-normal pulse-shape:
-    DSimpleXMLNode *m_riseTimeInNS;
-    DSimpleXMLNode *m_pulseWidthInNS;
+    /* lifetimes (distributions) */
+    DSimpleXMLNode *m_ltParentNode;
 
-    //lifetimes:
+        DSimpleXMLNode *m_ltDistr1ParentNode;
+        DSimpleXMLNode *m_ltDistr2ParentNode;
+        DSimpleXMLNode *m_ltDistr3ParentNode;
+        DSimpleXMLNode *m_ltDistr4ParentNode;
+        DSimpleXMLNode *m_ltDistr5ParentNode;
+
     DSimpleXMLNode *m_backgroundI;
     DSimpleXMLNode *m_coincidenceI;
 
@@ -224,35 +271,35 @@ class DRS4SimulationSettingsManager
     DSimpleXMLNode *m_I4_NS;
     DSimpleXMLNode *m_I5_NS;
 
-    DSimpleXMLNode *m_tau1_isDistributionEnabled;
-    DSimpleXMLNode *m_tau2_isDistributionEnabled;
-    DSimpleXMLNode *m_tau3_isDistributionEnabled;
-    DSimpleXMLNode *m_tau4_isDistributionEnabled;
-    DSimpleXMLNode *m_tau5_isDistributionEnabled;
+        DSimpleXMLNode *m_tau1_isDistributionEnabled;
+        DSimpleXMLNode *m_tau2_isDistributionEnabled;
+        DSimpleXMLNode *m_tau3_isDistributionEnabled;
+        DSimpleXMLNode *m_tau4_isDistributionEnabled;
+        DSimpleXMLNode *m_tau5_isDistributionEnabled;
 
-    DSimpleXMLNode *m_tau1_distrUncertainty_NS;
-    DSimpleXMLNode *m_tau2_distrUncertainty_NS;
-    DSimpleXMLNode *m_tau3_distrUncertainty_NS;
-    DSimpleXMLNode *m_tau4_distrUncertainty_NS;
-    DSimpleXMLNode *m_tau5_distrUncertainty_NS;
+        DSimpleXMLNode *m_tau1_distrUncertainty_NS;
+        DSimpleXMLNode *m_tau2_distrUncertainty_NS;
+        DSimpleXMLNode *m_tau3_distrUncertainty_NS;
+        DSimpleXMLNode *m_tau4_distrUncertainty_NS;
+        DSimpleXMLNode *m_tau5_distrUncertainty_NS;
 
-    DSimpleXMLNode *m_tau1_distrFunctionType;
-    DSimpleXMLNode *m_tau2_distrFunctionType;
-    DSimpleXMLNode *m_tau3_distrFunctionType;
-    DSimpleXMLNode *m_tau4_distrFunctionType;
-    DSimpleXMLNode *m_tau5_distrFunctionType;
+        DSimpleXMLNode *m_tau1_distrFunctionType;
+        DSimpleXMLNode *m_tau2_distrFunctionType;
+        DSimpleXMLNode *m_tau3_distrFunctionType;
+        DSimpleXMLNode *m_tau4_distrFunctionType;
+        DSimpleXMLNode *m_tau5_distrFunctionType;
 
-    DSimpleXMLNode *m_tau1_distrGridNumber;
-    DSimpleXMLNode *m_tau2_distrGridNumber;
-    DSimpleXMLNode *m_tau3_distrGridNumber;
-    DSimpleXMLNode *m_tau4_distrGridNumber;
-    DSimpleXMLNode *m_tau5_distrGridNumber;
+        DSimpleXMLNode *m_tau1_distrGridNumber;
+        DSimpleXMLNode *m_tau2_distrGridNumber;
+        DSimpleXMLNode *m_tau3_distrGridNumber;
+        DSimpleXMLNode *m_tau4_distrGridNumber;
+        DSimpleXMLNode *m_tau5_distrGridNumber;
 
-    DSimpleXMLNode *m_tau1_distrGridIncrement;
-    DSimpleXMLNode *m_tau2_distrGridIncrement;
-    DSimpleXMLNode *m_tau3_distrGridIncrement;
-    DSimpleXMLNode *m_tau4_distrGridIncrement;
-    DSimpleXMLNode *m_tau5_distrGridIncrement;
+        DSimpleXMLNode *m_tau1_distrGridIncrement;
+        DSimpleXMLNode *m_tau2_distrGridIncrement;
+        DSimpleXMLNode *m_tau3_distrGridIncrement;
+        DSimpleXMLNode *m_tau4_distrGridIncrement;
+        DSimpleXMLNode *m_tau5_distrGridIncrement;
 
     mutable QMutex m_mutex;
 
@@ -268,9 +315,6 @@ public:
     bool load(const QString& path);
     bool save(const QString& path);
 
-    /*float ttsDetectorAInNs() const;
-    float ttsDetectorBInNs() const;
-    float timingResolutionMeasurementUnitInNs() const;*/
 
     bool detectorA_irf_1_enabled() const;
     QString detectorA_irf_1_functionType() const;
@@ -302,6 +346,7 @@ public:
     float detectorA_irf_5_uncertainty() const;
     float detectorA_irf_5_shift() const;
 
+
     bool detectorB_irf_1_enabled() const;
     QString detectorB_irf_1_functionType() const;
     float detectorB_irf_1_intensity() const;
@@ -331,6 +376,7 @@ public:
     float detectorB_irf_5_intensity() const;
     float detectorB_irf_5_uncertainty() const;
     float detectorB_irf_5_shift() const;
+
 
     bool mu_irf_1_enabled() const;
     QString mu_irf_1_functionType() const;
@@ -362,6 +408,7 @@ public:
     float mu_irf_5_uncertainty() const;
     float mu_irf_5_shift() const;
 
+
     float sigmaPHS511keV_A() const;
     float meanPHS511keV_A() const;
 
@@ -374,13 +421,44 @@ public:
     float sigmaPHS1274keV_B() const;
     float meanPHS1274keV_B() const;
 
+
     float arrivalTimeSpreadInNs() const;
 
-    float riseTimeInNs() const;
-    float pulseWidthInNs() const;
+    /* pulse */
+    unsigned int digitizationDepthInBit() const;
+    bool isDigitizationEnabled() const;
 
-    void setRiseTimeInNs(float riseTime);
-    void setPulseWidthInNs(float width);
+    /* pulse A */
+    float riseTimeInNs_A() const;
+    float pulseWidthInNs_A() const;
+
+    bool isBaselineOffsetJitterEnabled_A() const;
+    double baselineOffsetJitterMean_in_mV_A() const;
+    double baselineOffsetJitterStddev_in_mV_A() const;
+
+    bool isRandomNoiseEnabled_A() const;
+    double randomNoise_in_mV_A() const;
+
+    bool isTimeAxisNonlinearityEnabled_A() const;
+    double nonlinearityFixedApertureJitter_in_ns_A() const;
+    double nonlinearityRandomApertureJitter_in_ns_A() const;
+
+
+    /* pulse B */
+    float riseTimeInNs_B() const;
+    float pulseWidthInNs_B() const;
+
+    bool isBaselineOffsetJitterEnabled_B() const;
+    double baselineOffsetJitterMean_in_mV_B() const;
+    double baselineOffsetJitterStddev_in_mV_B() const;
+
+    bool isRandomNoiseEnabled_B() const;
+    double randomNoise_in_mV_B() const;
+
+    bool isTimeAxisNonlinearityEnabled_B() const;
+    double nonlinearityFixedApertureJitter_in_ns_B() const;
+    double nonlinearityRandomApertureJitter_in_ns_B() const;
+
 
     float backgroundIntensity() const;
     float coincidenceIntensity() const;

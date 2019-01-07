@@ -1,6 +1,6 @@
 <DDRS4PALS>
-    <last-save-date>Di Sep 25 11:13:43 2018</last-save-date>
-    <file-version>3</file-version>
+    <last-save-date>Mo Jan 7 11:35:21 2019</last-save-date>
+    <file-version>4</file-version>
     <burst-mode?>false</burst-mode?>
     <negative-lifetimes?>true</negative-lifetimes?>
     <force-stop-stop-Prompt-spectrum>false</force-stop-stop-Prompt-spectrum>
@@ -8,17 +8,17 @@
 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
 p, li { white-space: pre-wrap; }
 </style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:7.875pt; font-weight:600; font-style:normal;">
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:8.1pt;">This software is written by Danny Petschke. Copyright 2016-2018. All rights reserved.</span></p></body></html></user-comment>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:8.1pt;">This software is written by Danny Petschke. Copyright 2016-2019. All rights reserved.</span></p></body></html></user-comment>
     <general-board-settings>
         <analog-input-channel-A>0</analog-input-channel-A>
         <analog-input-channel-B>1</analog-input-channel-B>
         <ignore-busy-state?>false</ignore-busy-state?>
         <trigger-source>768</trigger-source>
-        <trigger-polarity?>false</trigger-polarity?>
-        <trigger-level-channel-A-in-mV>30</trigger-level-channel-A-in-mV>
-        <trigger-level-channel-B-in-mV>30</trigger-level-channel-B-in-mV>
+        <trigger-polarity?>true</trigger-polarity?>
+        <trigger-level-channel-A-in-mV>-30</trigger-level-channel-A-in-mV>
+        <trigger-level-channel-B-in-mV>-30</trigger-level-channel-B-in-mV>
         <trigger-delay-in-ns>80</trigger-delay-in-ns>
-        <positive-signal-polarity?>true</positive-signal-polarity?>
+        <positive-signal-polarity?>false</positive-signal-polarity?>
         <ROI-start-cell>0</ROI-start-cell>
         <ROI-stop-cell>1023</ROI-stop-cell>
         <sweep-in-ns>200</sweep-in-ns>
@@ -34,10 +34,10 @@ p, li { white-space: pre-wrap; }
         <type-2-spline-interpolation>
             <spline-type>
                 <linear>
-                    <enabled?>true</enabled?>
+                    <enabled?>false</enabled?>
                 </linear>
                 <alglib-cubic>
-                    <enabled?>false</enabled?>
+                    <enabled?>true</enabled?>
                 </alglib-cubic>
                 <alglib-akima>
                     <enabled?>false</enabled?>
@@ -67,19 +67,19 @@ p, li { white-space: pre-wrap; }
     </phs-settings>
     <spectrum-settings>
         <spectrum-AB>
-            <offset-AB-spectrum-in-ns>3</offset-AB-spectrum-in-ns>
+            <offset-AB-spectrum-in-ns>8</offset-AB-spectrum-in-ns>
             <scale-AB-spectrum-in-ns>50</scale-AB-spectrum-in-ns>
             <number-of-channels-AB-spectrum>10000</number-of-channels-AB-spectrum>
             <AB-spectrum-fit-iterations>40</AB-spectrum-fit-iterations>
         </spectrum-AB>
         <spectrum-BA>
-            <offset-BA-spectrum-in-ns>3</offset-BA-spectrum-in-ns>
+            <offset-BA-spectrum-in-ns>8</offset-BA-spectrum-in-ns>
             <scale-BA-spectrum-in-ns>50</scale-BA-spectrum-in-ns>
             <number-of-channels-BA-spectrum>10000</number-of-channels-BA-spectrum>
             <BA-spectrum-fit-iterations>40</BA-spectrum-fit-iterations>
         </spectrum-BA>
         <spectrum-Merged>
-            <offset-Merged-spectrum-in-ns>4</offset-Merged-spectrum-in-ns>
+            <offset-Merged-spectrum-in-ns>8</offset-Merged-spectrum-in-ns>
             <scale-Merged-spectrum-in-ns>50</scale-Merged-spectrum-in-ns>
             <number-of-channels-Merged-spectrum>10000</number-of-channels-Merged-spectrum>
             <Merged-spectrum-fit-iterations>40</Merged-spectrum-fit-iterations>
@@ -93,7 +93,7 @@ p, li { white-space: pre-wrap; }
         </spectrum-Prompt>
     </spectrum-settings>
     <area-filter-settings>
-        <pulse-area-filter?>true</pulse-area-filter?>
+        <pulse-area-filter?>false</pulse-area-filter?>
         <pulse-area-filter-plot?>false</pulse-area-filter-plot?>
         <pulse-area-filter-binning-A>100</pulse-area-filter-binning-A>
         <pulse-area-filter-binning-B>100</pulse-area-filter-binning-B>
@@ -129,6 +129,7 @@ p, li { white-space: pre-wrap; }
     <pulse-shape-filter-settings>
         <pulse-shape-filter-A-enabled?>false</pulse-shape-filter-A-enabled?>
         <pulse-shape-filter-B-enabled?>false</pulse-shape-filter-B-enabled?>
+        <pulse-shape-filter-record-scheme>0</pulse-shape-filter-record-scheme>
         <pulse-shape-filter-number-of-pulses-to-be-recorded-A>10000</pulse-shape-filter-number-of-pulses-to-be-recorded-A>
         <pulse-shape-filter-number-of-pulses-to-be-recorded-B>10000</pulse-shape-filter-number-of-pulses-to-be-recorded-B>
         <pulse-shape-filter-plot-left-of-CFD-in-ns-A>2</pulse-shape-filter-plot-left-of-CFD-in-ns-A>
@@ -153,8 +154,8 @@ p, li { white-space: pre-wrap; }
         </pulse-shape-filter-content-B>
     </pulse-shape-filter-settings>
     <baseline-jitter-correction-settings>
-        <baseline-jitter-correction-enabled-A?>false</baseline-jitter-correction-enabled-A?>
-        <baseline-jitter-correction-enabled-B?>false</baseline-jitter-correction-enabled-B?>
+        <baseline-jitter-correction-enabled-A?>true</baseline-jitter-correction-enabled-A?>
+        <baseline-jitter-correction-enabled-B?>true</baseline-jitter-correction-enabled-B?>
         <baseline-jitter-correction-start-cell-A>5</baseline-jitter-correction-start-cell-A>
         <baseline-jitter-correction-start-cell-B>5</baseline-jitter-correction-start-cell-B>
         <baseline-jitter-correction-cell-region-A>25</baseline-jitter-correction-cell-region-A>

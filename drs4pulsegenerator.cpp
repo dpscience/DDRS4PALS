@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2018 Danny Petschke
+**  Copyright (C) 2016-2019 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -89,33 +89,43 @@ QString DRS4PulseGenerator::getErrorString() const
             errorStr += "<li><font color=\"Red\">invalid sum of irf intensities: PDS</font></li>";
         if ((m_error & DLTErrorType::INVALID_SUM_OF_MU_IRF_INTENSITIES))
             errorStr += "<li><font color=\"Red\">invalid sum of irf intensities: MU</font></li>";
+        if ((m_error & DLTErrorType::INVALID_VOLTAGE_BASELINE_JITTER))
+            errorStr += "<li><font color=\"Red\">invalid voltage aperture baseline jitter value</font></li>";
+        if ((m_error & DLTErrorType::INVALID_VOLTAGE_RND_NOISE))
+            errorStr += "<li><font color=\"Red\">invalid voltage random noise value</font></li>";
+        if ((m_error & DLTErrorType::INVALID_TIME_NONLINEARITY_FIXED_APERTURE_JITTER))
+            errorStr += "<li><font color=\"Red\">invalid time axis (fixed) pattern aperture jitter value</font></li>";
+        if ((m_error & DLTErrorType::INVALID_TIME_NONLINEARITY_RND_APERTURE_JITTER))
+            errorStr += "<li><font color=\"Red\">invalid time axis random aperture jitter value</font></li>";
+        if ((m_error & DLTErrorType::INVALID_DIGITIZATION_DEPTH))
+            errorStr += "<li><font color=\"Red\">invalid digitization depth value</font></li>";
     }
 
     errorStr += "</b></lu>";
 
     return errorStr;
 }
-#include <QDebug>
+
 void DRS4PulseGenerator::update()
 {
     QMutexLocker locker(&m_mutex);
 
     //PHS:
-    m_phsDistribution.meanOfStartA = DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_A();
-    m_phsDistribution.meanOfStartB = DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_B();
+    m_phsDistribution.meanOfStartA = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_A();
+    m_phsDistribution.meanOfStartB = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_B();
 
-    m_phsDistribution.meanOfStopA = DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_A();
-    m_phsDistribution.meanOfStopB = DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_B();
+    m_phsDistribution.meanOfStopA = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_A();
+    m_phsDistribution.meanOfStopB = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_B();
 
-    m_phsDistribution.stddevOfStartA = DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_A();
-    m_phsDistribution.stddevOfStartB = DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_B();
+    m_phsDistribution.stddevOfStartA = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_A();
+    m_phsDistribution.stddevOfStartB = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_B();
 
-    m_phsDistribution.stddevOfStopA = DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_A();
-    m_phsDistribution.stddevOfStopB = DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_B();
+    m_phsDistribution.stddevOfStopA = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_A();
+    m_phsDistribution.stddevOfStopB = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_B();
 
     //Device-Info:
     m_deviceInfo.ATS = DRS4SimulationSettingsManager::sharedInstance()->arrivalTimeSpreadInNs();    
-    m_deviceInfo.numberOfCells = kNumberOfBins; //fixed
+    m_deviceInfo.numberOfCells = kNumberOfBins; //fixed for DDRS4PALS
     m_deviceInfo.sweep = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
 
     /* PDS-A-1 */
@@ -435,14 +445,73 @@ void DRS4PulseGenerator::update()
         m_deviceInfo.irfMU.irf5MU = IGNORE_DLTIRF;
     }
 
-    //Pulse-Info:
-    m_pulseInfo.amplitude = 500.0f; //fixed
+    /* Pulse-Info */
+    m_pulseInfo.amplitude = -500.0f; // fixed for DDRS4PALS software
     m_pulseInfo.delay = DRS4SettingsManager::sharedInstance()->triggerDelayInNs();
-    m_pulseInfo.pulseWidth = DRS4SimulationSettingsManager::sharedInstance()->pulseWidthInNs();
-    m_pulseInfo.isPositiveSignalPolarity = true;
-    m_pulseInfo.riseTime = DRS4SimulationSettingsManager::sharedInstance()->riseTimeInNs();
+    m_pulseInfo.isPositiveSignalPolarity = false;
 
-    //Simulation-Input:
+    if (DRS4SimulationSettingsManager::sharedInstance()->isDigitizationEnabled()) {
+        m_pulseInfo.digitizationInfo.enabled = true;
+        m_pulseInfo.digitizationInfo.digitizationDepth = DRS4SimulationSettingsManager::sharedInstance()->digitizationDepthInBit();
+    }
+    else
+        m_pulseInfo.digitizationInfo = IGNORE_DIGITIZATION;
+
+    /* Pulse - A */
+    m_pulseInfo.pulseA.riseTime = DRS4SimulationSettingsManager::sharedInstance()->riseTimeInNs_A();
+    m_pulseInfo.pulseA.pulseWidth = DRS4SimulationSettingsManager::sharedInstance()->pulseWidthInNs_A();
+
+    if (DRS4SimulationSettingsManager::sharedInstance()->isBaselineOffsetJitterEnabled_A()) {
+        m_pulseInfo.pulseA.baselineOffsetJitterInfoV.enabled = true;
+        m_pulseInfo.pulseA.baselineOffsetJitterInfoV.meanOfBaselineOffsetJitter = DRS4SimulationSettingsManager::sharedInstance()->baselineOffsetJitterMean_in_mV_A();
+        m_pulseInfo.pulseA.baselineOffsetJitterInfoV.stddevOfBaselineOffsetJitter = DRS4SimulationSettingsManager::sharedInstance()->baselineOffsetJitterStddev_in_mV_A();
+    }
+    else
+        m_pulseInfo.pulseA.baselineOffsetJitterInfoV = IGNORE_BASELINE_JITTER_V;
+
+    if (DRS4SimulationSettingsManager::sharedInstance()->isRandomNoiseEnabled_A()) {
+        m_pulseInfo.pulseA.randomNoiseInfoV.enabled = true;
+        m_pulseInfo.pulseA.randomNoiseInfoV.rndNoise = DRS4SimulationSettingsManager::sharedInstance()->randomNoise_in_mV_A();
+    }
+    else
+        m_pulseInfo.pulseA.randomNoiseInfoV = IGNORE_RND_NOISE_V;
+
+    if (DRS4SimulationSettingsManager::sharedInstance()->isTimeAxisNonlinearityEnabled_A()) {
+        m_pulseInfo.pulseA.timeAxisNonLinearityInfoT.enabled = true;
+        m_pulseInfo.pulseA.timeAxisNonLinearityInfoT.fixedPatternApertureJitter = DRS4SimulationSettingsManager::sharedInstance()->nonlinearityFixedApertureJitter_in_ns_A();
+        m_pulseInfo.pulseA.timeAxisNonLinearityInfoT.rndApertureJitter = DRS4SimulationSettingsManager::sharedInstance()->nonlinearityRandomApertureJitter_in_ns_A();
+    }
+    else
+        m_pulseInfo.pulseA.timeAxisNonLinearityInfoT = IGNORE_AXIS_NONLINEARITY_T;
+
+    /* Pulse - B */
+    m_pulseInfo.pulseB.riseTime = DRS4SimulationSettingsManager::sharedInstance()->riseTimeInNs_B();
+    m_pulseInfo.pulseB.pulseWidth = DRS4SimulationSettingsManager::sharedInstance()->pulseWidthInNs_B();
+
+    if (DRS4SimulationSettingsManager::sharedInstance()->isBaselineOffsetJitterEnabled_B()) {
+        m_pulseInfo.pulseB.baselineOffsetJitterInfoV.enabled = true;
+        m_pulseInfo.pulseB.baselineOffsetJitterInfoV.meanOfBaselineOffsetJitter = DRS4SimulationSettingsManager::sharedInstance()->baselineOffsetJitterMean_in_mV_B();
+        m_pulseInfo.pulseB.baselineOffsetJitterInfoV.stddevOfBaselineOffsetJitter = DRS4SimulationSettingsManager::sharedInstance()->baselineOffsetJitterStddev_in_mV_B();
+    }
+    else
+        m_pulseInfo.pulseB.baselineOffsetJitterInfoV = IGNORE_BASELINE_JITTER_V;
+
+    if (DRS4SimulationSettingsManager::sharedInstance()->isRandomNoiseEnabled_B()) {
+        m_pulseInfo.pulseB.randomNoiseInfoV.enabled = true;
+        m_pulseInfo.pulseB.randomNoiseInfoV.rndNoise = DRS4SimulationSettingsManager::sharedInstance()->randomNoise_in_mV_B();
+    }
+    else
+        m_pulseInfo.pulseB.randomNoiseInfoV = IGNORE_RND_NOISE_V;
+
+    if (DRS4SimulationSettingsManager::sharedInstance()->isTimeAxisNonlinearityEnabled_B()) {
+        m_pulseInfo.pulseB.timeAxisNonLinearityInfoT.enabled = true;
+        m_pulseInfo.pulseB.timeAxisNonLinearityInfoT.fixedPatternApertureJitter = DRS4SimulationSettingsManager::sharedInstance()->nonlinearityFixedApertureJitter_in_ns_B();
+        m_pulseInfo.pulseB.timeAxisNonLinearityInfoT.rndApertureJitter = DRS4SimulationSettingsManager::sharedInstance()->nonlinearityRandomApertureJitter_in_ns_B();
+    }
+    else
+        m_pulseInfo.pulseB.timeAxisNonLinearityInfoT = IGNORE_AXIS_NONLINEARITY_T;
+
+    /* Simulation-Input */
     m_simulationInput.lt1_activated = DRS4SimulationSettingsManager::sharedInstance()->isLT1activated();
     m_simulationInput.lt2_activated = DRS4SimulationSettingsManager::sharedInstance()->isLT2activated();
     m_simulationInput.lt3_activated = DRS4SimulationSettingsManager::sharedInstance()->isLT3activated();
@@ -580,8 +649,6 @@ void DRS4PulseGenerator::update()
 
     DDELETE_SAFETY(m_generator);
     m_generator = new DLTPulseGenerator(m_simulationInput, m_phsDistribution, m_deviceInfo, m_pulseInfo, this);
-
-    /*m_generator->m_sampleScaleFactor = 250000/1024.0f;*/
 }
 
 bool DRS4PulseGenerator::receiveGeneratedPulsePair(float *pulseATime, float *pulseAVoltage, float *pulseBTime, float *pulseBVoltage)
