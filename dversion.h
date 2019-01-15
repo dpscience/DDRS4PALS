@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2018 Danny Petschke
+**  Copyright (C) 2016-2019 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@
 
 #define NAME                       QString("DDRS4PALS")
 #define MAJOR_VERSION       QString("1")
-#define MINOR_VERSION    QString("07")
+#define MINOR_VERSION    QString("08")
 #define VERSION_EXTENSION QString("(official)")
-#define DATE_EXTENSION  QString("23.11.2018")
+#define DATE_EXTENSION  QString("15.01.2018")
 
 #define DATA_STREAM_VERSION 1
 
@@ -78,7 +78,7 @@
 
 #define MSGBOX(__text__) DMSGBOX2(__text__, PROGRAM_NAME);
 
-#define SHOW_ABOUT() { const QString text = PROGRAM_NAME + "<br><br>(C) Copyright 2016-2018 by Danny Petschke<br>All rights reserved.<br><br>"; \
+#define SHOW_ABOUT() { const QString text = PROGRAM_NAME + "<br><br>(C) Copyright 2016-2019 by Danny Petschke<br>All rights reserved.<br><br>"; \
     const QString contact = "contact: <a href=\"danny.petschke@uni-wuerzburg.de\">danny.petschke@uni-wuerzburg.de</a><br><br>"; \
     const QString license = "<nobr>Fit Algorithm by: <br><a href=\"https://www.physics.wisc.edu/~craigm/idl/cmpfit.html\">MPFIT</a>: A MINPACK-1 Least Squares Fitting Library in C</nobr><br><br>"; \
     const QString license2 = "<nobr>CFD Interpolation by:<br><a href=\"http://www.alglib.net/\">ALGLIB</a>: A Numerical Analysis and Data Processing Library</nobr><br>and<br><a href=\"http://kluge.in-chemnitz.de/opensource/spline/\">Tino Kluge</a>: Cubic Spline Interpolation in C++<br><br>"; \

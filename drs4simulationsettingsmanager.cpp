@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2018 Danny Petschke
+**  Copyright (C) 2016-2019 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -278,16 +278,79 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
             m_irfMU_5_relativeShift = new DSimpleXMLNode("shift-in-ns");
             m_irfMU_5_relativeShift->setValue(0.0);
 
-    m_phsParentNode = new DSimpleXMLNode("pulse-height-spectrum-PHS");
+
+    //Pulse-Shape:
     m_pulseShapeParentNode = new DSimpleXMLNode("detector-output-pulse-shape");
-    m_ltParentNode = new DSimpleXMLNode("lifetime-spectrum-simulation-input");
-    m_ltDistr1ParentNode = new DSimpleXMLNode("lifetime-1-distribution-information");
-    m_ltDistr2ParentNode = new DSimpleXMLNode("lifetime-2-distribution-information");
-    m_ltDistr3ParentNode = new DSimpleXMLNode("lifetime-3-distribution-information");
-    m_ltDistr4ParentNode = new DSimpleXMLNode("lifetime-4-distribution-information");
-    m_ltDistr5ParentNode = new DSimpleXMLNode("lifetime-5-distribution-information");
+
+    m_pulseShapeDigitizationParentNode = new DSimpleXMLNode("pulse-digitization");
+    m_pulseShapeDigitization_enabled_Node = new DSimpleXMLNode("is-enabled?");
+    m_pulseShapeDigitization_enabled_Node->setValue(true);
+    m_pulseShapeDigitization_depth_in_bit_Node = new DSimpleXMLNode("digitization-depth-in-bit");
+    m_pulseShapeDigitization_depth_in_bit_Node->setValue(14);
+
+    //Pulse A:
+    m_pulseShape_A_ParentNode = new DSimpleXMLNode("detector-A");
+
+    m_pulseShapeRiseTimeInNS_A_Node = new DSimpleXMLNode("rise-time-in-ns");
+    m_pulseShapeRiseTimeInNS_A_Node->setValue(5.0f);
+    m_pulseShapeWidthInNS_A_Node = new DSimpleXMLNode("pulse-width-in-ns");
+    m_pulseShapeWidthInNS_A_Node->setValue(0.165f);
+
+    m_pulseShapeBaselineJitter_A_ParentNode = new DSimpleXMLNode("baseline-offset-jitter");
+    m_pulseShapeBaselineJitter_enabled_A_Node = new DSimpleXMLNode("is-enabled?");
+    m_pulseShapeBaselineJitter_enabled_A_Node->setValue(true);
+    m_pulseShapeBaselineJitter_mean_A_Node = new DSimpleXMLNode("mean-of-baseline-in-mV");
+    m_pulseShapeBaselineJitter_mean_A_Node->setValue(0.0f);
+    m_pulseShapeBaselineJitter_stddev_A_Node = new DSimpleXMLNode("stddev-of-baseline-in-mV");
+    m_pulseShapeBaselineJitter_stddev_A_Node->setValue(5.0f);
+
+    m_pulseShapeRandomNoise_A_ParentNode = new DSimpleXMLNode("random-noise");
+    m_pulseShapeRandomNoise_enabled_A_Node = new DSimpleXMLNode("is-enabled?");
+    m_pulseShapeRandomNoise_enabled_A_Node->setValue(true);
+    m_pulseShapeRandomNoise_stddev_A_Node = new DSimpleXMLNode("noise-in-mV");
+    m_pulseShapeRandomNoise_stddev_A_Node->setValue(0.35f);
+
+    m_pulseShapeTimeNonlinearity_A_ParentNode = new DSimpleXMLNode("time-axis-non-linearity");
+    m_pulseShapeNonLinearity_enabled_A_Node = new DSimpleXMLNode("is-enabled?");
+    m_pulseShapeNonLinearity_enabled_A_Node->setValue(true);
+    m_pulseShapeNonLinearity_fixedApertureJitter_A_Node = new DSimpleXMLNode("fixed-aperture-jitter-in-ns");
+    m_pulseShapeNonLinearity_fixedApertureJitter_A_Node->setValue(0.005f);
+    m_pulseShapeNonLinearity_randomApertureJitter_A_Node = new DSimpleXMLNode("random-aperture-jitter-in-ns");
+    m_pulseShapeNonLinearity_randomApertureJitter_A_Node->setValue(0.001f);
+
+    //Pulse B:
+    m_pulseShape_B_ParentNode = new DSimpleXMLNode("detector-B");
+
+    m_pulseShapeRiseTimeInNS_B_Node = new DSimpleXMLNode("rise-time-in-ns");
+    m_pulseShapeRiseTimeInNS_B_Node->setValue(5.0f);
+    m_pulseShapeWidthInNS_B_Node = new DSimpleXMLNode("pulse-width-in-ns");
+    m_pulseShapeWidthInNS_B_Node->setValue(0.165f);
+
+    m_pulseShapeBaselineJitter_B_ParentNode = new DSimpleXMLNode("baseline-offset-jitter");
+    m_pulseShapeBaselineJitter_enabled_B_Node = new DSimpleXMLNode("is-enabled?");
+    m_pulseShapeBaselineJitter_enabled_B_Node->setValue(true);
+    m_pulseShapeBaselineJitter_mean_B_Node = new DSimpleXMLNode("mean-of-baseline-in-mV");
+    m_pulseShapeBaselineJitter_mean_B_Node->setValue(0.0f);
+    m_pulseShapeBaselineJitter_stddev_B_Node = new DSimpleXMLNode("stddev-of-baseline-in-mV");
+    m_pulseShapeBaselineJitter_stddev_B_Node->setValue(5.0f);
+
+    m_pulseShapeRandomNoise_B_ParentNode = new DSimpleXMLNode("random-noise");
+    m_pulseShapeRandomNoise_enabled_B_Node = new DSimpleXMLNode("is-enabled?");
+    m_pulseShapeRandomNoise_enabled_B_Node->setValue(true);
+    m_pulseShapeRandomNoise_stddev_B_Node = new DSimpleXMLNode("noise-in-mV");
+    m_pulseShapeRandomNoise_stddev_B_Node->setValue(0.35f);
+
+    m_pulseShapeTimeNonlinearity_B_ParentNode = new DSimpleXMLNode("time-axis-non-linearity");
+    m_pulseShapeNonLinearity_enabled_B_Node = new DSimpleXMLNode("is-enabled?");
+    m_pulseShapeNonLinearity_enabled_B_Node->setValue(true);
+    m_pulseShapeNonLinearity_fixedApertureJitter_B_Node = new DSimpleXMLNode("fixed-aperture-jitter-in-ns");
+    m_pulseShapeNonLinearity_fixedApertureJitter_B_Node->setValue(0.005f);
+    m_pulseShapeNonLinearity_randomApertureJitter_B_Node = new DSimpleXMLNode("random-aperture-jitter-in-ns");
+    m_pulseShapeNonLinearity_randomApertureJitter_B_Node->setValue(0.001f);
 
     //PHS:
+    m_phsParentNode = new DSimpleXMLNode("pulse-height-spectrum-PHS");
+
     m_meanPHS_A_511Node = new DSimpleXMLNode("mean-stop-window-A-in-mV");
     m_meanPHS_A_511Node->setValue(90.0f);
     m_meanPHS_B_511Node = new DSimpleXMLNode("mean-stop-window-B-in-mV");
@@ -306,13 +369,14 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     m_sigmaPHS_B_1274Node = new DSimpleXMLNode("standard-deviation-start-window-B-in-mV");
     m_sigmaPHS_B_1274Node->setValue(150.0f);
 
-    //Pulse-Shape:
-    m_riseTimeInNS = new DSimpleXMLNode("rise-time-in-ns");
-    m_riseTimeInNS->setValue(5.0f);
-    m_pulseWidthInNS = new DSimpleXMLNode("pulse-width-in-ns");
-    m_pulseWidthInNS->setValue(0.165f);
-
     //LT:
+    m_ltParentNode = new DSimpleXMLNode("lifetime-spectrum-simulation-input");
+    m_ltDistr1ParentNode = new DSimpleXMLNode("lifetime-1-distribution-information");
+    m_ltDistr2ParentNode = new DSimpleXMLNode("lifetime-2-distribution-information");
+    m_ltDistr3ParentNode = new DSimpleXMLNode("lifetime-3-distribution-information");
+    m_ltDistr4ParentNode = new DSimpleXMLNode("lifetime-4-distribution-information");
+    m_ltDistr5ParentNode = new DSimpleXMLNode("lifetime-5-distribution-information");
+
     m_backgroundI = new DSimpleXMLNode("background-intensity");
     m_backgroundI->setValue(0.1f);
 
@@ -326,27 +390,27 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     m_enableLT3 = new DSimpleXMLNode("lifetime-3-enabled?");
     m_enableLT3->setValue(true);
     m_enableLT4 = new DSimpleXMLNode("lifetime-4-enabled?");
-    m_enableLT4->setValue(true);
+    m_enableLT4->setValue(false);
     m_enableLT5 = new DSimpleXMLNode("lifetime-5-enabled?");
-    m_enableLT5->setValue(true);
+    m_enableLT5->setValue(false);
 
     m_tau1_NS = new DSimpleXMLNode("lifetime-1-tau-in-ns");
     m_tau1_NS->setValue(0.160f);
     m_tau2_NS = new DSimpleXMLNode("lifetime-2-tau-in-ns");
     m_tau2_NS->setValue(0.355f);
     m_tau3_NS = new DSimpleXMLNode("lifetime-3-tau-in-ns");
-    m_tau3_NS->setValue(0.420f);
+    m_tau3_NS->setValue(1.250f);
     m_tau4_NS = new DSimpleXMLNode("lifetime-4-tau-in-ns");
     m_tau4_NS->setValue(1.2f);
     m_tau5_NS = new DSimpleXMLNode("lifetime-5-tau-in-ns");
     m_tau5_NS->setValue(3.6f);
 
     m_I1_NS = new DSimpleXMLNode("lifetime-1-intensity");
-    m_I1_NS->setValue(0.2f);
+    m_I1_NS->setValue(0.9f);
     m_I2_NS = new DSimpleXMLNode("lifetime-2-intensityy");
-    m_I2_NS->setValue(0.1f);
+    m_I2_NS->setValue(0.185f);
     m_I3_NS = new DSimpleXMLNode("lifetime-3-intensity");
-    m_I3_NS->setValue(0.2f);
+    m_I3_NS->setValue(0.015f);
     m_I4_NS = new DSimpleXMLNode("lifetime-4-intensity");
     m_I4_NS->setValue(0.3f);
     m_I5_NS = new DSimpleXMLNode("lifetime-5-intensity");
@@ -408,12 +472,6 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     m_tau5_distrGridIncrement->setValue(0.0f);
 
     //electronics:
-    /*m_tts_detectorAInNsNode = new DSimpleXMLNode("uncertainty-PDS-detector-A-in-ns");
-    m_tts_detectorAInNsNode->setValue(0.0849329f);
-    m_tts_detectorBInNsNode = new DSimpleXMLNode("uncertainty-PDS-detector-B-in-ns");
-    m_tts_detectorBInNsNode->setValue(0.0849329f);
-    m_timingResolution_boardInNsNode = new DSimpleXMLNode("uncertainty-MU-in-ns");
-    m_timingResolution_boardInNsNode->setValue(0.0025f);*/
     m_arrivalTimeSpreadInNsNode = new DSimpleXMLNode("arrival-time-spread-ATS-in-ns");
     m_arrivalTimeSpreadInNsNode->setValue(0.25f);
 
@@ -422,7 +480,20 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     (*m_phsParentNode) << m_meanPHS_A_511Node << m_meanPHS_B_511Node << m_meanPHS_A_1274Node << m_meanPHS_B_1274Node
                                     << m_sigmaPHS_A_511Node << m_sigmaPHS_B_511Node << m_sigmaPHS_A_1274Node << m_sigmaPHS_B_1274Node;
 
-    (*m_pulseShapeParentNode) << m_riseTimeInNS << m_pulseWidthInNS;
+        (*m_pulseShapeDigitizationParentNode) << m_pulseShapeDigitization_enabled_Node << m_pulseShapeDigitization_depth_in_bit_Node;
+
+            (*m_pulseShapeBaselineJitter_A_ParentNode) << m_pulseShapeBaselineJitter_enabled_A_Node << m_pulseShapeBaselineJitter_mean_A_Node << m_pulseShapeBaselineJitter_stddev_A_Node;
+            (*m_pulseShapeRandomNoise_A_ParentNode) << m_pulseShapeRandomNoise_enabled_A_Node << m_pulseShapeRandomNoise_stddev_A_Node;
+            (*m_pulseShapeTimeNonlinearity_A_ParentNode) << m_pulseShapeNonLinearity_enabled_A_Node << m_pulseShapeNonLinearity_fixedApertureJitter_A_Node << m_pulseShapeNonLinearity_randomApertureJitter_A_Node;
+
+            (*m_pulseShapeBaselineJitter_B_ParentNode) << m_pulseShapeBaselineJitter_enabled_B_Node << m_pulseShapeBaselineJitter_mean_B_Node << m_pulseShapeBaselineJitter_stddev_B_Node;
+            (*m_pulseShapeRandomNoise_B_ParentNode) << m_pulseShapeRandomNoise_enabled_B_Node << m_pulseShapeRandomNoise_stddev_B_Node;
+            (*m_pulseShapeTimeNonlinearity_B_ParentNode) << m_pulseShapeNonLinearity_enabled_B_Node << m_pulseShapeNonLinearity_fixedApertureJitter_B_Node << m_pulseShapeNonLinearity_randomApertureJitter_B_Node;
+
+        (*m_pulseShape_A_ParentNode) << m_pulseShapeRiseTimeInNS_A_Node << m_pulseShapeWidthInNS_A_Node << m_pulseShapeBaselineJitter_A_ParentNode << m_pulseShapeRandomNoise_A_ParentNode << m_pulseShapeTimeNonlinearity_A_ParentNode;
+        (*m_pulseShape_B_ParentNode) << m_pulseShapeRiseTimeInNS_B_Node << m_pulseShapeWidthInNS_B_Node << m_pulseShapeBaselineJitter_B_ParentNode << m_pulseShapeRandomNoise_B_ParentNode << m_pulseShapeTimeNonlinearity_B_ParentNode;
+
+    (*m_pulseShapeParentNode) << m_pulseShape_A_ParentNode << m_pulseShape_B_ParentNode << m_pulseShapeDigitizationParentNode;
 
         (*m_ltDistr1ParentNode) << m_tau1_isDistributionEnabled << m_tau1_distrFunctionType << m_tau1_distrUncertainty_NS << m_tau1_distrGridNumber << m_tau1_distrGridIncrement;
         (*m_ltDistr2ParentNode) << m_tau2_isDistributionEnabled << m_tau2_distrFunctionType << m_tau2_distrUncertainty_NS << m_tau2_distrGridNumber << m_tau2_distrGridIncrement;
@@ -585,31 +656,10 @@ bool DRS4SimulationSettingsManager::load(const QString &path)
         m_irfMU_5_uncertainty->setValue(0.0025f);
         m_irfMU_5_relativeShift->setValue(0.0);
 
-        /*m_tts_detectorAInNsNode->setValue(0.0849329f);
-        m_tts_detectorBInNsNode->setValue(0.0849329f);
-        m_timingResolution_boardInNsNode->setValue(0.0025f);*/
         m_arrivalTimeSpreadInNsNode->setValue(0.25f);
     }
     else
     {
-        /*const double  tts_detectorAInNs = electronicTag.getValueAt(m_tts_detectorAInNsNode, &ok).toDouble(&ok);
-        if ( ok )
-            m_tts_detectorAInNsNode->setValue(tts_detectorAInNs);
-        else
-            m_tts_detectorAInNsNode->setValue(0.0849329f);
-
-        const double  tts_detectorBInNs = electronicTag.getValueAt(m_tts_detectorBInNsNode, &ok).toDouble(&ok);
-        if ( ok )
-            m_tts_detectorBInNsNode->setValue(tts_detectorBInNs);
-        else
-            m_tts_detectorBInNsNode->setValue(0.0849329f);
-
-        const double  timingResolution_boardInNsNode = electronicTag.getValueAt(m_timingResolution_boardInNsNode, &ok).toDouble(&ok);
-        if ( ok )
-            m_timingResolution_boardInNsNode->setValue(timingResolution_boardInNsNode);
-        else
-            m_timingResolution_boardInNsNode->setValue(0.0025f);*/
-
         const double  arrivalTimeSpreadInNs = electronicTag.getValueAt(m_arrivalTimeSpreadInNsNode, &ok).toDouble(&ok);
         if ( ok )
             m_arrivalTimeSpreadInNsNode->setValue(arrivalTimeSpreadInNs);
@@ -1120,24 +1170,276 @@ bool DRS4SimulationSettingsManager::load(const QString &path)
     /* -----> Pulse-Shape Settings <-----*/
     const DSimpleXMLTag pulseShapeParentTag = parentTag.getTag(m_pulseShapeParentNode, &ok);
 
-    if ( !ok )
-    {
-        m_riseTimeInNS->setValue(5.0f);
-        m_pulseWidthInNS->setValue(0.45f);
-    }
-    else
-    {
-        const double  riseTimeInNs = pulseShapeParentTag.getValueAt(m_riseTimeInNS, &ok).toDouble(&ok);
-        if ( ok )
-            m_riseTimeInNS->setValue(riseTimeInNs);
-        else
-            m_riseTimeInNS->setValue(5.0f);
+    if ( !ok ) {
+        m_pulseShapeDigitization_enabled_Node->setValue(false);
+        m_pulseShapeDigitization_depth_in_bit_Node->setValue(14);
 
-        const double  pulseWidthInNs = pulseShapeParentTag.getValueAt(m_pulseWidthInNS, &ok).toDouble(&ok);
-        if ( ok )
-            m_pulseWidthInNS->setValue(pulseWidthInNs);
-        else
-            m_pulseWidthInNS->setValue(0.45f);
+
+        m_pulseShapeRiseTimeInNS_A_Node->setValue(5.0f);
+        m_pulseShapeWidthInNS_A_Node->setValue(0.45);
+
+        m_pulseShapeBaselineJitter_enabled_A_Node->setValue(false);
+        m_pulseShapeBaselineJitter_mean_A_Node->setValue(0.0);
+        m_pulseShapeBaselineJitter_stddev_A_Node->setValue(0.0);
+
+        m_pulseShapeRandomNoise_enabled_A_Node->setValue(false);
+        m_pulseShapeRandomNoise_stddev_A_Node->setValue(0.0);
+
+        m_pulseShapeNonLinearity_enabled_A_Node->setValue(false);
+        m_pulseShapeNonLinearity_fixedApertureJitter_A_Node->setValue(0.0);
+        m_pulseShapeNonLinearity_randomApertureJitter_A_Node->setValue(0.0);
+
+
+        m_pulseShapeRiseTimeInNS_B_Node->setValue(5.0f);
+        m_pulseShapeWidthInNS_B_Node->setValue(0.45);
+
+        m_pulseShapeBaselineJitter_enabled_B_Node->setValue(false);
+        m_pulseShapeBaselineJitter_mean_B_Node->setValue(0.0);
+        m_pulseShapeBaselineJitter_stddev_B_Node->setValue(0.0);
+
+        m_pulseShapeRandomNoise_enabled_B_Node->setValue(false);
+        m_pulseShapeRandomNoise_stddev_B_Node->setValue(0.0);
+
+        m_pulseShapeNonLinearity_enabled_B_Node->setValue(false);
+        m_pulseShapeNonLinearity_fixedApertureJitter_B_Node->setValue(0.0);
+        m_pulseShapeNonLinearity_randomApertureJitter_B_Node->setValue(0.0);
+    }
+    else {
+        const DSimpleXMLTag digiParentTag = pulseShapeParentTag.getTag(m_pulseShapeDigitizationParentNode, &ok);
+
+        if (!ok) {
+            m_pulseShapeDigitization_enabled_Node->setValue(false);
+            m_pulseShapeDigitization_depth_in_bit_Node->setValue(14);
+        }
+        else {
+            const bool  digiEnabled = digiParentTag.getValueAt(m_pulseShapeDigitization_enabled_Node, &ok).toBool();
+            if ( ok )
+                m_pulseShapeDigitization_enabled_Node->setValue(digiEnabled);
+            else
+                m_pulseShapeDigitization_enabled_Node->setValue(false);
+
+            const int  digiDepth = digiParentTag.getValueAt(m_pulseShapeDigitization_depth_in_bit_Node, &ok).toInt(&ok);
+            if ( ok )
+                m_pulseShapeDigitization_depth_in_bit_Node->setValue(digiDepth);
+            else
+                m_pulseShapeDigitization_depth_in_bit_Node->setValue(14);
+        }
+
+
+        // pulse A
+
+        const DSimpleXMLTag pulseAParentTag = pulseShapeParentTag.getTag(m_pulseShape_A_ParentNode, &ok);
+
+        if (!ok) {
+            m_pulseShapeRiseTimeInNS_A_Node->setValue(5.0f);
+            m_pulseShapeWidthInNS_A_Node->setValue(0.45);
+
+            m_pulseShapeBaselineJitter_enabled_A_Node->setValue(false);
+            m_pulseShapeBaselineJitter_mean_A_Node->setValue(0.0);
+            m_pulseShapeBaselineJitter_stddev_A_Node->setValue(0.0);
+
+            m_pulseShapeRandomNoise_enabled_A_Node->setValue(false);
+            m_pulseShapeRandomNoise_stddev_A_Node->setValue(0.0);
+
+            m_pulseShapeNonLinearity_enabled_A_Node->setValue(false);
+            m_pulseShapeNonLinearity_fixedApertureJitter_A_Node->setValue(0.0);
+            m_pulseShapeNonLinearity_randomApertureJitter_A_Node->setValue(0.0);
+        }
+        else {
+            const double  riseTimeInNs = pulseAParentTag.getValueAt(m_pulseShapeRiseTimeInNS_A_Node, &ok).toDouble(&ok);
+            if ( ok )
+                m_pulseShapeRiseTimeInNS_A_Node->setValue(riseTimeInNs);
+            else
+                m_pulseShapeRiseTimeInNS_A_Node->setValue(5.0f);
+
+            const double  pulseWidthInNs = pulseAParentTag.getValueAt(m_pulseShapeWidthInNS_A_Node, &ok).toDouble(&ok);
+            if ( ok )
+                m_pulseShapeWidthInNS_A_Node->setValue(pulseWidthInNs);
+            else
+                m_pulseShapeWidthInNS_A_Node->setValue(0.45f);
+
+            const DSimpleXMLTag baselineJitterTag = pulseAParentTag.getTag(m_pulseShapeBaselineJitter_A_ParentNode, &ok);
+
+            if (!ok) {
+                m_pulseShapeBaselineJitter_enabled_A_Node->setValue(false);
+                m_pulseShapeBaselineJitter_mean_A_Node->setValue(0.0);
+                m_pulseShapeBaselineJitter_stddev_A_Node->setValue(0.0);
+            }
+            else {
+                const bool  jitterEnabled = baselineJitterTag.getValueAt(m_pulseShapeBaselineJitter_enabled_A_Node, &ok).toBool();
+                if ( ok )
+                    m_pulseShapeBaselineJitter_enabled_A_Node->setValue(jitterEnabled);
+                else
+                    m_pulseShapeBaselineJitter_enabled_A_Node->setValue(false);
+
+                const double  mean = baselineJitterTag.getValueAt(m_pulseShapeBaselineJitter_mean_A_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeBaselineJitter_mean_A_Node->setValue(mean);
+                else
+                    m_pulseShapeBaselineJitter_mean_A_Node->setValue(0.0);
+
+                const double  stddev = baselineJitterTag.getValueAt(m_pulseShapeBaselineJitter_stddev_A_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeBaselineJitter_stddev_A_Node->setValue(stddev);
+                else
+                    m_pulseShapeBaselineJitter_stddev_A_Node->setValue(0.0);
+            }
+
+            const DSimpleXMLTag randomNoiseTag = pulseAParentTag.getTag(m_pulseShapeRandomNoise_A_ParentNode, &ok);
+
+            if (!ok) {
+                m_pulseShapeRandomNoise_enabled_A_Node->setValue(false);
+                m_pulseShapeRandomNoise_stddev_A_Node->setValue(0.0);
+            }
+            else {
+                const bool  randomNoiseEnabled = randomNoiseTag.getValueAt(m_pulseShapeRandomNoise_enabled_A_Node, &ok).toBool();
+                if ( ok )
+                    m_pulseShapeRandomNoise_enabled_A_Node->setValue(randomNoiseEnabled);
+                else
+                    m_pulseShapeRandomNoise_enabled_A_Node->setValue(false);
+
+                const double  stddev = randomNoiseTag.getValueAt(m_pulseShapeRandomNoise_stddev_A_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeRandomNoise_stddev_A_Node->setValue(stddev);
+                else
+                    m_pulseShapeRandomNoise_stddev_A_Node->setValue(0.0);
+            }
+
+            const DSimpleXMLTag nonlinearityTag = pulseAParentTag.getTag(m_pulseShapeTimeNonlinearity_A_ParentNode, &ok);
+
+            if (!ok) {
+                m_pulseShapeNonLinearity_enabled_A_Node->setValue(false);
+                m_pulseShapeNonLinearity_fixedApertureJitter_A_Node->setValue(0.0);
+                m_pulseShapeNonLinearity_randomApertureJitter_A_Node->setValue(0.0);
+            }
+            else {
+                const bool  nonLinearityEnabled = nonlinearityTag.getValueAt(m_pulseShapeNonLinearity_enabled_A_Node, &ok).toBool();
+                if ( ok )
+                    m_pulseShapeNonLinearity_enabled_A_Node->setValue(nonLinearityEnabled);
+                else
+                    m_pulseShapeNonLinearity_enabled_A_Node->setValue(false);
+
+                const double  fAstddev = nonlinearityTag.getValueAt(m_pulseShapeNonLinearity_fixedApertureJitter_A_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeNonLinearity_fixedApertureJitter_A_Node->setValue(fAstddev);
+                else
+                    m_pulseShapeNonLinearity_fixedApertureJitter_A_Node->setValue(0.0);
+
+                const double  rndAstddev = nonlinearityTag.getValueAt(m_pulseShapeNonLinearity_randomApertureJitter_A_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeNonLinearity_randomApertureJitter_A_Node->setValue(rndAstddev);
+                else
+                    m_pulseShapeNonLinearity_randomApertureJitter_A_Node->setValue(0.0);
+            }
+        }
+        // pulse B
+
+        const DSimpleXMLTag pulseBParentTag = pulseShapeParentTag.getTag(m_pulseShape_B_ParentNode, &ok);
+
+        if (!ok) {
+            m_pulseShapeRiseTimeInNS_B_Node->setValue(5.0f);
+            m_pulseShapeWidthInNS_B_Node->setValue(0.45);
+
+            m_pulseShapeBaselineJitter_enabled_B_Node->setValue(false);
+            m_pulseShapeBaselineJitter_mean_B_Node->setValue(0.0);
+            m_pulseShapeBaselineJitter_stddev_B_Node->setValue(0.0);
+
+            m_pulseShapeRandomNoise_enabled_B_Node->setValue(false);
+            m_pulseShapeRandomNoise_stddev_B_Node->setValue(0.0);
+
+            m_pulseShapeNonLinearity_enabled_B_Node->setValue(false);
+            m_pulseShapeNonLinearity_fixedApertureJitter_B_Node->setValue(0.0);
+            m_pulseShapeNonLinearity_randomApertureJitter_B_Node->setValue(0.0);
+        }
+        else {
+            const double  riseTimeInNs = pulseBParentTag.getValueAt(m_pulseShapeRiseTimeInNS_B_Node, &ok).toDouble(&ok);
+            if ( ok )
+                m_pulseShapeRiseTimeInNS_B_Node->setValue(riseTimeInNs);
+            else
+                m_pulseShapeRiseTimeInNS_B_Node->setValue(5.0f);
+
+            const double  pulseWidthInNs = pulseBParentTag.getValueAt(m_pulseShapeWidthInNS_B_Node, &ok).toDouble(&ok);
+            if ( ok )
+                m_pulseShapeWidthInNS_B_Node->setValue(pulseWidthInNs);
+            else
+                m_pulseShapeWidthInNS_B_Node->setValue(0.45f);
+
+            const DSimpleXMLTag baselineJitterTag = pulseBParentTag.getTag(m_pulseShapeBaselineJitter_B_ParentNode, &ok);
+
+            if (!ok) {
+                m_pulseShapeBaselineJitter_enabled_B_Node->setValue(false);
+                m_pulseShapeBaselineJitter_mean_B_Node->setValue(0.0);
+                m_pulseShapeBaselineJitter_stddev_B_Node->setValue(0.0);
+            }
+            else {
+                const bool  jitterEnabled = baselineJitterTag.getValueAt(m_pulseShapeBaselineJitter_enabled_B_Node, &ok).toBool();
+                if ( ok )
+                    m_pulseShapeBaselineJitter_enabled_B_Node->setValue(jitterEnabled);
+                else
+                    m_pulseShapeBaselineJitter_enabled_B_Node->setValue(false);
+
+                const double  mean = baselineJitterTag.getValueAt(m_pulseShapeBaselineJitter_mean_B_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeBaselineJitter_mean_B_Node->setValue(mean);
+                else
+                    m_pulseShapeBaselineJitter_mean_B_Node->setValue(0.0);
+
+                const double  stddev = baselineJitterTag.getValueAt(m_pulseShapeBaselineJitter_stddev_B_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeBaselineJitter_stddev_B_Node->setValue(stddev);
+                else
+                    m_pulseShapeBaselineJitter_stddev_B_Node->setValue(0.0);
+            }
+
+            const DSimpleXMLTag randomNoiseTag = pulseBParentTag.getTag(m_pulseShapeRandomNoise_B_ParentNode, &ok);
+
+            if (!ok) {
+                m_pulseShapeRandomNoise_enabled_B_Node->setValue(false);
+                m_pulseShapeRandomNoise_stddev_B_Node->setValue(0.0);
+            }
+            else {
+                const bool  randomNoiseEnabled = randomNoiseTag.getValueAt(m_pulseShapeRandomNoise_enabled_B_Node, &ok).toBool();
+                if ( ok )
+                    m_pulseShapeRandomNoise_enabled_B_Node->setValue(randomNoiseEnabled);
+                else
+                    m_pulseShapeRandomNoise_enabled_B_Node->setValue(false);
+
+                const double  stddev = randomNoiseTag.getValueAt(m_pulseShapeRandomNoise_stddev_B_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeRandomNoise_stddev_B_Node->setValue(stddev);
+                else
+                    m_pulseShapeRandomNoise_stddev_B_Node->setValue(0.0);
+            }
+
+            const DSimpleXMLTag nonlinearityTag = pulseBParentTag.getTag(m_pulseShapeTimeNonlinearity_B_ParentNode, &ok);
+
+            if (!ok) {
+                m_pulseShapeNonLinearity_enabled_B_Node->setValue(false);
+                m_pulseShapeNonLinearity_fixedApertureJitter_B_Node->setValue(0.0);
+                m_pulseShapeNonLinearity_randomApertureJitter_B_Node->setValue(0.0);
+            }
+            else {
+                const bool  nonLinearityEnabled = nonlinearityTag.getValueAt(m_pulseShapeNonLinearity_enabled_B_Node, &ok).toBool();
+                if ( ok )
+                    m_pulseShapeNonLinearity_enabled_B_Node->setValue(nonLinearityEnabled);
+                else
+                    m_pulseShapeNonLinearity_enabled_B_Node->setValue(false);
+
+                const double  fAstddev = nonlinearityTag.getValueAt(m_pulseShapeNonLinearity_fixedApertureJitter_B_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeNonLinearity_fixedApertureJitter_B_Node->setValue(fAstddev);
+                else
+                    m_pulseShapeNonLinearity_fixedApertureJitter_B_Node->setValue(0.0);
+
+                const double  rndAstddev = nonlinearityTag.getValueAt(m_pulseShapeNonLinearity_randomApertureJitter_B_Node, &ok).toDouble(&ok);
+                if ( ok )
+                    m_pulseShapeNonLinearity_randomApertureJitter_B_Node->setValue(rndAstddev);
+                else
+                    m_pulseShapeNonLinearity_randomApertureJitter_B_Node->setValue(0.0);
+            }
+
+
+        }
     }
      /* -----> /Pulse-Shape Settings <-----*/
 
@@ -1477,27 +1779,6 @@ bool DRS4SimulationSettingsManager::save(const QString &path)
 
     return ok;
 }
-
-/*float DRS4SimulationSettingsManager::ttsDetectorAInNs() const
-{
-    QMutexLocker locker(&m_mutex);
-
-    return m_tts_detectorAInNsNode->getValue().toFloat();
-}
-
-float DRS4SimulationSettingsManager::ttsDetectorBInNs() const
-{
-    QMutexLocker locker(&m_mutex);
-
-    return m_tts_detectorBInNsNode->getValue().toFloat();
-}
-
-float DRS4SimulationSettingsManager::timingResolutionMeasurementUnitInNs() const
-{
-    QMutexLocker locker(&m_mutex);
-
-    return m_timingResolution_boardInNsNode->getValue().toFloat();
-}*/
 
 bool DRS4SimulationSettingsManager::detectorA_irf_1_enabled() const
 {
@@ -2087,32 +2368,164 @@ float DRS4SimulationSettingsManager::arrivalTimeSpreadInNs() const
     return m_arrivalTimeSpreadInNsNode->getValue().toFloat();
 }
 
-float DRS4SimulationSettingsManager::riseTimeInNs() const
+unsigned int DRS4SimulationSettingsManager::digitizationDepthInBit() const
 {
     QMutexLocker locker(&m_mutex);
 
-    return m_riseTimeInNS->getValue().toFloat();
+    bool ok = false;
+    const unsigned int value = m_pulseShapeDigitization_depth_in_bit_Node->getValue().toInt(&ok);
+
+    if (!ok)
+        return 14;
+
+    return value;
 }
 
-float DRS4SimulationSettingsManager::pulseWidthInNs() const
+bool DRS4SimulationSettingsManager::isDigitizationEnabled() const
 {
     QMutexLocker locker(&m_mutex);
 
-    return m_pulseWidthInNS->getValue().toFloat();
+    return m_pulseShapeDigitization_enabled_Node->getValue().toBool();
 }
 
-void DRS4SimulationSettingsManager::setRiseTimeInNs(float riseTime)
+float DRS4SimulationSettingsManager::riseTimeInNs_A() const
 {
     QMutexLocker locker(&m_mutex);
 
-    m_riseTimeInNS->setValue(riseTime);
+    return m_pulseShapeRiseTimeInNS_A_Node->getValue().toFloat();
 }
 
-void DRS4SimulationSettingsManager::setPulseWidthInNs(float width)
+float DRS4SimulationSettingsManager::pulseWidthInNs_A() const
 {
     QMutexLocker locker(&m_mutex);
 
-    m_pulseWidthInNS->setValue(width);
+    return m_pulseShapeWidthInNS_A_Node->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::isBaselineOffsetJitterEnabled_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeBaselineJitter_enabled_A_Node->getValue().toBool();
+}
+
+double DRS4SimulationSettingsManager::baselineOffsetJitterMean_in_mV_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeBaselineJitter_mean_A_Node->getValue().toDouble();
+}
+
+double DRS4SimulationSettingsManager::baselineOffsetJitterStddev_in_mV_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeBaselineJitter_stddev_A_Node->getValue().toDouble();
+}
+
+bool DRS4SimulationSettingsManager::isRandomNoiseEnabled_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeRandomNoise_enabled_A_Node->getValue().toBool();
+}
+
+double DRS4SimulationSettingsManager::randomNoise_in_mV_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeRandomNoise_stddev_A_Node->getValue().toDouble();
+}
+
+bool DRS4SimulationSettingsManager::isTimeAxisNonlinearityEnabled_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeNonLinearity_enabled_A_Node->getValue().toBool();
+}
+
+double DRS4SimulationSettingsManager::nonlinearityFixedApertureJitter_in_ns_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeNonLinearity_fixedApertureJitter_A_Node->getValue().toDouble();
+}
+
+double DRS4SimulationSettingsManager::nonlinearityRandomApertureJitter_in_ns_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeNonLinearity_randomApertureJitter_A_Node->getValue().toDouble();
+}
+
+float DRS4SimulationSettingsManager::riseTimeInNs_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeRiseTimeInNS_B_Node->getValue().toFloat();
+}
+
+float DRS4SimulationSettingsManager::pulseWidthInNs_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeWidthInNS_B_Node->getValue().toFloat();
+}
+
+bool DRS4SimulationSettingsManager::isBaselineOffsetJitterEnabled_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeBaselineJitter_enabled_B_Node->getValue().toBool();
+}
+
+double DRS4SimulationSettingsManager::baselineOffsetJitterMean_in_mV_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeBaselineJitter_mean_B_Node->getValue().toDouble();
+}
+
+double DRS4SimulationSettingsManager::baselineOffsetJitterStddev_in_mV_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeBaselineJitter_stddev_B_Node->getValue().toDouble();
+}
+
+bool DRS4SimulationSettingsManager::isRandomNoiseEnabled_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeRandomNoise_enabled_B_Node->getValue().toBool();
+}
+
+double DRS4SimulationSettingsManager::randomNoise_in_mV_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeRandomNoise_stddev_B_Node->getValue().toDouble();
+}
+
+bool DRS4SimulationSettingsManager::isTimeAxisNonlinearityEnabled_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeNonLinearity_enabled_B_Node->getValue().toBool();
+}
+
+double DRS4SimulationSettingsManager::nonlinearityFixedApertureJitter_in_ns_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeNonLinearity_fixedApertureJitter_B_Node->getValue().toDouble();
+}
+
+double DRS4SimulationSettingsManager::nonlinearityRandomApertureJitter_in_ns_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_pulseShapeNonLinearity_randomApertureJitter_B_Node->getValue().toDouble();
 }
 
 float DRS4SimulationSettingsManager::backgroundIntensity() const

@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2018 Danny Petschke
+**  Copyright (C) 2016-2019 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -77,8 +77,7 @@ public:
 
     bool receiveGeneratedPulsePair(float *pulseATime, float *pulseAVoltage, float *pulseBTime, float *pulseBVoltage);
 
-    virtual void onEvent(DLifeTime::DLTError error) override
-    {
+    virtual void onEvent(DLifeTime::DLTError error) override {
         m_error = error;
 
         DLifeTime::DLTCallback::onEvent(error);
