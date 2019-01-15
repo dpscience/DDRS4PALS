@@ -32,7 +32,7 @@
 ***********************************************************************************************/
 
 /* For the compilation as static or linked library set COMPILE_AS_LIBRARY = 1 */
-#define COMPILE_AS_LIBRARY			 0
+#define COMPILE_AS_LIBRARY			 1
 
 #ifndef DLTPULSEGENERATOR_H
 #define DLTPULSEGENERATOR_H
@@ -45,7 +45,7 @@
 #include <memory>
 #include <cstdint>
 
-#define DLTPULSEGENERATOR_VERSION_RELEASE_DATE "04.01.2019"
+#define DLTPULSEGENERATOR_VERSION_RELEASE_DATE "15.01.2019"
 
 #define DLTPULSEGENERATOR_MAJOR_VERSION 1
 #define DLTPULSEGENERATOR_MINOR_VERSION 3
@@ -105,7 +105,7 @@ typedef struct {
 	double rndNoise;  // stddev [mV]
 } DLTPULSEGENERATOR_EXPORT DLTPulseRandomNoiseInfo;
 
-/* Voltage axis baseline jitter (Gaussian distributed) */
+/* Voltage axis baseline-offset jitter (Gaussian distributed) */
 typedef struct {
 	bool enabled;
 
@@ -113,10 +113,7 @@ typedef struct {
 	double stddevOfBaselineOffsetJitter;  // stddev [mV]
 } DLTPULSEGENERATOR_EXPORT DLTPulseBaselineOffsetJitterInfo;
 
-/** Time axis non-linearity (Gaussian distributed) for switched capacitor array based technologies 
-**  such as the domino ring sampler chip DRS4 provided by the Paul-Scherrer Institut (PSI):
-**  https://www.psi.ch/drs
-**/
+/* Time axis non-linearity (Gaussian distributed): aperture jitter (fixed and random) */
 typedef struct {
 	bool enabled;
 

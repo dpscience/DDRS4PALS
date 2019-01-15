@@ -39,7 +39,7 @@
 #define MAJOR_VERSION       QString("1")
 #define MINOR_VERSION    QString("08")
 #define VERSION_EXTENSION QString("(official)")
-#define DATE_EXTENSION  QString("07.01.2018")
+#define DATE_EXTENSION  QString("15.01.2018")
 
 #define DATA_STREAM_VERSION 1
 
@@ -74,7 +74,7 @@
 #define NO_SETTINGS_FILE_PLACEHOLDER    QString("<no settings-file loaded>")
 #define NO_SCRIPT_FILE_PLACEHOLDER    QString("<no script-file loaded>")
 
-#define PROGRAM_SETTINGS_ENCRYPTION_KEY QString("x§ThisYsoftwareCis;written_by?Danny)Petschke.&Copyrightp2016-2019.+All%rights!reserved.#???=")
+#define PROGRAM_SETTINGS_ENCRYPTION_KEY QString("x§ThisYsoftwareCis;written_by?Danny)Petschke.&Copyrightp2016-2018.+All%rights!reserved.#???=")
 
 #define MSGBOX(__text__) DMSGBOX2(__text__, PROGRAM_NAME);
 
