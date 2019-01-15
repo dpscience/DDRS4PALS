@@ -14,7 +14,7 @@ You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This D
 
 ## v1.x
 
-DDRS4PALS <b>v1.08</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1495099.svg)](https://doi.org/10.5281/zenodo.1495099)<br>
+DDRS4PALS <b>v1.08</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2540851.svg)](https://doi.org/10.5281/zenodo.2540851)<br>
 
 DDRS4PALS <b>v1.07</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1495099.svg)](https://doi.org/10.5281/zenodo.1495099)<br>
 
