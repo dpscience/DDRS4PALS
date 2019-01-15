@@ -2,7 +2,7 @@ Support this project and keep always updated about recent software releases, bug
 
 # DDRS4PALS  <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-Copyright (c) 2016-2018 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
+Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
 
 <b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
 
@@ -13,7 +13,9 @@ You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This D
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## v1.x
-DDRS4PALS <b>v1.07</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1434714.svg)](https://doi.org/10.5281/zenodo.1434714)<br>
+DDRS4PALS <b>v1.08</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1495099.svg)](https://doi.org/10.5281/zenodo.1495099)<br>
+
+DDRS4PALS <b>v1.07</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1495099.svg)](https://doi.org/10.5281/zenodo.1495099)<br>
 
 DDRS4PALS <b>v1.06</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1434714.svg)](https://doi.org/10.5281/zenodo.1434714)<br>
 
