@@ -8,6 +8,7 @@ Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 # Related Publications
 
+### Feb. 2019
 Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
 
 # How to cite this Software?
