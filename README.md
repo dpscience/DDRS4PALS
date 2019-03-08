@@ -6,6 +6,8 @@ Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 <b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
 
+<br>![DDRS4PALS](/images/ddrs4pals.png)
+
 # Related Publications
 
 ### Feb. 2019
@@ -68,6 +70,3 @@ These files containing documentation, drivers, applications, C/C++ source code a
 3. Compile (x86/x64) and Run the code on your Machine.
 4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
 5. Finished. Press run to obtain your Lifetime Spectra.
-
-# Manual
-- The full documentation can be found [here](https://github.com/dpscience/DDRS4PALS/wiki).
