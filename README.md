@@ -20,7 +20,7 @@ DDRS4PALS: A software for the acquisition and simulation of lifetime spectra usi
 
 # How to cite this Software?
 
-You should cite at least the following publication:<br><br>
+<b>You should cite at least the following publication:</b><br><br>
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br>
 
 You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This DOI represents all versions, and will always resolve to the latest one.<br>
