@@ -2,18 +2,38 @@ Support this project and keep always updated about recent software releases, bug
 
 # DDRS4PALS  <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-Copyright (c) 2016-2018 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
+Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
 
 <b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
 
+<br>![DDRS4PALS](/images/ddrs4pals.png)
+
+# Related Publications
+
+### Feb. 2019
+Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
+
+# Documentation
+
+### Jun. 2019
+DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board [SoftwareX (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
+
 # How to cite this Software?
+
+You should cite at least the following publication:<br><br>
+[DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br>
 
 You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This DOI represents all versions, and will always resolve to the latest one.<br>
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## v1.x
-DDRS4PALS <b>v1.07</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1434714.svg)](https://doi.org/10.5281/zenodo.1434714)<br>
+
+DDRS4PALS <b>v1.09</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2540851.svg)](https://doi.org/10.5281/zenodo.2540851)<br>
+
+DDRS4PALS <b>v1.08</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2540851.svg)](https://doi.org/10.5281/zenodo.2540851)<br>
+
+DDRS4PALS <b>v1.07</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1495099.svg)](https://doi.org/10.5281/zenodo.1495099)<br>
 
 DDRS4PALS <b>v1.06</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1434714.svg)](https://doi.org/10.5281/zenodo.1434714)<br>
 
@@ -60,6 +80,3 @@ These files containing documentation, drivers, applications, C/C++ source code a
 3. Compile (x86/x64) and Run the code on your Machine.
 4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
 5. Finished. Press run to obtain your Lifetime Spectra.
-
-# Manual
-- The full documentation can be found [here](https://github.com/dpscience/DDRS4PALS/wiki).

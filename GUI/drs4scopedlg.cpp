@@ -51,8 +51,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     m_pulseSaveRangeDlg(nullptr),
     m_burstModeTimer(nullptr),
     m_autoSaveSpectraTimer(nullptr),
-    m_bSwapDirection(true)
-{
+    m_bSwapDirection(true) {
     ui->setupUi(this);
 
 #ifdef __DISABLE_SCRIPT
@@ -240,6 +239,12 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->action_StartDAQStreaming, SIGNAL(triggered()), this, SLOT(startStreaming()));
     connect(ui->actionStop_Running, SIGNAL(triggered()), this, SLOT(stopStreaming()));
 
+    ui->actionStart_True_False_Pulse_Streaming->setEnabled(true);
+    ui->actionStop_True_False_Pulse_Streaming->setEnabled(false);
+
+    connect(ui->actionStart_True_False_Pulse_Streaming, SIGNAL(triggered()), this, SLOT(startTrueFalsePulseStreaming()));
+    connect(ui->actionStop_True_False_Pulse_Streaming, SIGNAL(triggered()), this, SLOT(stopTrueFalsePulseStreaming()));
+
     connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(showAboutBox()));
 
     connect(this, SIGNAL(signalUpdateCurrentFileLabelFromScript(QString)), this, SLOT(updateCurrentFileLabelFromScript(QString)), Qt::QueuedConnection);
@@ -272,6 +277,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
         ui->label_88->setEnabled(false);
         ui->label_89->setEnabled(false);
         ui->label_cores->setEnabled(false);
+
+        ui->actionStart_True_False_Pulse_Streaming->setEnabled(true);
+        ui->actionStop_True_False_Pulse_Streaming->setEnabled(false);
     }
 
     ui->widget_CFDAlgorithm->init(m_worker);
@@ -381,6 +389,15 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->spinBox_parallelChunkSize->setValue(DRS4ProgramSettingsManager::sharedInstance()->pulsePairChunkSize());
 
     ui->checkBox_hyperthreading->setChecked(DRS4ProgramSettingsManager::sharedInstance()->isMulticoreThreadingEnabled());
+
+    if (ui->checkBox_hyperthreading->isChecked()) {
+        ui->actionStart_True_False_Pulse_Streaming->setEnabled(false);
+        ui->actionStop_True_False_Pulse_Streaming->setEnabled(false);
+    }
+    else {
+        ui->actionStart_True_False_Pulse_Streaming->setEnabled(true);
+        ui->actionStop_True_False_Pulse_Streaming->setEnabled(false);
+    }
 
     if (DRS4ProgramSettingsManager::sharedInstance()->isMulticoreThreadingEnabled()) {
         ui->actionSave_next_N_Pulses->setEnabled(false);
@@ -607,20 +624,20 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->spinBox_stopMinB->setValue(0);
     ui->spinBox_stopMaxB->setValue(1000);
 
-    ui->spinBox_chnCountAB->setRange(1, 12384);
-    ui->spinBox_chnCountBA->setRange(1, 12384);
-    ui->spinBox_chnCountCoincidence->setRange(1, 12384);
-    ui->spinBox_chnCountMerged->setRange(1, 12384);
+    ui->spinBox_chnCountAB->setRange(10, 50000);
+    ui->spinBox_chnCountBA->setRange(10, 50000);
+    ui->spinBox_chnCountCoincidence->setRange(10, 50000);
+    ui->spinBox_chnCountMerged->setRange(10, 50000);
 
     ui->doubleSpinBox_offsetAB->setRange(-900, 900);
     ui->doubleSpinBox_offsetBA->setRange(-900, 900);
     ui->doubleSpinBox_offsetCoincidence->setRange(-900, 900);
     ui->doubleSpinBox_offsetMerged->setRange(-900, 900);
 
-    ui->doubleSpinBox_scalerAB->setRange(0.010, 2000);
-    ui->doubleSpinBox_scalerBA->setRange(0.010, 2000);
-    ui->doubleSpinBox_scalerCoincidence->setRange(0.010, 2000);
-    ui->doubleSpinBox_scalerMerged->setRange(0.010, 2000);
+    ui->doubleSpinBox_scalerAB->setRange(0.010, 50000);
+    ui->doubleSpinBox_scalerBA->setRange(0.010, 50000);
+    ui->doubleSpinBox_scalerCoincidence->setRange(0.010, 50000);
+    ui->doubleSpinBox_scalerMerged->setRange(0.010, 50000);
 
     ui->spinBox_chnCountAB->setValue(4096);
     ui->spinBox_chnCountBA->setValue(4096);
@@ -4196,6 +4213,8 @@ void DRS4ScopeDlg::plotPersistance()
         m_bSwapDirection = m_bSwapDirection?false:true;
     }
 
+
+
     m_worker->setBusy(false);
 
     ui->widget_persistanceA->replot();
@@ -6374,6 +6393,10 @@ void DRS4ScopeDlg::changeMulticoreThreadingEnabled(bool on, const FunctionSource
             DDELETE_SAFETY(m_pulseSaveDlg);
             m_pulseSaveDlg = new DRS4PulseSaveDlg(m_worker);
         }
+
+        if(DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
+            DRS4FalseTruePulseStreamManager::sharedInstance()->stopAndSave();
+        }
     }
 
     ui->actionSave_next_N_Pulses->setEnabled(!on);
@@ -6381,6 +6404,10 @@ void DRS4ScopeDlg::changeMulticoreThreadingEnabled(bool on, const FunctionSource
     ui->tabWidget_persistanceB->setEnabled(!on);
     ui->tabWidget_persistanceB->setEnabled(!on);
     ui->checkBox_enablePersistance->setEnabled(!on);
+    ui->actionStart_True_False_Pulse_Streaming->setEnabled(!on);
+
+    if (DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed())
+        ui->actionStop_True_False_Pulse_Streaming->setEnabled(!on);
 
     m_worker->setBusy(false);
 }
@@ -6565,6 +6592,87 @@ void DRS4ScopeDlg::stopStreaming()
     m_worker->setBusy(false);
 
     MSGBOX("OK. Finished Streaming!");
+}
+
+void DRS4ScopeDlg::startTrueFalsePulseStreaming()
+{
+    /*const QString fileName = QFileDialog::getSaveFileName(this, tr("Stream Data to..."),
+                               DRS4ProgramSettingsManager::sharedInstance()->streamInputFilePath(),
+                               QString("DRS4 Data Stream (*" + EXT_PULSE_STREAM_FILE + ")"));*/
+
+    QFileDialog *fd = new QFileDialog(this);
+    fd->setWindowTitle(tr("Stream Data to.."));
+    fd->setAcceptMode(QFileDialog::AcceptSave);
+    fd->setDirectory(DRS4ProgramSettingsManager::sharedInstance()->streamInputFilePath());
+    fd->setViewMode(QFileDialog::Detail);
+    fd->setDefaultSuffix(EXT_PULSE_STREAM_FILE);
+    fd->setFileMode(QFileDialog::AnyFile);
+    fd->setNameFilter(QString("DRS4 Data Stream (*" + EXT_PULSE_STREAM_FILE + ")"));
+
+    fd->setOption(QFileDialog::DontUseNativeDialog, true);
+
+    QGridLayout *layout = static_cast<QGridLayout*>(fd->layout());
+
+    QHBoxLayout *hboxLayout = new QHBoxLayout;
+
+    QLabel *label = new QLabel("stream for branch A (otherwise B)?");
+    QCheckBox *streamCheckBox = new QCheckBox;
+    streamCheckBox->setChecked(true);
+
+    hboxLayout->addWidget(label);
+    hboxLayout->addWidget(streamCheckBox);
+
+    layout->addLayout(hboxLayout, layout->rowCount()-1, layout->columnCount());
+
+    if (!fd->exec())
+        return;
+
+    const QString fileName = !fd->selectedFiles().isEmpty()?fd->selectedFiles().first():QString("");
+    const bool bStreamForA = streamCheckBox->isChecked();
+
+    DDELETE_SAFETY(label);
+    DDELETE_SAFETY(streamCheckBox);
+    DDELETE_SAFETY(hboxLayout);
+    DDELETE_SAFETY(fd);
+
+
+    if ( fileName.isEmpty() )
+        return;
+
+    DRS4ProgramSettingsManager::sharedInstance()->setStreamInputFilePath(fileName);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4FalseTruePulseStreamManager::sharedInstance()->init(fileName, this);
+
+    if ( DRS4FalseTruePulseStreamManager::sharedInstance()->start(bStreamForA) ) {
+        m_worker->setBusy(false);
+
+        ui->actionStart_True_False_Pulse_Streaming->setEnabled(false);
+        ui->actionStop_True_False_Pulse_Streaming->setEnabled(true);
+    }
+    else {
+        m_worker->setBusy(false);
+        MSGBOX("Sorry, an error occurred while starting the pulse-stream!");
+    }
+}
+
+void DRS4ScopeDlg::stopTrueFalsePulseStreaming()
+{
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4FalseTruePulseStreamManager::sharedInstance()->stopAndSave();
+
+    ui->actionStart_True_False_Pulse_Streaming->setEnabled(true);
+    ui->actionStop_True_False_Pulse_Streaming->setEnabled(false);
+
+    m_worker->setBusy(false);
+
+    MSGBOX("OK. Finished streaming!");
 }
 
 void DRS4ScopeDlg::saveSettings()
@@ -8330,7 +8438,7 @@ void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
 {
     const QMessageBox::StandardButton reply = QMessageBox::question(this, "Quit Program?", "Exit Program?", QMessageBox::Yes|QMessageBox::No);
 
-    if ( reply != QMessageBox::Yes  ) {
+    if (reply != QMessageBox::Yes) {
         event->ignore();
         return;
     }
@@ -8354,6 +8462,9 @@ void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
     if ( DRS4StreamManager::sharedInstance()->isArmed() )
         DRS4StreamManager::sharedInstance()->stopAndSave();
 
+    if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed() )
+        DRS4FalseTruePulseStreamManager::sharedInstance()->stopAndSave();
+
     if ( DRS4StreamDataLoader::sharedInstance()->isArmed() )
         DRS4StreamDataLoader::sharedInstance()->stop();
 
@@ -8371,6 +8482,9 @@ void DRS4ScopeDlg::arrangeIcons()
 {
     ui->action_StartDAQStreaming->setIcon(QIcon(":/images/images/play_click.svg"));
     ui->actionStop_Running->setIcon(QIcon(":/images/images/stop_hover.svg"));
+
+    ui->actionStart_True_False_Pulse_Streaming->setIcon(QIcon(":/images/images/play_click.svg"));
+    ui->actionStop_True_False_Pulse_Streaming->setIcon(QIcon(":/images/images/stop_hover.svg"));
 
     ui->actionSave_next_N_Pulses->setIcon(QIcon(":/images/images/001-heart-rate-monitor.png"));
     ui->actionSave_next_N_Pulses_in_Range->setIcon(QIcon(":/images/images/001-heart-rate-monitor.png"));

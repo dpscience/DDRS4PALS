@@ -39,12 +39,12 @@
 
 #include "alglib.h"
 
-#define __PULSESHAPEFILTER_LEFT_MAX -30.0 /* [ns] */
-#define __PULSESHAPEFILTER_RIGHT_MAX 100.0 /* [ns] */
+#define __PULSESHAPEFILTER_LEFT_MAX -200.0 //-30.0 /* [ns] */
+#define __PULSESHAPEFILTER_RIGHT_MAX 200.0 //100.0 /* [ns] */
 
-#define __PULSESHAPEFILTER_REGION 130.0 /* [ns] */
+#define __PULSESHAPEFILTER_REGION 400.0 //130.0 /* [ns] */
 
-#define __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER 1424
+#define __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER 4381 //1424
 
 struct DRS4PulseShapeFilterRecordScheme {
     enum Scheme : int {

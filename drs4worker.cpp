@@ -292,7 +292,7 @@ QVector<QPointF> DRS4Worker::calculateMeanTraceB() const
 
     for (DSpline spline : m_pulseShapeDataSplineB) {
         for (int i = 0 ; i < __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER ; ++ i) {
-            const double t = __PULSESHAPEFILTER_LEFT_MAX + (double)i*timeIncr;
+            const double t = __PULSESHAPEFILTER_LEFT_MAX + ((double)i)*timeIncr;
             meanVec[i] += QPointF(t, spline(t));
         }
     }
@@ -2887,8 +2887,37 @@ void DRS4Worker::runSingleThreaded()
         }
 
         if ((int)timeStampA == -1
-           || (int)timeStampB == -1)
+           || (int)timeStampB == -1) {
+            if ((int)timeStampA == -1) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
+            if ((int)timeStampB == -1) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
             continue;
+        }
 
         /* area-Filter */
         if (!bBurstMode
@@ -2978,8 +3007,37 @@ void DRS4Worker::runSingleThreaded()
 
             const bool y_BInside = (multB >= yLowerB && multB <=yUpperB);
 
-            if ( !y_AInside || !y_BInside )
+            if (!y_AInside) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
+            if (!y_BInside) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
+            if ( !y_AInside || !y_BInside ) {
                 continue;
+            }
         }
 
         /* apply rise time-filter and reject pulses if one of both appears outside the windows */
@@ -2996,8 +3054,37 @@ void DRS4Worker::runSingleThreaded()
             if (binB >= riseTimeFilterWindowLeftB && binB <= riseTimeFilterWindowRightB)
                 bAcceptedB = true;
 
-            if (!bAcceptedA || !bAcceptedB)
+            if (!bAcceptedA) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
+            if (!bAcceptedB) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
+            if (!bAcceptedA || !bAcceptedB) {
                 continue;
+            }
         }
 
         /* apply pulse-shape filter */
@@ -3061,8 +3148,37 @@ void DRS4Worker::runSingleThreaded()
                     break;
             }
 
-            if (bRejectA || bRejectB)
+            if (bRejectA) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
+            if (bRejectB) {
+                /* stream as 'false' pulse */
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
+                     && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+
+                    if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
+                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                    }
+                }
+            }
+
+            if (bRejectA || bRejectB) {
                 continue;
+            }
         }
 
         bool bValidLifetime = false;
@@ -3114,6 +3230,16 @@ void DRS4Worker::runSingleThreaded()
                     }
                 }
 
+                /*if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    m_phsA[cellPHSA] ++;
+                    m_phsACounts ++;
+                }
+
+                if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                    m_phsB[cellPHSB] ++;
+                    m_phsBCounts ++;
+                }*/
+
                 /* calculate normalized persistance data */
                 if (bPersistance && bValidLifetime2 && !bBurstMode) {
                     m_persistanceDataA.clear();
@@ -3135,6 +3261,30 @@ void DRS4Worker::runSingleThreaded()
 
                         m_persistanceDataA[j] = QPointF(m_pListChannelA.at(j).x()-((!bOppositePersistanceA)?timeStampA:timeStampB), yA); // >> shift channel A relative to CFD-%(t0) of A (of B)
                         m_persistanceDataB[j] = QPointF(m_pListChannelB.at(j).x()-((!bOppositePersistanceB)?timeStampB:timeStampA), yB); // >> shift channel B relative to CFD-%(t0) of B (of A)
+                    }
+                }
+
+                if (bValidLifetime2) {
+                    /* stream as 'false' pulse */
+                    if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
+                        if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+                        }
+                        else {
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+                        }
                     }
                 }
 
@@ -3234,6 +3384,39 @@ void DRS4Worker::runSingleThreaded()
                     }
                 }
 
+                /*if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    m_phsA[cellPHSA] ++;
+                    m_phsACounts ++;
+                }
+
+                if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                    m_phsB[cellPHSB] ++;
+                    m_phsBCounts ++;
+                }*/
+
+                if (bValidLifetime2) {
+                    if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
+                        if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+                        }
+                        else {
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+
+                            if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
+                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            }
+                        }
+                    }
+                }
+
                 /* recording pulse shape data if required */
                 if (!bBurstMode && bValidLifetime)
                     recordPulseShapeData(positiveSignal, timeAForYMax, timeBForYMax, yMinA, yMaxA, yMinB, yMaxB);
@@ -3285,6 +3468,29 @@ void DRS4Worker::runSingleThreaded()
                 /* recording pulse shape data if required */
                 if (!bBurstMode && bValidLifetime)
                     recordPulseShapeData(positiveSignal, timeAForYMax, timeBForYMax, yMinA, yMaxA, yMinB, yMaxB);
+            }
+
+            if (bValidLifetime2) {
+                if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
+                    if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
+                        if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
+                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        }
+
+                        if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
+                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        }
+                    }
+                    else {
+                        if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
+                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        }
+
+                        if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
+                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        }
+                    }
+                }
             }
         } //end prompt
     }

@@ -42,10 +42,10 @@
 
 typedef struct
 {
-    unsigned int version;
+    quint32 version;
     double sweepInNanoseconds;
     double sampleSpeedInGHz;
-    int sampleDepth;
+    qint32 sampleDepth;
 } DRS4PulseStreamHeader;
 
 #define sz_structDRS4PulseStreamHeader sizeof(DRS4PulseStreamHeader)
@@ -83,6 +83,44 @@ public:
     qint64 streamedContentInBytes() const;
 };
 
+class DRS4FalseTruePulseStreamManager
+{
+    DRS4FalseTruePulseStreamManager();
+    virtual ~DRS4FalseTruePulseStreamManager();
+
+    QFile *m_fileTrue;
+    QFile *m_fileFalse;
+
+    QString m_nameLiteral;
+
+    bool m_isArmed;
+
+    qint64 m_contentInByte;
+
+    bool m_bStreamForABranch;
+
+    DRS4ScopeDlg *m_guiAccess;
+
+    mutable QMutex m_mutex;
+
+public:
+    static DRS4FalseTruePulseStreamManager *sharedInstance();
+
+    void init(const QString& fileName, DRS4ScopeDlg *guiAccess);
+
+    bool start(bool bA);
+    void stopAndSave();
+
+    bool writeTruePulse(const char *data, qint64 length);
+    bool writeFalsePulse(const char *data, qint64 length);
+
+    bool isArmed() const;
+    bool isStreamingForABranch() const;
+
+    QString fileName() const;
+
+    qint64 streamedContentInBytes() const;
+};
 
 class DRS4TextFileStreamManager : public QObject
 {

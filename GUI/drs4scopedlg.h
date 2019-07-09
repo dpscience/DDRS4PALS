@@ -83,6 +83,7 @@ class DRS4ScopeDlg : public QMainWindow, public DRSCallback
     friend class DRS4ScriptingEngineAccessManager;
     friend class DRS4StreamDataLoader;
     friend class DRS4StreamManager;
+    friend class DRS4FalseTruePulseStreamManager;
 public:
     explicit DRS4ScopeDlg(const ProgramStartType& startType, bool *connectionLost, QWidget *parent = 0);
     virtual ~DRS4ScopeDlg();
@@ -259,6 +260,9 @@ private slots:
 
     void startStreaming();
     void stopStreaming();
+
+    void startTrueFalsePulseStreaming();
+    void stopTrueFalsePulseStreaming();
 
     void loadSimulationToolSettings();
     void loadStreamingData();
