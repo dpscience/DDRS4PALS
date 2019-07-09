@@ -1779,7 +1779,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>2000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -1808,10 +1808,10 @@
              </size>
             </property>
             <property name="minimum">
-             <number>1</number>
+             <number>10</number>
             </property>
             <property name="maximum">
-             <number>12384</number>
+             <number>300000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -2134,7 +2134,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>2000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -2163,10 +2163,10 @@
              </size>
             </property>
             <property name="minimum">
-             <number>1</number>
+             <number>10</number>
             </property>
             <property name="maximum">
-             <number>12384</number>
+             <number>300000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -2489,7 +2489,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>2000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -2518,10 +2518,10 @@
              </size>
             </property>
             <property name="minimum">
-             <number>1</number>
+             <number>10</number>
             </property>
             <property name="maximum">
-             <number>12384</number>
+             <number>300000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -2878,7 +2878,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>2000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -2907,10 +2907,10 @@
              </size>
             </property>
             <property name="minimum">
-             <number>1</number>
+             <number>10</number>
             </property>
             <property name="maximum">
-             <number>12384</number>
+             <number>300000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -6651,6 +6651,9 @@
     <addaction name="separator"/>
     <addaction name="actionSave_next_N_Pulses"/>
     <addaction name="actionSave_next_N_Pulses_in_Range"/>
+    <addaction name="separator"/>
+    <addaction name="actionStart_True_False_Pulse_Streaming"/>
+    <addaction name="actionStop_True_False_Pulse_Streaming"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -6884,6 +6887,16 @@
   <action name="actionCheck_for_Updates_of_DDRS4PALS">
    <property name="text">
     <string>Check for Updates of DDRS4PALS...</string>
+   </property>
+  </action>
+  <action name="actionStart_True_False_Pulse_Streaming">
+   <property name="text">
+    <string>Start (True/False) Pulse Streaming...</string>
+   </property>
+  </action>
+  <action name="actionStop_True_False_Pulse_Streaming">
+   <property name="text">
+    <string>Stop (True/False) Pulse Streaming...</string>
    </property>
   </action>
  </widget>

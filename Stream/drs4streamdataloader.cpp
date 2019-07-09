@@ -51,35 +51,27 @@ DRS4StreamDataLoader *DRS4StreamDataLoader::sharedInstance()
 
 bool DRS4StreamDataLoader::init(const QString &fileName, DRS4ScopeDlg *guiAccess, bool accessFromScript)
 {
-    //QMutexLocker locker(&m_mutex);
-
     m_guiAccess = guiAccess;
 
     DDELETE_SAFETY(m_file);
     m_file = new QFile(fileName);
 
-    if ( m_file->open(QIODevice::ReadWrite) )
-    {
+    if ( m_file->open(QIODevice::ReadWrite) ) {
         QFileInfo info(*m_file);
         m_fileSize = info.size(); // [Byte]
         m_loadedSize = 0;
 
         DRS4PulseStreamHeader header;
 
-        if (m_file->read((char*)&header, sz_structDRS4PulseStreamHeader) == sz_structDRS4PulseStreamHeader)
-        {
+        if (m_file->read((char*)&header, sz_structDRS4PulseStreamHeader) == sz_structDRS4PulseStreamHeader) {
             m_loadedSize += sz_structDRS4PulseStreamHeader;
 
-            if ( header.version <=  DATA_STREAM_VERSION )
-            {
-                if (!accessFromScript )
-                {
+            if ( header.version <=  DATA_STREAM_VERSION ) {
+                if (!accessFromScript ) {
                     if ( !qFuzzyCompare(header.sampleSpeedInGHz,  DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz())
-                         || !qFuzzyCompare(header.sweepInNanoseconds,  DRS4SettingsManager::sharedInstance()->sweepInNanoseconds()) )
-                    {
+                         || !qFuzzyCompare(header.sweepInNanoseconds,  DRS4SettingsManager::sharedInstance()->sweepInNanoseconds()) ) {
                             const QString text = "Stream was recorded with the following Sample-Speed: \n" + QString::number(header.sampleSpeedInGHz, 'f', 2) + "GHz [" + QString::number(header.sweepInNanoseconds, 'f', 0) + "ns].\n"\
                                                                                                                                                                                                                           "\nSample-Speed will be adapted to this Values!";
-                            //locker.unlock();
                             const int ret = QMessageBox::warning(NULL, "Stream was recorded with different Settings!", text, QMessageBox::Ok, QMessageBox::NoButton);
 
                             DUNUSED_PARAM(ret);
@@ -96,8 +88,7 @@ bool DRS4StreamDataLoader::init(const QString &fileName, DRS4ScopeDlg *guiAccess
 
         return true;
     }
-    else
-    {
+    else {
         m_fileSize = 0;
         m_loadedSize = 0;
 

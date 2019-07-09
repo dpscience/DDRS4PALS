@@ -153,6 +153,175 @@ qint64 DRS4StreamManager::streamedContentInBytes() const
 }
 
 
+
+
+
+
+DRS4FalseTruePulseStreamManager *__sharedInstanceDRS4FalseTruePulseStreamManager = nullptr;
+
+DRS4FalseTruePulseStreamManager::DRS4FalseTruePulseStreamManager()
+{
+    m_fileTrue = nullptr;
+    m_fileFalse = nullptr;
+    m_guiAccess = nullptr;
+    m_isArmed = false;
+    m_contentInByte = 0;
+    m_nameLiteral = "";
+
+    m_bStreamForABranch = false;
+}
+
+DRS4FalseTruePulseStreamManager::~DRS4FalseTruePulseStreamManager()
+{
+    DDELETE_SAFETY(m_fileTrue);
+    DDELETE_SAFETY(m_fileFalse);
+}
+
+DRS4FalseTruePulseStreamManager *DRS4FalseTruePulseStreamManager::sharedInstance()
+{
+    if ( !__sharedInstanceDRS4FalseTruePulseStreamManager )
+        __sharedInstanceDRS4FalseTruePulseStreamManager = new DRS4FalseTruePulseStreamManager();
+
+    return __sharedInstanceDRS4FalseTruePulseStreamManager;
+}
+
+void DRS4FalseTruePulseStreamManager::init(const QString &fileName, DRS4ScopeDlg *guiAccess)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_guiAccess = guiAccess;
+
+    DDELETE_SAFETY(m_fileTrue);
+    DDELETE_SAFETY(m_fileFalse);
+
+    m_nameLiteral = fileName;
+
+    const QStringList list = fileName.split(".");
+
+    m_fileTrue = new QFile(QString(list.at(0) + "__truePulses." + list.at(1)));
+    m_fileFalse = new QFile(QString(list.at(0) + "__falsePulses." + list.at(1)));
+
+    m_contentInByte = 0;
+    m_isArmed = false;
+}
+
+bool DRS4FalseTruePulseStreamManager::start(bool bA)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_bStreamForABranch = bA;
+
+    if ( m_fileTrue->open(QIODevice::ReadWrite)
+         && m_fileFalse->open(QIODevice::ReadWrite) ) {
+        m_isArmed = true;
+
+        DRS4PulseStreamHeader header;
+
+        header.version = DATA_STREAM_VERSION;
+        header.sweepInNanoseconds = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
+        header.sampleSpeedInGHz = DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz();
+        header.sampleDepth = kNumberOfBins;
+
+        if (m_fileTrue->write((const char*)&header, sz_structDRS4PulseStreamHeader) != sz_structDRS4PulseStreamHeader
+                || m_fileFalse->write((const char*)&header, sz_structDRS4PulseStreamHeader) != sz_structDRS4PulseStreamHeader) {
+            m_fileTrue->close();
+            m_fileFalse->close();
+
+            m_isArmed = false;
+            m_contentInByte = 0;
+
+            return false;
+        }
+
+        m_contentInByte += sz_structDRS4PulseStreamHeader;
+
+        m_guiAccess->addSampleSpeedWarningMessage(true, DRS4ScriptManager::sharedInstance()->isArmed());
+
+        return true;
+    }
+    else {
+        m_contentInByte = 0;
+        m_isArmed = false;
+
+        return false;
+    }
+
+    Q_UNREACHABLE();
+}
+
+void DRS4FalseTruePulseStreamManager::stopAndSave()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_isArmed = false;
+    m_contentInByte = 0;
+    m_nameLiteral = "";
+
+    if ( m_fileTrue )
+        m_fileTrue->close();
+
+    if ( m_fileFalse )
+        m_fileFalse->close();
+
+    m_guiAccess->addSampleSpeedWarningMessage(false, DRS4ScriptManager::sharedInstance()->isArmed());
+
+    DDELETE_SAFETY(m_fileTrue);
+    DDELETE_SAFETY(m_fileFalse);
+}
+
+bool DRS4FalseTruePulseStreamManager::writeTruePulse(const char* data, qint64 length)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_contentInByte += length;
+
+    return (m_fileTrue->write(data, length) == length);
+}
+
+bool DRS4FalseTruePulseStreamManager::writeFalsePulse(const char* data, qint64 length)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_contentInByte += length;
+
+    return (m_fileFalse->write(data, length) == length);
+}
+
+bool DRS4FalseTruePulseStreamManager::isArmed() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_isArmed;
+}
+
+bool DRS4FalseTruePulseStreamManager::isStreamingForABranch() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_bStreamForABranch;
+}
+
+QString DRS4FalseTruePulseStreamManager::fileName() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (m_fileFalse && m_fileTrue)
+        return m_nameLiteral;
+    else
+        return "";
+}
+
+qint64 DRS4FalseTruePulseStreamManager::streamedContentInBytes() const
+{
+    return m_contentInByte;
+}
+
+
+
+
+
+
+
 DRS4TextFileStreamManager *__sharedInstanceTextFileStreamManager = nullptr;
 
 DRS4TextFileStreamManager::DRS4TextFileStreamManager()
