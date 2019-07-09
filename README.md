@@ -16,7 +16,7 @@ Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PA
 # Documentation
 
 ### Jun. 2019
-DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board [SoftwareX (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
+DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board<br> [SoftwareX (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
 
 # How to cite this Software?
 
