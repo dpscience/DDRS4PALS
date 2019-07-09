@@ -20,10 +20,10 @@ DDRS4PALS: A software for the acquisition and simulation of lifetime spectra usi
 
 # How to cite this Software?
 
-<b>You should cite at least the following publication:</b><br><br>
+<b>You should at least cite the following publication:</b><br><br>
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br>
 
-You can cite all versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This DOI represents all versions, and will always resolve to the latest one.<br>
+Additionally, you can cite all released software versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This DOI represents all versions, and will always resolve to the latest one.<br>
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
@@ -80,3 +80,5 @@ These files containing documentation, drivers, applications, C/C++ source code a
 3. Compile (x86/x64) and Run the code on your Machine.
 4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
 5. Finished. Press run to obtain your Lifetime Spectra.
+
+
