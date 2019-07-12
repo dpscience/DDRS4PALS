@@ -13,10 +13,13 @@ Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 ### Feb. 2019
 Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
 
+### Jun. 2019
+[DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
+
 # Documentation
 
 ### Jun. 2019
-DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board [SoftwareX (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
+[DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
 
 # How to cite this Software?
 
@@ -80,5 +83,3 @@ These files containing documentation, drivers, applications, C/C++ source code a
 3. Compile (x86/x64) and Run the code on your Machine.
 4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
 5. Finished. Press run to obtain your Lifetime Spectra.
-
-
