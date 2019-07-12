@@ -443,9 +443,13 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->horizontalSlider_triggerDelay, SIGNAL(valueChanged(int)), this, SLOT(changeTriggerDelay(int)));
 
     connect(ui->pushButton_saveALTSpectrum, SIGNAL(clicked()), this, SLOT(saveABSpectrum()));
+    connect(ui->pushButton_saveDQuickAB, SIGNAL(clicked()), this, SLOT(saveABSpectrumDQuickLTFit()));
     connect(ui->pushButton_saveBALTSpectrum, SIGNAL(clicked()), this, SLOT(saveBASpectrum()));
+    connect(ui->pushButton_BADQuickLT, SIGNAL(clicked()), this, SLOT(saveBASpectrumDQuickLTFit()));
     connect(ui->pushButton_saveCoincidenceLTSpectrum, SIGNAL(clicked()), this, SLOT(saveCoincidenceSpectrum()));
+    connect(ui->pushButton_coincDQuickLT, SIGNAL(clicked()), this, SLOT(saveCoincidenceSpectrumDQuickLTFit()));
     connect(ui->pushButton_saveMergedLTSpectrum, SIGNAL(clicked()), this, SLOT(saveMergedSpectrum()));
+    connect(ui->pushButton_mergedDQuickLT, SIGNAL(clicked()), this, SLOT(saveMergedSpectrumDQuickLTFit()));
 
     connect(ui->pushButton_savePHSA, SIGNAL(clicked()), this, SLOT(savePHSA()));
     connect(ui->pushButton_savePHSB, SIGNAL(clicked()), this, SLOT(savePHSB()));
@@ -4433,9 +4437,13 @@ void DRS4ScopeDlg::autosaveAllSpectra()
     while(!m_worker->isBlocking()) {}
 
     saveABSpectrum(true);
+    saveABSpectrumDQuickLTFit(true);
     saveBASpectrum(true);
+    saveBASpectrumDQuickLTFit(true);
     saveCoincidenceSpectrum(true);
+    saveCoincidenceSpectrumDQuickLTFit(true);
     saveMergedSpectrum(true);
+    saveMergedSpectrumDQuickLTFit(true);
     savePHSA(true);
     savePHSB(true);
 
@@ -5833,6 +5841,67 @@ void DRS4ScopeDlg::saveABSpectrum(bool autosave, const QString &fileNameAutosave
     }
 }
 
+void DRS4ScopeDlg::saveABSpectrumDQuickLTFit(bool autosave, const QString &fileNameAutosave)
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    QString fileName = "";
+
+    if ( !autosave ) {
+        fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                              DRS4ProgramSettingsManager::sharedInstance()->saveDataFilePath(),
+                                                              tr("DQuickLTFit Project File (*.dquicklt)"));
+
+        if ( fileName.isEmpty() ) {
+            m_worker->setBusy(false);
+            return;
+        }
+
+        DRS4ProgramSettingsManager::sharedInstance()->setSaveDataFilePath(fileName);
+    }
+    else
+        fileName = fileNameAutosave;
+
+    PALSProjectManager::sharedInstance()->createEmptyProject();
+
+
+    QList<QPointF> data;
+
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntAB() ; ++ i )
+        data.append(QPointF(i, m_worker->spectrumAB()->at(i)));
+
+    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSAB()/(double)DRS4SettingsManager::sharedInstance()->channelCntAB();
+
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeRawData(data);
+    PALSProjectManager::sharedInstance()->setChannelRanges(0, DRS4SettingsManager::sharedInstance()->channelCntAB()-1);
+    PALSProjectManager::sharedInstance()->setASCIIDataName("data imported from DDRS4PALS software");
+    PALSProjectManager::sharedInstance()->setFileName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->setName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setChannelResolution(res);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setMaximumIterations(200);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStartChannel(0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntAB()-1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumAB());
+
+    if (PALSProjectManager::sharedInstance()->save(fileName)) {
+        /* ok */
+    }
+    else {
+        if ( !autosave ) {
+            MSGBOX("Error while writing file!");
+        }
+    }
+
+    m_worker->setBusy(false);
+}
+
 void DRS4ScopeDlg::saveBASpectrum(bool autosave, const QString &fileNameAutosave)
 {
     if (!m_worker)
@@ -5885,6 +5954,67 @@ void DRS4ScopeDlg::saveBASpectrum(bool autosave, const QString &fileNameAutosave
 
         m_worker->setBusy(false);
     }
+}
+
+void DRS4ScopeDlg::saveBASpectrumDQuickLTFit(bool autosave, const QString &fileNameAutosave)
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    QString fileName = "";
+
+    if ( !autosave ) {
+        fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                              DRS4ProgramSettingsManager::sharedInstance()->saveDataFilePath(),
+                                                              tr("DQuickLTFit Project File (*.dquicklt)"));
+
+        if ( fileName.isEmpty() ) {
+            m_worker->setBusy(false);
+            return;
+        }
+
+        DRS4ProgramSettingsManager::sharedInstance()->setSaveDataFilePath(fileName);
+    }
+    else
+        fileName = fileNameAutosave;
+
+    PALSProjectManager::sharedInstance()->createEmptyProject();
+
+
+    QList<QPointF> data;
+
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntBA() ; ++ i )
+        data.append(QPointF(i, m_worker->spectrumBA()->at(i)));
+
+    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntBA();
+
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeRawData(data);
+    PALSProjectManager::sharedInstance()->setChannelRanges(0, DRS4SettingsManager::sharedInstance()->channelCntBA()-1);
+    PALSProjectManager::sharedInstance()->setASCIIDataName("data imported from DDRS4PALS software");
+    PALSProjectManager::sharedInstance()->setFileName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->setName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setChannelResolution(res);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setMaximumIterations(200);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStartChannel(0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntBA()-1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumBA());
+
+    if (PALSProjectManager::sharedInstance()->save(fileName)) {
+        /* ok */
+    }
+    else {
+        if ( !autosave ) {
+            MSGBOX("Error while writing file!");
+        }
+    }
+
+    m_worker->setBusy(false);
 }
 
 void DRS4ScopeDlg::saveCoincidenceSpectrum(bool autosave, const QString &fileNameAutosave)
@@ -5941,6 +6071,67 @@ void DRS4ScopeDlg::saveCoincidenceSpectrum(bool autosave, const QString &fileNam
     }
 }
 
+void DRS4ScopeDlg::saveCoincidenceSpectrumDQuickLTFit(bool autosave, const QString &fileNameAutosave)
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    QString fileName = "";
+
+    if ( !autosave ) {
+        fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                              DRS4ProgramSettingsManager::sharedInstance()->saveDataFilePath(),
+                                                              tr("DQuickLTFit Project File (*.dquicklt)"));
+
+        if ( fileName.isEmpty() ) {
+            m_worker->setBusy(false);
+            return;
+        }
+
+        DRS4ProgramSettingsManager::sharedInstance()->setSaveDataFilePath(fileName);
+    }
+    else
+        fileName = fileNameAutosave;
+
+    PALSProjectManager::sharedInstance()->createEmptyProject();
+
+
+    QList<QPointF> data;
+
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntCoincindence() ; ++ i )
+        data.append(QPointF(i, m_worker->spectrumCoincidence()->at(i)));
+
+    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntCoincindence();
+
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeRawData(data);
+    PALSProjectManager::sharedInstance()->setChannelRanges(0, DRS4SettingsManager::sharedInstance()->channelCntCoincindence()-1);
+    PALSProjectManager::sharedInstance()->setASCIIDataName("data imported from DDRS4PALS software");
+    PALSProjectManager::sharedInstance()->setFileName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->setName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setChannelResolution(res);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setMaximumIterations(200);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStartChannel(0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntCoincindence()-1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumBA());
+
+    if (PALSProjectManager::sharedInstance()->save(fileName)) {
+        /* ok */
+    }
+    else {
+        if ( !autosave ) {
+            MSGBOX("Error while writing file!");
+        }
+    }
+
+    m_worker->setBusy(false);
+}
+
 void DRS4ScopeDlg::saveMergedSpectrum(bool autosave, const QString &fileNameAutosave)
 {
     if (!m_worker)
@@ -5994,6 +6185,67 @@ void DRS4ScopeDlg::saveMergedSpectrum(bool autosave, const QString &fileNameAuto
 
         m_worker->setBusy(false);
     }
+}
+
+void DRS4ScopeDlg::saveMergedSpectrumDQuickLTFit(bool autosave, const QString &fileNameAutosave)
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    QString fileName = "";
+
+    if ( !autosave ) {
+        fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                              DRS4ProgramSettingsManager::sharedInstance()->saveDataFilePath(),
+                                                              tr("DQuickLTFit Project File (*.dquicklt)"));
+
+        if ( fileName.isEmpty() ) {
+            m_worker->setBusy(false);
+            return;
+        }
+
+        DRS4ProgramSettingsManager::sharedInstance()->setSaveDataFilePath(fileName);
+    }
+    else
+        fileName = fileNameAutosave;
+
+    PALSProjectManager::sharedInstance()->createEmptyProject();
+
+
+    QList<QPointF> data;
+
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntMerged() ; ++ i )
+        data.append(QPointF(i, m_worker->spectrumCoincidence()->at(i)));
+
+    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntMerged();
+
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeRawData(data);
+    PALSProjectManager::sharedInstance()->setChannelRanges(0, DRS4SettingsManager::sharedInstance()->channelCntMerged()-1);
+    PALSProjectManager::sharedInstance()->setASCIIDataName("data imported from DDRS4PALS software");
+    PALSProjectManager::sharedInstance()->setFileName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->setName(fileName);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setChannelResolution(res);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setMaximumIterations(200);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStartChannel(0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntMerged()-1);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumMerged());
+
+    if (PALSProjectManager::sharedInstance()->save(fileName)) {
+        /* ok */
+    }
+    else {
+        if ( !autosave ) {
+            MSGBOX("Error while writing file!");
+        }
+    }
+
+    m_worker->setBusy(false);
 }
 
 void DRS4ScopeDlg::savePHSA(bool autosave, const QString &fileNameAutosave)

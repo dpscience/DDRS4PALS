@@ -62,6 +62,8 @@
 
 #include "alglib.h"
 
+#include "DQuickLTFit/projectmanager.h"
+
 #define ACCESSED_BY_SCRIPT_AND_GUI  /*Function can be accessed by GUI and Script!*/
 
 typedef enum
@@ -242,9 +244,13 @@ private slots:
     void autosaveAllSpectra();
 
     void saveABSpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecAB.txt");
+    void saveABSpectrumDQuickLTFit(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecAB.dquicklt");
     void saveBASpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecBA.txt");
+    void saveBASpectrumDQuickLTFit(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecBA.dquicklt");
     void saveCoincidenceSpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecPrompt.txt");
+    void saveCoincidenceSpectrumDQuickLTFit(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecPrompt.dquicklt");
     void saveMergedSpectrum(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecMerged.txt");
+    void saveMergedSpectrumDQuickLTFit(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecMerged.dquicklt");
     void savePHSA(bool autosave = false, const QString& fileNameAutosave = "__autosavePHSA.txt");
     void savePHSB(bool autosave = false, const QString& fileNameAutosave = "__autosavePHSB.txt");
     void saveTemperature();

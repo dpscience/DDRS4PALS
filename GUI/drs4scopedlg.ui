@@ -1843,8 +1843,27 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveALTSpectrum">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
-             <string>save</string>
+             <string>export as ASCII</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_saveDQuickAB">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>export as DQuickLTFit project</string>
             </property>
            </widget>
           </item>
@@ -2198,8 +2217,27 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveBALTSpectrum">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
-             <string>save</string>
+             <string>export as ASCII</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_BADQuickLT">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>export as DQuickLTFit project</string>
             </property>
            </widget>
           </item>
@@ -2554,8 +2592,27 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveCoincidenceLTSpectrum">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
-             <string>save</string>
+             <string>export as ASCII</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_coincDQuickLT">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>export as DQuickLTFit project</string>
             </property>
            </widget>
           </item>
@@ -2942,8 +2999,27 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveMergedLTSpectrum">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
-             <string>save</string>
+             <string>export as ASCII</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_mergedDQuickLT">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>export as DQuickLTFit project</string>
             </property>
            </widget>
           </item>
@@ -4077,7 +4153,7 @@
             <item>
              <widget class="QTabWidget" name="tabWidget_11">
               <property name="currentIndex">
-               <number>2</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab_33">
                <attribute name="title">

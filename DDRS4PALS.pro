@@ -51,7 +51,9 @@ SOURCES += main.cpp\
     GUI/drs4statelogdlg.cpp \
     GUI/drs4pulsesaverangedlg.cpp \
     GUI/drs4calculatordlg.cpp \
-    GUI/drs4cfdalgorithmdlg.cpp
+    GUI/drs4cfdalgorithmdlg.cpp \
+    DQuickLTFit/settings.cpp \
+    DQuickLTFit/projectmanager.cpp
 
 HEADERS  += DRS/DRS.h \
     DRS/averager.h\
@@ -84,7 +86,9 @@ HEADERS  += DRS/DRS.h \
     GUI/drs4statelogdlg.h \
     GUI/drs4pulsesaverangedlg.h \
     GUI/drs4calculatordlg.h \
-    GUI/drs4cfdalgorithmdlg.h
+    GUI/drs4cfdalgorithmdlg.h \
+    DQuickLTFit/settings.h \
+    DQuickLTFit/projectmanager.h
 
 FORMS    += GUI/drs4scopedlg.ui \
     GUI/drs4addinfodlg.ui \
