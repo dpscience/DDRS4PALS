@@ -8,7 +8,7 @@ QT       += core gui concurrent script printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = DDRS4PALS_1_0_6
+TARGET = DDRS4PALS_1_0_10
 TEMPLATE = app
 
 RC_FILE = softwareIcon.rc

@@ -147,7 +147,12 @@ signals:
     void signalChangeSampleSpeed(int index, bool accessFromScript);
 
 private slots:
-    void runDQuickLTFit();
+    void runDQuickLTFit(const QString &projectPath = "");
+
+    void openDQuickLTFitABSpectrum();
+    void openDQuickLTFitBASpectrum();
+    void openDQuickLTFitCoincidenceSpectrum();
+    void openDQuickLTFitMergedSpectrum();
 
     void updatePulseAreaFilterALimits();
     void updatePulseAreaFilterBLimits();

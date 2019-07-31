@@ -1867,6 +1867,22 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_openABDQuick">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>open in DQuickLTFit</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -2238,6 +2254,22 @@
             </property>
             <property name="text">
              <string>export as DQuickLTFit project</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_openBADQuick">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>open in DQuickLTFit</string>
             </property>
            </widget>
           </item>
@@ -2613,6 +2645,22 @@
             </property>
             <property name="text">
              <string>export as DQuickLTFit project</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_openPromptDQuick">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>open in DQuickLTFit</string>
             </property>
            </widget>
           </item>
@@ -3020,6 +3068,22 @@
             </property>
             <property name="text">
              <string>export as DQuickLTFit project</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_openMergedDQuickLT">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>open in DQuickLTFit</string>
             </property>
            </widget>
           </item>
@@ -6774,12 +6838,6 @@
     </property>
     <addaction name="actionOpen_2"/>
    </widget>
-   <widget class="QMenu" name="menuSpectrum_Analysis">
-    <property name="title">
-     <string>Spectrum-Analysis</string>
-    </property>
-    <addaction name="actionRun_DQuickLTFit"/>
-   </widget>
    <widget class="QMenu" name="menuCalculator">
     <property name="title">
      <string>Calculator</string>
@@ -6802,7 +6860,6 @@
    <addaction name="menuAdditional_Information"/>
    <addaction name="menuDoppler_Plugin"/>
    <addaction name="menuCalculator"/>
-   <addaction name="menuSpectrum_Analysis"/>
    <addaction name="menuAbout"/>
    <addaction name="menuUpdates"/>
   </widget>

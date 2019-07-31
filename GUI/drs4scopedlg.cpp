@@ -61,11 +61,18 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     /* Check if DQuickLTFit Software is available? */
     QFile file("DQuickLTFit.exe");
     const bool bDQuickExists = file.exists();
-    ui->menuSpectrum_Analysis->setEnabled(bDQuickExists);
 
     if ( bDQuickExists ) {
-        connect(ui->actionRun_DQuickLTFit, SIGNAL(triggered()), this, SLOT(runDQuickLTFit()));
-        ui->actionRun_DQuickLTFit->setIcon(QIcon(":/images/images/IconPNGRounded.png"));
+        connect(ui->pushButton_openABDQuick, SIGNAL(clicked()), this, SLOT(openDQuickLTFitABSpectrum()));
+        connect(ui->pushButton_openBADQuick, SIGNAL(clicked()), this, SLOT(openDQuickLTFitBASpectrum()));
+        connect(ui->pushButton_openPromptDQuick, SIGNAL(clicked()), this, SLOT(openDQuickLTFitCoincidenceSpectrum()));
+        connect(ui->pushButton_openMergedDQuickLT, SIGNAL(clicked()), this, SLOT(openDQuickLTFitMergedSpectrum()));
+    }
+    else {
+        ui->pushButton_openABDQuick->setEnabled(false);
+        ui->pushButton_openBADQuick->setEnabled(false);
+        ui->pushButton_openPromptDQuick->setEnabled(false);
+        ui->pushButton_openMergedDQuickLT->setEnabled(false);
     }
 
     arrangeIcons();
@@ -2328,22 +2335,67 @@ bool DRS4ScopeDlg::stopStreamingFromExtern()
     return true;
 }
 
-void DRS4ScopeDlg::runDQuickLTFit()
+void DRS4ScopeDlg::runDQuickLTFit(const QString& projectPath)
 {
+    QSharedMemory sharedMemory;
+    sharedMemory.setKey("DQuickLTFit0123456789qwetzuioasdfghjklerfgbnpokjn,.-234567890weuhcq8934cn43q8DQuickLTFit");
+
+    if (!sharedMemory.create(1)) {
+        MSGBOX("An instancen of DQuickLTFit is already running. Please save your currect working project, close DQuickLTFit and try again.");
+        return;
+    }
+
+    sharedMemory.detach();
+
     QMutexLocker locker(&m_mutex);
 
     m_worker->setBusy(true);
 
     while(!m_worker->isBlocking()) {}
 
-    HINSTANCE retVal = ShellExecuteA(NULL, "open", (LPCSTR)(QString(QFileInfo(QCoreApplication::applicationFilePath()).absolutePath() + "/DQuickLTFit.exe").toStdString().c_str()), NULL, NULL, SW_SHOWDEFAULT);
-    MSGBOX(QString(QFileInfo(QCoreApplication::applicationFilePath()).absolutePath() + "/DQuickLTFit.exe"));
+    HINSTANCE retVal = ShellExecuteA(NULL,
+                                     "open",
+                                     (LPCSTR)(QString(QFileInfo(QCoreApplication::applicationFilePath()).absolutePath() + "/DQuickLTFit.exe").toStdString().c_str()),
+                                     (LPCSTR)(projectPath.toStdString().c_str()),
+                                     NULL,
+                                     SW_SHOWDEFAULT);
 
     if ( ((int)retVal) < 32 ) {
+        m_worker->setBusy(false);
         MSGBOX("Cannot run DQuickLTFit.");
+
+        return;
     }
 
     m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::openDQuickLTFitABSpectrum()
+{
+    saveABSpectrumDQuickLTFit(true);
+
+    runDQuickLTFit(QString("__autosaveSpecAB.dquicklt"));
+}
+
+void DRS4ScopeDlg::openDQuickLTFitBASpectrum()
+{
+    saveBASpectrumDQuickLTFit(true);
+
+    runDQuickLTFit(QString("__autosaveSpecBA.dquicklt"));
+}
+
+void DRS4ScopeDlg::openDQuickLTFitCoincidenceSpectrum()
+{
+    saveCoincidenceSpectrumDQuickLTFit(true);
+
+    runDQuickLTFit(QString("__autosaveSpecPrompt.dquicklt"));
+}
+
+void DRS4ScopeDlg::openDQuickLTFitMergedSpectrum()
+{
+    saveMergedSpectrumDQuickLTFit(true);
+
+    runDQuickLTFit(QString("__autosaveSpecMerged.dquicklt"));
 }
 
 void DRS4ScopeDlg::updateCurrentFileLabelFromScript(const QString &currentFile)
@@ -5871,11 +5923,37 @@ void DRS4ScopeDlg::saveABSpectrumDQuickLTFit(bool autosave, const QString &fileN
 
 
     QList<QPointF> data;
+    double bkgrd = 0.0;
+    const int range = DRS4SettingsManager::sharedInstance()->channelCntAB()*0.05;
+    int index_where_ymax = 0;
+    int index_where_fwhm = 0;
+    double max_y = 0.0;
 
-    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntAB() ; ++ i )
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntAB() ; ++ i ) {
         data.append(QPointF(i, m_worker->spectrumAB()->at(i)));
 
+        if ( m_worker->spectrumAB()->at(i) > max_y) {
+            index_where_ymax = i;
+            max_y = m_worker->spectrumAB()->at(i);
+        }
+
+        if (i >= DRS4SettingsManager::sharedInstance()->channelCntAB() - range)
+            bkgrd += m_worker->spectrumAB()->at(i);
+    }
+
+    bkgrd /= range;
+
+    for ( int i = 0 ; i < index_where_ymax ; ++ i ) {
+        if ( m_worker->spectrumAB()->at(i) > 0.5*max_y ) {
+            index_where_fwhm = i;
+            break;
+        }
+    }
+
     const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSAB()/(double)DRS4SettingsManager::sharedInstance()->channelCntAB();
+
+    const double t0 = index_where_ymax*res;
+    const double fwhm = abs(index_where_ymax - index_where_fwhm)*res;
 
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
@@ -5890,11 +5968,20 @@ void DRS4ScopeDlg::saveABSpectrumDQuickLTFit(bool autosave, const QString &fileN
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntAB()-1);
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumAB());
 
+    // estimated t0 and fwhm value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(1)->setStartValue(t0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(0)->setStartValue(fwhm);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(2)->setAsFixed(true);
+
+    // estimated bkgrd value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getBackgroundParamPtr()->getParameter()->setStartValue(bkgrd);
+
     if (PALSProjectManager::sharedInstance()->save(fileName)) {
         /* ok */
     }
     else {
         if ( !autosave ) {
+            m_worker->setBusy(false);
             MSGBOX("Error while writing file!");
         }
     }
@@ -5986,11 +6073,37 @@ void DRS4ScopeDlg::saveBASpectrumDQuickLTFit(bool autosave, const QString &fileN
 
 
     QList<QPointF> data;
+    double bkgrd = 0.0;
+    const int range = DRS4SettingsManager::sharedInstance()->channelCntBA()*0.05;
+    int index_where_ymax = 0;
+    int index_where_fwhm = 0;
+    double max_y = 0.0;
 
-    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntBA() ; ++ i )
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntBA() ; ++ i ) {
         data.append(QPointF(i, m_worker->spectrumBA()->at(i)));
 
+        if ( m_worker->spectrumBA()->at(i) > max_y) {
+            index_where_ymax = i;
+            max_y = m_worker->spectrumBA()->at(i);
+        }
+
+        if (i >= DRS4SettingsManager::sharedInstance()->channelCntBA() - range)
+            bkgrd += m_worker->spectrumBA()->at(i);
+    }
+
+    bkgrd /= range;
+
+    for ( int i = 0 ; i < index_where_ymax ; ++ i ) {
+        if ( m_worker->spectrumBA()->at(i) > 0.5*max_y ) {
+            index_where_fwhm = i;
+            break;
+        }
+    }
+
     const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntBA();
+
+    const double t0 = index_where_ymax*res;
+    const double fwhm = abs(index_where_ymax - index_where_fwhm)*res;
 
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
@@ -6005,11 +6118,20 @@ void DRS4ScopeDlg::saveBASpectrumDQuickLTFit(bool autosave, const QString &fileN
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntBA()-1);
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumBA());
 
+    // estimated t0 and fwhm value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(1)->setStartValue(t0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(0)->setStartValue(fwhm);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(2)->setAsFixed(true);
+
+    // estimated bkgrd value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getBackgroundParamPtr()->getParameter()->setStartValue(bkgrd);
+
     if (PALSProjectManager::sharedInstance()->save(fileName)) {
         /* ok */
     }
     else {
         if ( !autosave ) {
+            m_worker->setBusy(false);
             MSGBOX("Error while writing file!");
         }
     }
@@ -6101,11 +6223,37 @@ void DRS4ScopeDlg::saveCoincidenceSpectrumDQuickLTFit(bool autosave, const QStri
 
 
     QList<QPointF> data;
+    double bkgrd = 0.0;
+    const int range = DRS4SettingsManager::sharedInstance()->channelCntCoincindence()*0.05;
+    int index_where_ymax = 0;
+    int index_where_fwhm = 0;
+    double max_y = 0.0;
 
-    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntCoincindence() ; ++ i )
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntCoincindence() ; ++ i ) {
         data.append(QPointF(i, m_worker->spectrumCoincidence()->at(i)));
 
-    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntCoincindence();
+        if ( m_worker->spectrumCoincidence()->at(i) > max_y) {
+            index_where_ymax = i;
+            max_y = m_worker->spectrumCoincidence()->at(i);
+        }
+
+        if (i >= DRS4SettingsManager::sharedInstance()->channelCntCoincindence() - range)
+            bkgrd += m_worker->spectrumCoincidence()->at(i);
+    }
+
+    bkgrd /= range;
+
+    for ( int i = 0 ; i < index_where_ymax ; ++ i ) {
+        if ( m_worker->spectrumCoincidence()->at(i) > 0.5*max_y ) {
+            index_where_fwhm = i;
+            break;
+        }
+    }
+
+    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSCoincidence()/(double)DRS4SettingsManager::sharedInstance()->channelCntCoincindence();
+
+    const double t0 = index_where_ymax*res;
+    const double fwhm = abs(index_where_ymax - index_where_fwhm)*res;
 
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
@@ -6118,13 +6266,22 @@ void DRS4ScopeDlg::saveCoincidenceSpectrumDQuickLTFit(bool autosave, const QStri
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setMaximumIterations(200);
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStartChannel(0);
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntCoincindence()-1);
-    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumBA());
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumCoincidence());
+
+    // estimated t0 and fwhm value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(1)->setStartValue(t0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(0)->setStartValue(fwhm);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(2)->setAsFixed(true);
+
+    // estimated bkgrd value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getBackgroundParamPtr()->getParameter()->setStartValue(bkgrd);
 
     if (PALSProjectManager::sharedInstance()->save(fileName)) {
         /* ok */
     }
     else {
         if ( !autosave ) {
+            m_worker->setBusy(false);
             MSGBOX("Error while writing file!");
         }
     }
@@ -6217,11 +6374,37 @@ void DRS4ScopeDlg::saveMergedSpectrumDQuickLTFit(bool autosave, const QString &f
 
 
     QList<QPointF> data;
+    double bkgrd = 0.0;
+    const int range = DRS4SettingsManager::sharedInstance()->channelCntMerged()*0.05;
+    int index_where_ymax = 0;
+    int index_where_fwhm = 0;
+    double max_y = 0.0;
 
-    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntMerged() ; ++ i )
-        data.append(QPointF(i, m_worker->spectrumCoincidence()->at(i)));
+    for ( int i = 0 ; i < DRS4SettingsManager::sharedInstance()->channelCntMerged() ; ++ i ) {
+        data.append(QPointF(i, m_worker->spectrumMerged()->at(i)));
 
-    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntMerged();
+        if ( m_worker->spectrumMerged()->at(i) > max_y) {
+            index_where_ymax = i;
+            max_y = m_worker->spectrumMerged()->at(i);
+        }
+
+        if (i >= DRS4SettingsManager::sharedInstance()->channelCntMerged() - range)
+            bkgrd += m_worker->spectrumMerged()->at(i);
+    }
+
+    bkgrd /= range;
+
+    for ( int i = 0 ; i < index_where_ymax ; ++ i ) {
+        if ( m_worker->spectrumMerged()->at(i) > 0.5*max_y ) {
+            index_where_fwhm = i;
+            break;
+        }
+    }
+
+    const double res = 1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSMerged()/(double)DRS4SettingsManager::sharedInstance()->channelCntMerged();
+
+    const double t0 = index_where_ymax*res;
+    const double fwhm = abs(index_where_ymax - index_where_fwhm)*res;
 
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setLifeTimeData(data);
     PALSProjectManager::sharedInstance()->getDataStructure()->getDataSetPtr()->setBinFactor(1);
@@ -6236,11 +6419,20 @@ void DRS4ScopeDlg::saveMergedSpectrumDQuickLTFit(bool autosave, const QString &f
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setStopChannel(DRS4SettingsManager::sharedInstance()->channelCntMerged()-1);
     PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->setCountsInRange(m_worker->countsSpectrumMerged());
 
+    // estimated t0 and fwhm value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(1)->setStartValue(t0);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(0)->setStartValue(fwhm);
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getDeviceResolutionParamPtr()->getParameterAt(2)->setAsFixed(true);
+
+    // estimated bkgrd value
+    PALSProjectManager::sharedInstance()->getDataStructure()->getFitSetPtr()->getBackgroundParamPtr()->getParameter()->setStartValue(bkgrd);
+
     if (PALSProjectManager::sharedInstance()->save(fileName)) {
         /* ok */
     }
     else {
         if ( !autosave ) {
+            m_worker->setBusy(false);
             MSGBOX("Error while writing file!");
         }
     }
