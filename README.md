@@ -32,6 +32,10 @@ Additionally, you can cite all released software versions by using the <b>DOI 10
 
 ## v1.x
 
+DDRS4PALS <b>v1.10</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3275603.svg)](https://doi.org/10.5281/zenodo.3275603)<br>
+
+This release [(v1.10)](https://github.com/dpscience/DQuickLTFit) contains the analysis tool [DQuickLTFit v4.1](https://github.com/dpscience/DQuickLTFit), which enables lifetime spectra to be directly opened and analysed from DDRS4PALS software. Moreover, lifetime spectra can be directly exported as (*.dquicklt) file providing an easy and convenient way for spectra analysis. 
+
 DDRS4PALS <b>v1.09</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3275603.svg)](https://doi.org/10.5281/zenodo.3275603)<br>
 
 DDRS4PALS <b>v1.08</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2540851.svg)](https://doi.org/10.5281/zenodo.2540851)<br>
@@ -77,7 +81,10 @@ The following 3rd party libraries are used by <b>DDRS4PALS</b> software.<br>
 These files containing documentation, drivers, applications, C/C++ source code and the FPGA firmware in VHDL and compiled bit files.<br><br>
 <b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b><br><br>License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
 
-# Setup
+# Run executable (*.exe)
+The corresponding executable (and binary files) can be downloaded from <b>zenodo platform</b> by following the related DOI (see above). 
+
+# Setup from source files
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
 2. Download and Setup MS Visual Studio Compiler 2013 (or any newer version) .
 3. Compile (x86/x64) and Run the code on your Machine.

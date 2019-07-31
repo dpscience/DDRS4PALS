@@ -55,6 +55,8 @@
 #include "drs4settingsmanager.h"
 #include "drs4pulsegenerator.h"
 
+#include "DQuickLTFit/projectmanager.h"
+
 #include "Stream/drs4streammanager.h"
 
 #include "Fit/dspline.h"
