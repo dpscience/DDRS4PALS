@@ -36,7 +36,6 @@ DDRS4PALS <b>v1.10</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenod
 
 This release [(v1.10)](https://github.com/dpscience/DQuickLTFit) contains the analysis tool [DQuickLTFit v4.1](https://github.com/dpscience/DQuickLTFit), which enables lifetime spectra to be directly opened and analysed from DDRS4PALS software. Moreover, lifetime spectra can be directly exported as (*.dquicklt) file providing an easy and convenient way for spectra analysis. 
 
-
 DDRS4PALS <b>v1.09</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3275603.svg)](https://doi.org/10.5281/zenodo.3275603)<br>
 
 DDRS4PALS <b>v1.08</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2540851.svg)](https://doi.org/10.5281/zenodo.2540851)<br>
