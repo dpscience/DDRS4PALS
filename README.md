@@ -82,7 +82,7 @@ These files containing documentation, drivers, applications, C/C++ source code a
 <b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b><br><br>License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
 
 # Run executable (*.exe)
-The corresponding executable (and binary files) can be downloaded from <b>zenodo platform</b> by following the related DOI (see above). 
+The executable (and binary files) can be either downloaded from <b>zenodo platform</b> by following the related DOI (see above) or from the corresponding release. 
 
 # Setup from source files
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
