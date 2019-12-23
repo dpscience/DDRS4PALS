@@ -8,6 +8,13 @@ Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
+# Quickstart Guide <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+
+1. Download the latest software release (<b>DDRS4PALS_v110.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+2. Unzip <b>DDRS4PALS_v110.rar</b>.
+3. Download and install the Visual C++ Redistributable Package (x64) if required: https://www.microsoft.com/de-de/download/details.aspx?id=48145
+3. Run the <b>DDRS4PALS</b> executable.
+
 # Related Publications
 
 ### Feb. 2019
@@ -84,9 +91,9 @@ These files containing documentation, drivers, applications, C/C++ source code a
 # Run executable (*.exe)
 The executable (and binary files) can be either downloaded from <b>zenodo platform</b> by following the related DOI (see above) or from the corresponding release. 
 
-# Setup from source files
+# Run DDRS4PALS from source files
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
-2. Download and Setup MS Visual Studio Compiler 2013 (or any newer version) .
-3. Compile (x86/x64) and Run the code on your Machine.
-4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
-5. Finished. Press run to obtain your Lifetime Spectra.
+2. Download and Setup the MS Visual Studio Compiler (at least version 2013).
+3. Compile and Deploy for x64.
+4. Connect your DRS4-EB (if available) and start the Simulation or Acquisition Mode.
+5. Finished.
