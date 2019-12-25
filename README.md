@@ -1,6 +1,6 @@
 Support this project and keep always updated about recent software releases, bug fixes and major improvements by [following on researchgate](https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board) or [github](https://github.com/dpscience?tab=followers).<br><br>
 
-# DDRS4PALS  <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+# DDRS4PALS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
 
@@ -15,7 +15,7 @@ Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 3. Download and install the Visual C++ Redistributable Package (x64) if required: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 3. Run the <b>DDRS4PALS</b> executable.
 
-# Related Publications
+# Related Publications <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ### Feb. 2019
 Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
@@ -23,12 +23,12 @@ Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PA
 ### Jun. 2019
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
 
-# Documentation
+# Documentation <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ### Jun. 2019
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
 
-# How to cite this Software?
+# How to cite this Software? <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 <b>You should at least cite the following publication:</b><br><br>
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br>
@@ -59,7 +59,7 @@ DDRS4PALS <b>v1.03</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219523.svg)](https://doi.org/10.5281/zenodo.1219523)<br>
 
-# Third Party Libraries and Licenses
+# Third Party Libraries and Licenses <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 <b>DDRS4PALS</b> is written in C++ using [Qt-Framework](https://www.qt.io/) (licensed under the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0))
 
@@ -88,10 +88,7 @@ The following 3rd party libraries are used by <b>DDRS4PALS</b> software.<br>
 These files containing documentation, drivers, applications, C/C++ source code and the FPGA firmware in VHDL and compiled bit files.<br><br>
 <b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b><br><br>License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
 
-# Run executable (*.exe)
-The executable (and binary files) can be either downloaded from <b>zenodo platform</b> by following the related DOI (see above) or from the corresponding release. 
-
-# Run DDRS4PALS from source files
+# Run DDRS4PALS from source files <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
 2. Download and Setup the MS Visual Studio Compiler (at least version 2013).
 3. Compile and Deploy for x64.
