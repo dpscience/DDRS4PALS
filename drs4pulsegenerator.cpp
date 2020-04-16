@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 
 using namespace DLifeTime;
 
-DRS4PulseGenerator *__sharedInstancePulseGenerator = nullptr;
+static DRS4PulseGenerator *__sharedInstancePulseGenerator = nullptr;
 
 DRS4PulseGenerator *DRS4PulseGenerator::sharedInstance()
 {

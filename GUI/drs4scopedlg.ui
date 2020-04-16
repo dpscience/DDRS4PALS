@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1457</width>
-    <height>1136</height>
+    <width>1513</width>
+    <height>1105</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,134 +17,9 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_9">
+   <layout class="QVBoxLayout" name="verticalLayout_35">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_35">
-      <item>
-       <widget class="QCheckBox" name="checkBox_burstMode">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: green</string>
-        </property>
-        <property name="text">
-         <string>enable Burst Mode?</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="Line" name="line">
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="lineWidth">
-         <number>2</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBox_hyperthreading">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: dark-blue</string>
-        </property>
-        <property name="text">
-         <string>enable parallel Processing?</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_87">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: dark-blue</string>
-        </property>
-        <property name="text">
-         <string>[available CPU Cores: </string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_cores">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: red</string>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_89">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: dark-blue</string>
-        </property>
-        <property name="text">
-         <string>]</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_88">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Pulse-Pair Chunk Size:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="spinBox_parallelChunkSize">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="minimum">
-         <number>1</number>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="DSVGButton" name="widget_play" native="true">
         <property name="minimumSize">
@@ -178,7 +53,35 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer_30">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QLabel" name="label_threadRunning">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>9</pointsize>
@@ -192,7 +95,56 @@
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_30">
+       <widget class="QPushButton" name="pushButton_resetAll">
+        <property name="minimumSize">
+         <size>
+          <width>160</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+border-style: flat;
+background-color: white; 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(216,216,216);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+        </property>
+        <property name="text">
+         <string>reset all spectra</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_42">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -205,7 +157,112 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_resetAll">
+       <widget class="QCheckBox" name="checkBox_burstMode">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: green;
+
+
+
+</string>
+        </property>
+        <property name="text">
+         <string>Burst-Mode ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_43">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_hyperthreading">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: dark-blue;
+    </string>
+        </property>
+        <property name="text">
+         <string>Parallel Processing ?</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_87">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: dark-blue</string>
+        </property>
+        <property name="text">
+         <string>[Number of CPU Cores: </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_cores">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: red</string>
+        </property>
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_89">
         <property name="font">
          <font>
           <weight>75</weight>
@@ -213,10 +270,147 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: black</string>
+         <string notr="true">color: dark-blue</string>
         </property>
         <property name="text">
-         <string>Reset all Spectra</string>
+         <string>]</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_44">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_88">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Pulse-Pair Chunk Size:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="spinBox_parallelChunkSize">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+         </font>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_45">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_141">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>CPU Load of DDRS4PALS:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="progressBar_cpuUsage">
+        <property name="minimumSize">
+         <size>
+          <width>160</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QProgressBar
+{
+    background: rgb(194, 154, 16);
+    color: black;
+    border-style: flat;
+    border-radius: 3px;
+    text-align: right;
+	/*text-margin-right: 5px;*/
+}
+QProgressBar::chunk
+{
+	border-radius: 3px;
+    background-color: rgba(71, 80, 99, 0.9);
+}
+                          </string>
+        </property>
+        <property name="value">
+         <number>20</number>
+        </property>
+        <property name="invertedAppearance">
+         <bool>false</bool>
+        </property>
+        <property name="textDirection">
+         <enum>QProgressBar::BottomToTop</enum>
+        </property>
+        <property name="format">
+         <string>%p %  </string>
         </property>
        </widget>
       </item>
@@ -227,7 +421,7 @@
       <property name="minimumSize">
        <size>
         <width>800</width>
-        <height>400</height>
+        <height>800</height>
        </size>
       </property>
       <property name="styleSheet">
@@ -253,7 +447,7 @@
               <property name="minimumSize">
                <size>
                 <width>800</width>
-                <height>200</height>
+                <height>250</height>
                </size>
               </property>
              </widget>
@@ -322,8 +516,14 @@
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
              <widget class="QLabel" name="label_5">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
-               <string>Output-Channel:</string>
+               <string>A:</string>
               </property>
              </widget>
             </item>
@@ -331,6 +531,15 @@
              <widget class="QCheckBox" name="checkBox_chn1_A">
               <property name="enabled">
                <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 1</string>
@@ -392,7 +601,7 @@
                </font>
               </property>
               <property name="text">
-               <string>CFD-Level [%]: </string>
+               <string>CF Level: </string>
               </property>
              </widget>
             </item>
@@ -433,6 +642,19 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QLabel" name="label_142">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
@@ -442,7 +664,7 @@
               <property name="minimumSize">
                <size>
                 <width>800</width>
-                <height>200</height>
+                <height>250</height>
                </size>
               </property>
              </widget>
@@ -511,8 +733,14 @@
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <widget class="QLabel" name="label_6">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
-               <string>Output-Channel:</string>
+               <string>B: </string>
               </property>
              </widget>
             </item>
@@ -530,6 +758,15 @@
              <widget class="QCheckBox" name="checkBox_chn2_B">
               <property name="enabled">
                <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 2</string>
@@ -581,7 +818,7 @@
                </font>
               </property>
               <property name="text">
-               <string>CFD-Level [%]:</string>
+               <string>CF Level:</string>
               </property>
              </widget>
             </item>
@@ -622,6 +859,19 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QLabel" name="label_143">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
@@ -635,11 +885,20 @@
                </font>
               </property>
               <property name="title">
-               <string>Trigger-Delay [ns]</string>
+               <string>Trigger-Delay</string>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_24">
                <item>
                 <widget class="QSlider" name="horizontalSlider_triggerDelay">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -658,6 +917,13 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QLabel" name="label_144">
+                 <property name="text">
+                  <string>ns</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -670,7 +936,7 @@
                </font>
               </property>
               <property name="title">
-               <string>ROI (Region of Interest)</string>
+               <string>ROI (Region-of-Interest)</string>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_22">
                <item>
@@ -844,19 +1110,12 @@
                </item>
                <item>
                 <widget class="QPushButton" name="pushButton_fullRange">
-                 <property name="font">
-                  <font>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
+                 <property name="minimumSize">
+                  <size>
+                   <width>140</width>
+                   <height>30</height>
+                  </size>
                  </property>
-                 <property name="text">
-                  <string>full range</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_scaleRange">
                  <property name="font">
                   <font>
                    <weight>75</weight>
@@ -864,10 +1123,72 @@
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true"/>
+                  <string notr="true">QPushButton {
+border-style: flat;
+background-color: rgb(160,160,160); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(216,216,216);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
                  </property>
                  <property name="text">
-                  <string>scale range</string>
+                  <string>Expand to Full Range</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_scaleRange">
+                 <property name="minimumSize">
+                  <size>
+                   <width>80</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+border-style: flat;
+background-color: rgb(160,160,160); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(216,216,216);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                 </property>
+                 <property name="text">
+                  <string>Fit to ROI</string>
                  </property>
                 </widget>
                </item>
@@ -878,6 +1199,12 @@
           </item>
           <item>
            <widget class="QGroupBox" name="groupBox">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>220</height>
+             </size>
+            </property>
             <property name="title">
              <string/>
             </property>
@@ -894,32 +1221,74 @@
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_13">
                <item>
-                <widget class="QCheckBox" name="checkBox_positiveTriggerPol">
-                 <property name="text">
-                  <string>Trigger on Rising Edge?</string>
+                <widget class="QLabel" name="label_SampleSpeed">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
                  </property>
-                 <property name="checked">
-                  <bool>false</bool>
+                 <property name="text">
+                  <string>Sampling-Speed:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="checkBox_forceStopStopCoincindence">
-                 <property name="text">
-                  <string>Force Stop-Stop Prompt-Spectrum? (Overlap Start/Stop-Windows of PHS to enable!)</string>
+                <widget class="QComboBox" name="comboBox_sampleSpeed">
+                 <property name="minimumSize">
+                  <size>
+                   <width>140</width>
+                   <height>28</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>200</width>
+                   <height>16777215</height>
+                  </size>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="checkBox_positivSignal">
-                 <property name="text">
-                  <string>Positive Pulse-Polarity?</string>
+                <widget class="QLabel" name="label_timingCalibrated">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>25</height>
+                  </size>
                  </property>
-                 <property name="checked">
-                  <bool>false</bool>
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: red
+</string>
+                 </property>
+                 <property name="text">
+                  <string/>
                  </property>
                 </widget>
                </item>
+               <item>
+                <spacer name="verticalSpacer_7">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_9">
                <item>
                 <widget class="QLabel" name="label_42">
                  <property name="font">
@@ -929,7 +1298,7 @@
                   </font>
                  </property>
                  <property name="text">
-                  <string>Trigger Logic:</string>
+                  <string>Trigger-Logic:</string>
                  </property>
                 </widget>
                </item>
@@ -956,33 +1325,73 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_SampleSpeed">
-                 <property name="font">
-                  <font>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Sample-Speed:</string>
-                 </property>
-                </widget>
+                <layout class="QHBoxLayout" name="horizontalLayout_62">
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_positiveTriggerPol">
+                   <property name="font">
+                    <font>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: dark-blue
+</string>
+                   </property>
+                   <property name="text">
+                    <string>Rising Edge (or External Trigger) ? </string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_positivSignal">
+                   <property name="font">
+                    <font>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: dark-blue</string>
+                   </property>
+                   <property name="text">
+                    <string>Positive Pulse-Polarity ?</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_46">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_sampleSpeed">
-                 <property name="minimumSize">
+                <spacer name="verticalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
                   <size>
-                   <width>0</width>
-                   <height>28</height>
+                   <width>20</width>
+                   <height>40</height>
                   </size>
                  </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>200</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
+                </spacer>
                </item>
               </layout>
              </item>
@@ -1000,7 +1409,14 @@
               </spacer>
              </item>
              <item>
-              <widget class="DRS4CFDAlgorithmDlg" name="widget_CFDAlgorithm" native="true"/>
+              <widget class="DRS4CFDAlgorithmDlg" name="widget_CFDAlgorithm" native="true">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>180</height>
+                </size>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -1040,7 +1456,7 @@
                <string notr="true">color: red</string>
               </property>
               <property name="text">
-               <string>Start:</string>
+               <string>A: Start:</string>
               </property>
              </widget>
             </item>
@@ -1050,7 +1466,7 @@
                <string notr="true">color: red</string>
               </property>
               <property name="text">
-               <string>min.:</string>
+               <string>LL:</string>
               </property>
              </widget>
             </item>
@@ -1073,7 +1489,7 @@
                <string notr="true">color: red</string>
               </property>
               <property name="text">
-               <string>max.:</string>
+               <string>UL:</string>
               </property>
              </widget>
             </item>
@@ -1119,7 +1535,7 @@
                <string notr="true">color: blue</string>
               </property>
               <property name="text">
-               <string>Stop:</string>
+               <string>A: Stop: </string>
               </property>
              </widget>
             </item>
@@ -1129,7 +1545,7 @@
                <string notr="true">color: blue</string>
               </property>
               <property name="text">
-               <string>min.:</string>
+               <string>LL:</string>
               </property>
              </widget>
             </item>
@@ -1152,7 +1568,7 @@
                <string notr="true">color: blue</string>
               </property>
               <property name="text">
-               <string>max.:</string>
+               <string>UL:</string>
               </property>
              </widget>
             </item>
@@ -1194,6 +1610,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_countsStartA">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">Color: red</string>
               </property>
@@ -1215,6 +1637,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_countsStopA">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">Color: blue</string>
               </property>
@@ -1232,6 +1660,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_phsACounts">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>0</string>
               </property>
@@ -1239,6 +1673,41 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_savePHSA">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+              </property>
               <property name="text">
                <string>save</string>
               </property>
@@ -1246,6 +1715,41 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_resetA">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+              </property>
               <property name="text">
                <string>reset</string>
               </property>
@@ -1281,7 +1785,7 @@
                <string notr="true">color: red</string>
               </property>
               <property name="text">
-               <string>Start:</string>
+               <string>B: Start:</string>
               </property>
              </widget>
             </item>
@@ -1291,7 +1795,7 @@
                <string notr="true">color: red</string>
               </property>
               <property name="text">
-               <string>min.:</string>
+               <string>LL:</string>
               </property>
              </widget>
             </item>
@@ -1314,7 +1818,7 @@
                <string notr="true">color: red</string>
               </property>
               <property name="text">
-               <string>max.:</string>
+               <string>UL:</string>
               </property>
              </widget>
             </item>
@@ -1360,7 +1864,7 @@
                <string notr="true">color: blue</string>
               </property>
               <property name="text">
-               <string>Stop:</string>
+               <string>B: Stop: </string>
               </property>
              </widget>
             </item>
@@ -1370,7 +1874,7 @@
                <string notr="true">color: blue</string>
               </property>
               <property name="text">
-               <string>min.:</string>
+               <string>LL:</string>
               </property>
              </widget>
             </item>
@@ -1393,7 +1897,7 @@
                <string notr="true">color: blue</string>
               </property>
               <property name="text">
-               <string>max.:</string>
+               <string>UL:</string>
               </property>
              </widget>
             </item>
@@ -1435,6 +1939,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_countsStartB">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: red</string>
               </property>
@@ -1455,6 +1965,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_countsStopB">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">color: blue</string>
               </property>
@@ -1472,6 +1988,12 @@
             </item>
             <item>
              <widget class="QLabel" name="label_phsBCounts">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>0</string>
               </property>
@@ -1479,6 +2001,41 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_savePHSB">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+              </property>
               <property name="text">
                <string>save</string>
               </property>
@@ -1486,6 +2043,41 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_resetB">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+              </property>
               <property name="text">
                <string>reset</string>
               </property>
@@ -1494,6 +2086,22 @@
            </layout>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_forceStopStopCoincindence">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: dark-blue</string>
+          </property>
+          <property name="text">
+           <string>Force Data to appear in the Tab Spec(Prompt/IRF) ? (Overlap Start/Stop-Windows of both PHS)</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -1543,6 +2151,12 @@
           </item>
           <item>
            <widget class="QLabel" name="label_59">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Fit Iterations</string>
             </property>
@@ -1580,7 +2194,7 @@
              <string notr="true">color: blue</string>
             </property>
             <property name="text">
-             <string>t0 [ps]:</string>
+             <string>t&lt;sub&gt;0&lt;/sub&gt; [ps]:</string>
             </property>
            </widget>
           </item>
@@ -1645,6 +2259,51 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_ABFit">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>fit Gaussian</string>
             </property>
@@ -1652,6 +2311,41 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_clearABFitData">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>clear</string>
             </property>
@@ -1730,7 +2424,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_offsetAB">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_offsetAB">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -1744,7 +2438,7 @@
              <double>0.010000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>2.000000000000000</double>
@@ -1765,7 +2459,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_scalerAB">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_scalerAB">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -1779,7 +2473,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>2000.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -1800,7 +2494,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_chnCountAB">
+           <widget class="DRS4SpinBox" name="spinBox_chnCountAB">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -1811,7 +2505,7 @@
              <number>10</number>
             </property>
             <property name="maximum">
-             <number>300000</number>
+             <number>1000000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -1836,6 +2530,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_resetABLTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>reset</string>
             </property>
@@ -1843,11 +2579,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveALTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as ASCII</string>
@@ -1856,11 +2628,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveDQuickAB">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as DQuickLTFit project</string>
@@ -1869,6 +2677,15 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_openABDQuick">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
@@ -1876,7 +2693,34 @@
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: blue</string>
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: blue;
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: blue;
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: blue;
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>open in DQuickLTFit</string>
@@ -1933,6 +2777,12 @@
           </item>
           <item>
            <widget class="QLabel" name="label_63">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Fit Iterations</string>
             </property>
@@ -1970,7 +2820,7 @@
              <string notr="true">color: blue</string>
             </property>
             <property name="text">
-             <string>t0 [ps]:</string>
+             <string>t&lt;sub&gt;0&lt;/sub&gt; [ps]:</string>
             </property>
            </widget>
           </item>
@@ -2035,6 +2885,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_BAFit">
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>fit Gaussian</string>
             </property>
@@ -2042,6 +2934,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_clearBAFitData">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>clear</string>
             </property>
@@ -2120,7 +3054,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_offsetBA">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_offsetBA">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2134,7 +3068,7 @@
              <double>0.010000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>2.000000000000000</double>
@@ -2155,7 +3089,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_scalerBA">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_scalerBA">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2169,7 +3103,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>2000.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -2190,7 +3124,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_chnCountBA">
+           <widget class="DRS4SpinBox" name="spinBox_chnCountBA">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2201,7 +3135,7 @@
              <number>10</number>
             </property>
             <property name="maximum">
-             <number>300000</number>
+             <number>1000000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -2226,6 +3160,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_resetBALTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>reset</string>
             </property>
@@ -2233,11 +3209,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveBALTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as ASCII</string>
@@ -2246,11 +3258,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_BADQuickLT">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as DQuickLTFit project</string>
@@ -2259,6 +3307,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_openBADQuick">
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
@@ -2266,7 +3320,34 @@
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: blue</string>
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: blue;
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: blue;
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: blue;
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>open in DQuickLTFit</string>
@@ -2279,7 +3360,7 @@
       </widget>
       <widget class="QWidget" name="tab_5">
        <attribute name="title">
-        <string>Prompt/IRF</string>
+        <string>Spec (Prompt/IRF)</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_8">
         <item>
@@ -2323,6 +3404,12 @@
           </item>
           <item>
            <widget class="QLabel" name="label_52">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Fit Iterations</string>
             </property>
@@ -2425,6 +3512,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_CoincidenceFit">
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>fit Gaussian</string>
             </property>
@@ -2432,6 +3561,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_clearCoincidenceFitData">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>clear</string>
             </property>
@@ -2510,7 +3681,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_offsetCoincidence">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_offsetCoincidence">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2524,7 +3695,7 @@
              <double>0.010000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>2.000000000000000</double>
@@ -2545,7 +3716,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_scalerCoincidence">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_scalerCoincidence">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2559,7 +3730,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>2000.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -2580,7 +3751,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_chnCountCoincidence">
+           <widget class="DRS4SpinBox" name="spinBox_chnCountCoincidence">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2591,7 +3762,7 @@
              <number>10</number>
             </property>
             <property name="maximum">
-             <number>300000</number>
+             <number>1000000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -2617,6 +3788,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_resetCoincidenceLTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>reset</string>
             </property>
@@ -2624,11 +3837,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveCoincidenceLTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as ASCII</string>
@@ -2637,11 +3886,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_coincDQuickLT">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as DQuickLTFit project</string>
@@ -2650,6 +3935,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_openPromptDQuick">
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
@@ -2657,7 +3948,34 @@
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: blue</string>
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: blue;
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: blue;
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: blue;
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>open in DQuickLTFit</string>
@@ -2714,6 +4032,12 @@
           </item>
           <item>
            <widget class="QLabel" name="label_56">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Fit Iterations</string>
             </property>
@@ -2751,7 +4075,7 @@
              <string notr="true">color: blue</string>
             </property>
             <property name="text">
-             <string>t0 [ps]:</string>
+             <string>t&lt;sub&gt;0&lt;/sub&gt; [ps]:</string>
             </property>
            </widget>
           </item>
@@ -2816,6 +4140,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_MergedFit">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>fit Gaussian</string>
             </property>
@@ -2823,6 +4189,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_clearMergedFitData">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>clear</string>
             </property>
@@ -2900,12 +4308,12 @@
 </string>
             </property>
             <property name="text">
-             <string>Estimated ATS [ps]:</string>
+             <string>Est. ATS [ps]:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_meanCoincidence">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_meanCoincidence">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2934,7 +4342,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_offsetMerged">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_offsetMerged">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2948,7 +4356,7 @@
              <double>0.010000000000000</double>
             </property>
             <property name="maximum">
-             <double>200.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>2.000000000000000</double>
@@ -2969,7 +4377,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_scalerMerged">
+           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_scalerMerged">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -2983,7 +4391,7 @@
              <double>0.005000000000000</double>
             </property>
             <property name="maximum">
-             <double>2000.000000000000000</double>
+             <double>1000000.000000000000000</double>
             </property>
             <property name="value">
              <double>5.000000000000000</double>
@@ -3004,7 +4412,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_chnCountMerged">
+           <widget class="DRS4SpinBox" name="spinBox_chnCountMerged">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -3015,7 +4423,7 @@
              <number>10</number>
             </property>
             <property name="maximum">
-             <number>300000</number>
+             <number>1000000</number>
             </property>
             <property name="value">
              <number>4096</number>
@@ -3040,6 +4448,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_resetMergedLTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>reset</string>
             </property>
@@ -3047,11 +4497,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveMergedLTSpectrum">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as ASCII</string>
@@ -3060,11 +4546,47 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_mergedDQuickLT">
+            <property name="minimumSize">
+             <size>
+              <width>185</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>export as DQuickLTFit project</string>
@@ -3073,6 +4595,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_openMergedDQuickLT">
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="font">
              <font>
               <weight>75</weight>
@@ -3080,7 +4608,34 @@
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: blue</string>
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: blue;
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: blue;
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: blue;
+border-radius: 2;
+border-color: black;
+}</string>
             </property>
             <property name="text">
              <string>open in DQuickLTFit</string>
@@ -3116,6 +4671,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_resetT">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>reset</string>
             </property>
@@ -3123,6 +4720,48 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_saveT">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
             <property name="text">
              <string>save</string>
             </property>
@@ -3149,7 +4788,7 @@
            <string notr="true">color: blue</string>
           </property>
           <property name="text">
-           <string>These Plots show the Peak - Normalized Pulses shifted to a Reference Value (after applying all Filters/Corrections if enabled) which form the Liftime Spectra subsequently.</string>
+           <string>These graphs show the amplitude-normalized pulses shifted with respect to the CF-level timing point (= 0.0 ns), which form the resulting liftime spectra appearing in the tabs Spec(A-B), Spec(B-A) or Spec(Prompt/IRF).</string>
           </property>
          </widget>
         </item>
@@ -3167,7 +4806,7 @@
              <string notr="true">color: green</string>
             </property>
             <property name="text">
-             <string>enable Plot?</string>
+             <string>Show Plot ?</string>
             </property>
            </widget>
           </item>
@@ -3204,8 +4843,11 @@
                 <bold>true</bold>
                </font>
               </property>
+              <property name="styleSheet">
+               <string notr="true">color: dark-blue</string>
+              </property>
               <property name="text">
-               <string>using CFD - B as Reference?</string>
+               <string>Using CF Level Timing-Point of the opposite Branch B as Reference ?</string>
               </property>
              </widget>
             </item>
@@ -3223,7 +4865,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Left of Ref. Value [ns]: </string>
+                 <string>Left of Reference-Timing [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3255,7 +4897,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Right of Ref. Value [ns]: </string>
+                 <string>Right of Reference-Timing [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3293,6 +4935,48 @@
               </item>
               <item>
                <widget class="QPushButton" name="pushButton_resetPersistanceA">
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                </property>
                 <property name="text">
                  <string>reset</string>
                 </property>
@@ -3315,8 +4999,11 @@
                 <bold>true</bold>
                </font>
               </property>
+              <property name="styleSheet">
+               <string notr="true">color: dark-blue</string>
+              </property>
               <property name="text">
-               <string>using CFD - A as Reference?</string>
+               <string>Using CF Level Timing-Point of the opposite Branch A as Reference ?</string>
               </property>
              </widget>
             </item>
@@ -3340,7 +5027,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Left of Ref. Value [ns]: </string>
+                 <string>Left of Reference-Timing [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3363,7 +5050,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Right of Ref. Value [ns]: </string>
+                 <string>Right of Reference-Timing [ns]: </string>
                 </property>
                </widget>
               </item>
@@ -3392,6 +5079,48 @@
               </item>
               <item>
                <widget class="QPushButton" name="pushButton_resetPersistanceB">
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                </property>
                 <property name="text">
                  <string>reset</string>
                 </property>
@@ -3407,7 +5136,7 @@
       </widget>
       <widget class="QWidget" name="tab_Filter">
        <attribute name="title">
-        <string>Filter/Correction</string>
+        <string>Physical Filters</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_17">
         <item>
@@ -3422,14 +5151,14 @@
            <string notr="true">color: blue</string>
           </property>
           <property name="text">
-           <string>The Intrinsic Filters/Corrections are applied prior to the External Filters since they modify the acquired Waveform. Thus, the Plots in the Tabs of the External Filters are based on the modified Waveform. </string>
+           <string>Note: The intrinsic filters are applied prior to the external filters. Therefore, the graphs shown in the tabs of the external filters are based on the modified waveforms. </string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QTabWidget" name="tabWidget_7">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_22">
            <attribute name="title">
@@ -3445,7 +5174,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Note: The Baseline Correction is applied to the modified Waveform if the Median Filter is enabled.</string>
+               <string>Note: If the median-filter is activated, the baseline-correction and filter are applied to the modified waveform.</string>
               </property>
              </widget>
             </item>
@@ -3468,7 +5197,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>The Baseline - Filter can be applied to reject Pulses which significantly deviate from the CALCULATED to the SET Baseline.</string>
+                   <string>Activate the baseline-filter to reject pulses whose CALCULATED baseline deviates significantly from the SET baseline. Applying the baseline-filter requires activating the baseline correction.</string>
                   </property>
                  </widget>
                 </item>
@@ -3494,7 +5223,7 @@
                        <string notr="true">color: green</string>
                       </property>
                       <property name="text">
-                       <string>activate (A) ?</string>
+                       <string>Activated (A) ?</string>
                       </property>
                      </widget>
                     </item>
@@ -3524,7 +5253,7 @@
                             <string notr="true">color: blue</string>
                            </property>
                            <property name="text">
-                            <string>Start Cell [#]: </string>
+                            <string>Average ( Start-Cell [#] </string>
                            </property>
                           </widget>
                          </item>
@@ -3559,7 +5288,7 @@
                             <string notr="true">color: blue</string>
                            </property>
                            <property name="text">
-                            <string>Cell Region [#]:</string>
+                            <string>: Cell-Region [#]</string>
                            </property>
                           </widget>
                          </item>
@@ -3571,8 +5300,30 @@
                              <height>30</height>
                             </size>
                            </property>
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_145">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">color: blue</string>
+                           </property>
+                           <property name="text">
+                            <string>)</string>
                            </property>
                           </widget>
                          </item>
@@ -3601,11 +5352,17 @@
                          </font>
                         </property>
                         <property name="title">
-                         <string>SET Baseline</string>
+                         <string>SET Baseline/Offset</string>
                         </property>
                         <layout class="QHBoxLayout" name="horizontalLayout_54">
                          <item>
                           <widget class="QLabel" name="label_131">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
                            </property>
@@ -3621,6 +5378,12 @@
                              <width>0</width>
                              <height>30</height>
                             </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
                            </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
@@ -3659,11 +5422,17 @@
                       <layout class="QHBoxLayout" name="horizontalLayout_57">
                        <item>
                         <widget class="QLabel" name="label_132">
+                         <property name="font">
+                          <font>
+                           <weight>75</weight>
+                           <bold>true</bold>
+                          </font>
+                         </property>
                          <property name="styleSheet">
                           <string notr="true">color: blue</string>
                          </property>
                          <property name="text">
-                          <string>Max. Deviation between CALCULATED and SET Baseline [%]: </string>
+                          <string>Max. allowed Deviation between CALCULATED and SET Baseline [%]: </string>
                          </property>
                         </widget>
                        </item>
@@ -3674,6 +5443,12 @@
                            <width>0</width>
                            <height>30</height>
                           </size>
+                         </property>
+                         <property name="font">
+                          <font>
+                           <weight>75</weight>
+                           <bold>true</bold>
+                          </font>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">color: blue</string>
@@ -3692,7 +5467,7 @@
                           <string notr="true">color: green</string>
                          </property>
                          <property name="text">
-                          <string>reject Pulses if the given Limit is exceeded?</string>
+                          <string>Reject Pulses if the given Limit is exceeded ?</string>
                          </property>
                         </widget>
                        </item>
@@ -3744,7 +5519,7 @@
                        <string notr="true">color: green</string>
                       </property>
                       <property name="text">
-                       <string>activate (B) ?</string>
+                       <string>Activated (B) ?</string>
                       </property>
                      </widget>
                     </item>
@@ -3764,11 +5539,17 @@
                         <layout class="QHBoxLayout" name="horizontalLayout_59">
                          <item>
                           <widget class="QLabel" name="label_134">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
                            </property>
                            <property name="text">
-                            <string>Start Cell [#]: </string>
+                            <string>Average ( Start-Cell [#] </string>
                            </property>
                           </widget>
                          </item>
@@ -3780,6 +5561,12 @@
                              <height>30</height>
                             </size>
                            </property>
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
                            </property>
@@ -3787,11 +5574,17 @@
                          </item>
                          <item>
                           <widget class="QLabel" name="label_135">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
                            </property>
                            <property name="text">
-                            <string>Cell Region [#]:</string>
+                            <string>: Cell-Region [#]</string>
                            </property>
                           </widget>
                          </item>
@@ -3803,8 +5596,30 @@
                              <height>30</height>
                             </size>
                            </property>
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_146">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">color:blue</string>
+                           </property>
+                           <property name="text">
+                            <string>)</string>
                            </property>
                           </widget>
                          </item>
@@ -3833,11 +5648,17 @@
                          </font>
                         </property>
                         <property name="title">
-                         <string>SET Baseline</string>
+                         <string>SET Baseline/Offset</string>
                         </property>
                         <layout class="QHBoxLayout" name="horizontalLayout_60">
                          <item>
                           <widget class="QLabel" name="label_136">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
                            </property>
@@ -3853,6 +5674,12 @@
                              <width>0</width>
                              <height>30</height>
                             </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
                            </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
@@ -3891,11 +5718,17 @@
                       <layout class="QHBoxLayout" name="horizontalLayout_58">
                        <item>
                         <widget class="QLabel" name="label_133">
+                         <property name="font">
+                          <font>
+                           <weight>75</weight>
+                           <bold>true</bold>
+                          </font>
+                         </property>
                          <property name="styleSheet">
                           <string notr="true">color: blue</string>
                          </property>
                          <property name="text">
-                          <string>Max. Deviation between CALCULATED and SET Baseline [%]: </string>
+                          <string>Max. allowed Deviation between CALCULATED and SET Baseline [%]: </string>
                          </property>
                         </widget>
                        </item>
@@ -3906,6 +5739,12 @@
                            <width>0</width>
                            <height>30</height>
                           </size>
+                         </property>
+                         <property name="font">
+                          <font>
+                           <weight>75</weight>
+                           <bold>true</bold>
+                          </font>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">color: blue</string>
@@ -3924,7 +5763,7 @@
                           <string notr="true">color: green</string>
                          </property>
                          <property name="text">
-                          <string>reject Pulses if the given Limit is exceeded?</string>
+                          <string>Reject Pulses if the given Limit is exceeded ?</string>
                          </property>
                         </widget>
                        </item>
@@ -3965,7 +5804,7 @@
               </widget>
               <widget class="QWidget" name="tab_25">
                <attribute name="title">
-                <string>Median  Filter (Spike Removal)</string>
+                <string>Median  Filter (Spike Removal &amp;&amp; Noise Reduction)</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_29">
                 <item>
@@ -3977,7 +5816,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>The Median - Filter is almost helpful to remove Spikes.</string>
+                   <string>Activate the median-filter to remove frequently occurring spikes within the sweep and/or to reduce the signal noise. Note: The window-size should be an odd value such as 3, 5 or 7.</string>
                   </property>
                  </widget>
                 </item>
@@ -4010,7 +5849,7 @@
 </string>
                       </property>
                       <property name="text">
-                       <string>activate (A) ?</string>
+                       <string>Activated (A) ?</string>
                       </property>
                      </widget>
                     </item>
@@ -4034,7 +5873,7 @@
                             <string notr="true">color: blue</string>
                            </property>
                            <property name="text">
-                            <string>Window Size [Sample Points]:</string>
+                            <string>Window-Size [Sample Points]:</string>
                            </property>
                           </widget>
                          </item>
@@ -4052,8 +5891,27 @@
                              <height>28</height>
                             </size>
                            </property>
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_147">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>(Note: The Window-Size should be an odd value such as 3, 5, 7, ...)</string>
                            </property>
                           </widget>
                          </item>
@@ -4108,7 +5966,7 @@
 </string>
                       </property>
                       <property name="text">
-                       <string>activate (B) ?</string>
+                       <string>Activated (B) ?</string>
                       </property>
                      </widget>
                     </item>
@@ -4132,7 +5990,7 @@
                             <string notr="true">color: blue</string>
                            </property>
                            <property name="text">
-                            <string>Window Size [Sample Points]:</string>
+                            <string>Window-Size [Sample Points]:</string>
                            </property>
                           </widget>
                          </item>
@@ -4150,8 +6008,27 @@
                              <height>28</height>
                             </size>
                            </property>
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">color: blue</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_148">
+                           <property name="font">
+                            <font>
+                             <weight>75</weight>
+                             <bold>true</bold>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>(Note: The Window-Size should be an odd value such as 3, 5, 7, ...)</string>
                            </property>
                           </widget>
                          </item>
@@ -4210,7 +6087,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Note: The External Filters are applied in OR - Logic.   </string>
+               <string>Note: All external filters are applied in OR-logic, which means that a rejection triggered by one activated filter discards the respective event.   </string>
               </property>
              </widget>
             </item>
@@ -4233,7 +6110,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>The Area - Filter is almost helpful to reject Pile - Up Events. The Area is calculated over the ROI (Region of Interest - see Signal Scope).</string>
+                   <string>Activate the area-filter to reject events, which display multiple occurences of pulses within the sweep and/or indicate pulses that are piled-up. Note: The area is calculated with respect to the set ROI (Region-of-Interest defined in the tab 'Signal Scope').</string>
                   </property>
                  </widget>
                 </item>
@@ -4251,7 +6128,7 @@
                      <string notr="true">color: green</string>
                     </property>
                     <property name="text">
-                     <string>activate (A &amp;&amp; B) ?</string>
+                     <string>Activated (A &amp;&amp; B) ?</string>
                     </property>
                    </widget>
                   </item>
@@ -4267,7 +6144,7 @@
                      <string notr="true">color: green</string>
                     </property>
                     <property name="text">
-                     <string>enable Plot (A &amp;&amp; B) ?</string>
+                     <string>Show Plots (A &amp;&amp; B) ?</string>
                     </property>
                    </widget>
                   </item>
@@ -4316,7 +6193,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Area-Binning Cnt. [#]:</string>
+                         <string>No. of Bins [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -4340,16 +6217,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_23">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QLabel" name="label_67">
                         <property name="font">
                          <font>
@@ -4358,7 +6225,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Normalization:</string>
+                         <string>Norm.:</string>
                         </property>
                        </widget>
                       </item>
@@ -4396,19 +6263,25 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>[%] of Full-Area [1024Chn*500mV]</string>
+                         <string>[% of Area (= 1024 Chn x 500 mV)]</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_25">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
+                       <spacer name="horizontalSpacer_47">
                         <property name="orientation">
-                         <enum>Qt::Vertical</enum>
+                         <enum>Qt::Horizontal</enum>
                         </property>
-                       </widget>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
                       </item>
                       <item>
                        <layout class="QVBoxLayout" name="verticalLayout_20">
@@ -4424,7 +6297,7 @@
                            <string notr="true">color: red</string>
                           </property>
                           <property name="text">
-                           <string>upper:</string>
+                           <string>Upper Bounding:</string>
                           </property>
                          </widget>
                         </item>
@@ -4436,7 +6309,7 @@
                              <string notr="true">color: red</string>
                             </property>
                             <property name="text">
-                             <string>left: </string>
+                             <string>Axis Left:</string>
                             </property>
                            </widget>
                           </item>
@@ -4471,7 +6344,7 @@
                              <string notr="true">color: red</string>
                             </property>
                             <property name="text">
-                             <string>right: </string>
+                             <string>Axis Right:</string>
                             </property>
                            </widget>
                           </item>
@@ -4514,7 +6387,7 @@
                            <string notr="true">color: green</string>
                           </property>
                           <property name="text">
-                           <string>lower:</string>
+                           <string>Lower Bounding:</string>
                           </property>
                          </widget>
                         </item>
@@ -4526,7 +6399,7 @@
                              <string notr="true">color: green</string>
                             </property>
                             <property name="text">
-                             <string>left: </string>
+                             <string>Axis Left:</string>
                             </property>
                            </widget>
                           </item>
@@ -4561,7 +6434,7 @@
                              <string notr="true">color: green</string>
                             </property>
                             <property name="text">
-                             <string>right: </string>
+                             <string>Axis Right:</string>
                             </property>
                            </widget>
                           </item>
@@ -4595,6 +6468,51 @@
                        </layout>
                       </item>
                       <item>
+                       <spacer name="horizontalSpacer_49">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_139">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">color: blue</string>
+                        </property>
+                        <property name="text">
+                         <string>No. of Collected Data inside Boundings [#]:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_areaCollectedCountsA">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>0</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <spacer name="horizontalSpacer_25">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
@@ -4608,7 +6526,98 @@
                        </spacer>
                       </item>
                       <item>
+                       <widget class="QPushButton" name="pushButton_saveAreaCollectionA">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>save</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="pushButton_resetAreaFilterA">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
                         <property name="text">
                          <string>reset</string>
                         </property>
@@ -4637,7 +6646,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Area-Binning Cnt. [#]:</string>
+                         <string>No. of Bins [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -4661,16 +6670,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_31">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QLabel" name="label_105">
                         <property name="font">
                          <font>
@@ -4679,7 +6678,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Normalization:</string>
+                         <string>Norm.:</string>
                         </property>
                        </widget>
                       </item>
@@ -4717,19 +6716,25 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>[%] of Full-Area [1024Chn*500mV]</string>
+                         <string>[% of Area (= 1024 Chn x 500 mV)]</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_32">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
+                       <spacer name="horizontalSpacer_48">
                         <property name="orientation">
-                         <enum>Qt::Vertical</enum>
+                         <enum>Qt::Horizontal</enum>
                         </property>
-                       </widget>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
                       </item>
                       <item>
                        <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -4745,7 +6750,7 @@
                            <string notr="true">color: red</string>
                           </property>
                           <property name="text">
-                           <string>upper:</string>
+                           <string>Upper Bounding:</string>
                           </property>
                          </widget>
                         </item>
@@ -4757,7 +6762,7 @@
                              <string notr="true">color: red</string>
                             </property>
                             <property name="text">
-                             <string>left: </string>
+                             <string>Axis Left:</string>
                             </property>
                            </widget>
                           </item>
@@ -4792,7 +6797,7 @@
                              <string notr="true">color: red</string>
                             </property>
                             <property name="text">
-                             <string>right: </string>
+                             <string>Axis Right:</string>
                             </property>
                            </widget>
                           </item>
@@ -4835,7 +6840,7 @@
                            <string notr="true">color: green</string>
                           </property>
                           <property name="text">
-                           <string>lower:</string>
+                           <string>Lower Bounding:</string>
                           </property>
                          </widget>
                         </item>
@@ -4847,7 +6852,7 @@
                              <string notr="true">color: green</string>
                             </property>
                             <property name="text">
-                             <string>left: </string>
+                             <string>Left Axis:</string>
                             </property>
                            </widget>
                           </item>
@@ -4882,7 +6887,7 @@
                              <string notr="true">color: green</string>
                             </property>
                             <property name="text">
-                             <string>right: </string>
+                             <string>Right Axis:</string>
                             </property>
                            </widget>
                           </item>
@@ -4916,6 +6921,52 @@
                        </layout>
                       </item>
                       <item>
+                       <spacer name="horizontalSpacer_50">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_140">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">color: blue
+</string>
+                        </property>
+                        <property name="text">
+                         <string>No. of Collected Data inside Boundings [#]:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_areaCollectedCountsB">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>0</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <spacer name="horizontalSpacer_32">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
@@ -4929,7 +6980,98 @@
                        </spacer>
                       </item>
                       <item>
+                       <widget class="QPushButton" name="pushButton_saveAreaCollectionB">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>save</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="pushButton_resetAreaFilterB_2">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
                         <property name="text">
                          <string>reset</string>
                         </property>
@@ -4945,7 +7087,7 @@
               </widget>
               <widget class="QWidget" name="tab_34">
                <attribute name="title">
-                <string>CFD - Rise Time Filter</string>
+                <string>Rise Time (10% to 90%) Filter</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_30">
                 <item>
@@ -4957,7 +7099,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>The CFD - Rise Time Filter displays the distribution of the calculated Time Differences between the CFD Level and Peak - Maximum. Normally, this Time Difference should be well distributed. If not, apply this Filter.</string>
+                   <string>These graphs show the distributions of the time needed to rise from 10% to 90% of the pulse-amplitude, i.e. the rise-time distribution. Usually, the rise-time should be well distributed. If not, apply the rise-time filter.</string>
                   </property>
                  </widget>
                 </item>
@@ -4975,7 +7117,7 @@
                      <string notr="true">color: green</string>
                     </property>
                     <property name="text">
-                     <string>activate (A &amp;&amp; B) ?</string>
+                     <string>Activated (A &amp;&amp; B) ?</string>
                     </property>
                    </widget>
                   </item>
@@ -4991,7 +7133,7 @@
                      <string notr="true">color: green</string>
                     </property>
                     <property name="text">
-                     <string>enable Plot (A &amp;&amp; B) ?</string>
+                     <string>Show Plots (A &amp;&amp; B) ?</string>
                     </property>
                    </widget>
                   </item>
@@ -5034,7 +7176,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Time-Scale [ns]:</string>
+                         <string>Time-Range [ns]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5064,16 +7206,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_28">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QLabel" name="label_92">
                         <property name="font">
                          <font>
@@ -5082,7 +7214,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Rise-Time Binning Cnt. [#]:</string>
+                         <string>No. of Bins [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5118,7 +7250,7 @@
 </string>
                         </property>
                         <property name="text">
-                         <string>channel width [ns]:</string>
+                         <string>Channel-Width: [ns]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5139,16 +7271,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_27">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QLabel" name="label_94">
                         <property name="font">
                          <font>
@@ -5160,7 +7282,7 @@
                          <string notr="true">color: red</string>
                         </property>
                         <property name="text">
-                         <string>left [#]:</string>
+                         <string>LL [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5199,7 +7321,7 @@
                          <string notr="true">color: green</string>
                         </property>
                         <property name="text">
-                         <string>right [#]:</string>
+                         <string>UL [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5237,7 +7359,7 @@
                          <string notr="true">color: blue</string>
                         </property>
                         <property name="text">
-                         <string>window region [ns]:</string>
+                         <string>Accepted Region [ns]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5271,7 +7393,98 @@
                        </spacer>
                       </item>
                       <item>
+                       <widget class="QPushButton" name="pushButton_saveRiseTimeA">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>save</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="pushButton_resetRiseTimeFilterA">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
                         <property name="text">
                          <string>reset</string>
                         </property>
@@ -5300,7 +7513,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Time-Scale [ns]:</string>
+                         <string>Time-Range [ns]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5330,16 +7543,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_29">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QLabel" name="label_97">
                         <property name="font">
                          <font>
@@ -5348,7 +7551,7 @@
                          </font>
                         </property>
                         <property name="text">
-                         <string>Rise-Time Binning Cnt. [#]:</string>
+                         <string>No. of Bins [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5384,7 +7587,7 @@
 </string>
                         </property>
                         <property name="text">
-                         <string>channel width [ns]:</string>
+                         <string>Channel-Width: [ns]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5405,16 +7608,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="Line" name="line_30">
-                        <property name="frameShadow">
-                         <enum>QFrame::Plain</enum>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QLabel" name="label_98">
                         <property name="font">
                          <font>
@@ -5426,7 +7619,7 @@
                          <string notr="true">color: red</string>
                         </property>
                         <property name="text">
-                         <string>left [#]:</string>
+                         <string>LL [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5465,7 +7658,7 @@
                          <string notr="true">color: green</string>
                         </property>
                         <property name="text">
-                         <string>right [#]:</string>
+                         <string>UL [#]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5503,7 +7696,7 @@
                          <string notr="true">color: blue</string>
                         </property>
                         <property name="text">
-                         <string>window region [ns]:</string>
+                         <string>Accepted Region [ns]:</string>
                         </property>
                        </widget>
                       </item>
@@ -5537,7 +7730,98 @@
                        </spacer>
                       </item>
                       <item>
+                       <widget class="QPushButton" name="pushButton_saveRiseTimeB">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>save</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="pushButton_resetRiseTimeFilterB">
+                        <property name="minimumSize">
+                         <size>
+                          <width>120</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+                        </property>
                         <property name="text">
                          <string>reset</string>
                         </property>
@@ -5565,7 +7849,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Note: The record of the Pulse Shape Filter is based on the filtered Pulses (if applied) which form the Lifetime Spectrum subsequently.  </string>
+                   <string>The records of the pulse-shape filter are based on the prior filtered pulses, which contribute to the resulting lifetime spectra.  </string>
                   </property>
                  </widget>
                 </item>
@@ -5583,7 +7867,7 @@
                      <string notr="true">color: blue</string>
                     </property>
                     <property name="text">
-                     <string>record scheme:</string>
+                     <string>Record-Scheme (distinguish between START and STOP Events):</string>
                     </property>
                    </widget>
                   </item>
@@ -5639,7 +7923,7 @@
                      <string notr="true">color: green</string>
                     </property>
                     <property name="text">
-                     <string>activate (A) ?</string>
+                     <string>Activated (A) ?</string>
                     </property>
                    </widget>
                   </item>
@@ -5691,7 +7975,7 @@
                      </font>
                     </property>
                     <property name="text">
-                     <string>Number of Pulses:</string>
+                     <string>Number of Pulses [#]:</string>
                     </property>
                    </widget>
                   </item>
@@ -5788,11 +8072,47 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="pushButton_shapeFilterCalcA">
+                    <property name="minimumSize">
+                     <size>
+                      <width>120</width>
+                      <height>30</height>
+                     </size>
+                    </property>
                     <property name="font">
                      <font>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
                     </property>
                     <property name="text">
                      <string>calculate (0)</string>
@@ -5828,7 +8148,7 @@
                      <string notr="true">color: green</string>
                     </property>
                     <property name="text">
-                     <string>activate (B) ?</string>
+                     <string>Activated (B) ?</string>
                     </property>
                    </widget>
                   </item>
@@ -5880,7 +8200,7 @@
                      </font>
                     </property>
                     <property name="text">
-                     <string>Number of Pulses:</string>
+                     <string>Number of Pulses [#]:</string>
                     </property>
                    </widget>
                   </item>
@@ -5977,11 +8297,47 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="pushButton_shapeFilterCalcB">
+                    <property name="minimumSize">
+                     <size>
+                      <width>120</width>
+                      <height>30</height>
+                     </size>
+                    </property>
                     <property name="font">
                      <font>
                       <weight>75</weight>
                       <bold>true</bold>
                      </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
                     </property>
                     <property name="text">
                      <string>calculate (0)</string>
@@ -6021,7 +8377,7 @@
                          </font>
                         </property>
                         <property name="title">
-                         <string>Visualization ROI</string>
+                         <string>ROI of Visualization</string>
                         </property>
                         <property name="flat">
                          <bool>false</bool>
@@ -6367,7 +8723,7 @@
                          </font>
                         </property>
                         <property name="title">
-                         <string>Visualization ROI</string>
+                         <string>ROI of Visualization</string>
                         </property>
                         <property name="flat">
                          <bool>false</bool>
@@ -6773,12 +9129,13 @@
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1457</width>
+     <width>1513</width>
      <height>20</height>
     </rect>
    </property>
@@ -6832,38 +9189,20 @@
     </property>
     <addaction name="actionInfo"/>
    </widget>
-   <widget class="QMenu" name="menuDoppler_Plugin">
-    <property name="title">
-     <string>Doppler-Plugin</string>
-    </property>
-    <addaction name="actionOpen_2"/>
-   </widget>
    <widget class="QMenu" name="menuCalculator">
     <property name="title">
      <string>Calculator</string>
     </property>
     <addaction name="actionOpen_calculator"/>
    </widget>
-   <widget class="QMenu" name="menuUpdates">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="title">
-     <string>Updates</string>
-    </property>
-    <addaction name="actionCheck_for_Updates_of_DDRS4PALS"/>
-   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuScript"/>
    <addaction name="menuTrigger_Source"/>
    <addaction name="menuDRS4_Board_Information"/>
    <addaction name="menuAdditional_Information"/>
-   <addaction name="menuDoppler_Plugin"/>
    <addaction name="menuCalculator"/>
    <addaction name="menuAbout"/>
-   <addaction name="menuUpdates"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="action_StartDAQStreaming">
    <property name="checkable">
     <bool>false</bool>
@@ -7057,6 +9396,16 @@
    <extends>QWidget</extends>
    <header location="global">GUI/drs4cfdalgorithmdlg.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DRS4DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header location="global">GUI/drs4doublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DRS4SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header location="global">GUI/drs4spinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

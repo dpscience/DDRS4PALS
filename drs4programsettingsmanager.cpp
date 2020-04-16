@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 
 #include "drs4programsettingsmanager.h"
 
-DRS4ProgramSettingsManager *__sharedInstanceProgramSettingsManager = nullptr;
+static DRS4ProgramSettingsManager *__sharedInstanceProgramSettingsManager = nullptr;
 
 DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
 {
@@ -66,6 +66,11 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
     m_lastPHSSaveFilePathNode = new DSimpleXMLNode("PHSDataFile-path");
     m_lastPHSSaveFilePathNode->setValue("/home");
 
+    m_lastRiseTimeDistrPathNode = new DSimpleXMLNode("RiseTimeDistributionDataFile-path");
+    m_lastRiseTimeDistrPathNode->setValue("/home");
+
+    m_lastAreaDistrPathNode = new DSimpleXMLNode("AreaDistributionDataFile-path");
+    m_lastAreaDistrPathNode->setValue("/home");
 
     m_multicoreThreadingParentNode = new DSimpleXMLNode("multicore-threading");
 
@@ -85,7 +90,9 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
                     << m_lastSaveScriptFilePathNode
                     << m_lastSaveLogFilePathNode
                     << m_lastSaveTProfileFilePathNode
-                    << m_lastPHSSaveFilePathNode;
+                    << m_lastPHSSaveFilePathNode
+                    << m_lastRiseTimeDistrPathNode
+                    << m_lastAreaDistrPathNode;
 
     (*m_multicoreThreadingParentNode) << m_enableMulticoreThreadingNode
                     << m_pulsePairChunkSizeNode;
@@ -133,6 +140,8 @@ bool DRS4ProgramSettingsManager::load()
         m_lastSaveLogFilePathNode->setValue("/home");
         m_lastSaveTProfileFilePathNode->setValue("/home");
         m_lastPHSSaveFilePathNode->setValue("/home");
+        m_lastRiseTimeDistrPathNode->setValue("/home");
+        m_lastAreaDistrPathNode->setValue("/home");
         m_enableMulticoreThreadingNode->setValue(false);
         m_pulsePairChunkSizeNode->setValue(1);
 
@@ -154,6 +163,8 @@ bool DRS4ProgramSettingsManager::load()
         m_lastSaveLogFilePathNode->setValue("/home");
         m_lastSaveTProfileFilePathNode->setValue("/home");
         m_lastPHSSaveFilePathNode->setValue("/home");
+        m_lastRiseTimeDistrPathNode->setValue("/home");
+        m_lastAreaDistrPathNode->setValue("/home");
         m_enableMulticoreThreadingNode->setValue(false);
         m_pulsePairChunkSizeNode->setValue(1);
 
@@ -225,6 +236,18 @@ bool DRS4ProgramSettingsManager::load()
        m_lastPHSSaveFilePathNode->setValue(pathPHSSavePath);
    else
        m_lastPHSSaveFilePathNode->setValue("/home");
+
+   const QString pathRiseTimeDistrSavePath = pTag.getValueAt(m_lastRiseTimeDistrPathNode, &ok).toString();
+   if ( ok )
+       m_lastRiseTimeDistrPathNode->setValue(pathRiseTimeDistrSavePath);
+   else
+       m_lastRiseTimeDistrPathNode->setValue("/home");
+
+   const QString pathAreaDistrSavePath = pTag.getValueAt(m_lastAreaDistrPathNode, &ok).toString();
+   if ( ok )
+       m_lastAreaDistrPathNode->setValue(pathAreaDistrSavePath);
+   else
+       m_lastAreaDistrPathNode->setValue("/home");
 
    const DSimpleXMLTag pTagMulticoreThreading = pTag.getTag(m_multicoreThreadingParentNode, &ok);
 
@@ -327,6 +350,22 @@ void DRS4ProgramSettingsManager::setSavePHSDataFilePath(const QString &path)
     QMutexLocker locker(&m_mutex);
 
     m_lastPHSSaveFilePathNode->setValue(path);
+    save();
+}
+
+void DRS4ProgramSettingsManager::setSaveRiseTimeDistributionDataFilePath(const QString &path)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_lastRiseTimeDistrPathNode->setValue(path);
+    save();
+}
+
+void DRS4ProgramSettingsManager::setSaveAreaDistributionDataFilePath(const QString &path)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_lastAreaDistrPathNode->setValue(path);
     save();
 }
 
@@ -447,6 +486,22 @@ QString DRS4ProgramSettingsManager::savePHSDataFilePath()
 
     load();
     return m_lastPHSSaveFilePathNode->getValue().toString();
+}
+
+QString DRS4ProgramSettingsManager::saveRiseTimeDistributionDataFilePath()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_lastRiseTimeDistrPathNode->getValue().toString();
+}
+
+QString DRS4ProgramSettingsManager::saveAreaDistributionDataFilePath()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_lastAreaDistrPathNode->getValue().toString();
 }
 
 bool DRS4ProgramSettingsManager::isMulticoreThreadingEnabled()

@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -471,17 +471,11 @@ void DRS4Worker::resetPHSB()
 void DRS4Worker::resetPulseA()
 {
     m_pListChannelA.clear();
-#ifdef __DEPRECATED_WORKER
-    m_pListChannelASpline.clear();
-#endif
 }
 
 void DRS4Worker::resetPulseB()
 {
     m_pListChannelB.clear();
-#ifdef __DEPRECATED_WORKER
-    m_pListChannelBSpline.clear();
-#endif
 }
 
 void DRS4Worker::resetPulseSplines()
@@ -566,6 +560,10 @@ void DRS4Worker::resetAreaFilterA()
 
     m_areaFilterACounter = 0;
     m_areaFilterDataA.fill(QPointF(-1, -1), 5000);
+
+    m_areaFilterCollectedACounter = 0;
+    m_areaFilterCollectedDataA.fill(QPointF(0.0, 0.0), kNumberOfBins);
+    m_areaFilterCollectedDataCounterA.fill(0, kNumberOfBins);
 }
 
 void DRS4Worker::resetAreaFilterB()
@@ -574,6 +572,10 @@ void DRS4Worker::resetAreaFilterB()
 
     m_areaFilterBCounter = 0;
     m_areaFilterDataB.fill(QPointF(-1, -1), 5000);
+
+    m_areaFilterCollectedBCounter = 0;
+    m_areaFilterCollectedDataB.fill(QPointF(0.0, 0.0), kNumberOfBins);
+    m_areaFilterCollectedDataCounterB.fill(0, kNumberOfBins);
 }
 
 QVector<QPointF> *DRS4Worker::areaFilterAData()
@@ -588,6 +590,48 @@ QVector<QPointF> *DRS4Worker::areaFilterBData()
     QMutexLocker locker(&m_mutex);
 
     return &m_areaFilterDataB;
+}
+
+QVector<QPointF> *DRS4Worker::areaFilterACollectedData()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_areaFilterCollectedDataA;
+}
+
+QVector<int> *DRS4Worker::cntsAreaFilterACollectedData()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_areaFilterCollectedDataCounterA;
+}
+
+QVector<QPointF> *DRS4Worker::areaFilterBCollectedData()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_areaFilterCollectedDataB;
+}
+
+QVector<int> *DRS4Worker::cntsAreaFilterBCollectedData()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_areaFilterCollectedDataCounterB;
+}
+
+int DRS4Worker::countsCollectedInAreaFilterA()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_areaFilterCollectedACounter;
+}
+
+int DRS4Worker::countsCollectedInAreaFilterB()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_areaFilterCollectedBCounter;
 }
 
 void DRS4Worker::resetRiseTimeFilterA()
@@ -975,943 +1019,6 @@ void DRS4Worker::run()
         runSingleThreaded();
 }
 
-#ifdef __DEPRECATED_WORKER
-void DRS4Worker::runSingleThreaded()
-{
-    const int sizeOfWave = sizeof(float)*kNumberOfBins;
-    const int sizeOfFloat = sizeof(float);
-
-    m_isBlocking = false;
-    m_isRunning = true;
-
-    DRS4LifetimeData ltData;
-    DRS4FilterData dataF;
-
-    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino();
-
-    time_t start;
-    time_t stop;
-
-    time(&start);
-    time(&stop);
-
-    forever {
-        if ( !m_isRunning ) {
-            m_isBlocking = false;
-
-            return;
-        }
-
-        if ( !DRS4SettingsManager::sharedInstance()->ignoreBusyState() ) {
-            if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
-                while ( !DRS4BoardManager::sharedInstance()->currentBoard()->IsEventAvailable() ) {
-                    while ( !nextSignal() ) {
-                        m_isBlocking = true;
-                    }
-                }
-            }
-        }
-
-        while ( !nextSignal() ) {
-            m_isBlocking = true;
-        }
-
-        m_isBlocking = false;
-
-        if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
-            try {
-                 // just 2 waves are necessary! Place them next to each other like (Chn1 & Chn2) to reduce sampling!
-                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 2);
-            }
-            catch (...) {
-                continue;
-            }
-        }
-
-        float tChannel0[kNumberOfBins] = {0};
-        float tChannel1[kNumberOfBins] = {0};
-
-        float waveChannel0[kNumberOfBins] = {0};
-        float waveChannel1[kNumberOfBins] = {0};
-
-        std::fill(tChannel0, tChannel0 + sizeof(tChannel0)/sizeOfFloat, 0);
-        std::fill(tChannel1, tChannel1 + sizeof(tChannel1)/sizeOfFloat, 0);
-
-        std::fill(waveChannel0, waveChannel0 + sizeof(waveChannel0)/sizeOfFloat, 0);
-        std::fill(waveChannel1, waveChannel1 + sizeof(waveChannel1)/sizeOfFloat, 0);
-
-        if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
-            int retState = 1;
-            int retStateT = 1;
-            int retStateV = kSuccess;
-
-            try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel0);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
-                continue;
-            }
-
-            if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
-                continue;
-            }
-
-            try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel1);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
-                continue;
-            }
-
-            if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
-                continue;
-            }
-
-            try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, waveChannel0);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
-                continue;
-            }
-
-            if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
-                continue;
-            }
-
-            try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, waveChannel1);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
-                continue;
-            }
-
-            if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
-                continue;
-            }
-
-            try {
-                retState = DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino(); // returns always 1.
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
-            }
-        }
-        else {
-            if ( !DRS4BoardManager::sharedInstance()->usingStreamDataOnDemoMode() ) {
-                if ( !DRS4PulseGenerator::sharedInstance()->receiveGeneratedPulsePair(tChannel0, waveChannel0, tChannel1, waveChannel1) )
-                    continue;
-            }
-            else {
-                if ( !DRS4StreamDataLoader::sharedInstance()->isArmed() )
-                    continue;
-
-                if ( !DRS4StreamDataLoader::sharedInstance()->receiveGeneratedPulsePair(tChannel0, waveChannel0, tChannel1, waveChannel1) ) {
-                    DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
-                    continue;
-                }
-            }
-        }
-
-        //clear pulse-data:
-        if ( !DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
-            resetPulseA();
-            resetPulseB();
-        }
-
-        //statistics:
-        time(&stop);
-        const double diffTime = difftime(stop, start);
-        if ( diffTime >= 1.0f ) {
-            m_currentPulseCountRateInSeconds = ((double)m_pulseCounterCnt)/diffTime;
-            m_summedPulseCountRateInSeconds += m_currentPulseCountRateInSeconds;
-            m_avgPulseCountRateInSeconds = (m_pulseCounterCntAvg==0)?m_currentPulseCountRateInSeconds:(m_summedPulseCountRateInSeconds/(double)m_pulseCounterCntAvg);
-
-            m_currentABSpecCountRateInSeconds = ((m_specABCounterCnt==0)?0:((double)m_specABCounterCnt)/diffTime);
-            m_summedABSpecCountRateInSeconds += m_currentABSpecCountRateInSeconds;
-            m_avgABSpecCountRateInSeconds = (m_specABCounterCntAvg==0)?m_currentABSpecCountRateInSeconds:(m_summedABSpecCountRateInSeconds/(double)m_specABCounterCntAvg);
-
-            m_currentBASpecCountRateInSeconds = ((m_specBACounterCnt==0)?0:((double)m_specBACounterCnt)/diffTime);
-            m_summedBASpecCountRateInSeconds += m_currentBASpecCountRateInSeconds;
-            m_avgBASpecCountRateInSeconds = (m_specBACounterCntAvg==0)?m_currentBASpecCountRateInSeconds:(m_summedBASpecCountRateInSeconds/(double)m_specBACounterCntAvg);
-
-            m_currentMergedSpecCountRateInSeconds = ((m_specMergedCounterCnt==0)?0:((double)m_specMergedCounterCnt)/diffTime);
-            m_summedMergedSpecCountRateInSeconds += m_currentMergedSpecCountRateInSeconds;
-            m_avgMergedSpecCountRateInSeconds = (m_specMergedCounterCntAvg==0)?m_currentMergedSpecCountRateInSeconds:(m_summedMergedSpecCountRateInSeconds/(double)m_specMergedCounterCntAvg);
-
-            m_currentCoincidenceSpecCountRateInSeconds = ((m_specCoincidenceCounterCnt==0)?0:((double)m_specCoincidenceCounterCnt)/diffTime);
-            m_summedCoincidenceSpecCountRateInSeconds += m_currentCoincidenceSpecCountRateInSeconds;
-            m_avgCoincidenceSpecCountRateInSeconds = (m_specCoincidencCounterCntAvg==0)?m_currentCoincidenceSpecCountRateInSeconds:(m_summedCoincidenceSpecCountRateInSeconds/(double)m_specCoincidencCounterCntAvg);
-
-            time(&start);
-
-            m_pulseCounterCnt = 0;
-            m_pulseCounterCntAvg ++;
-
-            m_specABCounterCnt = 0;
-            m_specBACounterCnt = 0;
-            m_specMergedCounterCnt = 0;
-            m_specCoincidenceCounterCnt = 0;
-
-            m_specABCounterCntAvg ++;
-            m_specBACounterCntAvg ++;
-            m_specMergedCounterCntAvg ++;
-            m_specCoincidencCounterCntAvg ++;
-        }
-
-        m_pulseCounterCnt ++;
-
-        float xMinA = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
-        float xMaxA = 0.0f;
-
-        float xMinB = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
-        float xMaxB = 0.0f;
-
-        float yMinA = 500.0f;
-        float yMaxA = -500.0f;
-
-        float yMinB = 500.0f;
-        float yMaxB = -500.0f;
-
-        float yMinASort = 500.0f;
-        float yMaxASort = -500.0f;
-
-        float yMinBSort = 500.0f;
-        float yMaxBSort = -500.0f;
-
-        const int startCell = DRS4SettingsManager::sharedInstance()->startCell();
-        const int endRange = DRS4SettingsManager::sharedInstance()->stopCell();
-        const int stopCellWidth = kNumberOfBins-DRS4SettingsManager::sharedInstance()->stopCell();
-        const int cellWidth = kNumberOfBins-startCell-stopCellWidth;
-
-        std::vector<double> dataVecXA(cellWidth);
-        std::vector<double> dataVecYA(cellWidth);
-
-        std::vector<double> dataVecXB(cellWidth);
-        std::vector<double> dataVecYB(cellWidth);
-
-        //default: linear!
-        DSpline _splineA, _splineB;
-
-        //cubic spline?
-        if ( (cellWidth > DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints() || cellWidth < DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints())
-             && !DRS4SettingsManager::sharedInstance()->usingLinearSpline() ) {
-            _splineA.set_type(SplineType::Cubic);
-            _splineB.set_type(SplineType::Cubic);
-        }
-
-        int cellYAMax = -1;
-        int cellYAMin = -1;
-        int cellYBMax = -1;
-        int cellYBMin = -1;
-
-        for ( int a = startCell ; a < endRange ; ++ a ) {
-            xMinA = qMin(xMinA, tChannel0[a]);
-            xMaxA = qMax(xMaxA, tChannel0[a]);
-
-            xMinB = qMin(xMinB, tChannel1[a]);
-            xMaxB = qMax(xMaxB, tChannel1[a]);
-
-            if ( waveChannel0[a] >= yMaxA ) {
-                yMaxA = waveChannel0[a];
-                cellYAMax = a;
-            }
-
-            if ( waveChannel1[a] >= yMaxB ) {
-                yMaxB = waveChannel1[a];
-                cellYBMax = a;
-            }
-
-            if ( waveChannel0[a] <= yMinA ) {
-                yMinA = waveChannel0[a];
-                cellYAMin = a;
-            }
-
-            if ( waveChannel1[a] <= yMinB ) {
-                yMinB = waveChannel1[a];
-                cellYBMin = a;
-            }
-
-            if ( waveChannel0[a] >= yMaxASort )
-                yMaxASort = waveChannel0[a];
-
-            if ( waveChannel1[a] >= yMaxBSort )
-                yMaxBSort = waveChannel1[a];
-
-            if ( waveChannel0[a] <= yMinASort )
-                yMinASort = waveChannel0[a];
-
-            if ( waveChannel1[a] <= yMinBSort )
-                yMinBSort = waveChannel1[a];
-
-            //append pulse-point:
-            if ( !DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
-                m_pListChannelA.append(QPointF(tChannel0[a], waveChannel0[a]));
-                m_pListChannelB.append(QPointF(tChannel1[a], waveChannel1[a]));
-            }
-
-            const int it = (a-startCell);
-
-            dataVecXA[it] = tChannel0[a];
-            dataVecYA[it] = waveChannel0[a];
-
-            dataVecXB[it] = tChannel1[a];
-            dataVecYB[it] = waveChannel1[a];
-        }
-
-        if (cellYAMax == -1 || cellYAMin == -1 || cellYBMax == -1 || cellYBMin == -1)
-            continue;
-
-        if (qFuzzyCompare(yMinA, yMaxA) || qFuzzyCompare(yMinB, yMaxB))
-            continue;
-
-        if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel0, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel0, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel1, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel1, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-        }
-
-        if ( DRS4TextFileStreamManager::sharedInstance()->isArmed() )
-            DRS4TextFileStreamManager::sharedInstance()->writePulses(tChannel0, tChannel1, waveChannel0, waveChannel1, kNumberOfBins);
-
-
-        //cubic spline?
-        if ( (cellWidth > DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints() || cellWidth < DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints())
-             && !DRS4SettingsManager::sharedInstance()->usingLinearSpline() ) {
-            _splineA.set_points(dataVecXA, dataVecYA);
-            _splineB.set_points(dataVecXB, dataVecYB);
-        }
-
-        //cubic spline?
-        const int cubSplinePointsCnt = DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints();
-        const double fcubSplinePointsCntRatio = 1.0f/((double)cubSplinePointsCnt);
-        const double incrA = (xMaxA-xMinA)*fcubSplinePointsCntRatio;
-        const double incrB = (xMaxB-xMinB)*fcubSplinePointsCntRatio;
-
-        if ( DRS4TextFileStreamManager::sharedInstance()->isArmed() ) {
-            QList<QPointF> interpolA, interpolB;
-            //cubic spline?
-            if ( (cellWidth > DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints() || cellWidth < DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints())
-                 && !DRS4SettingsManager::sharedInstance()->usingLinearSpline() ) {
-                for ( int a = 0 ; a <= cubSplinePointsCnt ; ++ a ) {
-                    const double splineXValueA = ((double)a)*incrA+xMinA;
-                    const double splineXValueB = ((double)a)*incrB+xMinB;
-
-                    const double valueAY = _splineA(splineXValueA);
-                    const double valueBY = _splineB(splineXValueB);
-
-                    interpolA.append(QPointF(splineXValueA, valueAY));
-                    interpolB.append(QPointF(splineXValueB, valueBY));
-                }
-            }
-            else { //linear spline?
-                for ( int a = 0 ; a < cellWidth ; ++ a ) {
-                    const double splineXValueA = dataVecXA.at(a);
-                    const double splineXValueB = dataVecXB.at(a);
-
-                    const double valueAY = dataVecYA.at(a);
-                    const double valueBY = dataVecYB.at(a);
-
-                    interpolA.append(QPointF(splineXValueA, valueAY));
-                    interpolB.append(QPointF(splineXValueB, valueBY));
-                }
-            }
-
-            DRS4TextFileStreamManager::sharedInstance()->writeInterpolations(&interpolA, &interpolB);
-        }
-
-        double areaA = 0;
-        double areaB = 0;
-
-        float t0_YMaxA = 0.0f;
-        float t0_YMaxB = 0.0f;
-
-        float t0_YMinA = 0.0f;
-        float t0_YMinB = 0.0f;
-
-
-        yMinA = 500.0f;
-        yMinB = 500.0f;
-        yMaxA = -500.0f;
-        yMaxB = -500.0f;
-
-        //cubic spline?
-        if ( (cellWidth > DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints() || cellWidth < DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints())
-             && !DRS4SettingsManager::sharedInstance()->usingLinearSpline() ) {
-            //subsequent area determination for area-filter:
-            for ( int a = 0 ; a < cubSplinePointsCnt ; ++ a ) {
-                const double splineXValueA = ((double)a)*incrA+xMinA;
-                const double splineXValueB = ((double)a)*incrB+xMinB;
-
-                float valueAY = _splineA(splineXValueA);
-                float valueBY = _splineB(splineXValueB);
-
-                if ( valueAY < yMinA ) {
-                    yMinA = valueAY;
-                    t0_YMinA = splineXValueA;
-                }
-
-                if ( valueBY < yMinB ) {
-                    yMinB = valueBY;
-                    t0_YMinB = splineXValueB;
-                }
-
-                if ( valueAY > yMaxA ) {
-                    yMaxA = valueAY;
-                    t0_YMaxA = splineXValueA;
-                }
-
-                if ( valueBY > yMaxB ) {
-                    yMaxB = valueBY;
-                    t0_YMaxB = splineXValueB;
-                }
-
-                if ( a < cubSplinePointsCnt - 1 ) {
-                    const double splineXValueANext = ((double)(a+1))*incrA+xMinA;
-                    const double splineXValueBNext = ((double)(a+1))*incrB+xMinB;
-
-                    float valueAYNext = _splineA(splineXValueANext);
-                    float valueBYNext = _splineB(splineXValueBNext);
-
-                    areaA += valueAYNext*0.5f;
-                    areaB += valueBYNext*0.5f;
-                }
-            }
-        }
-        else { //linear spline?
-            for ( int a = 0 ; a < cellWidth ; ++ a ) {
-                const double splineXValueA = dataVecXA.at(a);
-                const double splineXValueB = dataVecXB.at(a);
-
-                const double valueAY = dataVecYA.at(a);
-                const double valueBY = dataVecYB.at(a);
-
-                if ( valueAY < yMinA ) {
-                    yMinA = valueAY;
-                    t0_YMinA = splineXValueA;
-                }
-
-                if ( valueBY < yMinB ) {
-                    yMinB = valueBY;
-                    t0_YMinB = splineXValueB;
-                }
-
-                if ( valueAY > yMaxA ) {
-                    yMaxA = valueAY;
-                    t0_YMaxA = splineXValueA;
-                }
-
-                if ( valueBY > yMaxB ) {
-                    yMaxB = valueBY;
-                    t0_YMaxB = splineXValueB;
-                }
-
-                if ( a < cellWidth - 1 ) {
-                    const double splineXValueANext = dataVecXA.at(a+1);
-                    const double splineXValueBNext = dataVecXB.at(a+1);
-
-                    const double valueAYNext = dataVecYA.at(a+1);
-                    const double valueBYNext = dataVecYB.at(a+1);
-
-                    areaA += valueAYNext*(splineXValueANext - splineXValueA)*0.5f;
-                    areaB += valueBYNext*(splineXValueBNext - splineXValueB)*0.5f;
-                }
-            }
-        }
-
-        const float rat = 5120*((float)cellWidth/((float)kNumberOfBins));
-
-        areaA = abs(areaA)/(DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationA()*rat);
-        areaB = abs(areaB)/(DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationB()*rat);
-
-        if ( (int)yMinA == (int)yMaxA || (int)yMinB == (int)yMaxB  )
-            continue;
-
-        //filter wrong pulses:
-        if ( DRS4SettingsManager::sharedInstance()->isPositiveSignal() ) {
-            if ( fabs(yMinASort) > fabs(yMaxASort) )
-                continue;
-
-            if ( fabs(yMinBSort) > fabs(yMaxBSort) )
-                continue;
-
-            if ( abs(cellYAMax - startCell) <= 45 )
-                continue;
-
-            if ( abs(cellYBMax - startCell) <= 45 )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYA.at(cellWidth-1), (double)yMaxASort) )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYB.at(cellWidth-1), (double)yMaxBSort) )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYA.at(0), (double)yMaxASort) )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYB.at(0), (double)yMaxBSort) )
-                continue;
-        }
-        else {
-            if ( fabs(yMinASort) < fabs(yMaxASort) )
-                continue;
-
-            if ( fabs(yMinBSort) < fabs(yMaxBSort) )
-                continue;
-
-            if ( abs(cellYAMin - startCell) <= 45 )
-                continue;
-
-            if ( abs(cellYBMin - startCell) <= 45 )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYA.at(cellWidth-1), (double)yMinASort) )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYB.at(cellWidth-1), (double)yMinBSort) )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYA.at(0), (double)yMinASort) )
-                continue;
-
-            if ( qFuzzyCompare(dataVecYB.at(0), (double)yMinBSort) )
-                continue;
-        }
-
-        int channelYMaxA = 0;
-        int channelYMaxB = 0;
-
-        double cfdValueA = 0;
-        double cfdValueB = 0;
-
-        if ( DRS4SettingsManager::sharedInstance()->isPositiveSignal() ) {
-            channelYMaxA = ((int)((yMaxA/(500.0f))*(double)kNumberOfBins))-1;
-            channelYMaxB = ((int)((yMaxB/(500.0f))*(double)kNumberOfBins))-1;
-
-            cfdValueA = DRS4SettingsManager::sharedInstance()->cfdLevelA()*yMaxA;
-            cfdValueB = DRS4SettingsManager::sharedInstance()->cfdLevelB()*yMaxB;
-
-            if ( cfdValueA > 500.0f || qFuzzyCompare(cfdValueA, 0.0) || cfdValueA < 0.0f )
-                continue;
-
-            if ( cfdValueB > 500.0f || qFuzzyCompare(cfdValueB, 0.0) || cfdValueB < 0.0f )
-                continue;
-
-            if ( (int)cfdValueA == (int)yMaxA )
-                continue;
-
-            if ( (int)cfdValueB == (int)yMaxB )
-                continue;
-        }
-        else {
-            channelYMaxA = ((int)((yMinA/(-500.0f))*(double)kNumberOfBins))-1;
-            channelYMaxB = ((int)((yMinB/(-500.0f))*(double)kNumberOfBins))-1;
-
-            cfdValueA = DRS4SettingsManager::sharedInstance()->cfdLevelA()*yMinA;
-            cfdValueB = DRS4SettingsManager::sharedInstance()->cfdLevelB()*yMinB;
-
-            if ( cfdValueA < -500.0f || qFuzzyCompare(cfdValueA, 0.0) || cfdValueA > 0.0f )
-                continue;
-
-            if ( cfdValueB < -500.0f || qFuzzyCompare(cfdValueB, 0.0) || cfdValueB > 0.0f )
-                continue;
-
-            if ( (int)cfdValueA == (int)yMinA )
-                continue;
-
-            if ( (int)cfdValueB == (int)yMinB )
-                continue;
-        }
-
-        //PHS:
-        if ( channelYMaxA < kNumberOfBins && channelYMaxA >= 0 ) {
-            m_phsA[channelYMaxA] ++;
-            m_phsACounts ++;
-        }
-
-        if ( channelYMaxB < kNumberOfBins && channelYMaxB >= 0 ) {
-            m_phsB[channelYMaxB] ++;
-            m_phsBCounts ++;
-        }
-
-        /* Area-Filter */
-        dataF.areaARatio = areaA;
-        dataF.areaBRatio = areaB;
-        dataF.amplitudeAInMV = DRS4SettingsManager::sharedInstance()->isPositiveSignal()?yMaxA:abs(yMinA);
-        dataF.amplitudeBInMV = DRS4SettingsManager::sharedInstance()->isPositiveSignal()?yMaxB:abs(yMinB);
-
-        double timeStampA = -1;
-        double timeStampB = -1;
-
-        bool btimeStampA = false;
-        bool btimeStampB = false;
-
-        bool bReject = false;
-        int cntTimeStampA = 0;
-        int cntTimeStampB = 0;
-
-        //cubic spline?
-        if ( (cellWidth > DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints() || cellWidth < DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints())
-             && !DRS4SettingsManager::sharedInstance()->usingLinearSpline() ) {
-            for ( int a = 0 ; a <= cubSplinePointsCnt-1 ; ++ a ) {
-                const double splineXValueA_1 = ((double)a)*incrA+xMinA;
-                const double splineXValueB_1 = ((double)a)*incrB+xMinB;
-
-                const double splineXValueA_2 = ((double)(a+1))*incrA+xMinA;
-                const double splineXValueB_2 = ((double)(a+1))*incrB+xMinB;
-
-                const double valueAY_1 = _splineA(splineXValueA_1);
-                const double valueBY_1 = _splineB(splineXValueB_1);
-
-                const double valueAY_2 = _splineA(splineXValueA_2);
-                const double valueBY_2 = _splineB(splineXValueB_2);
-
-                if ( DRS4SettingsManager::sharedInstance()->isPositiveSignal() ) {
-                    if ( ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2 ) {
-                        bReject = true;
-                    }
-                }
-                else {
-                    if ( ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2 ) {
-                        bReject = true;
-                    }
-                }
-
-                if (!DRS4SettingsManager::sharedInstance()->isBurstMode()) {
-                    if ( !btimeStampA )
-                        m_pListChannelASpline.append(QPointF(splineXValueA_2, valueAY_2));
-
-                    if ( !btimeStampB )
-                        m_pListChannelBSpline.append(QPointF(splineXValueB_2, valueBY_2));
-                }
-
-                if (bReject) {
-                    if (!DRS4SettingsManager::sharedInstance()->isBurstMode())
-                        resetPulseSplines();
-
-                    break;
-                }
-            }
-
-            if ( cntTimeStampA <= 1 || cntTimeStampB <= 1 )
-                bReject = true;
-
-            if (bReject) {
-                if (!DRS4SettingsManager::sharedInstance()->isBurstMode())
-                    resetPulseSplines();
-
-                continue;
-            }
-        }
-        else { //linear spline?
-            for ( int a = 0 ; a < cellWidth - 1 ; ++ a ) {
-                const double splineXValueA_1 = dataVecXA.at(a);
-                const double splineXValueB_1 = dataVecXB.at(a);
-
-                const double splineXValueA_2 = dataVecXA.at(a+1);
-                const double splineXValueB_2 = dataVecXB.at(a+1);
-
-                const double valueAY_1 = dataVecYA.at(a);
-                const double valueBY_1 = dataVecYB.at(a);
-
-                const double valueAY_2 = dataVecYA.at(a+1);
-                const double valueBY_2 = dataVecYB.at(a+1);
-
-                if ( DRS4SettingsManager::sharedInstance()->isPositiveSignal() ) {
-                    if ( ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2) {
-                        bReject = true;
-                    }
-                }
-                else {
-                    if ( ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2 ) {
-                        bReject = true;
-                    }
-                }
-
-                if (!DRS4SettingsManager::sharedInstance()->isBurstMode()) {
-                    if ( !btimeStampA )
-                        m_pListChannelASpline.append(QPointF(splineXValueA_2, valueAY_2));
-
-                    if ( !btimeStampB )
-                        m_pListChannelBSpline.append(QPointF(splineXValueB_2, valueBY_2));
-                }
-
-                if (bReject) {
-                    if (!DRS4SettingsManager::sharedInstance()->isBurstMode())
-                        resetPulseSplines();
-
-                    break;
-                }
-            }
-
-            if ( cntTimeStampA <= 1 || cntTimeStampB <= 1 )
-                bReject = true;
-
-            if (bReject) {
-                if (!DRS4SettingsManager::sharedInstance()->isBurstMode())
-                    resetPulseSplines();
-
-                continue;
-            }
-        }
-
-        if (!DRS4SettingsManager::sharedInstance()->isBurstMode()) {
-            if ( m_pListChannelASpline.isEmpty() || m_pListChannelBSpline.isEmpty() ) {
-                continue;
-            }
-        }
-
-        if ( bReject || !btimeStampA || !btimeStampB ) {
-            continue;
-        }
-
-        /* lifetime-data */
-        if ( DRS4SettingsManager::sharedInstance()->isPositiveSignal() ) {
-            ltData.amplitudeAInMV = yMaxA;
-            ltData.amplitudeBInMV = yMaxB;
-        }
-        else {
-            ltData.amplitudeAInMV = yMinA;
-            ltData.amplitudeBInMV = yMinB;
-        }
-
-        ltData.tAInNS = timeStampA;
-        ltData.tBInNS = timeStampB;
-
-        ltData.areaARatio = areaA;
-        ltData.areaBRatio = areaB;
-
-        if ( DRS4TextFileStreamRangeManager::sharedInstance()->isArmed() ) {
-            ltData.rawDataA.append(m_pListChannelA);
-            ltData.rawDataB.append(m_pListChannelB);
-        }
-
-        /* persistance - data */
-        QVector<QPointF> persistanceAMeta;
-        QVector<QPointF> persistanceBMeta;
-
-        if ( btimeStampA && btimeStampB && !bReject ) {
-            //normalized persistance data:
-            if (DRS4SettingsManager::sharedInstance()->isPersistanceEnabled()
-                    && !DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
-
-                m_persistanceDataA.clear();
-                m_persistanceDataB.clear();
-
-                for ( int j = 0 ; j < m_pListChannelA.size() ; ++ j ) {
-                    const float yA = DRS4SettingsManager::sharedInstance()->isPositiveSignal()?(m_pListChannelA.at(j).y()/yMaxA):(m_pListChannelA.at(j).y()/yMinA);
-                    const float yB = DRS4SettingsManager::sharedInstance()->isPositiveSignal()?(m_pListChannelB.at(j).y()/yMaxB):(m_pListChannelB.at(j).y()/yMinB);
-
-                    const float t0A = timeStampA; //DRS4SettingsManager::sharedInstance()->isPositiveSignal()?t0_YMaxA:t0_YMinA;
-                    const float t0B = timeStampB; //DRS4SettingsManager::sharedInstance()->isPositiveSignal()?t0_YMaxB:t0_YMinB;
-
-                    persistanceAMeta.append(QPointF(m_pListChannelA.at(j).x()-t0B, yA)); // >> shift channel A relative to CFD-%(t0) of B
-                    persistanceBMeta.append(QPointF(m_pListChannelB.at(j).x()-t0A, yB)); // >> shift channel B relative to CFD-%(t0) of A
-                }
-            }
-        }
-
-        /* area-Filter */
-        if (!DRS4SettingsManager::sharedInstance()->isBurstMode()) {
-            if (DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled()) {
-                const int indexPHSA = (dataF.amplitudeAInMV/500.0f)*kNumberOfBins;
-                const int indexPHSB = (dataF.amplitudeBInMV/500.0f)*kNumberOfBins;
-
-                const int binA = dataF.areaARatio*(double)DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA();
-                const int binB = dataF.areaBRatio*(double)DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB();
-
-                if (!(indexPHSA>(kNumberOfBins-1)
-                      || indexPHSB>(kNumberOfBins-1)
-                      || indexPHSA<0
-                      || indexPHSB<0
-                      || binA < 0
-                      || binB < 0)) {
-                    if (m_areaFilterACounter >= 5000 )
-                        m_areaFilterACounter = 0;
-
-                    if (m_areaFilterBCounter >= 5000 )
-                        m_areaFilterBCounter = 0;
-
-                    m_areaFilterDataA[m_areaFilterACounter] = QPointF(indexPHSA, binA);
-                    m_areaFilterDataB[m_areaFilterBCounter] = QPointF(indexPHSB, binB);
-
-                    m_areaFilterACounter ++;
-                    m_areaFilterBCounter ++;
-                }
-            }
-        }
-
-        calcLifetimesInBurstMode(&ltData, &persistanceAMeta, &persistanceBMeta);
-    }
-}
-#endif
-
 void DRS4Worker::runSingleThreaded()
 {
     DSpline tkSplineA, tkSplineB;
@@ -1996,12 +1103,12 @@ void DRS4Worker::runSingleThreaded()
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel0);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -2009,12 +1116,12 @@ void DRS4Worker::runSingleThreaded()
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel1);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -2022,12 +1129,12 @@ void DRS4Worker::runSingleThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, waveChannel0);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -2035,12 +1142,12 @@ void DRS4Worker::runSingleThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, waveChannel1);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -2048,7 +1155,7 @@ void DRS4Worker::runSingleThreaded()
                 retState = DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino(); // returns always 1.
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
             }
         }
         else {
@@ -2061,7 +1168,7 @@ void DRS4Worker::runSingleThreaded()
                     continue;
 
                 if ( !DRS4StreamDataLoader::sharedInstance()->receiveGeneratedPulsePair(tChannel0, waveChannel0, tChannel1, waveChannel1) ) {
-                    DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
+                    // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
                     continue;
                 }
             }
@@ -2070,6 +1177,7 @@ void DRS4Worker::runSingleThreaded()
         /* statistics: */
         time(&stop);
         const double diffTime = difftime(stop, start);
+
         if ( diffTime >= __STATISTIC_AVG_TIME ) {
             m_currentPulseCountRateInSeconds = ((double)m_pulseCounterCnt)/diffTime;
             m_summedPulseCountRateInSeconds += m_currentPulseCountRateInSeconds;
@@ -2268,16 +1376,35 @@ void DRS4Worker::runSingleThreaded()
         int cellYBMin = -1;
         int cellYBMax = -1;
 
-        /* inline CFD value estimation */
+        /* inline CF value estimation */
         float cfdValueA = 0.0f;
         float cfdValueB = 0.0f;
 
-        /* inline CFD cell estimation */
+        float cfdValueA_10perc = 0.0f;
+        float cfdValueB_10perc = 0.0f;
+
+        float cfdValueA_90perc = 0.0f;
+        float cfdValueB_90perc = 0.0f;
+
+        /* inline CF cell estimation */
         int estimCFDACellStart = -1;
         int estimCFDBCellStart = -1;
 
         int estimCFDACellStop = -1;
         int estimCFDBCellStop = -1;
+
+        /* inline CF (10%, 90%) cell estimation >> rise-time estimation (delta illumination signal) */
+        int estimCFDACellStart_10perc = -1;
+        int estimCFDBCellStart_10perc = -1;
+
+        int estimCFDACellStart_90perc = -1;
+        int estimCFDBCellStart_90perc = -1;
+
+        int estimCFDACellStop_10perc = -1;
+        int estimCFDBCellStop_10perc = -1;
+
+        int estimCFDACellStop_90perc = -1;
+        int estimCFDBCellStop_90perc = -1;
 
         int cfdACounter = 0;
         int cfdBCounter = 0;
@@ -2293,7 +1420,7 @@ void DRS4Worker::runSingleThreaded()
 
         bool bForceReject = false;
 
-        /* determine min/max and proceed a CFD estimation in ROI */
+        /* determine min/max and proceed a CF estimation in ROI */
         for ( int a = reducedEndRange, it = reducedCellWidth ; a >= startCell ; -- a, -- it ) {
             /* time domain bracket values */
             xMinA = qMin(xMinA, tChannel0[a]);
@@ -2309,6 +1436,10 @@ void DRS4Worker::runSingleThreaded()
                 if (positiveSignal) {
                     cfdValueA = cfdA*yMaxA;
 
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueA_10perc = 0.1*yMaxA;
+                    cfdValueA_90perc = 0.9*yMaxA;
+
                     cfdACounter = 0;
                 }              
             }
@@ -2319,6 +1450,10 @@ void DRS4Worker::runSingleThreaded()
 
                 if (positiveSignal) {
                     cfdValueB = cfdB*yMaxB;
+
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueB_10perc = 0.1*yMaxB;
+                    cfdValueB_90perc = 0.9*yMaxB;
 
                     cfdBCounter = 0;
                 }                
@@ -2331,6 +1466,10 @@ void DRS4Worker::runSingleThreaded()
                 if (!positiveSignal) {
                     cfdValueA = cfdA*yMinA;
 
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueA_10perc = 0.1*yMinA;
+                    cfdValueA_90perc = 0.9*yMinA;
+
                     cfdACounter = 0;
                 }
             }
@@ -2341,6 +1480,10 @@ void DRS4Worker::runSingleThreaded()
 
                 if (!positiveSignal) {
                     cfdValueB = cfdB*yMinB;
+
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueB_10perc = 0.1*yMinB;
+                    cfdValueB_90perc = 0.9*yMinB;
 
                     cfdBCounter = 0;
                 }
@@ -2371,6 +1514,10 @@ void DRS4Worker::runSingleThreaded()
                 if ( bInRangeA ) {
                     const bool cfdLevelInRangeA = positiveSignal?(waveChannel0[a] > cfdValueA && waveChannel0[aDecr] < cfdValueA):(waveChannel0[a] < cfdValueA && waveChannel0[aDecr] > cfdValueA);
 
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    const bool cfdLevelInRangeA_10perc = positiveSignal?(waveChannel0[a] > cfdValueA_10perc && waveChannel0[aDecr] < cfdValueA_10perc):(waveChannel0[a] < cfdValueA_10perc && waveChannel0[aDecr] > cfdValueA_10perc);
+                    const bool cfdLevelInRangeA_90perc = positiveSignal?(waveChannel0[a] > cfdValueA_90perc && waveChannel0[aDecr] < cfdValueA_90perc):(waveChannel0[a] < cfdValueA_90perc && waveChannel0[aDecr] > cfdValueA_90perc);
+
                     if ( cfdLevelInRangeA ) {
                         estimCFDACellStart = aDecr;
                         estimCFDACellStop = a;
@@ -2389,10 +1536,42 @@ void DRS4Worker::runSingleThreaded()
 
                         cfdACounter ++;
                     }
+
+                    /* 10% CF Level */
+                    if ( cfdLevelInRangeA_10perc ) {
+                        estimCFDACellStart_10perc = aDecr;
+                        estimCFDACellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel0[a], cfdValueA_10perc) ) {
+                        estimCFDACellStart_10perc = a;
+                        estimCFDACellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel0[aDecr], cfdValueA_10perc) ) {
+                        estimCFDACellStart_10perc = aDecr;
+                        estimCFDACellStop_10perc = aDecr;
+                    }
+
+                    /* 90% CF Level */
+                    if ( cfdLevelInRangeA_90perc ) {
+                        estimCFDACellStart_90perc = aDecr;
+                        estimCFDACellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel0[a], cfdValueA_90perc) ) {
+                        estimCFDACellStart_90perc = a;
+                        estimCFDACellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel0[aDecr], cfdValueA_90perc) ) {
+                        estimCFDACellStart_90perc = aDecr;
+                        estimCFDACellStop_90perc = aDecr;
+                    }
                 }
 
                 if ( bInRangeB ) {
                     const bool cfdLevelInRangeB = positiveSignal?(waveChannel1[a] > cfdValueB && waveChannel1[aDecr] < cfdValueB):(waveChannel1[a] < cfdValueB && waveChannel1[aDecr] > cfdValueB);
+
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    const bool cfdLevelInRangeB_10perc = positiveSignal?(waveChannel1[a] > cfdValueB_10perc && waveChannel1[aDecr] < cfdValueB_10perc):(waveChannel1[a] < cfdValueB_10perc && waveChannel1[aDecr] > cfdValueB_10perc);
+                    const bool cfdLevelInRangeB_90perc = positiveSignal?(waveChannel1[a] > cfdValueB_90perc && waveChannel1[aDecr] < cfdValueB_90perc):(waveChannel1[a] < cfdValueB_90perc && waveChannel1[aDecr] > cfdValueB_90perc);
 
                     if ( cfdLevelInRangeB  ) {
                         estimCFDBCellStart = aDecr;
@@ -2411,6 +1590,34 @@ void DRS4Worker::runSingleThreaded()
                         estimCFDBCellStop = aDecr;
 
                         cfdBCounter ++;
+                    }
+
+                    /* 10% CF Level */
+                    if ( cfdLevelInRangeB_10perc ) {
+                        estimCFDBCellStart_10perc = aDecr;
+                        estimCFDBCellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel1[a], cfdValueB_10perc) ) {
+                        estimCFDBCellStart_10perc = a;
+                        estimCFDBCellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel1[aDecr], cfdValueB_10perc) ) {
+                        estimCFDBCellStart_10perc = aDecr;
+                        estimCFDBCellStop_10perc = aDecr;
+                    }
+
+                    /* 90% CF Level */
+                    if ( cfdLevelInRangeB_90perc ) {
+                        estimCFDBCellStart_90perc = aDecr;
+                        estimCFDBCellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel1[a], cfdValueB_90perc) ) {
+                        estimCFDBCellStart_90perc = a;
+                        estimCFDBCellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(waveChannel1[aDecr], cfdValueB_90perc) ) {
+                        estimCFDBCellStart_90perc = aDecr;
+                        estimCFDBCellStop_90perc = aDecr;
                     }
                 }
             }
@@ -2489,23 +1696,23 @@ void DRS4Worker::runSingleThreaded()
 
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel0, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel0S:waveChannel0), sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel1, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel1S:waveChannel1), sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
         }
 
-        /* light-weight filtering of wrong pulses: */
+        /* light-weight filtering of wrong events: */
         if ( positiveSignal ) {
             if ( (abs(yMinA) > abs(yMaxA))
                  || (abs(yMinB) > abs(yMaxB)) )
@@ -2537,7 +1744,7 @@ void DRS4Worker::runSingleThreaded()
                 continue;
         }
 
-        /* reject artefacts */
+        /* reject artifacts */
         if ( cfdBCounter > 1 || cfdBCounter == 0
              || cfdACounter > 1 || cfdACounter == 0 )
             continue;
@@ -2572,13 +1779,15 @@ void DRS4Worker::runSingleThreaded()
                 }
                     break;
                 }
-            } else if (bUsingTinoKluge) {
+            }
+            else if (bUsingTinoKluge) {
                 tkSplineA.setType(SplineType::Cubic);
                 tkSplineB.setType(SplineType::Cubic);
 
                 tkSplineA.setPoints(m_arrayDataTKX_A, m_arrayDataTKY_A);
                 tkSplineB.setPoints(m_arrayDataTKX_B, m_arrayDataTKY_B);
-            } else if (bUsingLinearInterpol) {
+            }
+            else if (bUsingLinearInterpol) {
                 /* nothing yet */
             }
         }
@@ -2587,8 +1796,7 @@ void DRS4Worker::runSingleThreaded()
             alglib::polynomialbuild(m_arrayDataX_B, m_arrayDataY_B, m_baryCentricInterpolantB);
         }
 
-
-        /* calculate and normalize pulse area for subsequent filtering */
+        /* calculate and normalize pulse area for subsequent area filtering */
         if (bPulseAreaPlot
                 || bPulseAreaFilter) {
             const float rat = 5120*((float)cellWidth/((float)kNumberOfBins));
@@ -2609,7 +1817,8 @@ void DRS4Worker::runSingleThreaded()
             timeBForYMax = tChannel1[cellYBMin];
         }
 
-        if (qFuzzyCompare(timeAForYMax, -1) || qFuzzyCompare(timeBForYMax, -1))
+        if (qFuzzyCompare(timeAForYMax, -1)
+                || qFuzzyCompare(timeBForYMax, -1))
             continue;
 
         /* store/write pulses and interpolations to ASCII file */
@@ -2674,7 +1883,7 @@ void DRS4Worker::runSingleThreaded()
                 const float valYA = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantA, t_A)):(tkSplineA(t_A))):(alglib::barycentriccalc(m_baryCentricInterpolantA, t_A));
                 const float valYB = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantB, t_B)):(tkSplineB(t_B))):(alglib::barycentriccalc(m_baryCentricInterpolantB, t_B));
 
-                /* modify min/max to calculate the CFD in high accuracy, subsequently */
+                /* modify min/max to calculate the CF level in high accuracy, subsequently */
                 if (valYA > yMaxA) {
                     yMaxA = valYA;
 
@@ -2738,7 +1947,7 @@ void DRS4Worker::runSingleThreaded()
             m_phsBCounts ++;
         }
 
-        /* CFD levels valid? */
+        /* CF levels valid? */
         if (estimCFDACellStart == -1
             || estimCFDACellStop == -1
             || estimCFDBCellStart == -1
@@ -2772,7 +1981,7 @@ void DRS4Worker::runSingleThreaded()
         double timeStampB = -1.0f;
 
         if (!bUsingLinearInterpol) {
-            /* finding correct CFD timestamp within the estimated CFD bracket index region */
+            /* find correct CF level timestamp within the estimated CF bracketed index region */
             if ( estimCFDACellStart == estimCFDACellStop ) {
                 timeStampA = tChannel0[estimCFDACellStart];
             }
@@ -2793,11 +2002,13 @@ void DRS4Worker::runSingleThreaded()
                         timeStampA = (cfdValueA - intersect)/slope;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueA, valY1) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueA, valY1) ) {
                         timeStampA = timeStamp1;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueA, valY2) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueA, valY2) ) {
                         timeStampA = timeStamp2;
 
                         break;
@@ -2825,11 +2036,13 @@ void DRS4Worker::runSingleThreaded()
                         timeStampB = (cfdValueB - intersect)/slope;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueB, valY1) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueB, valY1) ) {
                         timeStampB = timeStamp1;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueB, valY2) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueB, valY2) ) {
                         timeStampB = timeStamp2;
 
                         break;
@@ -2855,9 +2068,11 @@ void DRS4Worker::runSingleThreaded()
                     const double intersect = valY1 - slope*timeStamp1;
 
                     timeStampA = (cfdValueA - intersect)/slope;
-                } else if ( qFuzzyCompare(cfdValueA, valY1) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueA, valY1) ) {
                     timeStampA = timeStamp1;
-                } else if ( qFuzzyCompare(cfdValueA, valY2) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueA, valY2) ) {
                     timeStampA = timeStamp2;
                 }
             }
@@ -2878,10 +2093,260 @@ void DRS4Worker::runSingleThreaded()
                     const double intersect = valY1 - slope*timeStamp1;
 
                     timeStampB = (cfdValueB - intersect)/slope;
-                } else if ( qFuzzyCompare(cfdValueB, valY1) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueB, valY1) ) {
                     timeStampB = timeStamp1;
-                } else if ( qFuzzyCompare(cfdValueB, valY2) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueB, valY2) ) {
                     timeStampB = timeStamp2;
+                }
+            }
+        }
+
+        double timeStampA_10perc = -1.0f;
+        double timeStampB_10perc = -1.0f;
+
+        if (!bUsingLinearInterpol) {
+            /* finding correct CF (10%) timestamp within the estimated CF (10%) bracketed index region */
+            if ( estimCFDACellStart_10perc == estimCFDACellStop_10perc ) {
+                timeStampA_10perc = tChannel0[estimCFDACellStart_10perc];
+            }
+            else {
+                const double timeIncr = (tChannel0[estimCFDACellStop_10perc] - tChannel0[estimCFDACellStart_10perc])/((double)intraRenderPoints);
+                for ( int i = 0 ; i < intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = tChannel0[estimCFDACellStart_10perc] + (double)i*timeIncr;
+                    const double timeStamp2 = tChannel0[estimCFDACellStart_10perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantA, timeStamp1)):(tkSplineA(timeStamp1))):(alglib::barycentriccalc(m_baryCentricInterpolantA, timeStamp1));
+                    const float valY2 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantA, timeStamp2)):(tkSplineA(timeStamp2))):(alglib::barycentriccalc(m_baryCentricInterpolantA, timeStamp2));
+
+                    if ( (cfdValueA_10perc < valY1 && cfdValueA_10perc > valY2)
+                         || (cfdValueA_10perc > valY1 && cfdValueA_10perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampA_10perc = (cfdValueA_10perc - intersect)/slope;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_10perc, valY1) ) {
+                        timeStampA_10perc = timeStamp1;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_10perc, valY2) ) {
+                        timeStampA_10perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+
+            if ( estimCFDBCellStart_10perc == estimCFDBCellStop_10perc ) {
+                timeStampB_10perc = tChannel1[estimCFDBCellStart_10perc];
+            }
+            else {
+                const double timeIncr = (tChannel1[estimCFDBCellStop_10perc] - tChannel1[estimCFDBCellStart_10perc])/((double)intraRenderPoints);
+                for ( int i = 0 ; i < intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = tChannel1[estimCFDBCellStart_10perc] + (double)i*timeIncr;
+                    const double timeStamp2 = tChannel1[estimCFDBCellStart_10perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantB, timeStamp1)):(tkSplineB(timeStamp1))):(alglib::barycentriccalc(m_baryCentricInterpolantB, timeStamp1));
+                    const float valY2 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantB, timeStamp2)):(tkSplineB(timeStamp2))):(alglib::barycentriccalc(m_baryCentricInterpolantB, timeStamp2));
+
+                    if ( (cfdValueB_10perc < valY1 && cfdValueB_10perc > valY2)
+                         || (cfdValueB_10perc > valY1 && cfdValueB_10perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampB_10perc = (cfdValueB_10perc - intersect)/slope;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueB_10perc, valY1) ) {
+                        timeStampB_10perc = timeStamp1;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueB_10perc, valY2) ) {
+                        timeStampB_10perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+        }
+        /* linear interpolation */
+        else {
+            if ( estimCFDACellStart_10perc == estimCFDACellStop_10perc ) {
+                timeStampA_10perc = tChannel0[estimCFDACellStart_10perc];
+            }
+            else {
+                const float timeStamp1 = tChannel0[estimCFDACellStart_10perc];
+                const float timeStamp2 = tChannel0[estimCFDACellStop_10perc];
+
+                const float valY1 = waveChannel0[estimCFDACellStart_10perc];
+                const float valY2 = waveChannel0[estimCFDACellStop_10perc];
+
+                if ( (cfdValueA_10perc < valY1 && cfdValueA_10perc > valY2)
+                     || (cfdValueA_10perc > valY1 && cfdValueA_10perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampA_10perc = (cfdValueA_10perc - intersect)/slope;
+                }
+                else if ( qFuzzyCompare(cfdValueA_10perc, valY1) ) {
+                    timeStampA_10perc = timeStamp1;
+                }
+                else if ( qFuzzyCompare(cfdValueA_10perc, valY2) ) {
+                    timeStampA_10perc = timeStamp2;
+                }
+            }
+
+            if ( estimCFDBCellStart_10perc == estimCFDBCellStop_10perc ) {
+                timeStampB_10perc = tChannel1[estimCFDBCellStart_10perc];
+            }
+            else {
+                const float timeStamp1 = tChannel1[estimCFDBCellStart_10perc];
+                const float timeStamp2 = tChannel1[estimCFDBCellStop_10perc];
+
+                const float valY1 = waveChannel1[estimCFDBCellStart_10perc];
+                const float valY2 = waveChannel1[estimCFDBCellStop_10perc];
+
+                if ( (cfdValueB_10perc < valY1 && cfdValueB_10perc > valY2)
+                     || (cfdValueB_10perc > valY1 && cfdValueB_10perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampB_10perc = (cfdValueB_10perc - intersect)/slope;
+                } else if ( qFuzzyCompare(cfdValueB_10perc, valY1) ) {
+                    timeStampB_10perc = timeStamp1;
+                } else if ( qFuzzyCompare(cfdValueB_10perc, valY2) ) {
+                    timeStampB_10perc = timeStamp2;
+                }
+            }
+        }
+
+        double timeStampA_90perc = -1.0f;
+        double timeStampB_90perc = -1.0f;
+
+        if (!bUsingLinearInterpol) {
+            /* find correct CF level (90%) timestamp within the estimated CF (90%) bracketed index region */
+            if ( estimCFDACellStart_90perc == estimCFDACellStop_90perc ) {
+                timeStampA_90perc = tChannel0[estimCFDACellStart_90perc];
+            }
+            else {
+                const double timeIncr = (tChannel0[estimCFDACellStop_90perc] - tChannel0[estimCFDACellStart_90perc])/((double)intraRenderPoints);
+                for ( int i = 0 ; i < intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = tChannel0[estimCFDACellStart_90perc] + (double)i*timeIncr;
+                    const double timeStamp2 = tChannel0[estimCFDACellStart_90perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantA, timeStamp1)):(tkSplineA(timeStamp1))):(alglib::barycentriccalc(m_baryCentricInterpolantA, timeStamp1));
+                    const float valY2 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantA, timeStamp2)):(tkSplineA(timeStamp2))):(alglib::barycentriccalc(m_baryCentricInterpolantA, timeStamp2));
+
+                    if ( (cfdValueA_90perc < valY1 && cfdValueA_90perc > valY2)
+                         || (cfdValueA_90perc > valY1 && cfdValueA_90perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampA_90perc = (cfdValueA_90perc - intersect)/slope;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_90perc, valY1) ) {
+                        timeStampA_90perc = timeStamp1;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_90perc, valY2) ) {
+                        timeStampA_90perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+
+            if ( estimCFDBCellStart_90perc == estimCFDBCellStop_90perc ) {
+                timeStampB_90perc = tChannel1[estimCFDBCellStart_90perc];
+            }
+            else {
+                const double timeIncr = (tChannel1[estimCFDBCellStop_90perc] - tChannel1[estimCFDBCellStart_90perc])/((double)intraRenderPoints);
+                for ( int i = 0 ; i < intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = tChannel1[estimCFDBCellStart_90perc] + (double)i*timeIncr;
+                    const double timeStamp2 = tChannel1[estimCFDBCellStart_90perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantB, timeStamp1)):(tkSplineB(timeStamp1))):(alglib::barycentriccalc(m_baryCentricInterpolantB, timeStamp1));
+                    const float valY2 = (interpolationType == DRS4InterpolationType::type::spline)?(bUsingALGLIB?(alglib::spline1dcalc(m_interpolantB, timeStamp2)):(tkSplineB(timeStamp2))):(alglib::barycentriccalc(m_baryCentricInterpolantB, timeStamp2));
+
+                    if ( (cfdValueB_90perc < valY1 && cfdValueB_90perc > valY2)
+                         || (cfdValueB_90perc > valY1 && cfdValueB_90perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampB_90perc = (cfdValueB_90perc - intersect)/slope;
+
+                        break;
+                    } else if ( qFuzzyCompare(cfdValueB_90perc, valY1) ) {
+                        timeStampB_90perc = timeStamp1;
+
+                        break;
+                    } else if ( qFuzzyCompare(cfdValueB_90perc, valY2) ) {
+                        timeStampB_90perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+        }
+        /* linear interpolation */
+        else {
+            if ( estimCFDACellStart_90perc == estimCFDACellStop_90perc ) {
+                timeStampA_90perc = tChannel0[estimCFDACellStart_90perc];
+            }
+            else {
+                const float timeStamp1 = tChannel0[estimCFDACellStart_90perc];
+                const float timeStamp2 = tChannel0[estimCFDACellStop_90perc];
+
+                const float valY1 = waveChannel0[estimCFDACellStart_90perc];
+                const float valY2 = waveChannel0[estimCFDACellStop_90perc];
+
+                if ( (cfdValueA_90perc < valY1 && cfdValueA_90perc > valY2)
+                     || (cfdValueA_90perc > valY1 && cfdValueA_90perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampA_90perc = (cfdValueA_90perc - intersect)/slope;
+                }
+                else if ( qFuzzyCompare(cfdValueA_90perc, valY1) ) {
+                    timeStampA_90perc = timeStamp1;
+                }
+                else if ( qFuzzyCompare(cfdValueA_90perc, valY2) ) {
+                    timeStampA_90perc = timeStamp2;
+                }
+            }
+
+            if ( estimCFDBCellStart_90perc == estimCFDBCellStop_90perc ) {
+                timeStampB_90perc = tChannel1[estimCFDBCellStart_90perc];
+            }
+            else {
+                const float timeStamp1 = tChannel1[estimCFDBCellStart_90perc];
+                const float timeStamp2 = tChannel1[estimCFDBCellStop_90perc];
+
+                const float valY1 = waveChannel1[estimCFDBCellStart_90perc];
+                const float valY2 = waveChannel1[estimCFDBCellStop_90perc];
+
+                if ( (cfdValueB_90perc < valY1 && cfdValueB_90perc > valY2)
+                     || (cfdValueB_90perc > valY1 && cfdValueB_90perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampB_90perc = (cfdValueB_90perc - intersect)/slope;
+                }
+                else if ( qFuzzyCompare(cfdValueB_90perc, valY1) ) {
+                    timeStampB_90perc = timeStamp1;
+                }
+                else if ( qFuzzyCompare(cfdValueB_90perc, valY2) ) {
+                    timeStampB_90perc = timeStamp2;
                 }
             }
         }
@@ -2893,11 +2358,11 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
             }
@@ -2907,11 +2372,11 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
             }
@@ -2947,25 +2412,6 @@ void DRS4Worker::runSingleThreaded()
             }
         }
 
-        /* rise-time Filter */
-        const int binA = (int)((double)riseTimeFilterABinning*(timeAForYMax-timeStampA)/riseTimeFilterAScale);
-        const int binB = (int)((double)riseTimeFilterBBinning*(timeBForYMax-timeStampB)/riseTimeFilterBScale);
-
-        if ( !(binA < 0
-               || binB < 0
-               || binA >= riseTimeFilterABinning
-               || binB >= riseTimeFilterBBinning) ) {
-            m_riseTimeFilterDataA[binA] ++;
-            m_riseTimeFilterDataB[binB] ++;
-
-            m_riseTimeFilterACounter ++;
-            m_riseTimeFilterBCounter ++;
-
-            m_maxY_RiseTimeSpectrumA = qMax(m_maxY_RiseTimeSpectrumA, m_riseTimeFilterDataA[binA]);
-            m_maxY_RiseTimeSpectrumB = qMax(m_maxY_RiseTimeSpectrumB, m_riseTimeFilterDataB[binB]);
-        }
-
-
         /* determine start and stop branches */
         bool bIsStart_A = false;
         bool bIsStop_A = false;
@@ -2988,6 +2434,33 @@ void DRS4Worker::runSingleThreaded()
         if ( cellPHSB >= DRS4SettingsManager::sharedInstance()->stopChanneBMin()
              && cellPHSB <= DRS4SettingsManager::sharedInstance()->stopChanneBMax() )
             bIsStop_B = true;
+
+        /* rise-time Filter */
+        if ((int)timeStampA_10perc != -1
+                || (int)timeStampA_90perc != -1) {
+            const int binA = (int)((double)riseTimeFilterABinning*(timeStampA_90perc-timeStampA_10perc)/riseTimeFilterAScale);
+
+            if ( !(binA < 0 || binA >= riseTimeFilterABinning) ) {
+                if (bIsStart_A || bIsStop_A) {
+                    m_riseTimeFilterDataA[binA] ++;
+                    m_riseTimeFilterACounter ++;
+                    m_maxY_RiseTimeSpectrumA = qMax(m_maxY_RiseTimeSpectrumA, m_riseTimeFilterDataA[binA]);
+                }
+            }
+        }
+
+        if ((int)timeStampB_10perc != -1
+                || (int)timeStampB_90perc != -1) {
+            const int binB = (int)((double)riseTimeFilterBBinning*(timeStampB_90perc-timeStampB_10perc)/riseTimeFilterBScale);
+
+            if ( !(binB < 0 || binB >= riseTimeFilterBBinning) ) {
+                if (bIsStart_B || bIsStop_B) {
+                    m_riseTimeFilterDataB[binB] ++;
+                    m_riseTimeFilterBCounter ++;
+                    m_maxY_RiseTimeSpectrumB = qMax(m_maxY_RiseTimeSpectrumB, m_riseTimeFilterDataB[binB]);
+                }
+            }
+        }
 
         /* apply area-filter and reject pulses if one of both appears outside the windows */
         if (bPulseAreaFilter) {
@@ -3012,11 +2485,11 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
             }
@@ -3026,13 +2499,58 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
+            }
+
+            if (y_AInside) {
+                /* incremental (mean ; stddev) */
+                double meanA  = m_areaFilterCollectedDataA[indexPHSA].x();
+                double stddevA = m_areaFilterCollectedDataA[indexPHSA].y();
+
+                m_areaFilterCollectedDataCounterA[indexPHSA] ++;
+
+                if (m_areaFilterCollectedDataCounterA[indexPHSA] >= 2) {
+                    stddevA = ((m_areaFilterCollectedDataCounterA[indexPHSA]-2)/(m_areaFilterCollectedDataCounterA[indexPHSA]-1))*stddevA*stddevA + (1.0/m_areaFilterCollectedDataCounterA[indexPHSA])*(areaA-meanA)*(areaA-meanA);
+                    stddevA = sqrt(stddevA);
+                }
+                else
+                    stddevA = 0.0;
+
+                meanA = (1/(float)m_areaFilterCollectedDataCounterA[indexPHSA])*(areaA + float(m_areaFilterCollectedDataCounterA[indexPHSA] - 1)*meanA);
+
+
+                m_areaFilterCollectedDataA[indexPHSA].setX(meanA);
+                m_areaFilterCollectedDataA[indexPHSA].setY(stddevA);
+
+                m_areaFilterCollectedACounter ++;
+            }
+
+            if (y_BInside) {
+                /* incremental (mean ; stddev) */
+                double meanB  = m_areaFilterCollectedDataB[indexPHSB].x();
+                double stddevB = m_areaFilterCollectedDataB[indexPHSB].y();
+
+                m_areaFilterCollectedDataCounterB[indexPHSB] ++;
+
+                if (m_areaFilterCollectedDataCounterB[indexPHSB] >= 2) {
+                    stddevB = ((m_areaFilterCollectedDataCounterB[indexPHSB]-2)/(m_areaFilterCollectedDataCounterB[indexPHSB]-1))*stddevB*stddevB + (1.0/m_areaFilterCollectedDataCounterB[indexPHSB])*(areaB-meanB)*(areaB-meanB);
+                    stddevB = sqrt(stddevB);
+                }
+                else
+                    stddevB = 0.0;
+
+                meanB = (1/(float)m_areaFilterCollectedDataCounterB[indexPHSB])*(areaB + float(m_areaFilterCollectedDataCounterB[indexPHSB] - 1)*meanB);
+
+                m_areaFilterCollectedDataB[indexPHSB].setX(meanB);
+                m_areaFilterCollectedDataB[indexPHSB].setY(stddevB);
+
+                m_areaFilterCollectedBCounter ++;
             }
 
             if ( !y_AInside || !y_BInside ) {
@@ -3042,8 +2560,8 @@ void DRS4Worker::runSingleThreaded()
 
         /* apply rise time-filter and reject pulses if one of both appears outside the windows */
         if (bPulseRiseTimeFilter) {
-            const int binA = (int)((double)riseTimeFilterABinning*(timeAForYMax-timeStampA)/riseTimeFilterAScale);
-            const int binB = (int)((double)riseTimeFilterBBinning*(timeBForYMax-timeStampB)/riseTimeFilterBScale);
+            const int binA = (int)((double)riseTimeFilterABinning*(timeStampA_90perc-timeStampA_10perc)/riseTimeFilterAScale);
+            const int binB = (int)((double)riseTimeFilterBBinning*(timeStampB_90perc-timeStampB_10perc)/riseTimeFilterBScale);
 
             bool bAcceptedA = false;
             bool bAcceptedB = false;
@@ -3059,11 +2577,11 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
             }
@@ -3073,11 +2591,11 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
             }
@@ -3153,11 +2671,11 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel0, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel0S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
             }
@@ -3167,11 +2685,11 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()
                      && !DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch()) {
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)tChannel1, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
 
                     if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeFalsePulse((const char*)waveChannel1S, sizeOfWave)) {
-                        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteFalsePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                     }
                 }
             }
@@ -3230,15 +2748,17 @@ void DRS4Worker::runSingleThreaded()
                     }
                 }
 
-                /*if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
-                    m_phsA[cellPHSA] ++;
-                    m_phsACounts ++;
-                }
+                /******* count here for phs created of valid lifetimes ********************/
+                //if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    //m_phsA[cellPHSA] ++;
+                    //m_phsACounts ++;
+                //}
 
-                if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
-                    m_phsB[cellPHSB] ++;
-                    m_phsBCounts ++;
-                }*/
+                //if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                    //m_phsB[cellPHSB] ++;
+                    //m_phsBCounts ++;
+                //}
+                /******* count here for phs created of valid lifetimes ********************/
 
                 /* calculate normalized persistance data */
                 if (bPersistance && bValidLifetime2 && !bBurstMode) {
@@ -3269,20 +2789,20 @@ void DRS4Worker::runSingleThreaded()
                     if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
                         if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
 
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
                         }
                         else {
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
 
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
                         }
                     }
@@ -3384,6 +2904,7 @@ void DRS4Worker::runSingleThreaded()
                     }
                 }
 
+                /*******count here for phs created of valid lifetimes********************/
                 /*if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
                     m_phsA[cellPHSA] ++;
                     m_phsACounts ++;
@@ -3394,24 +2915,26 @@ void DRS4Worker::runSingleThreaded()
                     m_phsBCounts ++;
                 }*/
 
+                 /*******count here for phs created of valid lifetimes********************/
+
                 if (bValidLifetime2) {
                     if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
                         if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
 
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
                         }
                         else {
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
 
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
-                                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                             }
                         }
                     }
@@ -3474,20 +2997,20 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
                     if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
-                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                         }
 
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
-                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                         }
                     }
                     else {
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
-                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                         }
 
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
-                            DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
                         }
                     }
                 }
@@ -3495,628 +3018,6 @@ void DRS4Worker::runSingleThreaded()
         } //end prompt
     }
 }
-
-#ifdef __DEPRECATED_WORKER
-void DRS4Worker::calcLifetimesInBurstMode(DRS4LifetimeData *ltData, QVector<QPointF> *persistanceA, QVector<QPointF> *persistanceB)
-{
-    if ( !ltData
-         || !m_dataExchange
-         || !persistanceA
-         || !persistanceB)
-        return;
-
-    int convertToBinA = -1;
-    int convertToBinB = -1;
-
-    if ( DRS4SettingsManager::sharedInstance()->isPositiveSignal() ) { //rising edge:
-        convertToBinA = ((int)((ltData->amplitudeAInMV/(500.0f))*kNumberOfBins))-1;
-        convertToBinB = ((int)((ltData->amplitudeBInMV/(500.0f))*kNumberOfBins))-1;
-    }
-    else { //falling edge:
-        convertToBinA = ((int)((ltData->amplitudeAInMV/(-500.0f))*kNumberOfBins))-1;
-        convertToBinB = ((int)((ltData->amplitudeBInMV/(-500.0f))*kNumberOfBins))-1;
-    }
-
-    if ( convertToBinA == -1
-         || convertToBinB == -1 )
-        return;
-
-    if ( convertToBinA >= kNumberOfBins || convertToBinA < 0 )
-        return;
-
-    if ( convertToBinB >= kNumberOfBins || convertToBinB < 0 )
-        return;
-
-    bool bIsStart_A = false;
-    bool bIsStop_A = false;
-
-    bool bIsStart_B = false;
-    bool bIsStop_B = false;
-
-    const int startMinA = DRS4SettingsManager::sharedInstance()->startChanneAMin();
-    const int startMaxA = DRS4SettingsManager::sharedInstance()->startChanneAMax();
-    const int stopMinA = DRS4SettingsManager::sharedInstance()->stopChanneAMin();
-    const int stopMaxA = DRS4SettingsManager::sharedInstance()->stopChanneAMax();
-
-    const int startMinB = DRS4SettingsManager::sharedInstance()->startChanneBMin();
-    const int startMaxB = DRS4SettingsManager::sharedInstance()->startChanneBMax();
-    const int stopMinB = DRS4SettingsManager::sharedInstance()->stopChanneBMin();
-    const int stopMaxB = DRS4SettingsManager::sharedInstance()->stopChanneBMax();
-
-    if ( convertToBinA >= startMinA && convertToBinA <= startMaxA ) bIsStart_A = true;
-    if ( convertToBinA >= stopMinA && convertToBinA <= stopMaxA )  bIsStop_A = true;
-    if ( convertToBinB >= startMinB && convertToBinB <= startMaxB ) bIsStart_B = true;
-    if ( convertToBinB >= stopMinB && convertToBinB <= stopMaxB ) bIsStop_B = true;
-
-    //apply area-filter:
-    if ( DRS4SettingsManager::sharedInstance()->isPulseAreaFilterEnabled() ) {
-        const double indexPHSA = (abs(ltData->amplitudeAInMV)/500.0f)*1024.0f;
-        const double indexPHSB = (abs(ltData->amplitudeBInMV)/500.0f)*1024.0f;
-
-        const double yLowerA = *m_dataExchange->m_areaFilterASlopeLower*indexPHSA+*m_dataExchange->m_areaFilterAInterceptLower;
-        const double yUpperA = *m_dataExchange->m_areaFilterASlopeUpper*indexPHSA+*m_dataExchange->m_areaFilterAInterceptUpper;
-
-        const bool y_AInside = (ltData->areaARatio*DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA() >= yLowerA
-                                && ltData->areaARatio*DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA() <=yUpperA);
-
-        const double yLowerB = *m_dataExchange->m_areaFilterBSlopeLower*indexPHSB+*m_dataExchange->m_areaFilterBInterceptLower;
-        const double yUpperB = *m_dataExchange->m_areaFilterBSlopeUpper*indexPHSB+*m_dataExchange->m_areaFilterBInterceptUpper;
-
-        const bool y_BInside = (ltData->areaBRatio*DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB() >= yLowerB
-                                && ltData->areaBRatio*DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB() <=yUpperB);
-
-        if ( !y_AInside
-             || !y_BInside )
-            return;
-    }
-
-    if ( bIsStart_A
-         && bIsStop_B && !DRS4SettingsManager::sharedInstance()->isforceCoincidence()  ) //A-B (Master)
-    {
-        const double ltdiff = ltData->tBInNS - ltData->tAInNS;
-        const int binAB = ((int)round(((((ltdiff)+DRS4SettingsManager::sharedInstance()->offsetInNSAB())/DRS4SettingsManager::sharedInstance()->scalerInNSAB()))*((double)DRS4SettingsManager::sharedInstance()->channelCntAB())))-1;
-
-        const int binMerged = ((int)round(((((ltdiff+DRS4SettingsManager::sharedInstance()->meanCableDelay())+DRS4SettingsManager::sharedInstance()->offsetInNSMerged())/DRS4SettingsManager::sharedInstance()->scalerInNSMerged()))*((double)DRS4SettingsManager::sharedInstance()->channelCntMerged())))-1;
-
-        if ( binAB < 0 || binAB >= m_lifeTimeDataAB.size() )
-            return;
-
-        if ( binAB >= 0
-             && binAB < DRS4SettingsManager::sharedInstance()->channelCntAB() )
-        {
-            if ( DRS4SettingsManager::sharedInstance()->isNegativeLTAccepted() && ltdiff < 0  )
-            {
-                m_lifeTimeDataAB[binAB] ++;
-                m_abCounts ++;
-
-                m_maxY_ABSpectrum = qMax(m_maxY_ABSpectrum, m_lifeTimeDataAB[binAB]);
-            }
-            else if ( ltdiff >= 0 )
-            {
-                m_lifeTimeDataAB[binAB] ++;
-                m_abCounts ++;
-
-                m_maxY_ABSpectrum = qMax(m_maxY_ABSpectrum, m_lifeTimeDataAB[binAB]);
-            }
-
-            m_specABCounterCnt ++;
-
-            if ( DRS4TextFileStreamRangeManager::sharedInstance()->isArmed() ) {
-                if ( binAB >= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMinAB()
-                     && binAB <= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMaxAB() ) {
-                    if ( DRS4TextFileStreamRangeManager::sharedInstance()->isABEnabled() )
-                        DRS4TextFileStreamRangeManager::sharedInstance()->writePulses(&ltData->rawDataA, &ltData->rawDataB);
-                }
-            }
-        }
-
-        if ( binMerged < 0 || binMerged >= m_lifeTimeDataMerged.size() )
-            return;
-
-        if ( binMerged >= 0
-             && binMerged < DRS4SettingsManager::sharedInstance()->channelCntMerged() )
-        {
-            if ( DRS4SettingsManager::sharedInstance()->isNegativeLTAccepted() && ltdiff < 0  )
-            {
-                m_lifeTimeDataMerged[binMerged] ++;
-                m_mergedCounts ++;
-
-                m_maxY_MergedSpectrum = qMax(m_maxY_MergedSpectrum, m_lifeTimeDataMerged[binMerged]);
-            }
-            else if ( ltdiff >= 0 )
-            {
-                m_lifeTimeDataMerged[binMerged] ++;
-                m_mergedCounts ++;
-
-                m_maxY_MergedSpectrum = qMax(m_maxY_MergedSpectrum, m_lifeTimeDataMerged[binMerged]);
-            }
-
-            m_specMergedCounterCnt ++;
-        }
-    }
-    else if (  bIsStart_B
-               && bIsStop_A && !DRS4SettingsManager::sharedInstance()->isforceCoincidence() ) // B-A (Master)
-    {
-        const double ltdiff = ltData->tAInNS - ltData->tBInNS;
-        const int binBA = ((int)round(((((ltdiff)+DRS4SettingsManager::sharedInstance()->offsetInNSBA())/DRS4SettingsManager::sharedInstance()->scalerInNSBA()))*((double)DRS4SettingsManager::sharedInstance()->channelCntBA())))-1;
-
-        const int binMerged = ((int)round(((((ltdiff-DRS4SettingsManager::sharedInstance()->meanCableDelay())+DRS4SettingsManager::sharedInstance()->offsetInNSMerged())/DRS4SettingsManager::sharedInstance()->scalerInNSMerged()))*((double)DRS4SettingsManager::sharedInstance()->channelCntMerged())))-1;
-
-        if ( binBA < 0 || binBA >= m_lifeTimeDataBA.size() )
-            return;
-
-        if ( binBA >= 0
-             && binBA < DRS4SettingsManager::sharedInstance()->channelCntBA() )
-        {
-            if ( DRS4SettingsManager::sharedInstance()->isNegativeLTAccepted() && ltdiff < 0  )
-            {
-                m_lifeTimeDataBA[binBA] ++;
-                m_baCounts ++;
-
-                m_maxY_BASpectrum = qMax(m_maxY_BASpectrum, m_lifeTimeDataBA[binBA]);
-            }
-            else if ( ltdiff >= 0 )
-            {
-                m_lifeTimeDataBA[binBA] ++;
-                m_baCounts ++;
-
-                m_maxY_BASpectrum = qMax(m_maxY_BASpectrum, m_lifeTimeDataBA[binBA]);
-            }
-
-            m_specBACounterCnt ++;
-
-            if ( DRS4TextFileStreamRangeManager::sharedInstance()->isArmed() ) {
-                if ( binBA >= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMinBA()
-                     && binBA <= DRS4TextFileStreamRangeManager::sharedInstance()->ltRangeMaxBA() ) {
-                    if ( DRS4TextFileStreamRangeManager::sharedInstance()->isBAEnabled() )
-                        DRS4TextFileStreamRangeManager::sharedInstance()->writePulses(&ltData->rawDataA, &ltData->rawDataB);
-                }
-            }
-        }
-
-        if ( binMerged < 0 || binMerged >= m_lifeTimeDataMerged.size() )
-            return;
-
-        if ( binMerged >= 0
-             && binMerged < DRS4SettingsManager::sharedInstance()->channelCntMerged() )
-        {
-            if ( DRS4SettingsManager::sharedInstance()->isNegativeLTAccepted() && ltdiff < 0  )
-            {
-                m_lifeTimeDataMerged[binMerged] ++;
-                m_mergedCounts ++;
-
-                m_maxY_MergedSpectrum = qMax(m_maxY_MergedSpectrum, m_lifeTimeDataMerged[binMerged]);
-            }
-            else if ( ltdiff >= 0 )
-            {
-                m_lifeTimeDataMerged[binMerged] ++;
-                m_mergedCounts ++;
-
-                m_maxY_MergedSpectrum = qMax(m_maxY_MergedSpectrum, m_lifeTimeDataMerged[binMerged]);
-            }
-
-            m_specMergedCounterCnt ++;
-        }
-    }
-    else if (  bIsStop_B && bIsStop_A ) //Prompt (Stop A - Stop B) (Slave)
-    {
-        const double ltdiff = ltData->tAInNS - ltData->tBInNS;
-        const int binBA = ((int)round(((((ltdiff)+DRS4SettingsManager::sharedInstance()->offsetInNSCoincidence())/DRS4SettingsManager::sharedInstance()->scalerInNSCoincidence()))*((double)DRS4SettingsManager::sharedInstance()->channelCntCoincindence())))-1;
-
-        if ( binBA < 0 || binBA >= m_lifeTimeDataCoincidence.size() )
-            return;
-
-        if ( binBA >= 0
-             && binBA < DRS4SettingsManager::sharedInstance()->channelCntCoincindence() )
-        {
-            m_lifeTimeDataCoincidence[binBA] ++;
-            m_coincidenceCounts ++;
-
-            m_maxY_CoincidenceSpectrum = qMax(m_maxY_CoincidenceSpectrum, m_lifeTimeDataCoincidence[binBA]);
-
-            m_specCoincidenceCounterCnt ++;
-        }
-
-        /* swap persistance data to member */
-        if (DRS4SettingsManager::sharedInstance()->isPersistanceEnabled()
-                && !DRS4SettingsManager::sharedInstance()->isBurstMode()
-                && !persistanceA->isEmpty()
-                && !persistanceB->isEmpty() ) {
-            m_persistanceDataA.append(*persistanceA);
-            m_persistanceDataB.append(*persistanceB);
-        }
-    }
-}
-#endif
-
-#ifdef __DEPRECATED_WORKER
-void DRS4Worker::runMultiThreaded()
-{
-    const int sizeOfWave = sizeof(float)*kNumberOfBins;
-    const int sizeOfFloat = sizeof(float);
-
-    m_isBlocking = false;
-    m_isRunning = true;
-
-    const int pulsePairChunkSize = DRS4ProgramSettingsManager::sharedInstance()->pulsePairChunkSize();
-
-    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino();
-
-    time_t start;
-    time_t stop;
-
-    time(&start);
-    time(&stop);
-
-    forever {
-        if ( !m_isRunning ) {
-            m_copyData.clear();
-            m_workerConcurrentManager->cancel();
-
-            m_isBlocking = false;
-            return;
-        }
-
-        if ( !DRS4SettingsManager::sharedInstance()->ignoreBusyState() ) {
-            if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
-                while ( !DRS4BoardManager::sharedInstance()->currentBoard()->IsEventAvailable() ) {
-                    while ( !nextSignal() ) {
-                        m_copyData.clear();
-                        m_workerConcurrentManager->cancel();
-
-                        m_isBlocking = true;
-                    }
-                }
-            }
-        }
-
-        while ( !nextSignal() ) {
-            m_copyData.clear();
-            m_workerConcurrentManager->cancel();
-
-            m_isBlocking = true;
-        }
-
-        m_isBlocking = false;
-
-        if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
-            try {
-                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 2); // just 2 waves are necessary! Place them next to each other like (Chn1 & Chn2) to reduce sampling-counts!
-            }
-            catch (...) {
-                continue;
-            }
-        }
-
-        float tChannel0[kNumberOfBins] = {0};
-        float tChannel1[kNumberOfBins] = {0};
-
-        float waveChannel0[kNumberOfBins] = {0};
-        float waveChannel1[kNumberOfBins] = {0};
-
-        std::fill(tChannel0, tChannel0 + sizeof(tChannel0)/sizeOfFloat, 0);
-        std::fill(tChannel1, tChannel1 + sizeof(tChannel1)/sizeOfFloat, 0);
-
-        std::fill(waveChannel0, waveChannel0 + sizeof(waveChannel0)/sizeOfFloat, 0);
-        std::fill(waveChannel1, waveChannel1 + sizeof(waveChannel1)/sizeOfFloat, 0);
-
-
-        if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
-            int retState = 1;
-            int retStateT = 1;
-            int retStateV = kSuccess;
-
-            try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel0);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
-                continue;
-            }
-
-            if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
-                continue;
-            }
-
-            try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel1);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
-                continue;
-            }
-
-            if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
-                continue;
-            }
-
-            try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, waveChannel0);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
-                continue;
-            }
-
-            if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
-                continue;
-            }
-
-            try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, waveChannel1);
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
-                continue;
-            }
-
-            if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
-                continue;
-            }
-
-            try {
-                retState = DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino(); // returns always 1.
-            }
-            catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
-            }
-        }
-        else {
-            if ( !DRS4BoardManager::sharedInstance()->usingStreamDataOnDemoMode() ) {
-                if ( !DRS4PulseGenerator::sharedInstance()->receiveGeneratedPulsePair(tChannel0, waveChannel0, tChannel1, waveChannel1) )
-                    continue;
-            }
-            else {
-                if ( !DRS4StreamDataLoader::sharedInstance()->isArmed() )
-                    continue;
-
-                if ( !DRS4StreamDataLoader::sharedInstance()->receiveGeneratedPulsePair(tChannel0, waveChannel0, tChannel1, waveChannel1) ) {
-                    DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
-                    continue;
-                }
-            }
-        }
-
-        //clear pulse-data:
-        if ( !DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
-            resetPulseA();
-            resetPulseB();
-        }
-
-        //statistics:
-        time(&stop);
-        const double diffTime = difftime(stop, start);
-        if ( diffTime >= 1.0f ) {
-            m_currentPulseCountRateInSeconds = ((double)m_pulseCounterCnt)/diffTime;
-            m_summedPulseCountRateInSeconds += m_currentPulseCountRateInSeconds;
-            m_avgPulseCountRateInSeconds = (m_pulseCounterCntAvg==0)?m_currentPulseCountRateInSeconds:(m_summedPulseCountRateInSeconds/(double)m_pulseCounterCntAvg);
-
-            m_currentABSpecCountRateInSeconds = ((m_specABCounterCnt==0)?0:((double)m_specABCounterCnt)/diffTime);
-            m_summedABSpecCountRateInSeconds += m_currentABSpecCountRateInSeconds;
-            m_avgABSpecCountRateInSeconds = (m_specABCounterCntAvg==0)?m_currentABSpecCountRateInSeconds:(m_summedABSpecCountRateInSeconds/(double)m_specABCounterCntAvg);
-
-            m_currentBASpecCountRateInSeconds = ((m_specBACounterCnt==0)?0:((double)m_specBACounterCnt)/diffTime);
-            m_summedBASpecCountRateInSeconds += m_currentBASpecCountRateInSeconds;
-            m_avgBASpecCountRateInSeconds = (m_specBACounterCntAvg==0)?m_currentBASpecCountRateInSeconds:(m_summedBASpecCountRateInSeconds/(double)m_specBACounterCntAvg);
-
-            m_currentMergedSpecCountRateInSeconds = ((m_specMergedCounterCnt==0)?0:((double)m_specMergedCounterCnt)/diffTime);
-            m_summedMergedSpecCountRateInSeconds += m_currentMergedSpecCountRateInSeconds;
-            m_avgMergedSpecCountRateInSeconds = (m_specMergedCounterCntAvg==0)?m_currentMergedSpecCountRateInSeconds:(m_summedMergedSpecCountRateInSeconds/(double)m_specMergedCounterCntAvg);
-
-            m_currentCoincidenceSpecCountRateInSeconds = ((m_specCoincidenceCounterCnt==0)?0:((double)m_specCoincidenceCounterCnt)/diffTime);
-            m_summedCoincidenceSpecCountRateInSeconds += m_currentCoincidenceSpecCountRateInSeconds;
-            m_avgCoincidenceSpecCountRateInSeconds = (m_specCoincidencCounterCntAvg==0)?m_currentCoincidenceSpecCountRateInSeconds:(m_summedCoincidenceSpecCountRateInSeconds/(double)m_specCoincidencCounterCntAvg);
-
-            time(&start);
-
-            m_pulseCounterCnt = 0;
-            m_pulseCounterCntAvg ++;
-
-            m_specABCounterCnt = 0;
-            m_specBACounterCnt = 0;
-            m_specMergedCounterCnt = 0;
-            m_specCoincidenceCounterCnt = 0;
-
-            m_specABCounterCntAvg ++;
-            m_specBACounterCntAvg ++;
-            m_specMergedCounterCntAvg ++;
-            m_specCoincidencCounterCntAvg ++;
-        }
-
-        m_pulseCounterCnt ++;
-
-
-        DRS4ConcurrentCopyInputData copyData;
-
-        copyData.m_xMinA = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
-        copyData.m_xMaxA = 0.0f;
-
-        copyData.m_xMinB = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
-        copyData.m_xMaxB = 0.0f;
-
-        copyData.m_yMinA = 500.0f;
-        copyData.m_yMaxA = -500.0f;
-
-        copyData.m_yMinB = 500.0f;
-        copyData.m_yMaxB = -500.0f;
-
-        copyData.m_yMinASort = 500.0f;
-        copyData.m_yMaxASort = -500.0f;
-
-        copyData.m_yMinBSort = 500.0f;
-        copyData.m_yMaxBSort = -500.0f;
-
-        copyData.m_cellYAMax = -1;
-        copyData.m_cellYAMin = -1;
-        copyData.m_cellYBMax = -1;
-        copyData.m_cellYBMin = -1;
-
-        copyData.m_numberOfCubicSplinePoints = /*DRS4SettingsManager::sharedInstance()->numberOfCubicSplinePoints()*/1024;
-        copyData.m_isPositiveSignalPolarity = DRS4SettingsManager::sharedInstance()->isPositiveSignal();
-        copyData.m_isLinearInterpolation = /*DRS4SettingsManager::sharedInstance()->usingLinearSpline()*/true;
-
-        copyData.m_cfdLevelA = DRS4SettingsManager::sharedInstance()->cfdLevelA();
-        copyData.m_cfdLevelB = DRS4SettingsManager::sharedInstance()->cfdLevelB();
-
-        copyData.m_usingBurstMode = DRS4SettingsManager::sharedInstance()->isBurstMode();
-
-        copyData.m_startMinA = DRS4SettingsManager::sharedInstance()->startChanneAMin();
-        copyData.m_startMaxA = DRS4SettingsManager::sharedInstance()->startChanneAMax();
-        copyData.m_stopMinA = DRS4SettingsManager::sharedInstance()->stopChanneAMin();
-        copyData.m_stopMaxA = DRS4SettingsManager::sharedInstance()->stopChanneAMax();
-
-        copyData.m_startMinB = DRS4SettingsManager::sharedInstance()->startChanneBMin();
-        copyData.m_startMaxB = DRS4SettingsManager::sharedInstance()->startChanneBMax();
-        copyData.m_stopMinB = DRS4SettingsManager::sharedInstance()->stopChanneBMin();
-        copyData.m_stopMaxB = DRS4SettingsManager::sharedInstance()->stopChanneBMax();
-
-        copyData.m_isPulseAreaFilterEnabled = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterEnabled();
-        copyData.m_isPulseAreaFilterPlotEnabled = DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled();
-
-        copyData.m_pulseAreaFilterBinningA = DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA();
-        copyData.m_pulseAreaFilterBinningB = DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB();
-
-        copyData.m_pulseAreaFilterNormalizationA = DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationA();
-        copyData.m_pulseAreaFilterNormalizationB = DRS4SettingsManager::sharedInstance()->pulseAreaFilterNormalizationB();
-
-        copyData.m_channelCntCoincindence = DRS4SettingsManager::sharedInstance()->channelCntCoincindence();
-        copyData.m_channelCntAB = DRS4SettingsManager::sharedInstance()->channelCntAB();
-        copyData.m_channelCntBA = DRS4SettingsManager::sharedInstance()->channelCntBA();
-        copyData.m_channelCntMerged = DRS4SettingsManager::sharedInstance()->channelCntMerged();
-
-        copyData.m_offsetInNSCoincidence = DRS4SettingsManager::sharedInstance()->offsetInNSCoincidence();
-        copyData.m_offsetInNSAB = DRS4SettingsManager::sharedInstance()->offsetInNSAB();
-        copyData.m_offsetInNSBA = DRS4SettingsManager::sharedInstance()->offsetInNSBA();
-        copyData.m_offsetInNSMerged = DRS4SettingsManager::sharedInstance()->offsetInNSMerged();
-
-        copyData.m_scalerInNSCoincidence = DRS4SettingsManager::sharedInstance()->scalerInNSCoincidence();
-        copyData.m_scalerInNSAB = DRS4SettingsManager::sharedInstance()->scalerInNSAB();
-        copyData.m_scalerInNSBA = DRS4SettingsManager::sharedInstance()->scalerInNSBA();
-        copyData.m_scalerInNSMerged = DRS4SettingsManager::sharedInstance()->scalerInNSMerged();
-
-        copyData.m_meanCableDelay = DRS4SettingsManager::sharedInstance()->meanCableDelay();
-
-        copyData.m_isforceCoincidence = DRS4SettingsManager::sharedInstance()->isforceCoincidence();
-        copyData.m_isNegativeLTAccepted = DRS4SettingsManager::sharedInstance()->isNegativeLTAccepted();
-
-        copyData.m_areaFilterASlopeUpper = *m_dataExchange->m_areaFilterASlopeUpper;
-        copyData.m_areaFilterAInterceptUpper = *m_dataExchange->m_areaFilterAInterceptUpper;
-
-        copyData.m_areaFilterASlopeLower = *m_dataExchange->m_areaFilterASlopeLower;
-        copyData.m_areaFilterAInterceptLower = *m_dataExchange->m_areaFilterAInterceptLower;
-
-        copyData.m_areaFilterBSlopeUpper = *m_dataExchange->m_areaFilterBSlopeUpper;
-        copyData.m_areaFilterBInterceptUpper = *m_dataExchange->m_areaFilterBInterceptUpper;
-
-        copyData.m_areaFilterBSlopeLower = *m_dataExchange->m_areaFilterBSlopeLower;
-        copyData.m_areaFilterBInterceptLower = *m_dataExchange->m_areaFilterBInterceptLower;
-
-        copyData.m_startCell = DRS4SettingsManager::sharedInstance()->startCell();
-        copyData.m_endRange = DRS4SettingsManager::sharedInstance()->stopCell();
-        copyData.m_stopCellWidth = (kNumberOfBins - DRS4SettingsManager::sharedInstance()->stopCell());
-        copyData.m_cellWidth = (kNumberOfBins - copyData.m_startCell - copyData.m_stopCellWidth);
-
-        copyData.m_dataVecXA.resize(copyData.m_cellWidth);
-        copyData.m_dataVecYA.resize(copyData.m_cellWidth);
-
-        copyData.m_dataVecXB.resize(copyData.m_cellWidth);
-        copyData.m_dataVecYB.resize(copyData.m_cellWidth);
-
-        //prepare pulse data:
-        for ( int a = copyData.m_startCell ; a < copyData.m_endRange ; ++ a ) {
-            copyData.m_xMinA = qMin(copyData.m_xMinA, tChannel0[a]);
-            copyData.m_xMaxA = qMax(copyData.m_xMaxA, tChannel0[a]);
-
-            copyData.m_xMinB = qMin(copyData.m_xMinB, tChannel1[a]);
-            copyData.m_xMaxB = qMax(copyData.m_xMaxB, tChannel1[a]);
-
-            if ( waveChannel0[a] >= copyData.m_yMaxA ) {
-                copyData.m_yMaxA = waveChannel0[a];
-                copyData.m_cellYAMax = a;
-            }
-
-            if ( waveChannel1[a] >= copyData.m_yMaxB ) {
-                copyData.m_yMaxB = waveChannel1[a];
-                copyData.m_cellYBMax = a;
-            }
-
-            if ( waveChannel0[a] <= copyData.m_yMinA ) {
-                copyData.m_yMinA = waveChannel0[a];
-                copyData.m_cellYAMin = a;
-            }
-
-            if ( waveChannel1[a] <= copyData.m_yMinB ) {
-                copyData.m_yMinB = waveChannel1[a];
-                copyData.m_cellYBMin = a;
-            }
-
-            if ( !DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
-                /* visualization */
-                m_pListChannelA.append(QPointF(tChannel0[a], waveChannel0[a]));
-                m_pListChannelB.append(QPointF(tChannel1[a], waveChannel1[a]));
-            }
-
-            const int it = (a - copyData.m_startCell);
-
-            /* pulse meta data */
-            copyData.m_dataVecXA[it] = tChannel0[a];
-            copyData.m_dataVecYA[it] = waveChannel0[a];
-
-            copyData.m_dataVecXB[it] = tChannel1[a];
-            copyData.m_dataVecYB[it] = waveChannel1[a];
-        }
-
-        copyData.m_yMaxASort = copyData.m_yMaxA;
-        copyData.m_yMinASort = copyData.m_yMinA;
-
-        copyData.m_yMaxBSort = copyData.m_yMaxB;
-        copyData.m_yMinBSort = copyData.m_yMinB;
-
-        if (copyData.m_cellYAMax == -1
-                || copyData.m_cellYAMin == -1
-                || copyData.m_cellYBMax == -1
-                || copyData.m_cellYBMin == -1
-                || qFuzzyCompare(copyData.m_yMinA, copyData.m_yMaxA)
-                || qFuzzyCompare(copyData.m_yMinB, copyData.m_yMaxB)
-                || copyData.m_dataVecXA.empty()
-                || copyData.m_dataVecYA.empty()
-                || copyData.m_dataVecXB.empty()
-                || copyData.m_dataVecYB.empty())
-            continue;
-
-        if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel0, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel0, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel1, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-
-            if (!DRS4StreamManager::sharedInstance()->write((const char*)waveChannel1, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
-            }
-        }
-
-        m_copyData.append(copyData);
-
-        if ( m_copyData.size() == pulsePairChunkSize ) {
-            m_workerConcurrentManager->add(m_copyData);
-            m_copyData.clear();
-        }
-    } //end forever
-}
-#endif
 
 void DRS4Worker::runMultiThreaded()
 {
@@ -4203,12 +3104,12 @@ void DRS4Worker::runMultiThreaded()
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel0);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -4216,12 +3117,12 @@ void DRS4Worker::runMultiThreaded()
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel1);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -4229,12 +3130,12 @@ void DRS4Worker::runMultiThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, inputData.m_waveChannel0);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -4242,12 +3143,12 @@ void DRS4Worker::runMultiThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, inputData.m_waveChannel1);
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -4255,7 +3156,7 @@ void DRS4Worker::runMultiThreaded()
                 retState = DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino(); // returns always 1.
             }
             catch ( ... ) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
             }
         }
         else {
@@ -4268,7 +3169,7 @@ void DRS4Worker::runMultiThreaded()
                     continue;
 
                 if ( !DRS4StreamDataLoader::sharedInstance()->receiveGeneratedPulsePair(inputData.m_tChannel0, inputData.m_waveChannel0, inputData.m_tChannel1, inputData.m_waveChannel1) ) {
-                    DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
+                    // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
                     continue;
                 }
             }
@@ -4582,19 +3483,19 @@ void DRS4Worker::runMultiThreaded()
 
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_tChannel0, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(!bIntrinsicFilterA?inputData.m_waveChannel0:waveChannel0S), sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_tChannel1, sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(!bIntrinsicFilterB?inputData.m_waveChannel1:waveChannel1S), sizeOfWave)) {
-                DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
             }
         }
 
@@ -4691,12 +3592,31 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
         float cfdValueA = 0.0f;
         float cfdValueB = 0.0f;
 
+        float cfdValueA_10perc = 0.0f;
+        float cfdValueB_10perc = 0.0f;
+
+        float cfdValueA_90perc = 0.0f;
+        float cfdValueB_90perc = 0.0f;
+
         /* inline CFD cell estimation */
         int estimCFDACellStart = -1;
         int estimCFDBCellStart = -1;
 
         int estimCFDACellStop = -1;
         int estimCFDBCellStop = -1;
+
+        /* inline CF (10%, 90%) cell estimation >> rise-time estimation (delta illumination signal) */
+        int estimCFDACellStart_10perc = -1;
+        int estimCFDBCellStart_10perc = -1;
+
+        int estimCFDACellStart_90perc = -1;
+        int estimCFDBCellStart_90perc = -1;
+
+        int estimCFDACellStop_10perc = -1;
+        int estimCFDBCellStop_10perc = -1;
+
+        int estimCFDACellStop_90perc = -1;
+        int estimCFDBCellStop_90perc = -1;
 
         int cfdACounter = 0;
         int cfdBCounter = 0;
@@ -4708,6 +3628,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
         const int reducedEndRange = (inputData.m_endRange - 1);
         const int reducedCellWidth = (inputData.m_cellWidth - 1);
         const int extendedStartCell = (inputData.m_startCell + 1);
+
 
         bool bForceReject = false;
 
@@ -4727,6 +3648,10 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 if (inputData.m_positiveSignal) {
                     cfdValueA = inputData.m_cfdA*yMaxA;
 
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueA_10perc = 0.1*yMaxA;
+                    cfdValueA_90perc = 0.9*yMaxA;
+
                     cfdACounter = 0;
                 }
             }
@@ -4737,6 +3662,10 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
 
                 if (inputData.m_positiveSignal) {
                     cfdValueB = inputData.m_cfdB*yMaxB;
+
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueB_10perc = 0.1*yMaxB;
+                    cfdValueB_90perc = 0.9*yMaxB;
 
                     cfdBCounter = 0;
                 }
@@ -4749,6 +3678,10 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 if (!inputData.m_positiveSignal) {
                     cfdValueA = inputData.m_cfdA*yMinA;
 
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueA_10perc = 0.1*yMinA;
+                    cfdValueA_90perc = 0.9*yMinA;
+
                     cfdACounter = 0;
                 }
             }
@@ -4759,6 +3692,10 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
 
                 if (!inputData.m_positiveSignal) {
                     cfdValueB = inputData.m_cfdB*yMinB;
+
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    cfdValueB_10perc = 0.1*yMinB;
+                    cfdValueB_90perc = 0.9*yMinB;
 
                     cfdBCounter = 0;
                 }
@@ -4789,6 +3726,10 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 if ( bInRangeA ) {
                     const bool cfdLevelInRangeA = inputData.m_positiveSignal?(inputData.m_waveChannel0[a] > cfdValueA && inputData.m_waveChannel0[aDecr] < cfdValueA):(inputData.m_waveChannel0[a] < cfdValueA && inputData.m_waveChannel0[aDecr] > cfdValueA);
 
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    const bool cfdLevelInRangeA_10perc = inputData.m_positiveSignal?(inputData.m_waveChannel0[a] > cfdValueA_10perc && inputData.m_waveChannel0[aDecr] < cfdValueA_10perc):(inputData.m_waveChannel0[a] < cfdValueA_10perc && inputData.m_waveChannel0[aDecr] > cfdValueA_10perc);
+                    const bool cfdLevelInRangeA_90perc = inputData.m_positiveSignal?(inputData.m_waveChannel0[a] > cfdValueA_90perc && inputData.m_waveChannel0[aDecr] < cfdValueA_90perc):(inputData.m_waveChannel0[a] < cfdValueA_90perc && inputData.m_waveChannel0[aDecr] > cfdValueA_90perc);
+
                     if ( cfdLevelInRangeA ) {
                         estimCFDACellStart = aDecr;
                         estimCFDACellStop = a;
@@ -4807,10 +3748,42 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
 
                         cfdACounter ++;
                     }
+
+                    /* 10% CF Level */
+                    if ( cfdLevelInRangeA_10perc ) {
+                        estimCFDACellStart_10perc = aDecr;
+                        estimCFDACellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel0[a], cfdValueA_10perc) ) {
+                        estimCFDACellStart_10perc = a;
+                        estimCFDACellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel0[aDecr], cfdValueA_10perc) ) {
+                        estimCFDACellStart_10perc = aDecr;
+                        estimCFDACellStop_10perc = aDecr;
+                    }
+
+                    /* 90% CF Level */
+                    if ( cfdLevelInRangeA_90perc ) {
+                        estimCFDACellStart_90perc = aDecr;
+                        estimCFDACellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel0[a], cfdValueA_90perc) ) {
+                        estimCFDACellStart_90perc = a;
+                        estimCFDACellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel0[aDecr], cfdValueA_90perc) ) {
+                        estimCFDACellStart_90perc = aDecr;
+                        estimCFDACellStop_90perc = aDecr;
+                    }
                 }
 
                 if ( bInRangeB ) {
                     const bool cfdLevelInRangeB = inputData.m_positiveSignal?(inputData.m_waveChannel1[a] > cfdValueB && inputData.m_waveChannel1[aDecr] < cfdValueB):(inputData.m_waveChannel1[a] < cfdValueB && inputData.m_waveChannel1[aDecr] > cfdValueB);
+
+                    /* t - rise according to the spec definition of a delta illumination signal */
+                    const bool cfdLevelInRangeB_10perc = inputData.m_positiveSignal?(inputData.m_waveChannel1[a] > cfdValueB_10perc && inputData.m_waveChannel1[aDecr] < cfdValueB_10perc):(inputData.m_waveChannel1[a] < cfdValueB_10perc && inputData.m_waveChannel1[aDecr] > cfdValueB_10perc);
+                    const bool cfdLevelInRangeB_90perc = inputData.m_positiveSignal?(inputData.m_waveChannel1[a] > cfdValueB_90perc && inputData.m_waveChannel1[aDecr] < cfdValueB_90perc):(inputData.m_waveChannel1[a] < cfdValueB_90perc && inputData.m_waveChannel1[aDecr] > cfdValueB_90perc);
 
                     if ( cfdLevelInRangeB  ) {
                         estimCFDBCellStart = aDecr;
@@ -4829,6 +3802,34 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                         estimCFDBCellStop = aDecr;
 
                         cfdBCounter ++;
+                    }
+
+                    /* 10% CF Level */
+                    if ( cfdLevelInRangeB_10perc ) {
+                        estimCFDBCellStart_10perc = aDecr;
+                        estimCFDBCellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel1[a], cfdValueB_10perc) ) {
+                        estimCFDBCellStart_10perc = a;
+                        estimCFDBCellStop_10perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel1[aDecr], cfdValueB_10perc) ) {
+                        estimCFDBCellStart_10perc = aDecr;
+                        estimCFDBCellStop_10perc = aDecr;
+                    }
+
+                    /* 90% CF Level */
+                    if ( cfdLevelInRangeB_90perc ) {
+                        estimCFDBCellStart_90perc = aDecr;
+                        estimCFDBCellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel1[a], cfdValueB_90perc) ) {
+                        estimCFDBCellStart_90perc = a;
+                        estimCFDBCellStop_90perc = a;
+                    }
+                    else if ( qFuzzyCompare(inputData.m_waveChannel1[aDecr], cfdValueB_90perc) ) {
+                        estimCFDBCellStart_90perc = aDecr;
+                        estimCFDBCellStop_90perc = aDecr;
                     }
                 }
             }
@@ -4865,7 +3866,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 || (((int)yMinA == (int)yMaxA) || ((int)yMinB == (int)yMaxB)))
             continue;
 
-        /* light-weight filtering of wrong pulses: */
+        /* light-weight filtering of wrong events: */
         if ( inputData.m_positiveSignal ) {
             if ( (abs(yMinA) > abs(yMaxA))
                  || (abs(yMinB) > abs(yMaxB)) )
@@ -4897,7 +3898,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 continue;
         }
 
-        /* reject artefacts */
+        /* reject artifacts */
         if ( cfdBCounter > 1 || cfdBCounter == 0
              || cfdACounter > 1 || cfdACounter == 0 )
             continue;
@@ -4932,13 +3933,15 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 }
                     break;
                 }
-            } else if (inputData.m_bUsingTinoKluge) {
+            }
+            else if (inputData.m_bUsingTinoKluge) {
                 tkSplineA.setType(SplineType::Cubic);
                 tkSplineB.setType(SplineType::Cubic);
 
                 tkSplineA.setPoints(arrayDataTKX_A, arrayDataTKY_A);
                 tkSplineB.setPoints(arrayDataTKX_B, arrayDataTKY_B);
-            } else if (inputData.m_bUsingLinearInterpol) {
+            }
+            else if (inputData.m_bUsingLinearInterpol) {
                 /* nothing yet */
             }
         }
@@ -4947,7 +3950,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             alglib::polynomialbuild(arrayDataX_B, arrayDataY_B, baryCentricInterpolantB);
         }
 
-        /* calculate and normalize pulse area for subsequent filtering */
+        /* calculate and normalize pulse area for subsequent area filtering */
         if (inputData.m_bPulseAreaPlot
                 || inputData.m_bPulseAreaFilter) {
             const float rat = 5120*((float)inputData.m_cellWidth/((float)kNumberOfBins));
@@ -4968,7 +3971,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             timeBForYMax = inputData.m_tChannel1[cellYBMin];
         }
 
-        if (qFuzzyCompare(timeAForYMax, -1) || qFuzzyCompare(timeBForYMax, -1))
+        if (qFuzzyCompare(timeAForYMax, -1)
+                || qFuzzyCompare(timeBForYMax, -1))
             continue;
 
         /* determine max/min more precisely */
@@ -4995,7 +3999,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 const float valYA = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, t_A)):(tkSplineA(t_A))):(alglib::barycentriccalc(baryCentricInterpolantA, t_A));
                 const float valYB = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, t_B)):(tkSplineB(t_B))):(alglib::barycentriccalc(baryCentricInterpolantB, t_B));
 
-                /* modify min/max to calculate the CFD in high accuracy, subsequently */
+                /* modify min/max to calculate the CF level in high accuracy, subsequently */
                 if (valYA > yMaxA) {
                     yMaxA = valYA;
 
@@ -5057,7 +4061,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             outputData.m_phsB.append(cellPHSB);
         }
 
-        /* CFD levels valid? */
+        /* CF levels valid? */
         if (estimCFDACellStart == -1
                 || estimCFDACellStop == -1
                 || estimCFDBCellStart == -1
@@ -5091,7 +4095,7 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
         double timeStampB = -1.0f;
 
         if (!inputData.m_bUsingLinearInterpol) {
-            /* finding correct CFD timestamp within the estimated CFD bracket index region */
+            /* find correct CF level timestamp within the estimated CFD bracket index region */
             if ( estimCFDACellStart == estimCFDACellStop ) {
                 timeStampA = inputData.m_tChannel0[estimCFDACellStart];
             }
@@ -5112,11 +4116,13 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                         timeStampA = (cfdValueA - intersect)/slope;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueA, valY1) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueA, valY1) ) {
                         timeStampA = timeStamp1;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueA, valY2) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueA, valY2) ) {
                         timeStampA = timeStamp2;
 
                         break;
@@ -5144,11 +4150,13 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                         timeStampB = (cfdValueB - intersect)/slope;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueB, valY1) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueB, valY1) ) {
                         timeStampB = timeStamp1;
 
                         break;
-                    } else if ( qFuzzyCompare(cfdValueB, valY2) ) {
+                    }
+                    else if ( qFuzzyCompare(cfdValueB, valY2) ) {
                         timeStampB = timeStamp2;
 
                         break;
@@ -5174,9 +4182,11 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                     const double intersect = valY1 - slope*timeStamp1;
 
                     timeStampA = (cfdValueA - intersect)/slope;
-                } else if ( qFuzzyCompare(cfdValueA, valY1) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueA, valY1) ) {
                     timeStampA = timeStamp1;
-                } else if ( qFuzzyCompare(cfdValueA, valY2) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueA, valY2) ) {
                     timeStampA = timeStamp2;
                 }
             }
@@ -5197,10 +4207,264 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                     const double intersect = valY1 - slope*timeStamp1;
 
                     timeStampB = (cfdValueB - intersect)/slope;
-                } else if ( qFuzzyCompare(cfdValueB, valY1) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueB, valY1) ) {
                     timeStampB = timeStamp1;
-                } else if ( qFuzzyCompare(cfdValueB, valY2) ) {
+                }
+                else if ( qFuzzyCompare(cfdValueB, valY2) ) {
                     timeStampB = timeStamp2;
+                }
+            }
+        }
+
+        double timeStampA_10perc = -1.0f;
+        double timeStampB_10perc = -1.0f;
+
+        if (!inputData.m_bUsingLinearInterpol) {
+            /* finding correct CF (10%) timestamp within the estimated CF (10%) bracketed index region */
+            if ( estimCFDACellStart_10perc == estimCFDACellStop_10perc ) {
+                timeStampA_10perc = inputData.m_tChannel0[estimCFDACellStart_10perc];
+            }
+            else {
+                const double timeIncr = (inputData.m_tChannel0[estimCFDACellStop_10perc] - inputData.m_tChannel0[estimCFDACellStart_10perc])/((double)inputData.m_intraRenderPoints);
+                for ( int i = 0 ; i < inputData.m_intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = inputData.m_tChannel0[estimCFDACellStart_10perc] + (double)i*timeIncr;
+                    const double timeStamp2 = inputData.m_tChannel0[estimCFDACellStart_10perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, timeStamp1)):(tkSplineA(timeStamp1))):(alglib::barycentriccalc(baryCentricInterpolantA, timeStamp1));
+                    const float valY2 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, timeStamp2)):(tkSplineA(timeStamp2))):(alglib::barycentriccalc(baryCentricInterpolantA, timeStamp2));
+
+                    if ( (cfdValueA_10perc < valY1 && cfdValueA_10perc > valY2)
+                         || (cfdValueA_10perc > valY1 && cfdValueA_10perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampA_10perc = (cfdValueA_10perc - intersect)/slope;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_10perc, valY1) ) {
+                        timeStampA_10perc = timeStamp1;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_10perc, valY2) ) {
+                        timeStampA_10perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+
+            if ( estimCFDBCellStart_10perc == estimCFDBCellStop_10perc ) {
+                timeStampB_10perc = inputData.m_tChannel1[estimCFDBCellStart_10perc];
+            }
+            else {
+                const double timeIncr = (inputData.m_tChannel1[estimCFDBCellStop_10perc] - inputData.m_tChannel1[estimCFDBCellStart_10perc])/((double)inputData.m_intraRenderPoints);
+                for ( int i = 0 ; i < inputData.m_intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = inputData.m_tChannel1[estimCFDBCellStart_10perc] + (double)i*timeIncr;
+                    const double timeStamp2 = inputData.m_tChannel1[estimCFDBCellStart_10perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, timeStamp1)):(tkSplineB(timeStamp1))):(alglib::barycentriccalc(baryCentricInterpolantB, timeStamp1));
+                    const float valY2 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, timeStamp2)):(tkSplineB(timeStamp2))):(alglib::barycentriccalc(baryCentricInterpolantB, timeStamp2));
+
+                    if ( (cfdValueB_10perc < valY1 && cfdValueB_10perc > valY2)
+                         || (cfdValueB_10perc > valY1 && cfdValueB_10perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampB_10perc = (cfdValueB_10perc - intersect)/slope;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueB_10perc, valY1) ) {
+                        timeStampB_10perc = timeStamp1;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueB_10perc, valY2) ) {
+                        timeStampB_10perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+        }
+        /* linear interpolation */
+        else {
+            if ( estimCFDACellStart_10perc == estimCFDACellStop_10perc ) {
+                timeStampA_10perc = inputData.m_tChannel0[estimCFDACellStart_10perc];
+            }
+            else {
+                const float timeStamp1 = inputData.m_tChannel0[estimCFDACellStart_10perc];
+                const float timeStamp2 = inputData.m_tChannel0[estimCFDACellStop_10perc];
+
+                const float valY1 = inputData.m_waveChannel0[estimCFDACellStart_10perc];
+                const float valY2 = inputData.m_waveChannel0[estimCFDACellStop_10perc];
+
+                if ( (cfdValueA_10perc < valY1 && cfdValueA_10perc > valY2)
+                     || (cfdValueA_10perc > valY1 && cfdValueA_10perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampA_10perc = (cfdValueA_10perc - intersect)/slope;
+                }
+                else if ( qFuzzyCompare(cfdValueA_10perc, valY1) ) {
+                    timeStampA_10perc = timeStamp1;
+                }
+                else if ( qFuzzyCompare(cfdValueA_10perc, valY2) ) {
+                    timeStampA_10perc = timeStamp2;
+                }
+            }
+
+            if ( estimCFDBCellStart_10perc == estimCFDBCellStop_10perc ) {
+                timeStampB_10perc = inputData.m_tChannel1[estimCFDBCellStart_10perc];
+            }
+            else {
+                const float timeStamp1 = inputData.m_tChannel1[estimCFDBCellStart_10perc];
+                const float timeStamp2 = inputData.m_tChannel1[estimCFDBCellStop_10perc];
+
+                const float valY1 = inputData.m_waveChannel1[estimCFDBCellStart_10perc];
+                const float valY2 = inputData.m_waveChannel1[estimCFDBCellStop_10perc];
+
+                if ( (cfdValueB_10perc < valY1 && cfdValueB_10perc > valY2)
+                     || (cfdValueB_10perc > valY1 && cfdValueB_10perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampB_10perc = (cfdValueB_10perc - intersect)/slope;
+                }
+                else if ( qFuzzyCompare(cfdValueB_10perc, valY1) ) {
+                    timeStampB_10perc = timeStamp1;
+                }
+                else if ( qFuzzyCompare(cfdValueB_10perc, valY2) ) {
+                    timeStampB_10perc = timeStamp2;
+                }
+            }
+        }
+
+        double timeStampA_90perc = -1.0f;
+        double timeStampB_90perc = -1.0f;
+
+        if (!inputData.m_bUsingLinearInterpol) {
+            /* find correct CF level (90%) timestamp within the estimated CF (90%) bracketed index region */
+            if ( estimCFDACellStart_90perc == estimCFDACellStop_90perc ) {
+                timeStampA_90perc = inputData.m_tChannel0[estimCFDACellStart_90perc];
+            }
+            else {
+                const double timeIncr = (inputData.m_tChannel0[estimCFDACellStop_90perc] - inputData.m_tChannel0[estimCFDACellStart_90perc])/((double)inputData.m_intraRenderPoints);
+                for ( int i = 0 ; i < inputData.m_intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = inputData.m_tChannel0[estimCFDACellStart_90perc] + (double)i*timeIncr;
+                    const double timeStamp2 = inputData.m_tChannel0[estimCFDACellStart_90perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, timeStamp1)):(tkSplineA(timeStamp1))):(alglib::barycentriccalc(baryCentricInterpolantA, timeStamp1));
+                    const float valY2 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantA, timeStamp2)):(tkSplineA(timeStamp2))):(alglib::barycentriccalc(baryCentricInterpolantA, timeStamp2));
+
+                    if ( (cfdValueA_90perc < valY1 && cfdValueA_90perc > valY2)
+                         || (cfdValueA_90perc > valY1 && cfdValueA_90perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampA_90perc = (cfdValueA_90perc - intersect)/slope;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_90perc, valY1) ) {
+                        timeStampA_90perc = timeStamp1;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueA_90perc, valY2) ) {
+                        timeStampA_90perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+
+            if ( estimCFDBCellStart_90perc == estimCFDBCellStop_90perc ) {
+                timeStampB_90perc = inputData.m_tChannel1[estimCFDBCellStart_90perc];
+            }
+            else {
+                const double timeIncr = (inputData.m_tChannel1[estimCFDBCellStop_90perc] - inputData.m_tChannel1[estimCFDBCellStart_90perc])/((double)inputData.m_intraRenderPoints);
+                for ( int i = 0 ; i < inputData.m_intraRenderPoints ; ++ i ) {
+                    const double timeStamp1 = inputData.m_tChannel1[estimCFDBCellStart_90perc] + (double)i*timeIncr;
+                    const double timeStamp2 = inputData.m_tChannel1[estimCFDBCellStart_90perc] + (double)(i+1)*timeIncr;
+
+                    const float valY1 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, timeStamp1)):(tkSplineB(timeStamp1))):(alglib::barycentriccalc(baryCentricInterpolantB, timeStamp1));
+                    const float valY2 = (inputData.m_interpolationType == DRS4InterpolationType::type::spline)?(inputData.m_bUsingALGLIB?(alglib::spline1dcalc(interpolantB, timeStamp2)):(tkSplineB(timeStamp2))):(alglib::barycentriccalc(baryCentricInterpolantB, timeStamp2));
+
+                    if ( (cfdValueB_90perc < valY1 && cfdValueB_90perc > valY2)
+                         || (cfdValueB_90perc > valY1 && cfdValueB_90perc < valY2) ) {
+                        const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                        const double intersect = valY1 - slope*timeStamp1;
+
+                        timeStampB_90perc = (cfdValueB_90perc - intersect)/slope;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueB_90perc, valY1) ) {
+                        timeStampB_90perc = timeStamp1;
+
+                        break;
+                    }
+                    else if ( qFuzzyCompare(cfdValueB_90perc, valY2) ) {
+                        timeStampB_90perc = timeStamp2;
+
+                        break;
+                    }
+                }
+            }
+        }
+        /* linear interpolation */
+        else {
+            if ( estimCFDACellStart_90perc == estimCFDACellStop_90perc ) {
+                timeStampA_90perc = inputData.m_tChannel0[estimCFDACellStart_90perc];
+            }
+            else {
+                const float timeStamp1 = inputData.m_tChannel0[estimCFDACellStart_90perc];
+                const float timeStamp2 = inputData.m_tChannel0[estimCFDACellStop_90perc];
+
+                const float valY1 = inputData.m_waveChannel0[estimCFDACellStart_90perc];
+                const float valY2 = inputData.m_waveChannel0[estimCFDACellStop_90perc];
+
+                if ( (cfdValueA_90perc < valY1 && cfdValueA_90perc > valY2)
+                     || (cfdValueA_90perc > valY1 && cfdValueA_90perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampA_90perc = (cfdValueA_90perc - intersect)/slope;
+                }
+                else if ( qFuzzyCompare(cfdValueA_90perc, valY1) ) {
+                    timeStampA_90perc = timeStamp1;
+                }
+                else if ( qFuzzyCompare(cfdValueA_90perc, valY2) ) {
+                    timeStampA_90perc = timeStamp2;
+                }
+            }
+
+            if ( estimCFDBCellStart_90perc == estimCFDBCellStop_90perc ) {
+                timeStampB_90perc = inputData.m_tChannel1[estimCFDBCellStart_90perc];
+            }
+            else {
+                const float timeStamp1 = inputData.m_tChannel1[estimCFDBCellStart_90perc];
+                const float timeStamp2 = inputData.m_tChannel1[estimCFDBCellStop_90perc];
+
+                const float valY1 = inputData.m_waveChannel1[estimCFDBCellStart_90perc];
+                const float valY2 = inputData.m_waveChannel1[estimCFDBCellStop_90perc];
+
+                if ( (cfdValueB_90perc < valY1 && cfdValueB_90perc > valY2)
+                     || (cfdValueB_90perc > valY1 && cfdValueB_90perc < valY2) ) {
+                    const double slope = (valY2 - valY1)/(timeStamp2 - timeStamp1);
+                    const double intersect = valY1 - slope*timeStamp1;
+
+                    timeStampB_90perc = (cfdValueB_90perc - intersect)/slope;
+                }
+                else if ( qFuzzyCompare(cfdValueB_90perc, valY1) ) {
+                    timeStampB_90perc = timeStamp1;
+                }
+                else if ( qFuzzyCompare(cfdValueB_90perc, valY2) ) {
+                    timeStampB_90perc = timeStamp2;
                 }
             }
         }
@@ -5228,18 +4492,6 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             }
         }
 
-        /* rise-time Filter */        
-        const int binA = (int)((double)inputData.m_riseTimeFilterBinningA*(timeAForYMax-timeStampA)/inputData.m_riseTimeFilterARangeInNanoseconds);
-        const int binB = (int)((double)inputData.m_riseTimeFilterBinningB*(timeBForYMax-timeStampB)/inputData.m_riseTimeFilterBRangeInNanoseconds);
-
-        if ( !(binA < 0
-               || binB < 0
-               || binA >= inputData.m_riseTimeFilterBinningA
-               || binB >= inputData.m_riseTimeFilterBinningB) ) {
-            outputData.m_riseTimeFilterDataA.append(binA);
-            outputData.m_riseTimeFilterDataB.append(binB);
-        }
-
         /* determine start and stop branches */
         bool bIsStart_A = false;
         bool bIsStop_A = false;
@@ -5263,6 +4515,29 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
              && cellPHSB <= inputData.m_stopBMaxPHS )
             bIsStop_B = true;
 
+        /* rise-time Filter */
+        if ((int)timeStampA_10perc != -1
+                || (int)timeStampA_90perc != -1) {
+            const int binA = (int)((double)inputData.m_riseTimeFilterBinningA*(timeStampA_90perc-timeStampA_10perc)/inputData.m_riseTimeFilterARangeInNanoseconds);
+
+            if ( !(binA < 0 || binA >= inputData.m_riseTimeFilterBinningA) ) {
+                if (bIsStart_A || bIsStop_A) {
+                    outputData.m_riseTimeFilterDataA.append(binA);
+                }
+            }
+        }
+
+        if ((int)timeStampB_10perc != -1
+                || (int)timeStampB_90perc != -1) {
+            const int binB = (int)((double)inputData.m_riseTimeFilterBinningB*(timeStampB_90perc-timeStampB_10perc)/inputData.m_riseTimeFilterBRangeInNanoseconds);
+
+            if ( !(binB < 0 || binB >= inputData.m_riseTimeFilterBinningB) ) {
+                if (bIsStart_B || bIsStop_B) {
+                    outputData.m_riseTimeFilterDataB.append(binB);
+                }
+            }
+        }
+
         /* apply area-filter and reject pulses if one of both appears outside the windows */
         if (inputData.m_bPulseAreaFilter) {
             const double indexPHSA = cellPHSA;
@@ -5279,7 +4554,17 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             const double yLowerB = (inputData.m_areaFilterBSlopeLower*indexPHSB+inputData.m_areaFilterBInterceptLower);
             const double yUpperB = (inputData.m_areaFilterBSlopeUpper*indexPHSB+inputData.m_areaFilterBInterceptUpper);
 
-            const bool y_BInside = (multB >= yLowerB && multB <=yUpperB);
+            const bool y_BInside = (multB >= yLowerB && multB <= yUpperB);
+
+            if (y_AInside) {
+                /* incremental (mean ; stddev) */
+                outputData.m_areaFilterCollectionDataA.append(QPointF(indexPHSA, areaA));
+            }
+
+            if (y_BInside) {
+                /* incremental (mean ; stddev) */
+                outputData.m_areaFilterCollectionDataB.append(QPointF(indexPHSB, areaB));
+            }
 
             if ( !y_AInside || !y_BInside )
                 continue;
@@ -5287,8 +4572,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
 
         /* apply rise time-filter and reject pulses if one of both appears outside the windows */
         if (inputData.m_bPulseRiseTimeFilter) {
-            const int binA = (int)((double)inputData.m_riseTimeFilterBinningA*(timeAForYMax-timeStampA)/inputData.m_riseTimeFilterARangeInNanoseconds);
-            const int binB = (int)((double)inputData.m_riseTimeFilterBinningB*(timeBForYMax-timeStampB)/inputData.m_riseTimeFilterBRangeInNanoseconds);
+            const int binA = (int)((double)inputData.m_riseTimeFilterBinningA*(timeStampA_90perc-timeStampA_10perc)/inputData.m_riseTimeFilterARangeInNanoseconds);
+            const int binB = (int)((double)inputData.m_riseTimeFilterBinningB*(timeStampB_90perc-timeStampB_10perc)/inputData.m_riseTimeFilterBRangeInNanoseconds);
 
             bool bAcceptedA = false;
             bool bAcceptedB = false;
@@ -5693,762 +4978,6 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
     return outputData;
 }
 
-#ifdef __DEPRECATED_WORKER
-DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInputData> &copyDataVec)
-{
-    if ( copyDataVec.size() == 0 )
-        return DRS4ConcurrentCopyOutputData(0, 0, 0, 0);
-
-    const int channelCntCoincindence = copyDataVec.first().m_channelCntCoincindence;
-    const int channelCntAB = copyDataVec.first().m_channelCntAB;
-    const int channelCntBA = copyDataVec.first().m_channelCntBA;
-    const int channelCntMerged = copyDataVec.first().m_channelCntMerged;
-
-    for ( DRS4ConcurrentCopyInputData copyData : copyDataVec ) {
-        if ( channelCntCoincindence != copyData.m_channelCntCoincindence )
-            return DRS4ConcurrentCopyOutputData(0, 0, 0, 0);
-
-        if ( channelCntAB != copyData.m_channelCntAB )
-            return DRS4ConcurrentCopyOutputData(0, 0, 0, 0);
-
-        if ( channelCntBA != copyData.m_channelCntBA )
-            return DRS4ConcurrentCopyOutputData(0, 0, 0, 0);
-
-        if ( channelCntMerged != copyData.m_channelCntMerged )
-            return DRS4ConcurrentCopyOutputData(0, 0, 0, 0);
-    }
-
-    DRS4ConcurrentCopyOutputData outputData(channelCntCoincindence, channelCntAB, channelCntBA, channelCntMerged, false);
-
-    for ( DRS4ConcurrentCopyInputData copyData : copyDataVec ) {
-        const bool bSpline = (copyData.m_cellWidth > copyData.m_numberOfCubicSplinePoints || copyData.m_cellWidth < copyData.m_numberOfCubicSplinePoints)
-                && !copyData.m_isLinearInterpolation;
-
-        //default: linear!
-        DSpline _splineA, _splineB;
-
-        //cubic spline?
-        if ( bSpline ) {
-            _splineA.setType(SplineType::Cubic);
-            _splineA.setPoints(copyData.m_dataVecXA, copyData.m_dataVecYA);
-
-            _splineB.setType(SplineType::Cubic);
-            _splineB.setPoints(copyData.m_dataVecXB, copyData.m_dataVecYB);
-        }
-
-        //cubic spline?
-        const int cubSplinePointsCnt = copyData.m_numberOfCubicSplinePoints;
-        const double fcubSplinePointsCntRatio = 1.0f/((double)cubSplinePointsCnt);
-        const double incrA = (copyData.m_xMaxA - copyData.m_xMinA)*fcubSplinePointsCntRatio;
-        const double incrB = (copyData.m_xMaxB - copyData.m_xMinB)*fcubSplinePointsCntRatio;
-
-        double areaA = 0;
-        double areaB = 0;
-
-        float t0_YMaxA = 0.0f;
-        float t0_YMaxB = 0.0f;
-
-        float t0_YMinA = 0.0f;
-        float t0_YMinB = 0.0f;
-
-        copyData.m_yMinA = 500.0f;
-        copyData.m_yMinB = 500.0f;
-        copyData.m_yMaxA = -500.0f;
-        copyData.m_yMaxB = -500.0f;
-
-        //cubic spline?
-        if ( bSpline ) {
-            //subsequent area determination for area-filter:
-            for ( int a = 0 ; a < cubSplinePointsCnt ; ++ a ) {
-                const double splineXValueA = ((double)a)*incrA+copyData.m_xMinA;
-                const double splineXValueB = ((double)a)*incrB+copyData.m_xMinB;
-
-                float valueAY = _splineA(splineXValueA);
-                float valueBY = _splineB(splineXValueB);
-
-                if ( valueAY < copyData.m_yMinA ) {
-                    copyData.m_yMinA = valueAY;
-                    t0_YMinA = splineXValueA;
-                }
-
-                if ( valueBY < copyData.m_yMinB ) {
-                    copyData.m_yMinB = valueBY;
-                    t0_YMinB = splineXValueB;
-                }
-
-                if ( valueAY > copyData.m_yMaxA ) {
-                    copyData.m_yMaxA = valueAY;
-                    t0_YMaxA = splineXValueA;
-                }
-
-                if ( valueBY > copyData.m_yMaxB ) {
-                    copyData.m_yMaxB = valueBY;
-                    t0_YMaxB = splineXValueB;
-                }
-
-                if ( a < cubSplinePointsCnt - 1 ) {
-                    const double splineXValueANext = ((double)(a+1))*incrA+copyData.m_xMinA;
-                    const double splineXValueBNext = ((double)(a+1))*incrB+copyData.m_xMinB;
-
-                    float valueAYNext = _splineA(splineXValueANext);
-                    float valueBYNext = _splineB(splineXValueBNext);
-
-                    areaA += valueAYNext*0.5f;
-                    areaB += valueBYNext*0.5f;
-                }
-            }
-        }
-        else { //linear spline?
-            for ( int a = 0 ; a < copyData.m_cellWidth ; ++ a ) {
-                const double splineXValueA = copyData.m_dataVecXA.at(a);
-                const double splineXValueB = copyData.m_dataVecXB.at(a);
-
-                const double valueAY = copyData.m_dataVecYA.at(a);
-                const double valueBY = copyData.m_dataVecYB.at(a);
-
-                if ( valueAY < copyData.m_yMinA ) {
-                    copyData.m_yMinA = valueAY;
-                    t0_YMinA = splineXValueA;
-                }
-
-                if ( valueBY < copyData.m_yMinB ) {
-                    copyData.m_yMinB = valueBY;
-                    t0_YMinB = splineXValueB;
-                }
-
-                if ( valueAY > copyData.m_yMaxA ) {
-                    copyData.m_yMaxA = valueAY;
-                    t0_YMaxA = splineXValueA;
-                }
-
-                if ( valueBY > copyData.m_yMaxB ) {
-                    copyData.m_yMaxB = valueBY;
-                    t0_YMaxB = splineXValueB;
-                }
-
-                const int reducedCellWidth = (copyData.m_cellWidth - 1);
-                if ( a < reducedCellWidth ) {
-                    const double splineXValueANext = copyData.m_dataVecXA.at(a+1);
-                    const double splineXValueBNext = copyData.m_dataVecXB.at(a+1);
-
-                    const double valueAYNext = copyData.m_dataVecYA.at(a+1);
-                    const double valueBYNext = copyData.m_dataVecYB.at(a+1);
-
-                    areaA += valueAYNext*(splineXValueANext - splineXValueA)*0.5f;
-                    areaB += valueBYNext*(splineXValueBNext - splineXValueB)*0.5f;
-                }
-            }
-        }
-
-        const float rat = 5120*((float)copyData.m_cellWidth/((float)kNumberOfBins));
-
-        areaA = abs(areaA)/(copyData.m_pulseAreaFilterNormalizationA*rat);
-        areaB = abs(areaB)/(copyData.m_pulseAreaFilterNormalizationB*rat);
-
-        if ( (int)copyData.m_yMinA == (int)copyData.m_yMaxA
-             || (int)copyData.m_yMinB == (int)copyData.m_yMaxB  )
-            /*return*/continue;
-
-        //filter wrong pulses:
-        if ( copyData.m_isPositiveSignalPolarity ) {
-            if ( fabs(copyData.m_yMinASort) > fabs(copyData.m_yMaxASort) )
-                /*return*/continue;
-
-            if ( fabs(copyData.m_yMinBSort) > fabs(copyData.m_yMaxBSort) )
-                /*return*/continue;
-
-            if ( abs(copyData.m_cellYAMax - copyData.m_startCell) <= 45 )
-                /*return*/continue;
-
-            if ( abs(copyData.m_cellYBMax - copyData.m_startCell) <= 45 )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYA.at(copyData.m_cellWidth-1), (double)copyData.m_yMaxASort) )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYB.at(copyData.m_cellWidth-1), (double)copyData.m_yMaxBSort) )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYA.at(0), (double)copyData.m_yMaxASort) )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYB.at(0), (double)copyData.m_yMaxBSort) )
-                /*return*/continue;
-        }
-        else {
-            if ( fabs(copyData.m_yMinASort) < fabs(copyData.m_yMaxASort) )
-                /*return*/continue;
-
-            if ( fabs(copyData.m_yMinBSort) < fabs(copyData.m_yMaxBSort) )
-                /*return*/continue;
-
-            if ( abs(copyData.m_cellYAMin - copyData.m_startCell) <= 45 )
-                /*return*/continue;
-
-            if ( abs(copyData.m_cellYBMin - copyData.m_startCell) <= 45 )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYA.at(copyData.m_cellWidth-1), (double)copyData.m_yMinASort) )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYB.at(copyData.m_cellWidth-1), (double)copyData.m_yMinBSort) )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYA.at(0), (double)copyData.m_yMinASort) )
-                /*return*/continue;
-
-            if ( qFuzzyCompare(copyData.m_dataVecYB.at(0), (double)copyData.m_yMinBSort) )
-                /*return*/continue;
-        }
-
-        int channelYMaxA = 0;
-        int channelYMaxB = 0;
-
-        double cfdValueA = 0;
-        double cfdValueB = 0;
-
-        if ( copyData.m_isPositiveSignalPolarity ) {
-            channelYMaxA = ((int)((copyData.m_yMaxA/(500.0f))*(double)kNumberOfBins))-1;
-            channelYMaxB = ((int)((copyData.m_yMaxB/(500.0f))*(double)kNumberOfBins))-1;
-
-            cfdValueA = copyData.m_cfdLevelA*copyData.m_yMaxA;
-            cfdValueB = copyData.m_cfdLevelB*copyData.m_yMaxB;
-
-            if ( cfdValueA > 500.0f || qFuzzyCompare(cfdValueA, 0.0) || cfdValueA < 0.0f )
-                /*return*/continue;
-
-            if ( cfdValueB > 500.0f || qFuzzyCompare(cfdValueB, 0.0) || cfdValueB < 0.0f )
-                /*return*/continue;
-
-            if ( (int)cfdValueA == (int)copyData.m_yMaxA )
-                /*return*/continue;
-
-            if ( (int)cfdValueB == (int)copyData.m_yMaxB )
-                /*return*/continue;
-        }
-        else {
-            channelYMaxA = ((int)((copyData.m_yMinA/(-500.0f))*(double)kNumberOfBins))-1;
-            channelYMaxB = ((int)((copyData.m_yMinB/(-500.0f))*(double)kNumberOfBins))-1;
-
-            cfdValueA = copyData.m_cfdLevelA*copyData.m_yMinA;
-            cfdValueB = copyData.m_cfdLevelB*copyData.m_yMinB;
-
-            if ( cfdValueA < -500.0f || qFuzzyCompare(cfdValueA, 0.0) || cfdValueA > 0.0f )
-                /*return*/continue;
-
-            if ( cfdValueB < -500.0f || qFuzzyCompare(cfdValueB, 0.0) || cfdValueB > 0.0f )
-                /*return*/continue;
-
-            if ( (int)cfdValueA == (int)copyData.m_yMinA )
-                /*return*/continue;
-
-            if ( (int)cfdValueB == (int)copyData.m_yMinB )
-                /*return*/continue;
-        }
-
-        //PHS:
-        if ( channelYMaxA < kNumberOfBins && channelYMaxA >= 0 ) {
-            outputData.m_phsA.append(channelYMaxA); /* outputData.m_phsA[channelYMaxA] ++; */
-            /* outputData.m_phsACounts ++; */
-        }
-
-        if ( channelYMaxB < kNumberOfBins && channelYMaxB >= 0 ) {
-            outputData.m_phsB.append(channelYMaxB); /* outputData.m_phsB[channelYMaxB] ++; */
-            /* outputData.m_phsBCounts ++; */
-        }
-
-        DRS4FilterData dataF;
-
-        /* Area-Filter */
-        dataF.areaARatio = areaA;
-        dataF.areaBRatio = areaB;
-        dataF.amplitudeAInMV = copyData.m_isPositiveSignalPolarity?copyData.m_yMaxA:abs(copyData.m_yMinA);
-        dataF.amplitudeBInMV = copyData.m_isPositiveSignalPolarity?copyData.m_yMaxB:abs(copyData.m_yMinB);
-
-        double timeStampA = -1;
-        double timeStampB = -1;
-
-        bool btimeStampA = false;
-        bool btimeStampB = false;
-
-        bool bReject = false;
-        int cntTimeStampA = 0;
-        int cntTimeStampB = 0;
-
-        //cubic spline?
-        if ( bSpline ) {
-            const int reducedSplinePoints = (cubSplinePointsCnt - 1);
-            for ( int a = 0 ; a <= reducedSplinePoints ; ++ a ) {
-                const double splineXValueA_1 = ((double)a)*incrA+copyData.m_xMinA;
-                const double splineXValueB_1 = ((double)a)*incrB+copyData.m_xMinB;
-
-                const double splineXValueA_2 = ((double)(a+1))*incrA+copyData.m_xMinA;
-                const double splineXValueB_2 = ((double)(a+1))*incrB+copyData.m_xMinB;
-
-                const double valueAY_1 = _splineA(splineXValueA_1);
-                const double valueBY_1 = _splineB(splineXValueB_1);
-
-                const double valueAY_2 = _splineA(splineXValueA_2);
-                const double valueBY_2 = _splineB(splineXValueB_2);
-
-                if ( copyData.m_isPositiveSignalPolarity ) {
-                    if ( ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2 ) {
-                        bReject = true;
-                    }
-                }
-                else {
-                    if ( ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2 ) {
-                        bReject = true;
-                    }
-                }
-
-                if (bReject) {
-                    break;
-                }
-            }
-
-            if ( cntTimeStampA <= 1 || cntTimeStampB <= 1 ) {
-                /* bReject = true; */
-                /*return*/continue;
-            }
-
-            if (bReject) {
-                /*return*/continue;
-            }
-        }
-        else { //linear spline?
-            const int reducedCellWidth = (copyData.m_cellWidth - 1);
-            for ( int a = 0 ; a < reducedCellWidth ; ++ a ) {
-                const double splineXValueA_1 = copyData.m_dataVecXA.at(a);
-                const double splineXValueB_1 = copyData.m_dataVecXB.at(a);
-
-                const double splineXValueA_2 = copyData.m_dataVecXA.at(a+1);
-                const double splineXValueB_2 = copyData.m_dataVecXB.at(a+1);
-
-                const double valueAY_1 = copyData.m_dataVecYA.at(a);
-                const double valueBY_1 = copyData.m_dataVecYB.at(a);
-
-                const double valueAY_2 = copyData.m_dataVecYA.at(a+1);
-                const double valueBY_2 = copyData.m_dataVecYB.at(a+1);
-
-                if ( copyData.m_isPositiveSignalPolarity ) {
-                    if ( ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2) {
-                        bReject = true;
-                    }
-                }
-                else {
-                    if ( ((cfdValueA < valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA > valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2)))
-                         || ((cfdValueA > valueAY_1 || qFuzzyCompare(cfdValueA, valueAY_1)) && (cfdValueA < valueAY_2 || qFuzzyCompare(cfdValueA, valueAY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueA, valueAY_2) )
-                            continue;
-
-                        if ( cntTimeStampA == 0 ) {
-                            const double slopeA = (valueAY_2 - valueAY_1)/(splineXValueA_2 - splineXValueA_1);
-                            const double intersectA = valueAY_2 - slopeA*splineXValueA_2;
-
-                            timeStampA = (cfdValueA - intersectA)/slopeA;
-
-                            btimeStampA = true;
-                        }
-
-                        cntTimeStampA ++;
-                    }
-
-                    if ( ((cfdValueB < valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB > valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2)))
-                         || ((cfdValueB > valueBY_1 || qFuzzyCompare(cfdValueB, valueBY_1)) && (cfdValueB < valueBY_2 || qFuzzyCompare(cfdValueB, valueBY_2))) ) {
-
-                        if ( qFuzzyCompare(cfdValueB, valueBY_2) )
-                            continue;
-
-                        if ( cntTimeStampB == 0 ) {
-                            const double slopeB = (valueBY_2 - valueBY_1)/(splineXValueB_2 - splineXValueB_1);
-                            const double intersectB = valueBY_2 - slopeB*splineXValueB_2;
-
-                            timeStampB = (cfdValueB - intersectB)/slopeB;
-
-                            btimeStampB = true;
-                        }
-
-                        cntTimeStampB ++;
-                    }
-
-                    if ( cntTimeStampA > 2 || cntTimeStampB > 2 ) {
-                        bReject = true;
-                    }
-                }
-
-                if (bReject) {
-                    break;
-                }
-            }
-
-            if ( cntTimeStampA <= 1 || cntTimeStampB <= 1 ) {
-                /* bReject = true; */
-                /*return*/continue;
-            }
-
-            if (bReject) {
-                /*return*/continue;
-            }
-        }
-
-        if ( bReject || !btimeStampA || !btimeStampB ) {
-            /*return*/continue;
-        }
-
-        DRS4LifetimeData ltData;
-
-        /* lifetime-data */
-        if ( copyData.m_isPositiveSignalPolarity ) {
-            ltData.amplitudeAInMV = copyData.m_yMaxA;
-            ltData.amplitudeBInMV = copyData.m_yMaxB;
-        }
-        else {
-            ltData.amplitudeAInMV = copyData.m_yMinA;
-            ltData.amplitudeBInMV = copyData.m_yMinB;
-        }
-
-        ltData.tAInNS = timeStampA;
-        ltData.tBInNS = timeStampB;
-
-        ltData.areaARatio = areaA;
-        ltData.areaBRatio = areaB;
-
-        /* area-Filter */
-        if (!copyData.m_usingBurstMode) {
-            if (copyData.m_isPulseAreaFilterPlotEnabled) {
-                const int indexPHSA = (dataF.amplitudeAInMV/500.0f)*kNumberOfBins;
-                const int indexPHSB = (dataF.amplitudeBInMV/500.0f)*kNumberOfBins;
-
-                const int binA = dataF.areaARatio*(double)copyData.m_pulseAreaFilterBinningA;
-                const int binB = dataF.areaBRatio*(double)copyData.m_pulseAreaFilterBinningB;
-
-                if (!(indexPHSA>(kNumberOfBins-1)
-                      || indexPHSB>(kNumberOfBins-1)
-                      || indexPHSA<0
-                      || indexPHSB<0
-                      || binA < 0
-                      || binB < 0)) {
-                    outputData.m_areaFilterDataA.append(QPointF(indexPHSA, binA));
-                    outputData.m_areaFilterDataB.append(QPointF(indexPHSB, binB));
-                }
-            }
-        }
-
-        int convertToBinA = -1;
-        int convertToBinB = -1;
-
-        //rising edge:
-        if ( copyData.m_isPositiveSignalPolarity ) {
-            convertToBinA = ((int)((ltData.amplitudeAInMV/(500.0f))*kNumberOfBins))-1;
-            convertToBinB = ((int)((ltData.amplitudeBInMV/(500.0f))*kNumberOfBins))-1;
-        }
-        //falling edge:
-        else {
-            convertToBinA = ((int)((ltData.amplitudeAInMV/(-500.0f))*kNumberOfBins))-1;
-            convertToBinB = ((int)((ltData.amplitudeBInMV/(-500.0f))*kNumberOfBins))-1;
-        }
-
-        if ( convertToBinA == -1
-             || convertToBinB == -1 )
-            /*return*/continue;
-
-        if ( convertToBinA >= kNumberOfBins || convertToBinA < 0 )
-            /*return*/continue;
-
-        if ( convertToBinB >= kNumberOfBins || convertToBinB < 0 )
-            /*return*/continue;
-
-        bool bIsStart_A = false;
-        bool bIsStop_A = false;
-
-        bool bIsStart_B = false;
-        bool bIsStop_B = false;
-
-        if ( convertToBinA >= copyData.m_startMinA
-             && convertToBinA <= copyData.m_startMaxA )
-            bIsStart_A = true;
-
-        if ( convertToBinA >= copyData.m_stopMinA
-             && convertToBinA <= copyData.m_stopMaxA )
-            bIsStop_A = true;
-
-        if ( convertToBinB >= copyData.m_startMinB
-             && convertToBinB <= copyData.m_startMaxB )
-            bIsStart_B = true;
-
-        if ( convertToBinB >= copyData.m_stopMinB
-             && convertToBinB <= copyData.m_stopMaxB )
-            bIsStop_B = true;
-
-        //apply area-filter:
-        if ( copyData.m_isPulseAreaFilterEnabled ) {
-            const double indexPHSA = (abs(ltData.amplitudeAInMV)/500.0f)*1024.0f;
-            const double indexPHSB = (abs(ltData.amplitudeBInMV)/500.0f)*1024.0f;
-
-            const double yLowerA = copyData.m_areaFilterASlopeLower*indexPHSA+copyData.m_areaFilterAInterceptLower;
-            const double yUpperA = copyData.m_areaFilterASlopeUpper*indexPHSA+copyData.m_areaFilterAInterceptUpper;
-
-            const bool y_AInside = (ltData.areaARatio*copyData.m_pulseAreaFilterBinningA >= yLowerA
-                                    && ltData.areaARatio*copyData.m_pulseAreaFilterBinningA <=yUpperA);
-
-            const double yLowerB = copyData.m_areaFilterBSlopeLower*indexPHSB+copyData.m_areaFilterBInterceptLower;
-            const double yUpperB = copyData.m_areaFilterBSlopeUpper*indexPHSB+copyData.m_areaFilterBInterceptUpper;
-
-            const bool y_BInside = (ltData.areaBRatio*copyData.m_pulseAreaFilterBinningB >= yLowerB
-                                    && ltData.areaBRatio*copyData.m_pulseAreaFilterBinningB <=yUpperB);
-
-            if ( !y_AInside
-                 || !y_BInside )
-                /*return*/continue;
-        }
-
-        if ( bIsStart_A
-             && bIsStop_B && !copyData.m_isforceCoincidence  ) //A-B (Master)
-        {
-            const double ltdiff = (ltData.tBInNS - ltData.tAInNS);
-            const int binAB = ((int)round(((((ltdiff)+copyData.m_offsetInNSAB)/copyData.m_scalerInNSAB))*((double)copyData.m_channelCntAB)))-1;
-
-            const int binMerged = ((int)round(((((ltdiff+copyData.m_meanCableDelay)+copyData.m_offsetInNSMerged)/copyData.m_scalerInNSMerged))*((double)copyData.m_channelCntMerged)))-1;
-
-            if ( binAB < 0 || binAB >= copyData.m_channelCntAB )
-                /*return*/continue;
-
-            if ( binAB >= 0
-                 && binAB < copyData.m_channelCntAB )
-            {
-                if ( copyData.m_isNegativeLTAccepted && ltdiff < 0  )
-                {
-                    outputData.m_lifeTimeDataAB.append(binAB); /* outputData.m_lifeTimeDataAB[binAB] ++; */
-                    /* outputData.m_abCounts ++; */
-
-                    /* outputData.m_maxY_ABSpectrum = qMax(outputData.m_maxY_ABSpectrum, outputData.m_lifeTimeDataAB[binAB]); */
-                }
-                else if ( ltdiff >= 0 )
-                {
-                    outputData.m_lifeTimeDataAB.append(binAB); /* outputData.m_lifeTimeDataAB[binAB] ++; */
-                    /* outputData.m_abCounts ++; */
-
-                    /* outputData.m_maxY_ABSpectrum = qMax(outputData.m_maxY_ABSpectrum, outputData.m_lifeTimeDataAB[binAB]); */
-                }
-
-                /* outputData.m_specABCounterCnt ++; */
-            }
-
-            if ( binMerged < 0 || binMerged >= outputData.m_channelCntMerged )
-                /*return*/ continue;
-
-            if ( binMerged >= 0
-                 && binMerged < copyData.m_channelCntMerged )
-            {
-                if ( copyData.m_isNegativeLTAccepted && ltdiff < 0  )
-                {
-                    outputData.m_lifeTimeDataMerged.append(binMerged); /* outputData.m_lifeTimeDataMerged[binMerged] ++; */
-                    /* outputData.m_mergedCounts ++; */
-
-                    /* outputData.m_maxY_MergedSpectrum = qMax(outputData.m_maxY_MergedSpectrum, outputData.m_lifeTimeDataMerged[binMerged]); */
-                }
-                else if ( ltdiff >= 0 )
-                {
-                    outputData.m_lifeTimeDataMerged.append(binMerged); /* outputData.m_lifeTimeDataMerged[binMerged] ++; */
-                    /* outputData.m_mergedCounts ++; */
-
-                    /* outputData.m_maxY_MergedSpectrum = qMax(outputData.m_maxY_MergedSpectrum, outputData.m_lifeTimeDataMerged[binMerged]); */
-                }
-
-                /* outputData.m_specMergedCounterCnt ++; */
-            }
-        }
-        else if (  bIsStart_B
-                   && bIsStop_A && !copyData.m_isforceCoincidence ) // B-A (Master)
-        {
-            const double ltdiff = (ltData.tAInNS - ltData.tBInNS);
-            const int binBA = ((int)round(((((ltdiff)+copyData.m_offsetInNSBA)/copyData.m_scalerInNSBA))*((double)copyData.m_channelCntBA)))-1;
-
-            const int binMerged = ((int)round(((((ltdiff-copyData.m_meanCableDelay)+copyData.m_offsetInNSMerged)/copyData.m_scalerInNSMerged))*((double)copyData.m_channelCntMerged)))-1;
-
-            if ( binBA < 0 || binBA >= copyData.m_channelCntBA )
-                /*return*/continue;
-
-            if ( binBA >= 0
-                 && binBA < copyData.m_channelCntBA )
-            {
-                if ( copyData.m_isNegativeLTAccepted && ltdiff < 0  )
-                {
-                    outputData.m_lifeTimeDataBA.append(binBA); /* outputData.m_lifeTimeDataBA[binBA] ++; */
-                    /* outputData.m_baCounts ++; */
-
-                    /* outputData.m_maxY_BASpectrum = qMax(outputData.m_maxY_BASpectrum, outputData.m_lifeTimeDataBA[binBA]); */
-                }
-                else if ( ltdiff >= 0 )
-                {
-                    outputData.m_lifeTimeDataBA.append(binBA); /* outputData.m_lifeTimeDataBA[binBA] ++; */
-                    /* outputData.m_baCounts ++; */
-
-                    /* outputData.m_maxY_BASpectrum = qMax(outputData.m_maxY_BASpectrum, outputData.m_lifeTimeDataBA[binBA]); */
-                }
-
-                /* outputData.m_specBACounterCnt ++; */
-            }
-
-            if ( binMerged < 0 || binMerged >= copyData.m_channelCntMerged )
-                /*return*/ continue;
-
-            if ( binMerged >= 0
-                 && binMerged < copyData.m_channelCntMerged )
-            {
-                if ( copyData.m_isNegativeLTAccepted && ltdiff < 0  )
-                {
-                    outputData.m_lifeTimeDataMerged.append(binMerged); /* outputData.m_lifeTimeDataMerged[binMerged] ++; */
-                    /* outputData.m_mergedCounts ++; */
-
-                    /* outputData.m_maxY_MergedSpectrum = qMax(outputData.m_maxY_MergedSpectrum, outputData.m_lifeTimeDataMerged[binMerged]); */
-                }
-                else if ( ltdiff >= 0 )
-                {
-                    outputData.m_lifeTimeDataMerged.append(binMerged); /* outputData.m_lifeTimeDataMerged[binMerged] ++; */
-                    /* outputData.m_mergedCounts ++; */
-
-                    /* outputData.m_maxY_MergedSpectrum = qMax(outputData.m_maxY_MergedSpectrum, outputData.m_lifeTimeDataMerged[binMerged]); */
-                }
-
-                /* outputData.m_specMergedCounterCnt ++; */
-            }
-        }
-        else if (  bIsStop_B && bIsStop_A ) //Prompt (Stop A - Stop B) (Slave)
-        {
-            const double ltdiff = (ltData.tAInNS - ltData.tBInNS);
-            const int binBA = ((int)round(((((ltdiff)+copyData.m_offsetInNSCoincidence)/copyData.m_scalerInNSCoincidence))*((double)copyData.m_channelCntCoincindence)))-1;
-
-            if ( binBA < 0 || binBA >= copyData.m_channelCntCoincindence )
-                /*return*/ continue;
-
-            if ( binBA >= 0
-                 && binBA < copyData.m_channelCntCoincindence )
-            {
-                outputData.m_lifeTimeDataCoincidence.append(binBA); /* outputData.m_lifeTimeDataCoincidence[binBA] ++; */
-                /* outputData.m_coincidenceCounts ++; */
-
-                /* outputData.m_maxY_CoincidenceSpectrum = qMax(outputData.m_maxY_CoincidenceSpectrum, outputData.m_lifeTimeDataCoincidence[binBA]); */
-
-                /* outputData.m_specCoincidenceCounterCnt ++; */
-            }
-        }
-    }
-
-    return outputData;
-}
-#endif
-
 bool DRS4WorkerConcurrentManager::add(const QVector<DRS4ConcurrentCopyInputData> &copyData)
 {
     if (copyData.isEmpty())
@@ -6552,6 +5081,62 @@ void DRS4WorkerConcurrentManager::merge()
             m_worker->m_areaFilterBCounter ++;
 
             index ++;
+        }
+
+        for ( int i = 0 ; i < outputData.m_areaFilterCollectionDataA.size() ; ++ i ) {
+            const QPointF p = outputData.m_areaFilterCollectionDataA[i];
+
+            const int indexA = (int)p.x();
+            const double areaA = p.y();
+
+            /* incremental (mean ; stddev) */
+            double meanA  = m_worker->m_areaFilterCollectedDataA[indexA].x();
+            double stddevA = m_worker->m_areaFilterCollectedDataA[indexA].y();
+
+            m_worker->m_areaFilterCollectedDataCounterA[indexA] ++;
+
+            if (m_worker->m_areaFilterCollectedDataCounterA[indexA] >= 2) {
+                stddevA = ((m_worker->m_areaFilterCollectedDataCounterA[indexA]-2)/(m_worker->m_areaFilterCollectedDataCounterA[indexA]-1))*stddevA*stddevA + (1.0/m_worker->m_areaFilterCollectedDataCounterA[indexA])*(areaA-meanA)*(areaA-meanA);
+                stddevA = sqrt(stddevA);
+            }
+            else
+                stddevA = 0.0;
+
+            meanA = (1/(float)m_worker->m_areaFilterCollectedDataCounterA[indexA])*(areaA + float(m_worker->m_areaFilterCollectedDataCounterA[indexA] - 1)*meanA);
+
+
+            m_worker->m_areaFilterCollectedDataA[indexA].setX(meanA);
+            m_worker->m_areaFilterCollectedDataA[indexA].setY(stddevA);
+
+            m_worker->m_areaFilterCollectedACounter ++;
+        }
+
+        for ( int i = 0 ; i < outputData.m_areaFilterCollectionDataB.size() ; ++ i ) {
+            const QPointF p = outputData.m_areaFilterCollectionDataB[i];
+
+            const int indexB = (int)p.x();
+            const double areaB = p.y();
+
+            /* incremental (mean ; stddev) */
+            double meanB  = m_worker->m_areaFilterCollectedDataB[indexB].x();
+            double stddevB = m_worker->m_areaFilterCollectedDataB[indexB].y();
+
+            m_worker->m_areaFilterCollectedDataCounterB[indexB] ++;
+
+            if (m_worker->m_areaFilterCollectedDataCounterB[indexB] >= 2) {
+                stddevB = ((m_worker->m_areaFilterCollectedDataCounterB[indexB]-2)/(m_worker->m_areaFilterCollectedDataCounterB[indexB]-1))*stddevB*stddevB + (1.0/m_worker->m_areaFilterCollectedDataCounterB[indexB])*(areaB-meanB)*(areaB-meanB);
+                stddevB = sqrt(stddevB);
+            }
+            else
+                stddevB = 0.0;
+
+            meanB = (1/(float)m_worker->m_areaFilterCollectedDataCounterB[indexB])*(areaB + float(m_worker->m_areaFilterCollectedDataCounterB[indexB] - 1)*meanB);
+
+
+            m_worker->m_areaFilterCollectedDataB[indexB].setX(meanB);
+            m_worker->m_areaFilterCollectedDataB[indexB].setY(stddevB);
+
+            m_worker->m_areaFilterCollectedBCounter ++;
         }
 
         /* Rise - Time Filter */

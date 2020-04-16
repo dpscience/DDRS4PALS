@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -54,15 +54,13 @@ int main(int argc, char *argv[])
     splash.setPixmap(QPixmap::fromImage(QImage(":/images/images/PALS.JPG").scaledToWidth(QApplication::desktop()->availableGeometry().width()*0.5)));
     splash.show();
 
-#if !defined(Q_OS_WIN)
-    splash.setFont(QFont("Arial", 12));
-#endif
-
-    splash.showMessage((QString(QString("<b>") + PROGRAM_NAME + "</b><br>(C) Copyright 2016-2019 by Danny Petschke. All rights reserved.")), Qt::AlignLeft | Qt::AlignTop, Qt::darkGray);
+    splash.showMessage((QString(QString("<b>") + PROGRAM_NAME + "</b><br>(C) Copyright 2016-2020 by Danny Petschke. All rights reserved.")), Qt::AlignLeft | Qt::AlignTop, Qt::darkGray);
 
     const QTime dieTime= QTime::currentTime().addSecs(3);
-    while ( QTime::currentTime() < dieTime )
-       QCoreApplication::processEvents();
+
+    // show as long as requesting updates finished or at least 3 seconds
+    while (QTime::currentTime() < dieTime)
+        QCoreApplication::processEvents();
 
     ProgramStartType startType = ProgramStartType::Unknown;
 
@@ -70,7 +68,8 @@ int main(int argc, char *argv[])
     dlg.show();
     splash.finish(&dlg);
 
-    while (!dlg.isFinished()) { QApplication::processEvents(); }
+    while (!dlg.isFinished())
+        QApplication::processEvents();
 
     if ( startType == ProgramStartType::Abort )
         return a.exit();

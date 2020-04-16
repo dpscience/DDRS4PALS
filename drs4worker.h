@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -72,119 +72,6 @@ class DRS4ConcurrentCopyInputData;
 class DRS4ConcurrentCopyOutputData;
 class DRS4WorkerDataExchange;
 class DRS4Worker;
-
-#ifdef __DEPRECATED_WORKER
-typedef struct {
-   double tAInNS;
-   double tBInNS;
-   double amplitudeAInMV;
-   double amplitudeBInMV;
-
-   QVector<QPointF> rawDataA;
-   QVector<QPointF> rawDataB;
-
-   double areaARatio;
-   double areaBRatio;
-} DRS4LifetimeData;
-
-typedef struct {
-   double areaARatio;
-   double areaBRatio;
-   double amplitudeAInMV;
-   double amplitudeBInMV;
-} DRS4FilterData;
-
-class DRS4ConcurrentCopyInputData final {
-public:
-    float m_xMinA;
-    float m_xMaxA;
-    float m_xMinB;
-    float m_xMaxB;
-    float m_yMinA;
-    float m_yMaxA;
-    float m_yMinB;
-    float m_yMaxB;
-    float m_yMinASort;
-    float m_yMaxASort;
-    float m_yMinBSort;
-    float m_yMaxBSort;
-
-    int m_startCell;
-    int m_endRange;
-    int m_stopCellWidth;
-    int m_cellWidth;
-    int m_cellYAMax;
-    int m_cellYAMin;
-    int m_cellYBMax;
-    int m_cellYBMin;
-
-    int m_numberOfCubicSplinePoints;
-    bool m_isLinearInterpolation;
-
-    bool m_isPositiveSignalPolarity;
-
-    double m_cfdLevelA;
-    double m_cfdLevelB;
-
-    bool m_usingBurstMode;
-
-    int m_startMinA;
-    int m_startMaxA;
-    int m_stopMinA;
-    int m_stopMaxA;
-
-    int m_startMinB;
-    int m_startMaxB;
-    int m_stopMinB;
-    int m_stopMaxB;
-
-    bool m_isPulseAreaFilterEnabled;
-    bool m_isPulseAreaFilterPlotEnabled;
-
-    int m_pulseAreaFilterBinningA;
-    int m_pulseAreaFilterBinningB;
-
-    double m_pulseAreaFilterNormalizationA;
-    double m_pulseAreaFilterNormalizationB;
-
-    double m_areaFilterASlopeUpper;
-    double m_areaFilterAInterceptUpper;
-
-    double m_areaFilterASlopeLower;
-    double m_areaFilterAInterceptLower;
-
-    double m_areaFilterBSlopeUpper;
-    double m_areaFilterBInterceptUpper;
-
-    double m_areaFilterBSlopeLower;
-    double m_areaFilterBInterceptLower;
-
-    int m_channelCntCoincindence;
-    int m_channelCntAB;
-    int m_channelCntBA;
-    int m_channelCntMerged;
-
-    double m_offsetInNSCoincidence;
-    double m_offsetInNSAB;
-    double m_offsetInNSBA;
-    double m_offsetInNSMerged;
-
-    double m_scalerInNSCoincidence;
-    double m_scalerInNSAB;
-    double m_scalerInNSBA;
-    double m_scalerInNSMerged;
-
-    double m_meanCableDelay;
-
-    bool m_isforceCoincidence;
-    bool m_isNegativeLTAccepted;
-
-    std::vector<double> m_dataVecXA;
-    std::vector<double> m_dataVecYA;
-    std::vector<double> m_dataVecXB;
-    std::vector<double> m_dataVecYB;
-};
-#endif
 
 class DRS4ConcurrentCopyInputData final {
 public:
@@ -403,8 +290,17 @@ public:
     QVector<QPointF> m_areaFilterDataA;
     QVector<QPointF> m_areaFilterDataB;
 
+    QVector<QPointF> m_areaFilterCollectedDataA;
+    QVector<QPointF> m_areaFilterCollectedDataB;
+
+    QVector<int> m_areaFilterCollectedDataCounterA;
+    QVector<int> m_areaFilterCollectedDataCounterB;
+
     int m_areaFilterACounter;
     int m_areaFilterBCounter;
+
+    int m_areaFilterCollectedACounter;
+    int m_areaFilterCollectedBCounter;
 
     /* Rise-Time Filter */
     QVector<int> m_riseTimeFilterDataA;
@@ -547,6 +443,14 @@ public:
     QVector<QPointF>* areaFilterAData();
     QVector<QPointF>* areaFilterBData();
 
+    QVector<QPointF>* areaFilterACollectedData();
+    QVector<int>* cntsAreaFilterACollectedData();
+    QVector<QPointF>* areaFilterBCollectedData();
+    QVector<int>* cntsAreaFilterBCollectedData();
+
+    int countsCollectedInAreaFilterA();
+    int countsCollectedInAreaFilterB();
+
     /* Rise-Time Filter */
     void resetRiseTimeFilterA();
     void resetRiseTimeFilterB();
@@ -620,6 +524,7 @@ public:
 
     /* Area-Filter */
     QVector<QPointF> m_areaFilterDataA, m_areaFilterDataB;
+    QVector<QPointF> m_areaFilterCollectionDataA, m_areaFilterCollectionDataB; /*mean and stddev calculation */
 
     /* Rise-Time Filter */
     QVector<int> m_riseTimeFilterDataA, m_riseTimeFilterDataB;

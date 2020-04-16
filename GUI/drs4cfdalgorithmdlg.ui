@@ -23,7 +23,7 @@
       </font>
      </property>
      <property name="title">
-      <string>CFD Algorithm</string>
+      <string>CF (Constant-Fraction) Algorithm</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
@@ -76,7 +76,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Number of Render Points:</string>
+                 <string>Number of Render-Points:</string>
                 </property>
                </widget>
               </item>
@@ -189,7 +189,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Number of Render Points:</string>
+                   <string>Number of Render-Points:</string>
                   </property>
                  </widget>
                 </item>

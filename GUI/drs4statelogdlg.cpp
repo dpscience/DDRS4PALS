@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -90,6 +90,11 @@ DRS4StateLogDlg::DRS4StateLogDlg(QWidget *parent) :
 
     if (ui->treeWidget_simulationInputFile->topLevelItem(0) )
         ui->treeWidget_simulationInputFile->topLevelItem(0)->setText(0, DRS4SimulationSettingsManager::sharedInstance()->fileName());
+
+    m_updateTimer.setInterval(1500);
+    m_updateTimer.setSingleShot(false);
+
+    connect(&m_updateTimer, SIGNAL(timeout()), this, SLOT(updateState()));
 }
 
 DRS4StateLogDlg::~DRS4StateLogDlg()
@@ -100,27 +105,28 @@ DRS4StateLogDlg::~DRS4StateLogDlg()
 void DRS4StateLogDlg::init(DRS4Worker *worker)
 {
     m_worker = worker;
+}
 
-    connect(&m_updateTimer, SIGNAL(timeout()), this, SLOT(updateState()));
-
-    m_updateTimer.setInterval(1200);
-    m_updateTimer.setSingleShot(false);
+void DRS4StateLogDlg::showEvent(QShowEvent *event)
+{
+    updateState();
 
     m_updateTimer.start();
+
+    QWidget::showEvent(event);
+}
+
+void DRS4StateLogDlg::hideEvent(QHideEvent *event)
+{
+    m_updateTimer.stop();
+
+    QWidget::hideEvent(event);
 }
 
 void DRS4StateLogDlg::updateState()
 {
-    /*if (!m_worker)
-        return;
-
-    m_worker->setBusy(true);
-
-    while(!m_worker->isBlocking()) {}*/
-
     ui->textEdit_simulationErrorCode->clear();
 
-    //Decision-Matrix:
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
     {
         ui->groupBox->setEnabled(false);
@@ -240,6 +246,4 @@ void DRS4StateLogDlg::updateState()
             m_lastSimulation = simulationContent;
         }
     }
-
-    //m_worker->setBusy(false);
 }

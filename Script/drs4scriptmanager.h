@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -67,7 +67,11 @@ public:
     void mapMsg(const QString& msg, const DRS4LogType& type);
 
 public:
-    DRS4ScriptEngineCommandCollector(QScriptEngine *engine, DRS4ScriptString *logFile = nullptr, DRS4ScriptString *logFileSucceed = nullptr, DRS4ScriptString *logFileFailed = nullptr, DRS4ScriptString *logFilePrintOut = nullptr);
+    DRS4ScriptEngineCommandCollector(QScriptEngine *engine,
+                                     DRS4ScriptString *logFile = nullptr,
+                                     DRS4ScriptString *logFileSucceed = nullptr,
+                                     DRS4ScriptString *logFileFailed = nullptr,
+                                     DRS4ScriptString *logFilePrintOut = nullptr);
     virtual ~DRS4ScriptEngineCommandCollector();
 
 public slots:

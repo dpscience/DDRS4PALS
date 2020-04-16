@@ -4,11 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui concurrent script printsupport
+QT       += core gui concurrent script printsupport network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = DDRS4PALS_1_0_10
+TARGET = DDRS4PALS_1_0_11
 TEMPLATE = app
 
 RC_FILE = softwareIcon.rc
@@ -53,7 +53,11 @@ SOURCES += main.cpp\
     GUI/drs4calculatordlg.cpp \
     GUI/drs4cfdalgorithmdlg.cpp \
     DQuickLTFit/settings.cpp \
-    DQuickLTFit/projectmanager.cpp
+    DQuickLTFit/projectmanager.cpp \
+    UpdateNotifier/drs4updatenotifier.cpp \
+    CPUUsage/drs4cpuusage.cpp \
+    GUI/drs4doublespinbox.cpp \
+    GUI/drs4spinbox.cpp
 
 HEADERS  += DRS/DRS.h \
     DRS/averager.h\
@@ -88,7 +92,11 @@ HEADERS  += DRS/DRS.h \
     GUI/drs4calculatordlg.h \
     GUI/drs4cfdalgorithmdlg.h \
     DQuickLTFit/settings.h \
-    DQuickLTFit/projectmanager.h
+    DQuickLTFit/projectmanager.h \
+    UpdateNotifier/drs4updatenotifier.h \
+    CPUUsage/drs4cpuusage.h \
+    GUI/drs4doublespinbox.h \
+    GUI/drs4spinbox.h
 
 FORMS    += GUI/drs4scopedlg.ui \
     GUI/drs4addinfodlg.ui \

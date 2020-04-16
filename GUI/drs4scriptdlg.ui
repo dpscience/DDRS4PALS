@@ -19,8 +19,50 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="pushButton_runScript">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+        </property>
         <property name="text">
-         <string>Run...</string>
+         <string>Run ...</string>
         </property>
        </widget>
       </item>
@@ -49,8 +91,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1274</width>
-         <height>333</height>
+         <width>1278</width>
+         <height>357</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -90,7 +132,7 @@
      <x>0</x>
      <y>0</y>
      <width>1298</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -189,7 +231,7 @@
        </widget>
        <widget class="QWidget" name="tab_logSucceed">
         <attribute name="title">
-         <string>Log-Succeed</string>
+         <string>Log-Successful</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
@@ -319,7 +361,7 @@
   </action>
   <action name="actionSave_Log_Succeed">
    <property name="text">
-    <string>Save Log-Succeed...</string>
+    <string>Save Log-Successful...</string>
    </property>
   </action>
   <action name="actionSave_Log_Failed">

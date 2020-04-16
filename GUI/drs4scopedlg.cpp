@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -116,8 +116,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     setWindowTitle(PROGRAM_NAME);
 
-    ui->menuDoppler_Plugin->menuAction()->setVisible(false); //disable Doppler-Plugin!
-
     //scripting access:
     DRS4ScriptingEngineAccessManager::sharedInstance()->setDialogAccess(this);
 
@@ -159,37 +157,37 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     /* Pulse -Scope */
     m_pulseRequestTimer = new QTimer;
-    m_pulseRequestTimer->setInterval(50);
+    m_pulseRequestTimer->setInterval(120);
 
     connect(m_pulseRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseScope()), Qt::QueuedConnection);
 
     /* PHS-Plot */
     m_phsRequestTimer = new QTimer;
-    m_phsRequestTimer->setInterval(50);
+    m_phsRequestTimer->setInterval(200);
 
     connect(m_phsRequestTimer, SIGNAL(timeout()), this, SLOT(plotPHS()), Qt::QueuedConnection);
 
     /* Area-Filter */
     m_areaRequestTimer = new QTimer;
-    m_areaRequestTimer->setInterval(50);
+    m_areaRequestTimer->setInterval(200);
 
     connect(m_areaRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseAreaFilterData()), Qt::QueuedConnection);
 
     /* Rise-Time Filter */
     m_riseTimeRequestTimer = new QTimer;
-    m_riseTimeRequestTimer->setInterval(50);
+    m_riseTimeRequestTimer->setInterval(200);
 
     connect(m_riseTimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotRiseTimeFilterData()), Qt::QueuedConnection);
 
     /* Lifetime-Spectra */
     m_lifetimeRequestTimer = new QTimer;
-    m_lifetimeRequestTimer->setInterval(50);
+    m_lifetimeRequestTimer->setInterval(200);
 
     connect(m_lifetimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotLifetimeSpectra()), Qt::QueuedConnection);
 
     /* Persistance - Data */
     m_persistanceRequestTimer = new QTimer;
-    m_persistanceRequestTimer->setInterval(50);
+    m_persistanceRequestTimer->setInterval(200);
 
     connect(m_persistanceRequestTimer, SIGNAL(timeout()), this, SLOT(plotPersistance()), Qt::QueuedConnection);
 
@@ -201,7 +199,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         m_temperatureTimer = new QTimer;
-        m_temperatureTimer->setInterval(3000);
+        m_temperatureTimer->setInterval(5000);
         m_temperatureTimer->setSingleShot(false);
     }
     else {
@@ -461,6 +459,12 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->pushButton_savePHSA, SIGNAL(clicked()), this, SLOT(savePHSA()));
     connect(ui->pushButton_savePHSB, SIGNAL(clicked()), this, SLOT(savePHSB()));
 
+    connect(ui->pushButton_saveRiseTimeA, SIGNAL(clicked()), this, SLOT(saveRiseTimeDistributionA()));
+    connect(ui->pushButton_saveRiseTimeB, SIGNAL(clicked()), this, SLOT(saveRiseTimeDistributionB()));
+
+    connect(ui->pushButton_saveAreaCollectionA, SIGNAL(clicked()), this, SLOT(saveAreaDistributionA()));
+    connect(ui->pushButton_saveAreaCollectionB, SIGNAL(clicked()), this, SLOT(saveAreaDistributionB()));
+
     connect(ui->checkBox_positiveTriggerPol, SIGNAL(clicked(bool)), this, SLOT(changePositivTriggerPolarity(bool)));
     connect(ui->checkBox_positivSignal, SIGNAL(clicked(bool)), this, SLOT(changePositivSignal(bool)));
 
@@ -579,10 +583,10 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->comboBox_triggerLogic->setCurrentIndex(2);
 
     /* board-specs (see manual) */
-    ui->comboBox_sampleSpeed->addItem("5.12GHz (200ns)");
-    ui->comboBox_sampleSpeed->addItem("2.00GHz (500ns)");
-    ui->comboBox_sampleSpeed->addItem("1.00GHz (1000ns)");
-    ui->comboBox_sampleSpeed->addItem("0.50GHz (2000ns)");
+    ui->comboBox_sampleSpeed->addItem("~5.12GHz (~200ns)");
+    ui->comboBox_sampleSpeed->addItem("~2.00GHz (~500ns)");
+    ui->comboBox_sampleSpeed->addItem("~1.00GHz (~1000ns)");
+    ui->comboBox_sampleSpeed->addItem("~0.50GHz (~2000ns)");
 
     ui->comboBox_sampleSpeed->setCurrentIndex(0);
 
@@ -635,20 +639,20 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     ui->spinBox_stopMinB->setValue(0);
     ui->spinBox_stopMaxB->setValue(1000);
 
-    ui->spinBox_chnCountAB->setRange(10, 50000);
-    ui->spinBox_chnCountBA->setRange(10, 50000);
-    ui->spinBox_chnCountCoincidence->setRange(10, 50000);
-    ui->spinBox_chnCountMerged->setRange(10, 50000);
+    ui->spinBox_chnCountAB->setRange(10, 1000000);
+    ui->spinBox_chnCountBA->setRange(10, 1000000);
+    ui->spinBox_chnCountCoincidence->setRange(10, 1000000);
+    ui->spinBox_chnCountMerged->setRange(10, 1000000);
 
-    ui->doubleSpinBox_offsetAB->setRange(-900, 900);
-    ui->doubleSpinBox_offsetBA->setRange(-900, 900);
-    ui->doubleSpinBox_offsetCoincidence->setRange(-900, 900);
-    ui->doubleSpinBox_offsetMerged->setRange(-900, 900);
+    ui->doubleSpinBox_offsetAB->setRange(-1000000, 1000000);
+    ui->doubleSpinBox_offsetBA->setRange(-1000000, 1000000);
+    ui->doubleSpinBox_offsetCoincidence->setRange(-1000000, 1000000);
+    ui->doubleSpinBox_offsetMerged->setRange(-1000000, 1000000);
 
-    ui->doubleSpinBox_scalerAB->setRange(0.010, 50000);
-    ui->doubleSpinBox_scalerBA->setRange(0.010, 50000);
-    ui->doubleSpinBox_scalerCoincidence->setRange(0.010, 50000);
-    ui->doubleSpinBox_scalerMerged->setRange(0.010, 50000);
+    ui->doubleSpinBox_scalerAB->setRange(0.010, 1000000);
+    ui->doubleSpinBox_scalerBA->setRange(0.010, 1000000);
+    ui->doubleSpinBox_scalerCoincidence->setRange(0.010, 1000000);
+    ui->doubleSpinBox_scalerMerged->setRange(0.010, 1000000);
 
     ui->spinBox_chnCountAB->setValue(4096);
     ui->spinBox_chnCountBA->setValue(4096);
@@ -669,7 +673,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     /* Autosave - Spectra */
     m_autoSaveSpectraTimer = new QTimer;
-    m_autoSaveSpectraTimer->setInterval(60000);
+    m_autoSaveSpectraTimer->setInterval(300000);
 
     connect(m_autoSaveSpectraTimer, SIGNAL(timeout()), this, SLOT(autosaveAllSpectra()), Qt::QueuedConnection);
 
@@ -678,6 +682,11 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     m_autoSaveTimer->start();
     m_autoSaveSpectraTimer->start();
+
+    /* CPU usage */
+    connect(DRS4CPUUsageManager::sharedInstance(), SIGNAL(cpu(int)), ui->progressBar_cpuUsage, SLOT(setValue(int)));
+
+    DRS4CPUUsageManager::sharedInstance()->start(500);
 
     ui->widget_play->setLiteralSVG(":/images/images/play");
     ui->widget_stop->setLiteralSVG(":/images/images/stop");
@@ -693,13 +702,13 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     /* Pulse-Shape Filter */
     m_pulseShapeFilterTimerA = new QTimer;
-    m_pulseShapeFilterTimerA->setInterval(35);
+    m_pulseShapeFilterTimerA->setInterval(200);
 
     m_pulseShapeFilterTimerB = new QTimer;
-    m_pulseShapeFilterTimerB->setInterval(35);
+    m_pulseShapeFilterTimerB->setInterval(200);
 
-    connect(m_pulseShapeFilterTimerA, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressA()));
-    connect(m_pulseShapeFilterTimerB, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressB()));
+    connect(m_pulseShapeFilterTimerA, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressA()),  Qt::QueuedConnection);
+    connect(m_pulseShapeFilterTimerB, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressB()),  Qt::QueuedConnection);
 
     ui->widget_playPulseShapeFilterA->setLiteralSVG(":/images/images/play");
     ui->widget_playPulseShapeFilterB->setLiteralSVG(":/images/images/play");
@@ -924,6 +933,8 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
 DRS4ScopeDlg::~DRS4ScopeDlg()
 {
+    DRS4CPUUsageManager::sharedInstance()->stop();
+
     m_pulseSaveDlg->close();
     DDELETE_SAFETY(m_pulseSaveDlg);
 
@@ -1632,7 +1643,7 @@ void DRS4ScopeDlg::initPulseRiseTimeFilterA()
     ui->widget_plotrRiseTimeFilterA->xBottom()->setNumberFormat(plot2DXAxis::floating);
     ui->widget_plotrRiseTimeFilterA->xBottom()->setNumberPrecision(0);
 
-    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisScaling(plot2DXAxis::linear);
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
     ui->widget_plotrRiseTimeFilterA->yLeft()->setNumberFormat(plot2DXAxis::floating);
     ui->widget_plotrRiseTimeFilterA->yLeft()->setNumberPrecision(0);
 
@@ -1679,7 +1690,7 @@ void DRS4ScopeDlg::initPulseRiseTimeFilterB()
     ui->widget_plotrRiseTimeFilterB->xBottom()->setNumberFormat(plot2DXAxis::floating);
     ui->widget_plotrRiseTimeFilterB->xBottom()->setNumberPrecision(0);
 
-    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisScaling(plot2DXAxis::linear);
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
     ui->widget_plotrRiseTimeFilterB->yLeft()->setNumberFormat(plot2DXAxis::floating);
     ui->widget_plotrRiseTimeFilterB->yLeft()->setNumberPrecision(0);
 
@@ -2458,8 +2469,14 @@ void DRS4ScopeDlg::startThread()
     }
 
     if ( !DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
-        ui->actionSave_next_N_Pulses->setEnabled(true);
-        ui->actionSave_next_N_Pulses_in_Range->setEnabled(true);
+        if (!DRS4ProgramSettingsManager::sharedInstance()->isMulticoreThreadingEnabled()) {
+            ui->actionSave_next_N_Pulses->setEnabled(true);
+            ui->actionSave_next_N_Pulses_in_Range->setEnabled(true);
+        }
+        else {
+            ui->actionSave_next_N_Pulses->setEnabled(false);
+            ui->actionSave_next_N_Pulses_in_Range->setEnabled(false);
+        }
 
         ui->actionLoad->setEnabled(true);
         ui->actionLoad_Autosave->setEnabled(true);
@@ -2516,8 +2533,14 @@ void DRS4ScopeDlg::stopThread()
     }
 
     if ( !DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
-        ui->actionSave_next_N_Pulses->setEnabled(true);
-        ui->actionSave_next_N_Pulses_in_Range->setEnabled(true);
+        if (!DRS4ProgramSettingsManager::sharedInstance()->isMulticoreThreadingEnabled()) {
+            ui->actionSave_next_N_Pulses->setEnabled(true);
+            ui->actionSave_next_N_Pulses_in_Range->setEnabled(true);
+        }
+        else {
+            ui->actionSave_next_N_Pulses->setEnabled(false);
+            ui->actionSave_next_N_Pulses_in_Range->setEnabled(false);
+        }
 
         ui->actionLoad->setEnabled(true);
         ui->actionLoad_Autosave->setEnabled(true);
@@ -4045,14 +4068,30 @@ void DRS4ScopeDlg::plotPHSWindows()
 
 void DRS4ScopeDlg::plotPulseAreaFilterData()
 {
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-        return;
-
-    if ( !DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled() )
-        return;
-
     if (!m_worker)
         return;
+
+    if (!ui->tab_12->isVisible()
+            && !ui->tab_36->isVisible())
+        return;
+
+    if ( !DRS4SettingsManager::sharedInstance()->isPulseAreaFilterPlotEnabled()
+         || DRS4SettingsManager::sharedInstance()->isBurstMode() ) {
+        m_areaRequestTimer->stop();
+
+        m_worker->setBusy(true);
+
+        while(!m_worker->isBlocking()) {}
+
+        ui->label_areaCollectedCountsA->setNum(m_worker->countsCollectedInAreaFilterA());
+        ui->label_areaCollectedCountsB->setNum(m_worker->countsCollectedInAreaFilterB());
+
+        m_worker->setBusy(false);
+
+        m_areaRequestTimer->start();
+
+        return;
+    }
 
     m_areaRequestTimer->stop();
 
@@ -4065,6 +4104,9 @@ void DRS4ScopeDlg::plotPulseAreaFilterData()
 
     ui->widget_plotAreaFilterA->curve().at(0)->addData(*m_worker->areaFilterAData());
     ui->widget_plotAreaFilterB_2->curve().at(0)->addData(*m_worker->areaFilterBData());
+
+    ui->label_areaCollectedCountsA->setNum(m_worker->countsCollectedInAreaFilterA());
+    ui->label_areaCollectedCountsB->setNum(m_worker->countsCollectedInAreaFilterB());
 
     m_worker->setBusy(false);
 
@@ -4088,6 +4130,10 @@ void DRS4ScopeDlg::plotRiseTimeFilterData()
     if (!m_worker)
         return;
 
+    if (!ui->tab_17->isVisible()
+            && !ui->tab_18->isVisible())
+        return;
+
     m_riseTimeRequestTimer->stop();
 
     ui->widget_plotrRiseTimeFilterA->curve().at(0)->clearCurveContent();
@@ -4105,8 +4151,8 @@ void DRS4ScopeDlg::plotRiseTimeFilterData()
     const int valA = m_worker->riseTimeFilterADataMax();
     const int valB = m_worker->riseTimeFilterBDataMax();
 
-    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisRange(0, valA<=/*1000?1000*/10?10:valA);
-    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisRange(0, valB<=/*1000?1000*/10?10:valB);
+    ui->widget_plotrRiseTimeFilterA->yLeft()->setAxisRange(1, valA<=/*1000?1000*/10?10:valA);
+    ui->widget_plotrRiseTimeFilterB->yLeft()->setAxisRange(1, valB<=/*1000?1000*/10?10:valB);
 
     updateRiseTimeFilterALimits();
     updateRiseTimeFilterBLimits();
@@ -4133,21 +4179,33 @@ void DRS4ScopeDlg::plotLifetimeSpectra()
 
     m_lifetimeRequestTimer->stop();
 
-    /* AB-Spectrum */
-    ui->widget_ltAB->curve().at(0)->clearCurveContent();
-    ui->widget_ltAB->curve().at(1)->clearCurveContent();
+    /* A-B */
+    if (ui->tab_3->isVisible()) {
+        /* AB-Spectrum */
+        ui->widget_ltAB->curve().at(0)->clearCurveContent();
+        ui->widget_ltAB->curve().at(1)->clearCurveContent();
+    }
 
-    /* BA-Spectrum */
-    ui->widget_ltBA->curve().at(0)->clearCurveContent();
-    ui->widget_ltBA->curve().at(1)->clearCurveContent();
+    /* B-A */
+    if (ui->tab_4->isVisible()) {
+        /* BA-Spectrum */
+        ui->widget_ltBA->curve().at(0)->clearCurveContent();
+        ui->widget_ltBA->curve().at(1)->clearCurveContent();
+    }
 
-    /* Merged-Spectrum */
-    ui->widget_ltMerged->curve().at(0)->clearCurveContent();
-    ui->widget_ltMerged->curve().at(1)->clearCurveContent();
+    /* Prompt */
+    if (ui->tab_5->isVisible()) {
+        /* Prompt-Spectrum */
+        ui->widget_ltConicidence->curve().at(0)->clearCurveContent();
+        ui->widget_ltConicidence->curve().at(1)->clearCurveContent();
+    }
 
-    /* Coincidence-Spectrum */
-    ui->widget_ltConicidence->curve().at(0)->clearCurveContent();
-    ui->widget_ltConicidence->curve().at(1)->clearCurveContent();
+    /* Merged */
+    if (ui->tab_7->isVisible()) {
+        /* Merged-Spectrum */
+        ui->widget_ltMerged->curve().at(0)->clearCurveContent();
+        ui->widget_ltMerged->curve().at(1)->clearCurveContent();
+    }
 
     m_worker->setBusy(true);
 
@@ -4175,58 +4233,87 @@ void DRS4ScopeDlg::plotLifetimeSpectra()
     const int mergedCounts = m_worker->countsSpectrumMerged();
     const int coincidenceCounts = m_worker->countsSpectrumCoincidence();
 
-    ui->widget_ltAB->curve().at(0)->addDataVec(*m_worker->spectrumAB());
-    ui->widget_ltBA->curve().at(0)->addDataVec(*m_worker->spectrumBA());
-    ui->widget_ltMerged->curve().at(0)->addDataVec(*m_worker->spectrumMerged());
-    ui->widget_ltConicidence->curve().at(0)->addDataVec(*m_worker->spectrumCoincidence());
+    /* A-B */
+    if (ui->tab_3->isVisible()) {
+        ui->widget_ltAB->curve().at(0)->addDataVec(*m_worker->spectrumAB());
+    }
+
+    /* B-A */
+    if (ui->tab_4->isVisible()) {
+        ui->widget_ltBA->curve().at(0)->addDataVec(*m_worker->spectrumBA());
+    }
+
+    /* Merged */
+    if (ui->tab_7->isVisible()) {
+        ui->widget_ltMerged->curve().at(0)->addDataVec(*m_worker->spectrumMerged());
+    }
+
+    /* Prompt */
+    if (ui->tab_5->isVisible()) {
+        ui->widget_ltConicidence->curve().at(0)->addDataVec(*m_worker->spectrumCoincidence());
+    }
 
     m_worker->setBusy(false);
 
-    ui->widget_ltAB->yLeft()->setAxisRange(1, qMax(yABMax, 2));
-    ui->widget_ltBA->yLeft()->setAxisRange(1, qMax(yBAMax, 2));
-    ui->widget_ltMerged->yLeft()->setAxisRange(1, qMax(yMergedMax, 2));
-    ui->widget_ltConicidence->yLeft()->setAxisRange(1, qMax(yCoincidenceMax, 2));
+    /* A-B */
+    if (ui->tab_3->isVisible()) {
+        ui->widget_ltAB->yLeft()->setAxisRange(1, qMax(yABMax, 2));
+        ui->widget_ltAB->curve().at(1)->addData(m_fitPointsAB_Single);
+        ui->widget_ltAB->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
+        ui->widget_ltAB->replot();
 
-    ui->widget_ltAB->curve().at(1)->addData(m_fitPointsAB_Single);
-    ui->widget_ltBA->curve().at(1)->addData(m_fitPointsBA_Single);
-    ui->widget_ltMerged->curve().at(1)->addData(m_fitPointsMerged_Single);
-    ui->widget_ltConicidence->curve().at(1)->addData(m_fitPoints);
+        ui->label_countsIntergralAB->setNum(abCounts);
 
-    ui->widget_ltAB->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
-    ui->widget_ltBA->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
-    ui->widget_ltMerged->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
-    ui->widget_ltConicidence->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
+        if ( abCounts < 3000 )
+            ui->pushButton_ABFit->setEnabled(false);
+        else
+            ui->pushButton_ABFit->setEnabled(true);
+    }
 
-    ui->widget_ltAB->replot();
-    ui->widget_ltBA->replot();
-    ui->widget_ltMerged->replot();
-    ui->widget_ltConicidence->replot();
+    /* B-A */
+    if (ui->tab_4->isVisible()) {
+        ui->widget_ltBA->yLeft()->setAxisRange(1, qMax(yBAMax, 2));
+        ui->widget_ltBA->curve().at(1)->addData(m_fitPointsBA_Single);
+        ui->widget_ltBA->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
+        ui->widget_ltBA->replot();
 
+        ui->label_countsIntergralBA->setNum(baCounts);
 
-    ui->label_countsIntergralAB->setNum(abCounts);
-    ui->label_countsIntergralBA->setNum(baCounts);
-    ui->label_countsIntergralMerged->setNum(mergedCounts);
-    ui->label_countsIntergralCoincidence->setNum(coincidenceCounts);
+        if ( baCounts < 3000 )
+            ui->pushButton_BAFit->setEnabled(false);
+        else
+            ui->pushButton_BAFit->setEnabled(true);
+    }
 
-    if ( coincidenceCounts < 3000 )
-        ui->pushButton_CoincidenceFit->setEnabled(false);
-    else
-        ui->pushButton_CoincidenceFit->setEnabled(true);
+    /* Merged */
+    if (ui->tab_7->isVisible()) {
+        ui->widget_ltMerged->yLeft()->setAxisRange(1, qMax(yMergedMax, 2));
+        ui->widget_ltMerged->curve().at(1)->addData(m_fitPointsMerged_Single);
+        ui->widget_ltMerged->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
+        ui->widget_ltMerged->replot();
 
-    if ( abCounts < 3000 )
-        ui->pushButton_ABFit->setEnabled(false);
-    else
-        ui->pushButton_ABFit->setEnabled(true);
+        ui->label_countsIntergralMerged->setNum(mergedCounts);
 
-    if ( baCounts < 3000 )
-        ui->pushButton_BAFit->setEnabled(false);
-    else
-        ui->pushButton_BAFit->setEnabled(true);
+        if ( mergedCounts < 3000 )
+            ui->pushButton_MergedFit->setEnabled(false);
+        else
+            ui->pushButton_MergedFit->setEnabled(true);
+    }
 
-    if ( mergedCounts < 3000 )
-        ui->pushButton_MergedFit->setEnabled(false);
-    else
-        ui->pushButton_MergedFit->setEnabled(true);
+    /* Prompt */
+    if (ui->tab_5->isVisible()) {
+        ui->widget_ltConicidence->yLeft()->setAxisRange(1, qMax(yCoincidenceMax, 2));
+        ui->widget_ltConicidence->curve().at(1)->addData(m_fitPoints);
+        ui->widget_ltConicidence->yLeft()->setAxisScaling(plot2DXAxis::logarithmic);
+        ui->widget_ltConicidence->replot();
+
+        ui->label_countsIntergralCoincidence->setNum(coincidenceCounts);
+
+        if ( coincidenceCounts < 3000 )
+            ui->pushButton_CoincidenceFit->setEnabled(false);
+        else
+            ui->pushButton_CoincidenceFit->setEnabled(true);
+    }
 
     ui->label_valiLTPerSec->setText("Lifetime Efficiency\t[Hz]:\t[A-B] " + QString::number(avgCountABHz, 'f', 2) + " (" + QString::number(countABHz, 'f', 2) + ") [B-A] " + QString::number(avgCountBAHz, 'f', 2) + " (" + QString::number(countBAHz, 'f', 2) + ") [Merged] " + QString::number(avgCountMergedHz, 'f', 2) + " (" + QString::number(countMergedHz, 'f', 2) + ")");
     ui->label_validCoincidencePerSec->setText("Prompt Efficiency\t[Hz]:\t" + QString::number(avgCountCoincidenceHz, 'f', 2) + " (" + QString::number(countCoincidenceHz, 'f', 2) + ")" );
@@ -4245,6 +4332,9 @@ void DRS4ScopeDlg::plotPersistance()
     if (!m_worker)
         return;
 
+    if (!ui->tab_persistance->isVisible())
+        return;
+
     m_persistanceRequestTimer->stop();
 
     m_worker->setBusy(true);
@@ -4253,12 +4343,12 @@ void DRS4ScopeDlg::plotPersistance()
 
     if (!m_worker->persistanceDataA()->isEmpty()
             && !m_worker->persistanceDataB()->isEmpty()) {
-        if (ui->widget_persistanceA->curve().at(0)->getDataSize() >= 180000) {
+        if (ui->widget_persistanceA->curve().at(0)->getDataSize() >= 360000) {
             ui->widget_persistanceA->curve().at(0)->clearCurveContent();
             ui->widget_persistanceA->curve().at(0)->clearCurveCache();
         }
 
-        if (ui->widget_persistanceB->curve().at(0)->getDataSize() >= 180000) {
+        if (ui->widget_persistanceB->curve().at(0)->getDataSize() >= 360000) {
             ui->widget_persistanceB->curve().at(0)->clearCurveContent();
             ui->widget_persistanceB->curve().at(0)->clearCurveCache();
         }
@@ -4268,8 +4358,6 @@ void DRS4ScopeDlg::plotPersistance()
 
         m_bSwapDirection = m_bSwapDirection?false:true;
     }
-
-
 
     m_worker->setBusy(false);
 
@@ -4387,7 +4475,7 @@ void DRS4ScopeDlg::resetPHSB(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetAllLTSpectraByPushButton(const FunctionSource &source)
 {
-    const QString text = "Are you sure to reset the following Spectra?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Prompt/IRF</li><li>Persistance</li><li>Filters</li></lu></b>";
+    const QString text = "This action will reset the following spectra. Are you sure ?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Spec(Prompt/IRF)</li><li>Persistence</li><li>Filters</li></lu></b>";
 
     const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset all Spectra?", text, QMessageBox::Yes|QMessageBox::No);
 
@@ -4397,7 +4485,7 @@ void DRS4ScopeDlg::resetAllLTSpectraByPushButton(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetLTSpectrumABByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset AB Spectrum?", "Reset AB Spectrum (Spec (A-B))?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum A-B. Are you sure?", "Reset AB Spectrum (Spec (A-B))?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumAB(source);
@@ -4405,7 +4493,7 @@ void DRS4ScopeDlg::resetLTSpectrumABByPushButton(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetLTSpectrumBAByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset BA Spectrum?", "Reset BA Spectrum (Spec (B-A)?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum B-A. Are you sure?", "Reset BA Spectrum (Spec (B-A)?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumBA(source);
@@ -4413,7 +4501,7 @@ void DRS4ScopeDlg::resetLTSpectrumBAByPushButton(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetLTSpectrumCoincidenceByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset Prompt Spectrum?", "Reset Prompt Spectrum (Prompt/IRF)?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum Prompt/IRF. Are you sure?", "Reset Prompt Spectrum (Prompt/IRF)?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumCoincidence(source);
@@ -4421,7 +4509,7 @@ void DRS4ScopeDlg::resetLTSpectrumCoincidenceByPushButton(const FunctionSource &
 
 void DRS4ScopeDlg::resetLTSpectrumMergedByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset Merged Spectrum?", "Reset Merged Spectrum (Spec (Merged)?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Merged Spectrum. Are you sure?", "Reset Merged Spectrum (Spec (Merged)?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumMerged(source);
@@ -4489,15 +4577,16 @@ void DRS4ScopeDlg::autosaveAllSpectra()
     while(!m_worker->isBlocking()) {}
 
     saveABSpectrum(true);
-    saveABSpectrumDQuickLTFit(true);
+    // saveABSpectrumDQuickLTFit(true);
     saveBASpectrum(true);
-    saveBASpectrumDQuickLTFit(true);
+    // saveBASpectrumDQuickLTFit(true);
     saveCoincidenceSpectrum(true);
-    saveCoincidenceSpectrumDQuickLTFit(true);
+    // saveCoincidenceSpectrumDQuickLTFit(true);
     saveMergedSpectrum(true);
-    saveMergedSpectrumDQuickLTFit(true);
-    savePHSA(true);
-    savePHSB(true);
+    // saveMergedSpectrumDQuickLTFit(true);
+
+    // savePHSA(true);
+    // savePHSB(true);
 
     m_worker->setBusy(false);
 
@@ -5430,6 +5519,15 @@ void DRS4ScopeDlg::changeSampleSpeed(int index, bool accessFromScript)
         m_worker->setBusy(false);
 
         return;
+    }
+    else {
+        const bool validTimingCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsTimingCalibrationValid();
+
+        if (!validTimingCalib) {
+            ui->label_timingCalibrated->setText("not calibrated");
+        }
+        else
+            ui->label_timingCalibrated->setText("");
     }
 
     m_worker->setBusy(true);
@@ -6548,6 +6646,200 @@ void DRS4ScopeDlg::savePHSB(bool autosave, const QString &fileNameAutosave)
     }
 }
 
+void DRS4ScopeDlg::saveRiseTimeDistributionA()
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+     const QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                                     DRS4ProgramSettingsManager::sharedInstance()->saveRiseTimeDistributionDataFilePath(),
+                                                                     tr("Data (*.dat *.txt *.log)"));
+
+    if ( fileName.isEmpty() ) {
+        m_worker->setBusy(false);
+        return;
+    }
+
+    DRS4ProgramSettingsManager::sharedInstance()->setSaveRiseTimeDistributionDataFilePath(fileName);
+
+
+    QFile file(fileName);
+    QTextStream stream(&file);
+
+    if ( file.open(QIODevice::WriteOnly) ) {
+        const QString res = QString::number(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfA()/DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA(), 'f', 3);
+
+        stream << "#" << "Rise-Time (10% >> 90% CF Level) Distribution - A\n";
+        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# Bin-Resolution [ns]: " << res << "\n";
+        stream << "# Total Counts: " << QString::number((double)m_worker->m_riseTimeFilterACounter, 'f', 0) << "[#]\n";
+        stream << "bin\tcounts\n";
+
+        for ( int i = 0 ; i < m_worker->m_riseTimeFilterDataA.size() ; ++ i ) {
+            if (m_worker->m_riseTimeFilterDataA.at(i) < 0.0) {
+                stream << QVariant(i).toString() << "\t0" << "\n";
+            }
+            else {
+                stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->m_riseTimeFilterDataA.at(i)).toString() << "\n";
+            }
+        }
+
+        file.close();
+        m_worker->setBusy(false);
+    }
+    else {
+        MSGBOX("Error while writing file!");
+
+        m_worker->setBusy(false);
+    }
+}
+
+void DRS4ScopeDlg::saveRiseTimeDistributionB()
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                                     DRS4ProgramSettingsManager::sharedInstance()->saveRiseTimeDistributionDataFilePath(),
+                                                                     tr("Data (*.dat *.txt *.log)"));
+
+    if ( fileName.isEmpty() ) {
+        m_worker->setBusy(false);
+        return;
+    }
+
+    DRS4ProgramSettingsManager::sharedInstance()->setSaveRiseTimeDistributionDataFilePath(fileName);
+
+
+    QFile file(fileName);
+    QTextStream stream(&file);
+
+    if ( file.open(QIODevice::WriteOnly) ) {
+        const QString res = QString::number(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfB()/DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB(), 'f', 3);
+
+        stream << "#" << "Rise-Time (10% >> 90% CF Level) Distribution - B\n";
+        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# Bin-Resolution [ns]: " << res << "\n";
+        stream << "# Total Counts: " << QString::number((double)m_worker->m_riseTimeFilterBCounter, 'f', 0) << "[#]\n";
+        stream << "bin\tcounts\n";
+
+        for ( int i = 0 ; i < m_worker->m_riseTimeFilterDataB.size() ; ++ i ) {
+            if (m_worker->m_riseTimeFilterDataB.at(i) < 0.0) {
+                stream << QVariant(i).toString() << "\t0" << "\n";
+            }
+            else {
+                stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->m_riseTimeFilterDataB.at(i)).toString() << "\n";
+            }
+        }
+
+        file.close();
+        m_worker->setBusy(false);
+    }
+    else {
+        MSGBOX("Error while writing file!");
+
+        m_worker->setBusy(false);
+    }
+}
+
+void DRS4ScopeDlg::saveAreaDistributionA()
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+     const QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                                     DRS4ProgramSettingsManager::sharedInstance()->saveAreaDistributionDataFilePath(),
+                                                                     tr("Data (*.dat *.txt *.log)"));
+
+    if ( fileName.isEmpty() ) {
+        m_worker->setBusy(false);
+        return;
+    }
+
+    DRS4ProgramSettingsManager::sharedInstance()->setSaveAreaDistributionDataFilePath(fileName);
+
+
+    QFile file(fileName);
+    QTextStream stream(&file);
+
+    if ( file.open(QIODevice::WriteOnly) ) {
+        const double res = 500.0f/(float)kNumberOfBins;
+
+        stream << "#" << "Area Distribution - A\n";
+        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "amplitude [mV]\tarea mean [a.u.]\tarea stddev [a.u.]\n";
+
+        for ( int i = 0 ; i < m_worker->m_areaFilterCollectedDataA.size() ; ++ i ) {
+                stream << QString::number(i*res, 'f', 3) << "\t" <<  QString::number(m_worker->areaFilterACollectedData()->at(i).x(), 'g', 6) << "\t" <<  QString::number(m_worker->areaFilterACollectedData()->at(i).y(), 'g', 6)  << "\n";
+        }
+
+        file.close();
+        m_worker->setBusy(false);
+    }
+    else {
+        MSGBOX("Error while writing file!");
+
+        m_worker->setBusy(false);
+    }
+}
+
+void DRS4ScopeDlg::saveAreaDistributionB()
+{
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+     const QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                                     DRS4ProgramSettingsManager::sharedInstance()->saveAreaDistributionDataFilePath(),
+                                                                     tr("Data (*.dat *.txt *.log)"));
+
+    if ( fileName.isEmpty() ) {
+        m_worker->setBusy(false);
+        return;
+    }
+
+    DRS4ProgramSettingsManager::sharedInstance()->setSaveAreaDistributionDataFilePath(fileName);
+
+
+    QFile file(fileName);
+    QTextStream stream(&file);
+
+    if ( file.open(QIODevice::WriteOnly) ) {
+        const double res = 500.0f/(float)kNumberOfBins;
+
+        stream << "#" << "Area Distribution - B\n";
+        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "amplitude [mV]\tarea mean [a.u.]\tarea stddev [a.u.]\n";
+
+        for ( int i = 0 ; i < m_worker->m_areaFilterCollectedDataB.size() ; ++ i ) {
+                stream << QString::number(i*res, 'f', 3) << "\t" <<  QString::number(m_worker->areaFilterBCollectedData()->at(i).x(), 'g', 6) << "\t" <<  QString::number(m_worker->areaFilterBCollectedData()->at(i).y(), 'g', 6)  << "\n";
+        }
+
+        file.close();
+        m_worker->setBusy(false);
+    }
+    else {
+        MSGBOX("Error while writing file!");
+
+        m_worker->setBusy(false);
+    }
+}
+
 void DRS4ScopeDlg::saveTemperature()
 {
     m_worker->setBusy(true);
@@ -6769,8 +7061,15 @@ void DRS4ScopeDlg::changeBurstModeEnabled(bool on, const FunctionSource &source)
 
     ui->menuDRS4_Board_Information->setEnabled(!on);
 
-    ui->actionSave_next_N_Pulses->setEnabled(!on);
-    ui->actionSave_next_N_Pulses_in_Range->setEnabled(!on);
+    if (DRS4ProgramSettingsManager::sharedInstance()->isMulticoreThreadingEnabled()
+            && !on) {
+        ui->actionSave_next_N_Pulses->setEnabled(false);
+        ui->actionSave_next_N_Pulses_in_Range->setEnabled(false);
+    }
+    else {
+        ui->actionSave_next_N_Pulses->setEnabled(!on);
+        ui->actionSave_next_N_Pulses_in_Range->setEnabled(!on);
+    }
 
     ui->actionLoad->setEnabled(!on);
     ui->actionLoad_Autosave->setEnabled(!on);
@@ -6940,7 +7239,7 @@ void DRS4ScopeDlg::plotTemperature()
     try {
         T = DRS4BoardManager::sharedInstance()->currentBoard()->GetTemperature();
     } catch ( ... ) {
-        DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttTemp. try-catch"));
+        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttTemp. try-catch"));
     }
 
     m_time += m_temperatureTimer->interval();
@@ -6952,8 +7251,10 @@ void DRS4ScopeDlg::plotTemperature()
 
     m_worker->setBusy(false);
 
-    ui->widget_boardT->curve().at(0)->addData(p.x(), p.y());
-    ui->widget_boardT->replot();
+    if (ui->tab_6->isVisible()) {
+        ui->widget_boardT->curve().at(0)->addData(p.x(), p.y());
+        ui->widget_boardT->replot();
+    }
 
     m_temperatureTimer->start();
 }
@@ -8743,6 +9044,12 @@ void DRS4ScopeDlg::plotPulseScope()
     if (!m_worker)
         return;
 
+    if (!ui->tab->isVisible())
+        return;
+
+    if (!m_workerThread->isRunning())
+        return;
+
     m_pulseRequestTimer->stop();
 
     ui->widget_plotA->curve().at(0)->clearCurveContent();
@@ -8776,6 +9083,22 @@ void DRS4ScopeDlg::plotPHS()
 
     if (!m_worker)
         return;
+
+    if (!ui->tab_2->isVisible()) {
+        m_phsRequestTimer->stop();
+
+        m_worker->setBusy(true);
+
+        while(!m_worker->isBlocking()) {}
+
+        ui->label_phsCntPerSecA->setText("Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
+
+        m_worker->setBusy(false);
+
+        m_phsRequestTimer->start();
+
+        return;
+    }
 
     m_phsRequestTimer->stop();
 
@@ -8878,6 +9201,27 @@ void DRS4ScopeDlg::Progress(int value)
     qDebug() << value;
 }
 
+void DRS4ScopeDlg::showEvent(QShowEvent *event)
+{
+    event->accept();
+    QMainWindow::showEvent(event);
+
+    if (!DRS4BoardManager::sharedInstance()->isDemoModeEnabled()) {
+        const bool validVoltCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsVoltageCalibrationValid();
+        const bool validTimingCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsTimingCalibrationValid();
+
+        if (!validVoltCalib
+                || !validTimingCalib) {
+            const QString voltStr = !validVoltCalib ?QString( "<font color=\"red\">[ x ]&emsp;voltage calibration ?</font>") : QString("<font color=\"green\">[ ok ]&emsp;voltage calibration ?</font>");
+            const QString timeStr = !validTimingCalib ? QString("<font color=\"red\">[ x ]&emsp;timing calibration (%1 GHz) ?</font>").arg(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz()) : QString("<font color=\"green\">[ ok ]&emsp;timing calibration (%1 GHz) ?</font>").arg(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz());
+
+            const QString text = QString(QString("<nobr>The DRS4 evaluation board need to be calibrated:</nobr><br><lu><li>") + voltStr + QString("</li>") + QString("<li>") + timeStr + QString("</li></lu>"));
+
+            QMessageBox::information(this, "Calibration needed!", text);
+        }
+    }
+}
+
 void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
 {
     const QMessageBox::StandardButton reply = QMessageBox::question(this, "Quit Program?", "Exit Program?", QMessageBox::Yes|QMessageBox::No);
@@ -8888,7 +9232,7 @@ void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
     }
 
     if ( m_worker->isRunning() ) {
-        MSGBOX("Before closing, please stop the measurement!");
+        MSGBOX("Please stop the acquisition or simulation before closing the software!");
         event->ignore();
         return;
     }

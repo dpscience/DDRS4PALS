@@ -35,7 +35,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Export the next N Pulses in Region as ASCII</string>
+      <string>Export the next N Pulses in a defined ROI as ASCII</string>
      </property>
     </widget>
    </item>
@@ -153,7 +153,7 @@
            <string notr="true">color: green</string>
           </property>
           <property name="text">
-           <string>On?</string>
+           <string>Activated ?</string>
           </property>
          </widget>
         </item>
@@ -265,7 +265,7 @@
            <string notr="true">color: green</string>
           </property>
           <property name="text">
-           <string>On?</string>
+           <string>Activated ?</string>
           </property>
          </widget>
         </item>
@@ -394,6 +394,48 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_save">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+       </property>
        <property name="text">
         <string>save</string>
        </property>

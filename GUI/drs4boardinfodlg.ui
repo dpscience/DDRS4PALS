@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>590</width>
-    <height>502</height>
+    <height>511</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -218,7 +218,7 @@ color: blue
          <string notr="true">color: blue</string>
         </property>
         <property name="title">
-         <string>Specs</string>
+         <string>Specifications</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -654,8 +654,50 @@ color: blue
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_save">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+       </property>
        <property name="text">
-        <string>save...</string>
+        <string>save</string>
        </property>
       </widget>
      </item>

@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ DRS4PulseSaveDlg::DRS4PulseSaveDlg(DRS4Worker *worker, QWidget *parent) :
     ui->checkBox_PulsesInterpolationA->setChecked(true);
     ui->checkBox_PulsesInterpolationB->setChecked(true);
 
-    ui->spinBox_renderPoints->setRange(2, 1000);
+    ui->spinBox_renderPoints->setRange(2, 100);
     ui->spinBox_renderPoints->setValue(DRS4ProgramSettingsManager::sharedInstance()->splineIntraPoints());
 
     connect(ui->spinBox_renderPoints, SIGNAL(valueChanged(int)), this, SLOT(changeSplineIntraPoints(int)));
@@ -112,7 +112,8 @@ void DRS4PulseSaveDlg::save()
 
     DRS4ProgramSettingsManager::sharedInstance()->setStreamTextFileInputFilePath(fileName);
 
-    DRS4TextFileStreamManager::sharedInstance()->start(fileName, ui->spinBox_NPulses->value(),
+    DRS4TextFileStreamManager::sharedInstance()->start(fileName,
+                                                       ui->spinBox_NPulses->value(),
                                                        ui->checkBox_PulsesA->isChecked(),
                                                        ui->checkBox_PulsesB->isChecked(),
                                                        ui->checkBox_PulsesInterpolationA->isChecked(),

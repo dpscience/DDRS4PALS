@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@ class DRS4ProgramSettingsManager
     DSimpleXMLNode *m_lastSaveLogFilePathNode;
     DSimpleXMLNode *m_lastSaveTProfileFilePathNode;
     DSimpleXMLNode *m_lastPHSSaveFilePathNode;
+    DSimpleXMLNode *m_lastRiseTimeDistrPathNode;
+    DSimpleXMLNode *m_lastAreaDistrPathNode;
 
     DSimpleXMLNode *m_multicoreThreadingParentNode;
         DSimpleXMLNode *m_enableMulticoreThreadingNode;
@@ -82,6 +84,8 @@ public:
     void setSaveLogFilePath(const QString& path);
     void setSaveTProfilePath(const QString& path);
     void setSavePHSDataFilePath(const QString& path);
+    void setSaveRiseTimeDistributionDataFilePath(const QString& path);
+    void setSaveAreaDistributionDataFilePath(const QString& path);
 
     void setEnableMulticoreThreading(bool on);
     void setPulsePairChunkSize(int size);
@@ -97,6 +101,8 @@ public:
     QString saveLogFilePath();
     QString saveTProfileFilePath();
     QString savePHSDataFilePath();
+    QString saveRiseTimeDistributionDataFilePath();
+    QString saveAreaDistributionDataFilePath();
 
     bool isMulticoreThreadingEnabled();
     int pulsePairChunkSize();

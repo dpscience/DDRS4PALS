@@ -27,5 +27,6 @@
         <file>images/006-binary-code-loading-symbol.png</file>
         <file>images/log.png</file>
         <file>images/001-heart-rate-monitor.png</file>
+        <file>iconDesign/iconDDRS4.ico</file>
     </qresource>
 </RCC>

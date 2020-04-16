@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@
 
 #include "Script/drs4scriptingengineaccessmanager.h"
 
+#include "CPUUsage/drs4cpuusage.h"
+
 #include "Stream/drs4streammanager.h"
 #include "Stream/drs4streamdataloader.h"
 
@@ -94,6 +96,7 @@ public:
     virtual void Progress(int value);
 
 protected:
+    virtual void showEvent(QShowEvent *event);
     virtual void closeEvent(QCloseEvent *event);
 
 private:
@@ -258,6 +261,10 @@ private slots:
     void saveMergedSpectrumDQuickLTFit(bool autosave = false, const QString& fileNameAutosave = "__autosaveSpecMerged.dquicklt");
     void savePHSA(bool autosave = false, const QString& fileNameAutosave = "__autosavePHSA.txt");
     void savePHSB(bool autosave = false, const QString& fileNameAutosave = "__autosavePHSB.txt");
+    void saveRiseTimeDistributionA();
+    void saveRiseTimeDistributionB();
+    void saveAreaDistributionA();
+    void saveAreaDistributionB();
     void saveTemperature();
 
     void saveSettings();
