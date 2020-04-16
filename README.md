@@ -5,8 +5,22 @@ Support this project and keep always updated about recent software releases, bug
 Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
 
 <b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
-
 <br>![DDRS4PALS](/images/ddrs4pals.png)
+
+<br><b>Signal-Scope: </b>Monitor of acquired or simulated Detector-Output Pulses<br>
+<br>![Detector-Pulse Monitor](/images/scope.png)
+
+<br><b>Pulse-Height Spectra (PHS): </b>Selection of Energy-Windows<br>
+<br>![PHS](/images/phs.png)
+
+<br><b>Lifetime or Prompt (IRF) Spectrum</b><br>
+<br>![Spectrum](/images/spec.png)
+
+<br><b>Physical Filters providing Data of highest Quality: </b>The Area-Filter for Pile-Up Rejection<br>
+<br>![Area-Filter](/images/areaFilter.png)
+
+<br><b>Physical Filters providing Data of highest Quality: </b>The Pulse-Shape Filter<br>
+<br>![Shape-Filter](/images/shapeFilter.png)
 
 # Quickstart Guide <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
