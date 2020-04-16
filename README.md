@@ -1,14 +1,21 @@
 Support this project and keep always updated about recent software releases, bug fixes and major improvements by [following on researchgate](https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board) or [github](https://github.com/dpscience?tab=followers).<br><br>
 
-# DDRS4PALS  <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+# DDRS4PALS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
+Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
 
 <b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
 
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
-# Related Publications
+# Quickstart Guide <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+
+1. Download the latest software release (<b>DDRS4PALS_v110.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+2. Unzip <b>DDRS4PALS_v111.rar</b>.
+3. Download and install the Visual C++ Redistributable Package (x64) if required: https://www.microsoft.com/de-de/download/details.aspx?id=48145
+3. Run the <b>DDRS4PALS</b> executable.
+
+# Related Publications <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ### Feb. 2019
 Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
@@ -16,12 +23,12 @@ Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PA
 ### Jun. 2019
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
 
-# Documentation
+# Documentation <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ### Jun. 2019
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
 
-# How to cite this Software?
+# How to cite this Software? <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 <b>You should at least cite the following publication:</b><br><br>
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br>
@@ -32,9 +39,11 @@ Additionally, you can cite all released software versions by using the <b>DOI 10
 
 ## v1.x
 
-DDRS4PALS <b>v1.10</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3275603.svg)](https://doi.org/10.5281/zenodo.3275603)<br>
+DDRS4PALS <b>v1.11</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3356791.svg)](https://doi.org/10.5281/zenodo.3356791)<br>
 
-This release [(v1.10)](https://github.com/dpscience/DQuickLTFit) contains the analysis tool [DQuickLTFit v4.1](https://github.com/dpscience/DQuickLTFit), which enables lifetime spectra to be directly opened and analysed from DDRS4PALS software. Moreover, lifetime spectra can be directly exported as (*.dquicklt) file providing an easy and convenient way for spectra analysis. 
+DDRS4PALS <b>v1.10</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3356791.svg)](https://doi.org/10.5281/zenodo.3356791)<br>
+
+This release [(v1.10)](https://doi.org/10.5281/zenodo.3356791) contains the analysis tool [DQuickLTFit v4.1](https://doi.org/10.5281/zenodo.3356830), which enables lifetime spectra to be directly opened and analysed from DDRS4PALS software. Moreover, lifetime spectra can be directly exported as (*.dquicklt) file providing an easy and convenient way for spectra analysis. 
 
 DDRS4PALS <b>v1.09</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3275603.svg)](https://doi.org/10.5281/zenodo.3275603)<br>
 
@@ -52,7 +61,7 @@ DDRS4PALS <b>v1.03</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219523.svg)](https://doi.org/10.5281/zenodo.1219523)<br>
 
-# Third Party Libraries and Licenses
+# Third Party Libraries and Licenses <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 <b>DDRS4PALS</b> is written in C++ using [Qt-Framework](https://www.qt.io/) (licensed under the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0))
 
@@ -81,12 +90,9 @@ The following 3rd party libraries are used by <b>DDRS4PALS</b> software.<br>
 These files containing documentation, drivers, applications, C/C++ source code and the FPGA firmware in VHDL and compiled bit files.<br><br>
 <b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b><br><br>License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
 
-# Run executable (*.exe)
-The corresponding executable (and binary files) can be downloaded from <b>zenodo platform</b> by following the related DOI (see above). 
-
-# Setup from source files
+# Run DDRS4PALS from source files <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 1. Download [Qt-framework](https://www.qt.io/download) (at least v5.x).
-2. Download and Setup MS Visual Studio Compiler 2013 (or any newer version) .
-3. Compile (x86/x64) and Run the code on your Machine.
-4. Start the Simulation or Acquisition Modus if your DRS4 Board is connected.
-5. Finished. Press run to obtain your Lifetime Spectra.
+2. Download and Setup the MS Visual Studio Compiler (at least version 2013).
+3. Compile and Deploy for x64.
+4. Connect your DRS4-EB (if available) and start the Simulation or Acquisition Mode.
+5. Finished.
