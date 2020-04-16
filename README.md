@@ -38,7 +38,7 @@ Additionally, you can cite all released software versions by using the <b>DOI 10
 
 ## v1.x
 
-DDRS4PALS <b>v1.11</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3356791.svg)](https://doi.org/10.5281/zenodo.3356791)<br>
+DDRS4PALS <b>v1.11</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3754770.svg)](https://doi.org/10.5281/zenodo.3754770)<br>
 
 DDRS4PALS <b>v1.10</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3356791.svg)](https://doi.org/10.5281/zenodo.3356791)<br>
 
