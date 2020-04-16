@@ -2,16 +2,15 @@ Support this project and keep always updated about recent software releases, bug
 
 # DDRS4PALS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-Copyright (c) 2016-2019 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
+Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
 
 <b>DDRS4PALS</b> - A Software for the Acquisition and Simulation of Positron Lifetime Spectra (PALS) using the DRS4 Evaluation Board<br>
-
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
 # Quickstart Guide <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 1. Download the latest software release (<b>DDRS4PALS_v110.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
-2. Unzip <b>DDRS4PALS_v110.rar</b>.
+2. Unzip <b>DDRS4PALS_v111.rar</b>.
 3. Download and install the Visual C++ Redistributable Package (x64) if required: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 3. Run the <b>DDRS4PALS</b> executable.
 
@@ -39,6 +38,8 @@ Additionally, you can cite all released software versions by using the <b>DOI 10
 
 ## v1.x
 
+DDRS4PALS <b>v1.11</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3356791.svg)](https://doi.org/10.5281/zenodo.3356791)<br>
+
 DDRS4PALS <b>v1.10</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3356791.svg)](https://doi.org/10.5281/zenodo.3356791)<br>
 
 This release [(v1.10)](https://doi.org/10.5281/zenodo.3356791) contains the analysis tool [DQuickLTFit v4.1](https://doi.org/10.5281/zenodo.3356830), which enables lifetime spectra to be directly opened and analysed from DDRS4PALS software. Moreover, lifetime spectra can be directly exported as (*.dquicklt) file providing an easy and convenient way for spectra analysis. 
@@ -58,6 +59,28 @@ DDRS4PALS <b>v1.04</b> (<b>DLTPulseGenerator v1.2</b>):<br>[![DOI](https://zenod
 DDRS4PALS <b>v1.03</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1227278.svg)](https://doi.org/10.5281/zenodo.1227278)<br>
 
 DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219523.svg)](https://doi.org/10.5281/zenodo.1219523)<br>
+
+# Software Preview <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+
+### <br><b>Signal-Scope: </b>Monitoring of the acquired or simulated detector-output pulses<br>
+<br>![Detector-Pulse Monitor](/images/scope.png)
+
+### <br><b>Pulse-Height Spectra (PHS): </b>Selection of the energy-windows identifying the start & stop quanta<br>
+<br>![PHS](/images/phs.png)
+
+### <br><b>Resulting Lifetime or Prompt (IRF) Spectra</b><br>
+<br>![Spectrum](/images/spec.png)<br>
+
+## A set of free and easy configurable physical filters provide the acquisition of high-quality lifetime spectra:
+
+### <br><b>Spike-Removal and Noise-Reduction by applying 1D Median-Filtering</b><br>
+<br>![Median-Filter](/images/spikeRemoval.png)
+
+### <br><b>Pile-Up Rejection by applying Area-Filtering</b><br>
+<br>![Area-Filter](/images/areaFilter.png)
+
+### <br><b>Rejection of misshaped or artifact-afflicted Pulses by applying shape-sensitive Filtering</b><br>
+<br>![Shape-Filter](/images/shapeFilter.png)
 
 # Third Party Libraries and Licenses <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 

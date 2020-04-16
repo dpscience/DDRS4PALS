@@ -98,7 +98,7 @@
           <number>1</number>
          </property>
          <property name="maximum">
-          <number>100</number>
+          <number>10000</number>
          </property>
         </widget>
        </item>
@@ -111,7 +111,7 @@
           </font>
          </property>
          <property name="text">
-          <string>(Limited to 100 Pulses)</string>
+          <string>(Limited to 10000 Pulses)</string>
          </property>
         </widget>
        </item>
@@ -132,6 +132,12 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_PulsesA">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">color: blue</string>
        </property>
@@ -145,6 +151,12 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_PulsesB">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">color: red</string>
        </property>
@@ -158,11 +170,17 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_PulsesInterpolationA">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">color: blue</string>
        </property>
        <property name="text">
-        <string>Interpolation of Pulse A?</string>
+        <string>Interpolation Curve of Pulse A?</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -171,12 +189,18 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_PulsesInterpolationB">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">color: red
 </string>
        </property>
        <property name="text">
-        <string>Interpolation of Pulse B?</string>
+        <string>Interpolation Curve of Pulse B?</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -194,7 +218,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Number of Render Points:</string>
+          <string>Interpolation Curves: Number of Render-Points:</string>
          </property>
         </widget>
        </item>
@@ -281,6 +305,48 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_save">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+         </property>
          <property name="text">
           <string>save</string>
          </property>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1450</width>
-    <height>748</height>
+    <height>758</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,6 +63,9 @@
                   <bold>true</bold>
                  </font>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">color: black</string>
+                </property>
                 <property name="text">
                  <string>DLTPulseGenerator (Log-Normal Shape)</string>
                 </property>
@@ -78,6 +81,9 @@
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">color: black</string>
                 </property>
                 <property name="text">
                  <string>DLTPulseGenerator (Electronic Components)</string>
@@ -188,6 +194,9 @@
                   <bold>true</bold>
                  </font>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">color: black</string>
+                </property>
                 <property name="text">
                  <string>Pulse-Stream (&lt;&lt;)</string>
                 </property>
@@ -226,8 +235,11 @@
             <bold>true</bold>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">color: black</string>
+          </property>
           <property name="text">
-           <string>Pulse-Stream is armed? (&gt;&gt;)</string>
+           <string>Pulse-Stream is armed ? (&gt;&gt;)</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -274,8 +286,11 @@
             <bold>true</bold>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">color: black</string>
+          </property>
           <property name="text">
-           <string>Script is running?</string>
+           <string>Script is running ?</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -402,13 +417,13 @@
         <bool>true</bool>
        </property>
        <property name="headerHidden">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="columnCount">
         <number>2</number>
        </property>
        <attribute name="headerVisible">
-        <bool>true</bool>
+        <bool>false</bool>
        </attribute>
        <column>
         <property name="text">
@@ -482,13 +497,13 @@
         <bool>true</bool>
        </property>
        <property name="headerHidden">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="columnCount">
         <number>2</number>
        </property>
        <attribute name="headerVisible">
-        <bool>true</bool>
+        <bool>false</bool>
        </attribute>
        <column>
         <property name="text">

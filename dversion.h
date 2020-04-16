@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -35,11 +35,11 @@
 
 /** To Change before Release **/
 
-#define NAME                       QString("DDRS4PALS")
-#define MAJOR_VERSION       QString("1")
-#define MINOR_VERSION    QString("10")
-#define VERSION_EXTENSION QString("(official)")
-#define DATE_EXTENSION  QString("31.07.2019")
+#define NAME                               QString("DDRS4PALS")
+#define MAJOR_VERSION         QString("1")
+#define MINOR_VERSION         QString("11")
+#define VERSION_EXTENSION  QString("(official)")
+#define DATE_EXTENSION        QString("16.04.2020")
 
 #define DATA_STREAM_VERSION 1
 
@@ -78,17 +78,22 @@
 
 #define MSGBOX(__text__) DMSGBOX2(__text__, PROGRAM_NAME);
 
-#define SHOW_ABOUT() { const QString text = PROGRAM_NAME + "<br><br>(C) Copyright 2016-2019 by Danny Petschke<br>All rights reserved.<br><br>"; \
+#define SHOW_ABOUT() { const QString text = PROGRAM_NAME + "<br><br>(C) Copyright 2016-2020 by Danny Petschke<br>All rights reserved.<br><br>"; \
     const QString contact = "contact: <a href=\"danny.petschke@uni-wuerzburg.de\">danny.petschke@uni-wuerzburg.de</a><br><br>"; \
+    const QString publication1 = "<b>Publications:</b><br><br><a href=\"https://www.sciencedirect.com/science/article/pii/S2352711019300676\">DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board</a><br><br>"; \
+    const QString publication2 = "<a href=\"https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub\">Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS</a><br><br><br>"; \
     const QString license = "<nobr>Fit Algorithm by: <br><a href=\"https://www.physics.wisc.edu/~craigm/idl/cmpfit.html\">MPFIT</a>: A MINPACK-1 Least Squares Fitting Library in C</nobr><br><br>"; \
-    const QString license2 = "<nobr>CFD Interpolation by:<br><a href=\"http://www.alglib.net/\">ALGLIB</a>: A Numerical Analysis and Data Processing Library</nobr><br>and<br><a href=\"http://kluge.in-chemnitz.de/opensource/spline/\">Tino Kluge</a>: Cubic Spline Interpolation in C++<br><br>"; \
+    const QString license2 = "<nobr>CF Interpolation by:<br><a href=\"http://www.alglib.net/\">ALGLIB</a>: A Numerical Analysis and Data Processing Library</nobr><br>and<br><a href=\"http://kluge.in-chemnitz.de/opensource/spline/\">Tino Kluge</a>: Cubic Spline Interpolation in C++<br><br>"; \
     const QString license2_1 = "<nobr>Spike Removal by:<br><a href=\"http://www.sergejusz.com/engineering_tips/median_filter.htm/\">S. Zabinskis</a>: A Fast Median Filter in C++<br><br>";\
     const QString license4 = "<nobr>Logo designed by: <br><a href=\"https://www.researchgate.net/profile/Hannah_Heil\">Hannah Heil</a></nobr><br><br><br>"; \
     const QString acknowlegment = "<b>Acknowledgment:</b><br><br><nobr>I thank Jakub Cizek (Charles University in Prague)<br><a href=\"https://www.researchgate.net/profile/Jakub_Cizek\">Jakub Cizek</a><br><br> and Martin Petriska (Slovak University of Technology in Bratislava)<br><a href=\"https://www.researchgate.net/profile/Martin_Petriska\">Martin Petriska</a><br><br> for fruitful discussions concerning pulse shape filtering and digital positron lifetime spectroscopy on the <a href=\"https://www.bgsu.edu/events/icpa-18.html\">ICPA-18</a>.</nobr><br><br>Furthermore, I thank <a href=\"https://www.researchgate.net/profile/Ricardo_Helm\">Ricardo Helm</a> for extensively testing this software."; \
     QString versionStr; \
     versionStr = QString("v%1.%2").arg(DLTPULSEGENERATOR_MAJOR_VERSION).arg(DLTPULSEGENERATOR_MINOR_VERSION); \
     const QString license3 = "<nobr><a href=\"https://github.com/dpscience/DLTPulseGenerator\">DLTPulseGenerator</a> " + versionStr + " for Spectra-Simulation by: <br><a href=\"https://www.researchgate.net/profile/Danny_Petschke\">Danny Petschke</a></nobr><br><br>"; \
-    QMessageBox::about(this, PROGRAM_NAME, "<b>" + text + "</b>" + contact + license + license2 + license2_1 + license3 + license4 + acknowlegment); }
+    QMessageBox::about(this, PROGRAM_NAME, "<b>" + text + "</b>" + contact + license + license2 + license2_1 + license3 + license4 + publication1 + publication2 + acknowlegment); }
+
+/* update notifier */
+#define GITHUB_LATEST_RELEASE_GET_URL QUrl("https://api.github.com/repos/dpscience/DDRS4PALS/releases/latest")
 
 enum class ProgramStartType {
     Unknown,

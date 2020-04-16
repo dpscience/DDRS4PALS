@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -31,8 +31,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#include "DRS/DRS.h"
 #include "DLib.h"
+
+#include "DRS/DRS.h"
 
 class DRS4BoardManager
 {
@@ -58,8 +59,6 @@ public:
 
     bool isDemoModeEnabled() const;
     bool usingStreamDataOnDemoMode() const;
-
-    void log(const QString& logText);
 };
 
 #endif // DRS4BOARDMANAGER_H

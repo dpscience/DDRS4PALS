@@ -3,7 +3,7 @@
 **  DDRS4PALS, a for the acquisition of lifetime spectra based on the DRS4 evaluation board
 **  DRS4 Evaluation Board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -151,10 +151,6 @@ qint64 DRS4StreamManager::streamedContentInBytes() const
 {
     return m_contentInByte;
 }
-
-
-
-
 
 
 DRS4FalseTruePulseStreamManager *__sharedInstanceDRS4FalseTruePulseStreamManager = nullptr;
@@ -317,11 +313,6 @@ qint64 DRS4FalseTruePulseStreamManager::streamedContentInBytes() const
 }
 
 
-
-
-
-
-
 DRS4TextFileStreamManager *__sharedInstanceTextFileStreamManager = nullptr;
 
 DRS4TextFileStreamManager::DRS4TextFileStreamManager()
@@ -372,6 +363,7 @@ void DRS4TextFileStreamManager::start(const QString &fileName, int n, bool pulse
 
     m_isArmed = true;
 
+
     emit started();
 }
 
@@ -388,64 +380,64 @@ void DRS4TextFileStreamManager::abort()
 void DRS4TextFileStreamManager::writePulses(float *timeA, float *timeB, float *waveA, float *waveB, int number)
 {
     if ( !isArmed() )
-        return;
+            return;
 
-    QMutexLocker locker(&m_mutex);
+        QMutexLocker locker(&m_mutex);
 
-    m_counter ++;
+        m_counter ++;
 
-    if ( !m_pulseA && !m_pulseB )
-        return;
+        if ( !m_pulseA && !m_pulseB )
+            return;
 
-    if ( number < 1 )
-        return;
+        if ( number < 1 )
+            return;
 
-    if ( !timeA || !timeB || !waveA || !waveB )
-        return;
+        if ( !timeA || !timeB || !waveA || !waveB )
+            return;
 
-    DDELETE_SAFETY(m_file);
+        DDELETE_SAFETY(m_file);
 
-    m_file = new QFile(m_fileTag + "_pulse_" + QVariant(m_counter).toString() + ".txt");
+        m_file = new QFile(m_fileTag + "_pulse_" + QVariant(m_counter).toString() + ".txt");
 
-    QTextStream stream(m_file);
+        QTextStream stream(m_file);
 
-    if ( m_file->open(QIODevice::WriteOnly) )
-    {
-        if ( m_pulseA )
-            stream << "time [ns] (Pulse A)\tvoltage [mV] (Pulse A)\t";
-
-        if ( m_pulseB )
-            stream << "time [ns] (Pulse B)\tvoltage [mV] (Pulse B)";
-
-        stream << "\n";
-
-        for ( int i = 0 ; i < number ; ++ i )
+        if ( m_file->open(QIODevice::WriteOnly) )
         {
-            const QString ext = m_pulseB?"\t":"";
-
             if ( m_pulseA )
-                stream << QString::number(timeA[i], 'f', 6) + "\t" + QString::number(waveA[i], 'f', 6) << ext;
+                stream << "time [ns] (Pulse A)\tvoltage [mV] (Pulse A)\t";
 
             if ( m_pulseB )
-                 stream << QString::number(timeB[i], 'f', 6) + "\t" + QString::number(waveB[i], 'f', 6);
+                stream << "time [ns] (Pulse B)\tvoltage [mV] (Pulse B)";
 
             stream << "\n";
+
+            for ( int i = 0 ; i < number ; ++ i )
+            {
+                const QString ext = m_pulseB?"\t":"";
+
+                if ( m_pulseA )
+                    stream << QString::number(timeA[i], 'f', 6) + "\t" + QString::number(waveA[i], 'f', 6) << ext;
+
+                if ( m_pulseB )
+                     stream << QString::number(timeB[i], 'f', 6) + "\t" + QString::number(waveB[i], 'f', 6);
+
+                stream << "\n";
+            }
+
+            m_file->close();
         }
 
-        m_file->close();
-    }
+        DDELETE_SAFETY(m_file);
 
-    DDELETE_SAFETY(m_file);
-
-    if ( m_counter > m_counts )
-    {
-        if ( !m_interpolA && !m_interpolB )
+        if ( m_counter > m_counts )
         {
-            m_isArmed = false;
+            if ( !m_interpolA && !m_interpolB )
+            {
+                m_isArmed = false;
 
-            emit finished();
+                emit finished();
+            }
         }
-    }
 }
 
 void DRS4TextFileStreamManager::writePulsesd(double *timeA, double *timeB, double *waveA, double *waveB, int number)

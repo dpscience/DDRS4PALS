@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2019 Danny Petschke
+**  Copyright (C) 2016-2020 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -110,21 +110,21 @@ void DRS4PulseSaveRangeDlg::updateState(bool state)
     ui->spinBox_BA_right->setMinimum(0);
     ui->spinBox_BA_right->setMaximum(DRS4SettingsManager::sharedInstance()->channelCntBA());
 
+    bool bValid = true;
+
     if ( ui->checkBox_AB->isChecked() )
     {
         if ( ui->spinBox_AB_left->value() >= ui->spinBox_AB_right->value() )
-            ui->pushButton_save->setEnabled(false);
-        else
-            ui->pushButton_save->setEnabled(true);
+            bValid = false;
     }
 
     if ( ui->checkBox_BA->isChecked() )
     {
         if ( ui->spinBox_BA_left->value() >= ui->spinBox_BA_right->value() )
-            ui->pushButton_save->setEnabled(false);
-        else
-            ui->pushButton_save->setEnabled(true);
+            bValid = false;
     }
+
+    ui->pushButton_save->setEnabled(bValid);
 
     DRS4TextFileStreamRangeManager::sharedInstance()->setLTRangeMinAB(ui->spinBox_AB_left->value());
     DRS4TextFileStreamRangeManager::sharedInstance()->setLTRangeMaxAB(ui->spinBox_AB_right->value());
@@ -135,9 +135,7 @@ void DRS4PulseSaveRangeDlg::updateState(bool state)
 
 void DRS4PulseSaveRangeDlg::updateState2(int state)
 {
-    DUNUSED_PARAM(state);
-
-    updateState(true);
+    updateState(state);
 }
 
 void DRS4PulseSaveRangeDlg::save()
