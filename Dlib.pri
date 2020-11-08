@@ -27,7 +27,6 @@ HEADERS  +=  DLib.h\
                         DLib/DPlot/plot2DXCanvas.h\
                         DLib/DThirdParty/Crypt/tinyaes.h\
                         DLib/DThirdParty/MedianFilter/medflt.h\
-                        #DLib/DMath/dspline.h\
                         DLib/DMath/constantexplanations.h\
                         DLib/DMath/dmedianfilter.h\
 

@@ -16,7 +16,7 @@
    between these two pulses to show the performance of the DRS board
    for time measurements.
 
-   $Id: read_binary.cpp 22290 2016-04-27 14:51:37Z ritt $
+   $Id: read_binary.cpp 22321 2016-08-25 12:26:12Z ritt $
 */
 
 #include <stdio.h>
@@ -92,7 +92,7 @@ int main(int argc, const char * argv[])
    }
    
    // open the binary waveform file
-   FILE *f = fopen(filename, "r");
+   FILE *f = fopen(filename, "rb");
    if (f == NULL) {
       printf("Cannot find file \'%s\'\n", filename);
       return 0;
@@ -160,7 +160,7 @@ int main(int argc, const char * argv[])
       if (i < 1)
          break;
       
-      printf("Found event #%d\n", eh.event_serial_number);
+      printf("Found event #%d %d %d\n", eh.event_serial_number, eh.second, eh.millisecond);
       
       // loop over all boards in data file
       for (b=0 ; b<n_boards ; b++) {

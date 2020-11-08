@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "settings.h"
 
@@ -187,7 +214,7 @@ void PALSProject::removeDataStructure(PALSDataStructure *dataStructure)
 PALSDataStructure *PALSProject::operator[](unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_dataStructureList[index];
 }
@@ -195,7 +222,7 @@ PALSDataStructure *PALSProject::operator[](unsigned int index) const
 PALSDataStructure *PALSProject::getDataStructureAt(unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_dataStructureList[index];
 }
@@ -1155,7 +1182,7 @@ void PALSSourceParameter::removeParameter(PALSFitParameter *param)
 PALSFitParameter *PALSSourceParameter::operator[](unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_fitParamSettings[index];
 }
@@ -1163,7 +1190,7 @@ PALSFitParameter *PALSSourceParameter::operator[](unsigned int index) const
 PALSFitParameter *PALSSourceParameter::getParameterAt(unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_fitParamSettings[index];
 }
@@ -1805,7 +1832,7 @@ void PALSDeviceResolutionParameter::removeParameter(PALSFitParameter *param)
 PALSFitParameter *PALSDeviceResolutionParameter::operator[](unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_fitParamSettings[index];
 }
@@ -1813,7 +1840,7 @@ PALSFitParameter *PALSDeviceResolutionParameter::operator[](unsigned int index) 
 PALSFitParameter *PALSDeviceResolutionParameter::getParameterAt(unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_fitParamSettings[index];
 }
@@ -1959,7 +1986,7 @@ void PALSLifeTimeParameter::removeParameter(PALSFitParameter *param)
 PALSFitParameter *PALSLifeTimeParameter::operator[](unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_fitParamSettings[index];
 }
@@ -1967,7 +1994,7 @@ PALSFitParameter *PALSLifeTimeParameter::operator[](unsigned int index) const
 PALSFitParameter *PALSLifeTimeParameter::getParameterAt(unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_fitParamSettings[index];
 }
@@ -2049,7 +2076,7 @@ void PALSResultHistorie::removeResult(unsigned int index)
 PALSResult *PALSResultHistorie::operator[](unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_resultList[index];
 }
@@ -2057,7 +2084,7 @@ PALSResult *PALSResultHistorie::operator[](unsigned int index) const
 PALSResult *PALSResultHistorie::getResultAt(unsigned int index) const
 {
     if ( index >= getSize() )
-        return nullptr;
+        return DNULLPTR;
     else
         return m_resultList[index];
 }

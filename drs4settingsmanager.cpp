@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "drs4settingsmanager.h"
 
@@ -43,22 +70,22 @@ DRS4PulseShapeFilterData& DRS4PulseShapeFilterData::operator=(const DRS4PulseSha
 
     if (m_meanTraceDataXArray) {
         delete [] m_meanTraceDataXArray;
-        m_meanTraceDataXArray = nullptr;
+        m_meanTraceDataXArray = DNULLPTR;
     }
 
     if (m_meanTraceDataYArray) {
         delete [] m_meanTraceDataYArray;
-        m_meanTraceDataYArray = nullptr;
+        m_meanTraceDataYArray = DNULLPTR;
     }
 
     if (m_stdDevTraceDataXArray) {
         delete [] m_stdDevTraceDataXArray;
-        m_stdDevTraceDataXArray = nullptr;
+        m_stdDevTraceDataXArray = DNULLPTR;
     }
 
     if (m_stdDevTraceDataYArray) {
         delete [] m_stdDevTraceDataYArray;
-        m_stdDevTraceDataYArray = nullptr;
+        m_stdDevTraceDataYArray = DNULLPTR;
     }
 
     m_meanTraceDataXArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
@@ -104,22 +131,22 @@ void DRS4PulseShapeFilterData::setData(const QVector<QPointF> &mean, const QVect
 
     if (m_meanTraceDataXArray) {
         delete [] m_meanTraceDataXArray;
-        m_meanTraceDataXArray = nullptr;
+        m_meanTraceDataXArray = DNULLPTR;
     }
 
     if (m_meanTraceDataYArray) {
         delete [] m_meanTraceDataYArray;
-        m_meanTraceDataYArray = nullptr;
+        m_meanTraceDataYArray = DNULLPTR;
     }
 
     if (m_stdDevTraceDataXArray) {
         delete [] m_stdDevTraceDataXArray;
-        m_stdDevTraceDataXArray = nullptr;
+        m_stdDevTraceDataXArray = DNULLPTR;
     }
 
     if (m_stdDevTraceDataYArray) {
         delete [] m_stdDevTraceDataYArray;
-        m_stdDevTraceDataYArray = nullptr;
+        m_stdDevTraceDataYArray = DNULLPTR;
     }
 
     m_meanTraceDataXArray = new float[__PULSESHAPEFILTER_SPLINE_TRACE_NUMBER];
@@ -172,7 +199,7 @@ bool DRS4PulseShapeFilterData::isInsideBounding(const double &x, const double &y
     return (y <= upperLimit) && (y >= lowerLimit);
 }
 
-static DRS4SettingsManager *__sharedInstanceSettingsManager = nullptr;
+static DRS4SettingsManager *__sharedInstanceSettingsManager = DNULLPTR;
 
 DRS4SettingsManager::DRS4SettingsManager() :
     m_negativeLifetimes(false),

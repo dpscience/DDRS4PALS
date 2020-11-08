@@ -17,7 +17,7 @@
 #endif
 
 #ifdef HAVE_USB
-#   include <DRS/musbstd.h>
+#   include "musbstd.h"
 #endif                          // HAVE_USB
 
 #ifdef HAVE_VME
@@ -708,35 +708,14 @@ public:
                         int triggerCell = -1, int wsr = -1, bool adjustToClock = false, float threshold = 0, bool offsetCalib = true);
    int          GetWave(unsigned int chipIndex, unsigned char channel, float *waveform, bool responseCalib,
                         int triggerCell = -1, int wsr = -1, bool adjustToClock = false, float threshold = 0, bool offsetCalib = true);
-   //int          GetWave(unsigned int chipIndex, unsigned char channel, float *waveform);
+   int          GetWave(unsigned int chipIndex, unsigned char channel, float *waveform);
    int          GetRawWave(unsigned int chipIndex, unsigned char channel, unsigned short *waveform, bool adjustToClock = false);
    int          GetRawWave(unsigned char *waveforms,unsigned int chipIndex, unsigned char channel,
                            unsigned short *waveform, bool adjustToClock = false);
    bool         IsTimingCalibrationValid(void);
    bool         IsVoltageCalibrationValid(void) { return fVoltageCalibrationValid; }
-
    int          GetTime(unsigned int chipIndex, int channelIndex, double freq, int tc, float *time, bool tcalibrated=true, bool rotated=true);
-   //int          GetTime(unsigned int chipIndex, int channelIndex, int tc, float *time, bool tcalibrated=true, bool rotated=true);
-
-   /* danny */
-
-   int          GetWave(unsigned int chipIndex, unsigned char channel, float *waveform);
    int          GetTime(unsigned int chipIndex, int channelIndex, int tc, float *time, bool tcalibrated=true, bool rotated=true);
-   int          GetWavesAB(unsigned int chipIndex,
-                           unsigned char channel,
-                           int channelIndex,
-                           int tc,
-                           int startIndex,
-                           int stopIndex,
-                           float *timeA,
-                           float *timeB,
-                           float *waveformA,
-                           float *waveformB,
-                           bool tcalibrated=true,
-                           bool rotated=true);
-
-   /* danny end */
-
    int          GetTimeCalibration(unsigned int chipIndex, int channelIndex, int mode, float *time, bool force=false);
    int          GetTriggerCell(unsigned int chipIndex);
    int          GetStopCell(unsigned int chipIndex);

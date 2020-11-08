@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "GUI/drs4scopedlg.h"
 #include "GUI/drs4startdlg.h"
@@ -37,12 +64,14 @@
 
 #include "dversion.h"
 
-int main(int argc, char *argv[])
-{
+#include <QDebug>
+
+int main(int argc, char *argv[]) {
+    /* check for another running instance */
     QSharedMemory mem("ckdkhfvakdjvhabsdfcjanöspofiäpansoucfdhbusvbdhfcPOIUXÄI");
 
     if ( !mem.create(1) ) {
-        MSGBOX("An instance of DDRS4PALS is already running!");
+        MSGBOX("Cannot start DDRS4PALS. Another instance of DDRS4PALS is already running!");
         exit(0);
     }
 
@@ -50,20 +79,22 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
+    /* place splashscreen at the center of the screen */
     QSplashScreen splash;
     splash.setPixmap(QPixmap::fromImage(QImage(":/images/images/PALS.JPG").scaledToWidth(QApplication::desktop()->availableGeometry().width()*0.5)));
     splash.show();
 
-    splash.showMessage((QString(QString("<b>") + PROGRAM_NAME + "</b><br>(C) Copyright 2016-2020 by Danny Petschke. All rights reserved.")), Qt::AlignLeft | Qt::AlignTop, Qt::darkGray);
+    splash.showMessage((QString(QString("<b>") + PROGRAM_NAME + "</b><br>" + COPYRIGHT_NOTICE)), Qt::AlignLeft | Qt::AlignTop, Qt::darkGray);
 
     const QTime dieTime= QTime::currentTime().addSecs(3);
 
-    // show as long as requesting updates finished or at least 3 seconds
+    /* show as long as requesting updates from github finished or at least 3 seconds */
     while (QTime::currentTime() < dieTime)
         QCoreApplication::processEvents();
 
     ProgramStartType startType = ProgramStartType::Unknown;
 
+    /* setup start type of the program */
     DRS4StartDlg dlg(&startType);
     dlg.show();
     splash.finish(&dlg);
@@ -74,15 +105,10 @@ int main(int argc, char *argv[])
     if ( startType == ProgramStartType::Abort )
         return a.exit();
 
-    bool connectionNotPossible = false;
+    DRS4ScopeDlg scopeDlg(startType);
 
-    DRS4ScopeDlg scopeDlg(startType, &connectionNotPossible);
-
-    if ( startType != ProgramStartType::Simulation
-         && connectionNotPossible ) {
-        MSGBOX("Please connect your DRS4-Board and restart this Software!");
-        return a.exit();
-    }
+    scopeDlg.setMinimumSize(QSize(QApplication::desktop()->availableGeometry().width(), QApplication::desktop()->availableGeometry().height()));
+    scopeDlg.setMaximumSize(QSize(QApplication::desktop()->availableGeometry().width(), QApplication::desktop()->availableGeometry().height()));
 
     scopeDlg.showMaximized();
 

@@ -46,7 +46,6 @@ inline void Sleep(useconds_t x)
 #else
 #include <sys/ioctl.h>
 
-
 int drs_kbhit()
 {
    int n;
@@ -60,13 +59,13 @@ static inline int getch()
 }
 #endif
 
-#include <DRS/DRS.h>
+#include "DRS.h"
 
 #ifdef _MSC_VER
 extern "C" {
 #endif
 
-#include <DRS/mxml.h>
+#include "mxml.h"
 
 #ifdef _MSC_VER
 }
@@ -4607,94 +4606,6 @@ int DRSBoard::GetTime(unsigned int chipIndex, int channelIndex, int tc, float *t
    }
       
    return 1;
-}
-
-int DRSBoard::GetWavesAB(unsigned int chipIndex,
-                         unsigned char channel,
-                         int channelIndex,
-                         int tc,
-                         int startIndex,
-                         int stopIndex,
-                         float *timeA,
-                         float *timeB,
-                         float *waveformA,
-                         float *waveformB,
-                         bool tcalibrated,
-                         bool rotated)
-{
-//     time */
-//    int i, scale, iend;
-//    double gt0, gt;
-
-//    /* for DRS2, please use function below */
-//    if (fDRSType < 4)
-//       return GetTime(chipIndex, channelIndex, fNominalFrequency, tc, time, tcalibrated, rotated);
-
-//    scale = fDecimation ? 2 : 1;
-
-//    if (!IsTimingCalibrationValid() || !tcalibrated) {
-//       double t0 = tc / fNominalFrequency;
-//       for (i = 0; i < fChannelDepth; i++) {
-//          if (rotated)
-//             time[i] = static_cast < float >(((i*scale+tc) % kNumberOfBins) / fNominalFrequency - t0);
-//          else
-//             time[i] = static_cast < float >((i*scale) / fNominalFrequency);
-//          if (time[i] < 0)
-//             time[i] += static_cast < float > (kNumberOfBins / fNominalFrequency);
-//          if (i*scale >= kNumberOfBins)
-//             time[i] += static_cast < float > (kNumberOfBins / fNominalFrequency);
-//       }
-//       return 1;
-//    }
-
-//    time[0] = 0;
-//    for (i=1 ; i<fChannelDepth ; i++) {
-//       if (rotated)
-//          time[i] = time[i-1] + (float)fCellDT[chipIndex][channelIndex][(i-1+tc) % kNumberOfBins];
-//       else
-//          time[i] = time[i-1] + (float)fCellDT[chipIndex][channelIndex][(i-1) % kNumberOfADCBins];
-//    }
-
-//    if (channelIndex > 0) {
-//       // correct all channels to channel 0 (Daniel's method)
-//       iend = tc >= 700 ? 700+1024 : 700;
-//       for (i=tc,gt0=0 ; i<iend ; i++)
-//          gt0 += fCellDT[chipIndex][0][i % 1024];
-
-//       for (i=tc,gt=0 ; i<iend ; i++)
-//          gt += fCellDT[chipIndex][channelIndex][i % 1024];
-
-//       for (i=0 ; i<fChannelDepth ; i++)
-//          time[i] += (float)(gt0 - gt);
-//    }
-
-//    return 1;
-
-//    /* time end */
-
-//    /* voltage start */
-
-//    int ret, i;
-//    short waveS[2*kNumberOfBins];
-//    ret =
-//        GetWave(waveforms, chipIndex, channel, waveS, responseCalib, triggerCell, wsr, adjustToClock, threshold,
-//                offsetCalib);
-//    if (responseCalib)
-//       for (i = 0; i < fChannelDepth ; i++)
-//          waveform[i] = static_cast < float >(static_cast <short> (waveS[i]) * GetPrecision());
-//    else {
-//       for (i = 0; i < fChannelDepth ; i++) {
-//          if (fBoardType == 4 || fBoardType == 5 || fBoardType == 6 || fBoardType == 7 || fBoardType == 8 || fBoardType == 9) {
-//             waveform[i] = static_cast < float >(waveS[i] * GetPrecision());
-//          } else
-//             waveform[i] = static_cast < float >(waveS[i]);
-//       }
-//    }
-//    return ret;
-
-//    /* voltage end
-
-    return 1;
 }
 
 /*------------------------------------------------------------------*/

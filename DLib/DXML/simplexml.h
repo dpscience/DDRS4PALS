@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #ifndef SIMPLEXML_H
 #define SIMPLEXML_H
@@ -150,18 +177,18 @@ public:
 
     virtual ~DSimpleXMLTag();
 
-    DSimpleXMLTag getTag(const QString& tagName, bool *ok = nullptr) const;
-    DSimpleXMLTag getTag(const DString& tagName, bool *ok = nullptr) const;
-    DSimpleXMLTag getTag(const DSimpleXMLString& tagName, bool *ok = nullptr) const;
-    DSimpleXMLTag getTag(const DSimpleXMLNode& node, bool *ok = nullptr) const;
-    DSimpleXMLTag getTag(DSimpleXMLNode* node, bool *ok = nullptr) const;
+    DSimpleXMLTag getTag(const QString& tagName, bool *ok = DNULLPTR) const;
+    DSimpleXMLTag getTag(const DString& tagName, bool *ok = DNULLPTR) const;
+    DSimpleXMLTag getTag(const DSimpleXMLString& tagName, bool *ok = DNULLPTR) const;
+    DSimpleXMLTag getTag(const DSimpleXMLNode& node, bool *ok = DNULLPTR) const;
+    DSimpleXMLTag getTag(DSimpleXMLNode* node, bool *ok = DNULLPTR) const;
 
     QVariant getValue() const;
-    QVariant getValueAt(const QString& tagName, bool *ok = nullptr) const;
-    QVariant getValueAt(const DString& tagName, bool *ok = nullptr) const;
-    QVariant getValueAt(const DSimpleXMLString& tagName, bool *ok = nullptr) const;
-    QVariant getValueAt(const DSimpleXMLNode& node, bool *ok = nullptr) const;
-    QVariant getValueAt(DSimpleXMLNode *node, bool *ok = nullptr) const;
+    QVariant getValueAt(const QString& tagName, bool *ok = DNULLPTR) const;
+    QVariant getValueAt(const DString& tagName, bool *ok = DNULLPTR) const;
+    QVariant getValueAt(const DSimpleXMLString& tagName, bool *ok = DNULLPTR) const;
+    QVariant getValueAt(const DSimpleXMLNode& node, bool *ok = DNULLPTR) const;
+    QVariant getValueAt(DSimpleXMLNode *node, bool *ok = DNULLPTR) const;
 
 public slots:
     void XMLMessageBox();
@@ -171,7 +198,7 @@ public slots:
 class DXMLTreeWidgetItem : public QTreeWidgetItem
 {
 public:
-    DXMLTreeWidgetItem(DSimpleXMLNode *node, QTreeWidget *parent = nullptr);
+    DXMLTreeWidgetItem(DSimpleXMLNode *node, QTreeWidget *parent = DNULLPTR);
 };
 
 #endif // SIMPLEXML_H

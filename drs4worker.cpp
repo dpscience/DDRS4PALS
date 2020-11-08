@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "drs4worker.h"
 
@@ -39,8 +66,7 @@ DRS4Worker::DRS4Worker(DRS4WorkerDataExchange *dataExchange, QObject *parent) :
     m_isRecordingForShapeFilterA(false),
     m_isRecordingForShapeFilterB(false),
     m_pulseShapeDataAmountA(0),
-    m_pulseShapeDataAmountB(0)
-{
+    m_pulseShapeDataAmountB(0) {
     m_workerConcurrentManager = new DRS4WorkerConcurrentManager(this);
 
     resetPHSA();
@@ -60,22 +86,18 @@ DRS4Worker::DRS4Worker(DRS4WorkerDataExchange *dataExchange, QObject *parent) :
     resetLifetimeEfficiencyCounter();
 }
 
-DRS4Worker::~DRS4Worker()
-{
+DRS4Worker::~DRS4Worker() {
     DDELETE_SAFETY(m_workerConcurrentManager);
 }
 
 void DRS4Worker::initDRS4Worker() {}
 
-void DRS4Worker::start()
-{
+void DRS4Worker::start() {
     m_copyData.clear();
 
     if ( !DRS4BoardManager::sharedInstance()->currentBoard() ) {
         DRS4BoardManager::sharedInstance()->setDemoMode(true);
     }
-    else
-        DRS4BoardManager::sharedInstance()->setDemoMode(false);
 
     resetLifetimeEfficiencyCounter();
 
@@ -1050,10 +1072,21 @@ void DRS4Worker::runSingleThreaded()
 
         if (!bIgnoreBusyState) {
             if (!bDemoMode) {
-                while ( !DRS4BoardManager::sharedInstance()->currentBoard()->IsEventAvailable() ) {
+                while ( !DRS4BoardManager::sharedInstance()->currentBoard()->IsEventAvailable()) {
                     while ( !nextSignal() ) {
                         m_isBlocking = true;
                     }
+
+                    if ( !m_isRunning ) {
+                        m_isBlocking = false;
+
+                        return;
+                    }
+
+                    QTime dieTime= QTime::currentTime().addMSecs(25);
+
+                    while (QTime::currentTime() < dieTime)
+                        QCoreApplication::processEvents(QEventLoop::AllEvents);
                 }
             }
         }
@@ -1066,7 +1099,6 @@ void DRS4Worker::runSingleThreaded()
 
         if (!bDemoMode) {
             try {
-                 // just 2 waves are necessary! Place them next to each other like (Chn1 & Chn2) to reduce sampling!
                 DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 3);
             }
             catch (...) {
@@ -1102,13 +1134,11 @@ void DRS4Worker::runSingleThreaded()
             try {
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel0);
             }
-            catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
+            catch ( ... ) {               
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -1116,12 +1146,10 @@ void DRS4Worker::runSingleThreaded()
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel1);
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -1129,12 +1157,10 @@ void DRS4Worker::runSingleThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, waveChannel0);
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -1142,12 +1168,10 @@ void DRS4Worker::runSingleThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, waveChannel1);
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -1155,7 +1179,6 @@ void DRS4Worker::runSingleThreaded()
                 retState = DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino(); // returns always 1.
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
             }
         }
         else {
@@ -1168,7 +1191,6 @@ void DRS4Worker::runSingleThreaded()
                     continue;
 
                 if ( !DRS4StreamDataLoader::sharedInstance()->receiveGeneratedPulsePair(tChannel0, waveChannel0, tChannel1, waveChannel1) ) {
-                    // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
                     continue;
                 }
             }
@@ -1696,19 +1718,19 @@ void DRS4Worker::runSingleThreaded()
 
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel0, sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel0S:waveChannel0), sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)tChannel1, sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(bMedianFilterA?waveChannel1S:waveChannel1), sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
         }
 
@@ -1718,8 +1740,8 @@ void DRS4Worker::runSingleThreaded()
                  || (abs(yMinB) > abs(yMaxB)) )
                 continue;
 
-            if ( abs(cellYAMax - startCell) <= 45
-                 || abs(cellYBMax - startCell) <= 45 )
+            if ( abs(cellYAMax - startCell) <= 15
+                 || abs(cellYBMax - startCell) <= 15 )
                 continue;
 
             if ( qFuzzyCompare(waveChannel0[reducedEndRange], yMaxA)
@@ -1733,8 +1755,8 @@ void DRS4Worker::runSingleThreaded()
                  || (abs(yMinB) < abs(yMaxB)) )
                 continue;
 
-            if ( abs(cellYAMin - startCell) <= 45
-                 || abs(cellYBMin - startCell) <= 45 )
+            if ( abs(cellYAMin - startCell) <= 15
+                 || abs(cellYBMin - startCell) <= 15 )
                 continue;
 
             if ( qFuzzyCompare(waveChannel0[reducedEndRange], yMinA)
@@ -2921,20 +2943,20 @@ void DRS4Worker::runSingleThreaded()
                     if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
                         if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
-                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                /* nothing yet */
                             }
 
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
-                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                /* nothing yet */
                             }
                         }
                         else {
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
-                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                /* nothing yet */
                             }
 
                             if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
-                                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                                /* nothing yet */
                             }
                         }
                     }
@@ -2997,20 +3019,19 @@ void DRS4Worker::runSingleThreaded()
                 if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
                     if (DRS4FalseTruePulseStreamManager::sharedInstance()->isStreamingForABranch() ) {
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel0, sizeOfWave)) {
-                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
                         }
 
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel0S, sizeOfWave)) {
-                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            /* nothing yet */
                         }
                     }
                     else {
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)tChannel1, sizeOfWave)) {
-                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            /* nothing yet */
                         }
 
                         if (!DRS4FalseTruePulseStreamManager::sharedInstance()->writeTruePulse((const char*)waveChannel1S, sizeOfWave)) {
-                            // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteTruePulseStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                            /* nothing yet */
                         }
                     }
                 }
@@ -3053,6 +3074,17 @@ void DRS4Worker::runMultiThreaded()
                     while ( !nextSignal() ) {
                         m_isBlocking = true;
                     }
+
+                    if ( !m_isRunning ) {
+                        m_isBlocking = false;
+
+                        return;
+                    }
+
+                    QTime dieTime= QTime::currentTime().addMSecs(25);
+
+                    while (QTime::currentTime() < dieTime)
+                        QCoreApplication::processEvents(QEventLoop::AllEvents);
                 }
             }
         }
@@ -3065,7 +3097,6 @@ void DRS4Worker::runMultiThreaded()
 
         if (!bDemoMode) {
             try {
-                 // just 2 waves are necessary! Place them next to each other like (Chn1 & Chn2) to reduce sampling!
                 DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 3);
             }
             catch (...) {
@@ -3104,12 +3135,10 @@ void DRS4Worker::runMultiThreaded()
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel0);
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(0) try-catch"));
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(0): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -3117,12 +3146,10 @@ void DRS4Worker::runMultiThreaded()
                 retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel1);
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttime(1) try-catch"));
                 continue;
             }
 
             if ( retStateT != 1 ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState time(1): " + QVariant(retStateT).toString()));
                 continue;
             }
 
@@ -3130,12 +3157,10 @@ void DRS4Worker::runMultiThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, inputData.m_waveChannel0);
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(0) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(0): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -3143,12 +3168,10 @@ void DRS4Worker::runMultiThreaded()
                 retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, inputData.m_waveChannel1);
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tvolt(1) try-catch"));
                 continue;
             }
 
             if ( retStateV != kSuccess ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treturnState volt(1): " + QVariant(retStateV).toString()));
                 continue;
             }
 
@@ -3156,7 +3179,6 @@ void DRS4Worker::runMultiThreaded()
                 retState = DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino(); // returns always 1.
             }
             catch ( ... ) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\tstart Domino-Wave: try-catch"));
             }
         }
         else {
@@ -3169,7 +3191,6 @@ void DRS4Worker::runMultiThreaded()
                     continue;
 
                 if ( !DRS4StreamDataLoader::sharedInstance()->receiveGeneratedPulsePair(inputData.m_tChannel0, inputData.m_waveChannel0, inputData.m_tChannel1, inputData.m_waveChannel1) ) {
-                    // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\treadStream: error"));
                     continue;
                 }
             }
@@ -3483,19 +3504,19 @@ void DRS4Worker::runMultiThreaded()
 
         if ( DRS4StreamManager::sharedInstance()->isArmed() ) {
             if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_tChannel0, sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(!bIntrinsicFilterA?inputData.m_waveChannel0:waveChannel0S), sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(0): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)inputData.m_tChannel1, sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream time(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
 
             if (!DRS4StreamManager::sharedInstance()->write((const char*)(!bIntrinsicFilterB?inputData.m_waveChannel1:waveChannel1S), sizeOfWave)) {
-                // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\twriteStream volt(1): size(" + QVariant(sizeOfWave).toString() + ")"));
+                /* nothing yet */
             }
         }
 
@@ -3872,8 +3893,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                  || (abs(yMinB) > abs(yMaxB)) )
                 continue;
 
-            if ( abs(cellYAMax - inputData.m_startCell) <= 45
-                 || abs(cellYBMax - inputData.m_startCell) <= 45 )
+            if ( abs(cellYAMax - inputData.m_startCell) <= 15
+                 || abs(cellYBMax - inputData.m_startCell) <= 15 )
                 continue;
 
             if ( qFuzzyCompare(inputData.m_waveChannel0[reducedEndRange], yMaxA)
@@ -3887,8 +3908,8 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                  || (abs(yMinB) < abs(yMaxB)) )
                 continue;
 
-            if ( abs(cellYAMin - inputData.m_startCell) <= 45
-                 || abs(cellYBMin - inputData.m_startCell) <= 45 )
+            if ( abs(cellYAMin - inputData.m_startCell) <= 15
+                 || abs(cellYBMin - inputData.m_startCell) <= 15 )
                 continue;
 
             if ( qFuzzyCompare(inputData.m_waveChannel0[reducedEndRange], yMinA)

@@ -23,11 +23,38 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "drs4scriptingengineaccessmanager.h"
 
-DRS4ScriptingEngineAccessManager *__sharedInstanceScriptingEngineAccessManager = nullptr;
+DRS4ScriptingEngineAccessManager *__sharedInstanceScriptingEngineAccessManager = DNULLPTR;
 
 DRS4ScriptingEngineAccessManager *DRS4ScriptingEngineAccessManager::sharedInstance()
 {
@@ -426,16 +453,6 @@ void DRS4ScriptingEngineAccessManager::resetPHSB()
         return;
 
     m_dlgAccess->resetPHSB(FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::resetTemperatureProfile()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->resetTemperatureProfile(FunctionSource::AccessFromScript);
 }
 
 void DRS4ScriptingEngineAccessManager::resetAreaPlotA()
@@ -868,16 +885,6 @@ bool DRS4ScriptingEngineAccessManager::loadSettingsFile(const QString &path)
     return m_dlgAccess->loadSettingsFileFromExtern(path);
 }
 
-bool DRS4ScriptingEngineAccessManager::saveTemperatureProfile(const QString &fileName)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return false;
-
-    return m_dlgAccess->saveTemperatureFromExtern(fileName);
-}
-
 bool DRS4ScriptingEngineAccessManager::loadDataStreamFile(const QString &fileName)
 {
     QMutexLocker locker(&m_mutex);
@@ -998,7 +1005,7 @@ bool DRS4ScriptingEngineAccessManager::savePHSB(const QString &fileName)
     return m_dlgAccess->savePHSBFromExtern(fileName);
 }
 
-DRS4ScriptingEngineAccessManager::DRS4ScriptingEngineAccessManager() : m_dlgAccess(nullptr) {}
+DRS4ScriptingEngineAccessManager::DRS4ScriptingEngineAccessManager() : m_dlgAccess(DNULLPTR) {}
 
 DRS4ScriptingEngineAccessManager::~DRS4ScriptingEngineAccessManager()
 {

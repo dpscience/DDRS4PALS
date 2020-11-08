@@ -8,7 +8,7 @@ QT       += core gui concurrent script printsupport network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = DDRS4PALS_1_0_11
+TARGET = DDRS4PALS_1_0_12
 TEMPLATE = app
 
 RC_FILE = softwareIcon.rc
@@ -24,11 +24,11 @@ DEFINES += NOMINMAX
 DEFINES+= HAVE_LIBUSB10
 
 SOURCES += main.cpp\
-    DRS/DRS.cpp \
-    DRS/averager.cpp\
-    DRS/musbstd.c\
-    DRS/mxml.c\
-    DRS/strlcpy.c\
+    DRS/drs507/DRS.cpp \
+    DRS/drs507/averager.cpp\
+    DRS/drs507/musbstd.c\
+    DRS/drs507/mxml.c\
+    DRS/drs507/strlcpy.c\
     drs4worker.cpp \
     GUI/drs4scopedlg.cpp \
     drs4boardmanager.cpp \
@@ -59,12 +59,12 @@ SOURCES += main.cpp\
     GUI/drs4doublespinbox.cpp \
     GUI/drs4spinbox.cpp
 
-HEADERS  += DRS/DRS.h \
-    DRS/averager.h\
-    DRS/usb.h \
-    DRS/musbstd.h\
-    DRS/mxml.h\
-    DRS/strlcpy.h\
+HEADERS  += DRS/drs507/DRS.h \
+    DRS/drs507/averager.h\
+    DRS/drs507/usb.h \
+    DRS/drs507/musbstd.h\
+    DRS/drs507/mxml.h\
+    DRS/drs507/strlcpy.h\
     include/libusb-1.0/libusb.h \
     include/DLTPulseGenerator/DLTPulseGenerator.h \
     drs4worker.h \

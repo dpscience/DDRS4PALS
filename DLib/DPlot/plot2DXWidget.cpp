@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "plot2DXWidget.h"
 
@@ -31,12 +58,11 @@
 #include <QDebug>
 #endif
 
-#define MAX_CURVE_NUMBER              20 //setzt die maximal mögliche Anzahl an angezeigten und veränderbaren Diagramm-Kurven
+#define MAX_CURVE_NUMBER              20
 #define DEFAULT_BACKGROUND_COLOR      QColor(Qt::white)
 
-//setzt die x-/y-Startpunkte der canvas-Pixmap bezüglich des 'plot2DXWidget'-widget parents
-//#define CANVAS_X_OFFSET             80 //absolete!
-//#define CANVAS_Y_OFFSET             50 //absolete!
+//#define CANVAS_X_OFFSET             80
+//#define CANVAS_Y_OFFSET             50
 
 #define CANVAS_Y_OFFSET_ON_VISIBLE    50
 #define CANVAS_Y_OFFSET_ON_UNVISIBLE  10
@@ -44,7 +70,6 @@
 #define CANVAS_X_OFFSET_ON_UNVISIBLE  10
 #define CANVAS_X_OFFSET_ON_VISIBLE    80
 
-//default pen for the grids
 #define DEFAULT_GRID_PEN              QPen(Qt::lightGray, 1, Qt::DashLine)
 
 plot2DXWidget::plot2DXWidget(QWidget *parent) :
@@ -107,11 +132,6 @@ plot2DXWidget::plot2DXWidget(QWidget *parent) :
     connect(xTopAxis,SIGNAL(scalingPropertyChanged()),this,SLOT(updatePlotView()));
     connect(xBottomAxis,SIGNAL(scalingPropertyChanged()),this,SLOT(updatePlotView()));
 
-    //TODO:
-    //connect(xTopAxis, SIGNAL(visibleStateChanged(bool)), this, SLOT(adaptAxisGeometry(bool)));
-    //connect(xBottomAxis, SIGNAL(visibleStateChanged(bool)), this, SLOT(adaptAxisGeometry(bool)));
-
-    //default:
     yRightAxis->setVisible(false);
     xTopAxis  ->setVisible(false);
 
@@ -149,31 +169,8 @@ plot2DXWidget::~plot2DXWidget()
 void plot2DXWidget::adaptAxisGeometry(bool visible)
 {
     Q_UNUSED(visible);
-//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    /*if ( xTopAxis->isVisible() && xBottomAxis->isVisible() )
-        m_canvasRect.setRect(CANVAS_X_OFFSET_ON_VISIBLE, CANVAS_Y_OFFSET_ON_VISIBLE, geometry().width()-CANVAS_X_OFFSET_ON_UNVISIBLE-CANVAS_X_OFFSET_ON_VISIBLE, geometry().height()-2*CANVAS_Y_OFFSET_ON_VISIBLE);
-    else if ( xBottomAxis->isVisible() && !xTopAxis->isVisible() )
-        m_canvasRect.setRect(CANVAS_X_OFFSET_ON_VISIBLE, CANVAS_Y_OFFSET_ON_UNVISIBLE, geometry().width()-CANVAS_X_OFFSET_ON_UNVISIBLE-CANVAS_X_OFFSET_ON_VISIBLE, geometry().height()-CANVAS_Y_OFFSET_ON_UNVISIBLE);
-    else if ( !xBottomAxis->isVisible() && xTopAxis->isVisible() )
-        m_canvasRect.setRect(CANVAS_X_OFFSET_ON_VISIBLE, CANVAS_Y_OFFSET_ON_VISIBLE, geometry().width()-CANVAS_X_OFFSET_ON_UNVISIBLE-CANVAS_X_OFFSET_ON_VISIBLE, geometry().height()-CANVAS_Y_OFFSET_ON_UNVISIBLE);
-
-    if ( canvas() )
-        canvas()->setGeometry(m_canvasRect);
-
-    if ( yRight() )
-        yRight()->adaptGeometry(this->rect(),m_canvasRect);
-    if ( yLeft() )
-        yLeft()->adaptGeometry(this->rect(),m_canvasRect);
-    if ( xTop() )
-        xTop()->adaptGeometry(this->rect(),m_canvasRect);
-    if ( xBottom() )
-        xBottom()->adaptGeometry(this->rect(),m_canvasRect);*/
 }
 
-/**
- * Dieser slot ermittelt aus der cache-Liste jedes Kurven-Objektes die neu zu zeichnenden Pixel.
- * Sollte sich eine Achse im 'timePlot'-Modus befinden, so wird zudem der 'Shift' der Canvas-Pixmap ermittelt.
- */
 void plot2DXWidget::replot()
 {
     if ( !isReplotEnabled() )
@@ -187,11 +184,9 @@ void plot2DXWidget::replot()
         return;
     }
 
-    //0.a) check for value-plot!!!
     if ( xBottom()->getAxisPlotType() == plot2DXAxis::valuePlot &&
          xTop()->getAxisPlotType()    == plot2DXAxis::valuePlot )
     {
-        //0.b) draw the grids at first to set it on the background of the curves:
         if ( isYLeftGridShown() && yLeft()->isVisible() ){
 
             const double ySpan = fabs(yLeft()->getAxisMaxValue() - yLeft()->getAxisMinValue());
@@ -257,7 +252,6 @@ void plot2DXWidget::replot()
             canvas()->drawXTopGrid(gridXPixelList,getXTopGridPen());
         }
 
-        //1. get the new scaling-list of curve-object´s cache-list:
         for ( int index = 0 ; index < MAX_CURVE_NUMBER ; index ++ ){
             QVector<QPoint> cachePixelList = pixelList(curve().at(index)->getCache(),
                                                      curve().at(index)->getAxis());
@@ -266,7 +260,6 @@ void plot2DXWidget::replot()
             if ( cachePixelList.isEmpty() )
                 continue;
 
-            //add the last value to the current pixelList for connecting lines in shift-mode:
             switch ( curve().at(index)->getAxis() ){
 
             case plot2DXCurve::yLeft_xBottom:
@@ -313,15 +306,11 @@ void plot2DXWidget::replot()
                 break;
             }
 
-
-            //2. swap the cache-list to the container:
             curve().at(index)->swapToContainer();
 
             if ( !curve().at(index)->isCurveShown() )
                 continue;
 
-
-            //3.b) append new curve-value:
             canvas()->drawCurve(curve().at(index)->getCurveWidth(),
                                 curve().at(index)->getCurveColor(),
                                 curve().at(index)->getCurveStyle(),
@@ -329,12 +318,9 @@ void plot2DXWidget::replot()
         }
     }
 
-
-    //0.a) check for time-value-plot!!!
     if ( xBottom()->getAxisPlotType() == plot2DXAxis::timePlot &&
          xTop()->getAxisPlotType()    == plot2DXAxis::timePlot )
     {
-        //1. get the curve´s cache-list and determine the x-maximum value (iteration through all curve-objects):
         double maxXValue = xBottom()->getAxisMaxValue();
 
         for ( int index = 0 ; index < MAX_CURVE_NUMBER ; index ++ ){
@@ -349,13 +335,9 @@ void plot2DXWidget::replot()
                 maxXValue = xValue;
         }
 
-
-        //2. determine wether we need to shift or not:
         const double maxXValue_old = xBottom()->getAxisMaxValue();
         const bool shift = (maxXValue > maxXValue_old);
 
-
-        //3. set the new x-range (on time-value plot, the Signal for propertyChanged() doesn´t emit!!!)
         const double xSpan = xBottom()->getAxisSpan();
 
         const double newXMaxValue = maxXValue;
@@ -364,33 +346,25 @@ void plot2DXWidget::replot()
         xBottom()->setAxisRange(newXMinValue,newXMaxValue);
         xTop()->setAxisRange(newXMinValue,newXMaxValue);
 
-
-        //4. calculate the x-direction-shift:
         int xShift = 0;
 
         if ( shift )
             xShift = (-1)*abs(xBottom()->ConvertToPixel(xBottom()->getAxisMaxValue(),plot2DXAxis::linear) - xBottom()->ConvertToPixel(maxXValue_old,plot2DXAxis::linear));
 
-
-        //5. shift the pixmap if value is > 0:
         if ( xShift != 0 )
             canvas()->shiftPixmap(xShift);
 
-
-        //6. get the new scaling-list of curve-object´s cache-list:
         for ( int index = 0 ; index < MAX_CURVE_NUMBER ; index ++ ){
 
             QVector<QPoint> cachePixelList = pixelList(curve().at(index)->getCache(),
                                                      curve().at(index)->getAxis());
 
             if ( cachePixelList.isEmpty() ){
-                //6.1. swap the cache-list to the container:
                 curve().at(index)->swapToContainer();
 
                 if ( !curve().at(index)->isCurveShown() )
                     continue;
 
-                //6.2. append new curve-value:
                 canvas()->drawCurve(curve().at(index)->getCurveWidth(),
                                     curve().at(index)->getCurveColor(),
                                     curve().at(index)->getCurveStyle(),
@@ -402,8 +376,6 @@ void plot2DXWidget::replot()
 
             const QPointF lastValueF = curve().at(index)->getLastValueBeforeReplot();
 
-
-            //add the last value to the current pixelList for connecting lines in shift-mode:
             switch ( curve().at(index)->getAxis() ){
 
             case plot2DXCurve::yLeft_xBottom:
@@ -474,13 +446,11 @@ void plot2DXWidget::replot()
                 break;
             }
 
-            //7. swap the cache-list to the container:
             curve().at(index)->swapToContainer();
 
             if ( !curve().at(index)->isCurveShown() )
                 continue;
 
-            //8. append new curve-value:
             canvas()->drawCurve(curve().at(index)->getCurveWidth(),
                                 curve().at(index)->getCurveColor(),
                                 curve().at(index)->getCurveStyle(),
@@ -489,16 +459,10 @@ void plot2DXWidget::replot()
     }
 }
 
-/**
- * Dieser SLOT wird nur aufgerufen, wenn Eigenschaften der Achsen- oder Kurven-Objekte geändert werden!
- * Die Zuweisung/'connect' findet im Konstruktor dieser Klasse statt.
- */
 void plot2DXWidget::updatePlotView()
 {
-    //1. clear canvas:
     canvas()->clear();
 
-    //2.a) draw the grids at first to set it on the background of the curves:
     if ( isYLeftGridShown() && yLeft()->isVisible() ){
 
         const double ySpan = fabs(yLeft()->getAxisMaxValue() - yLeft()->getAxisMinValue());
@@ -564,18 +528,13 @@ void plot2DXWidget::updatePlotView()
         canvas()->drawXTopGrid(gridXPixelList, getXTopGridPen());
     }
 
-
-    //2.b) get new scaling of each curve
     for ( int i = 0 ; i < MAX_CURVE_NUMBER ; ++i ){
-
-        //check wether curve is set visible:
         if ( !curve().at(i)->isCurveShown() )
             continue;
 
 
         const QVector<QPoint> clippingList = pixelList(curve().at(i));
 
-        //3) repaint the canvas with new data
         canvas()->drawCurve(curve().at(i)->getCurveWidth(),
                             curve().at(i)->getCurveColor(),
                             curve().at(i)->getCurveStyle(),
@@ -712,7 +671,6 @@ QVector<QPoint> plot2DXWidget::pixelList(plot2DXCurve *curve)
 
             const QPointF iterValue = curve->getData().at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 
@@ -739,7 +697,6 @@ QVector<QPoint> plot2DXWidget::pixelList(plot2DXCurve *curve)
 
             const QPointF iterValue = curve->getData().at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 
@@ -766,7 +723,6 @@ QVector<QPoint> plot2DXWidget::pixelList(plot2DXCurve *curve)
 
             const QPointF iterValue = curve->getData().at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 
@@ -793,7 +749,6 @@ QVector<QPoint> plot2DXWidget::pixelList(plot2DXCurve *curve)
 
             const QPointF iterValue = curve->getData().at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 
@@ -835,7 +790,6 @@ QVector<QPoint> plot2DXWidget::pixelList(const QVector<QPointF> &curve,
 
             const QPointF iterValue = curve.at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 
@@ -862,7 +816,6 @@ QVector<QPoint> plot2DXWidget::pixelList(const QVector<QPointF> &curve,
 
             const QPointF iterValue = curve.at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 
@@ -889,7 +842,6 @@ QVector<QPoint> plot2DXWidget::pixelList(const QVector<QPointF> &curve,
 
             const QPointF iterValue = curve.at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 
@@ -916,7 +868,6 @@ QVector<QPoint> plot2DXWidget::pixelList(const QVector<QPointF> &curve,
 
             const QPointF iterValue = curve.at(i);
 
-            //point inside canvas?:
             if ( !insideCanvas(iterValue,minXValue,maxXValue,minYValue,maxYValue) )
                 continue;
 

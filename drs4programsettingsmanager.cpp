@@ -23,11 +23,38 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "drs4programsettingsmanager.h"
 
-static DRS4ProgramSettingsManager *__sharedInstanceProgramSettingsManager = nullptr;
+static DRS4ProgramSettingsManager *__sharedInstanceProgramSettingsManager = DNULLPTR;
 
 DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
 {
@@ -60,9 +87,6 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
     m_lastSaveLogFilePathNode = new DSimpleXMLNode("scriptLogFile-path");
     m_lastSaveLogFilePathNode->setValue("/home");
 
-    m_lastSaveTProfileFilePathNode = new DSimpleXMLNode("boardTemperatureProfileFile-path");
-    m_lastSaveTProfileFilePathNode->setValue("/home");
-
     m_lastPHSSaveFilePathNode = new DSimpleXMLNode("PHSDataFile-path");
     m_lastPHSSaveFilePathNode->setValue("/home");
 
@@ -89,7 +113,6 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
                     << m_lastSaveDataFilePathNode
                     << m_lastSaveScriptFilePathNode
                     << m_lastSaveLogFilePathNode
-                    << m_lastSaveTProfileFilePathNode
                     << m_lastPHSSaveFilePathNode
                     << m_lastRiseTimeDistrPathNode
                     << m_lastAreaDistrPathNode;
@@ -138,7 +161,6 @@ bool DRS4ProgramSettingsManager::load()
         m_lastStreamInputFilePathNode->setValue("/home");
         m_lastStreamTextFileInputFilePathNode->setValue("/home");
         m_lastSaveLogFilePathNode->setValue("/home");
-        m_lastSaveTProfileFilePathNode->setValue("/home");
         m_lastPHSSaveFilePathNode->setValue("/home");
         m_lastRiseTimeDistrPathNode->setValue("/home");
         m_lastAreaDistrPathNode->setValue("/home");
@@ -161,7 +183,6 @@ bool DRS4ProgramSettingsManager::load()
         m_lastStreamInputFilePathNode->setValue("/home");
         m_lastStreamTextFileInputFilePathNode->setValue("/home");
         m_lastSaveLogFilePathNode->setValue("/home");
-        m_lastSaveTProfileFilePathNode->setValue("/home");
         m_lastPHSSaveFilePathNode->setValue("/home");
         m_lastRiseTimeDistrPathNode->setValue("/home");
         m_lastAreaDistrPathNode->setValue("/home");
@@ -224,12 +245,6 @@ bool DRS4ProgramSettingsManager::load()
        m_lastSaveLogFilePathNode->setValue(pathLog);
    else
        m_lastSaveLogFilePathNode->setValue("/home");
-
-   const QString pathT = pTag.getValueAt(m_lastSaveTProfileFilePathNode, &ok).toString();
-   if ( ok )
-       m_lastSaveTProfileFilePathNode->setValue(pathT);
-   else
-       m_lastSaveTProfileFilePathNode->setValue("/home");
 
    const QString pathPHSSavePath = pTag.getValueAt(m_lastPHSSaveFilePathNode, &ok).toString();
    if ( ok )
@@ -334,14 +349,6 @@ void DRS4ProgramSettingsManager::setSaveLogFilePath(const QString &path)
     QMutexLocker locker(&m_mutex);
 
     m_lastSaveLogFilePathNode->setValue(path);
-    save();
-}
-
-void DRS4ProgramSettingsManager::setSaveTProfilePath(const QString &path)
-{
-    QMutexLocker locker(&m_mutex);
-
-    m_lastSaveTProfileFilePathNode->setValue(path);
     save();
 }
 
@@ -470,14 +477,6 @@ QString DRS4ProgramSettingsManager::saveLogFilePath()
 
     load();
     return m_lastSaveLogFilePathNode->getValue().toString();
-}
-
-QString DRS4ProgramSettingsManager::saveTProfileFilePath()
-{
-    QMutexLocker locker(&m_mutex);
-
-    load();
-    return m_lastSaveTProfileFilePathNode->getValue().toString();
 }
 
 QString DRS4ProgramSettingsManager::savePHSDataFilePath()

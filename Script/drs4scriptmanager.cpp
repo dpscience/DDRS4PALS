@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "drs4scriptmanager.h"
 
@@ -65,9 +92,6 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
     list.append("savePHSA(\"__name_of_file__\") << bool");
     list.append("savePHSB(\"__name_of_file__\") << bool");
 
-    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        list.append("saveTemperatureProfile(\"__name_of_file__\") << bool");
-
     list.append("saveCompleteLogFile(\"__name_of_file__\") << bool");
     list.append("savePrintOutLogFile(\"__name_of_file__\") << bool");
     list.append("saveSucceedLogFile(\"__name_of_file__\") << bool");
@@ -93,9 +117,6 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
 
     list.append("resetPHSA()");
     list.append("resetPHSB()");
-
-    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        list.append("resetTemperatureProfile()");
 
     list.append("resetAllSpectra()");
     list.append("resetABSpectrum()");
@@ -477,31 +498,6 @@ bool DRS4ScriptEngineCommandCollector::saveFailedLogFile(const QString &fileName
     return true;
 }
 
-bool DRS4ScriptEngineCommandCollector::saveTemperatureProfile(const QString &fileName)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return false;
-    }
-
-    if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-    {
-        mapMsg("Demo-Mode is enabled. T-Profile cannot be saved.", DRS4LogType::FAILED);
-
-        return false;
-    }
-
-    const bool success = DRS4ScriptingEngineAccessManager::sharedInstance()->saveTemperatureProfile(fileName);
-
-    if ( success )
-        mapMsg("T-Profile successfully saved: /" + fileName + "/", DRS4LogType::SUCCEED);
-    else
-        mapMsg("Error on saving T-Profile: /" + fileName + "/", DRS4LogType::FAILED);
-
-    return success;
-}
-
 bool DRS4ScriptEngineCommandCollector::savePHSA(const QString &fileName)
 {
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
@@ -695,26 +691,6 @@ void DRS4ScriptEngineCommandCollector::resetPHSB()
     mapMsg("PHS of B reseted.", DRS4LogType::SUCCEED);
 
     DRS4ScriptingEngineAccessManager::sharedInstance()->resetPHSB();
-}
-
-void DRS4ScriptEngineCommandCollector::resetTemperatureProfile()
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-    {
-        mapMsg("Demo-Mode is enabled. T-Profile cannot be reseted.", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    mapMsg("T-Profile was reseted.", DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->resetTemperatureProfile();
 }
 
 void DRS4ScriptEngineCommandCollector::resetAreaPlotA()
@@ -1884,10 +1860,10 @@ DRS4ScriptEngine::DRS4ScriptEngine(DRS4ScriptString *logFile, DRS4ScriptString *
     }
     else
     {
-        m_logTextEdit = nullptr;
-        m_logSucceedTextEdit = nullptr;
-        m_logFailedTextEdit = nullptr;
-        m_logPrintOutTextEdit = nullptr;
+        m_logTextEdit = DNULLPTR;
+        m_logSucceedTextEdit = DNULLPTR;
+        m_logFailedTextEdit = DNULLPTR;
+        m_logPrintOutTextEdit = DNULLPTR;
     }
 
     if ( m_logTextEdit
@@ -1900,7 +1876,7 @@ DRS4ScriptEngine::DRS4ScriptEngine(DRS4ScriptString *logFile, DRS4ScriptString *
 }
 
 
-DRS4ScriptDataInterChangeManager* __sharedInstanceScriptDataInterChangeManager = nullptr;
+DRS4ScriptDataInterChangeManager* __sharedInstanceScriptDataInterChangeManager = DNULLPTR;
 
 DRS4ScriptDataInterChangeManager::DRS4ScriptDataInterChangeManager() :
     m_state(SCRIP_NO_STATE),
@@ -1975,10 +1951,10 @@ DRS4ScriptExecuter::DRS4ScriptExecuter(DRS4ScriptString *logFile, DRS4ScriptStri
      }
      else
      {
-         m_logTextEdit = nullptr;
-         m_logSucceedTextEdit = nullptr;
-         m_logFailedTextEdit = nullptr;
-         m_logPrintOutTextEdit = nullptr;
+         m_logTextEdit = DNULLPTR;
+         m_logSucceedTextEdit = DNULLPTR;
+         m_logFailedTextEdit = DNULLPTR;
+         m_logPrintOutTextEdit = DNULLPTR;
      }
 
      if ( m_logTextEdit
@@ -2120,7 +2096,7 @@ void DRS4ScriptExecuter::mapMsg(const QString &msg, const DRS4LogType &type)
 }
 
 
-static DRS4ScriptManager* __sharedInstanceDRS4ScriptManager = nullptr;
+static DRS4ScriptManager* __sharedInstanceDRS4ScriptManager = DNULLPTR;
 
 DRS4ScriptManager::DRS4ScriptManager() :
     m_armed(false),

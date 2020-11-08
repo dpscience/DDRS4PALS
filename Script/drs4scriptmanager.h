@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #ifndef DDRS4SCRIPTMANAGER_H
 #define DDRS4SCRIPTMANAGER_H
@@ -68,10 +95,10 @@ public:
 
 public:
     DRS4ScriptEngineCommandCollector(QScriptEngine *engine,
-                                     DRS4ScriptString *logFile = nullptr,
-                                     DRS4ScriptString *logFileSucceed = nullptr,
-                                     DRS4ScriptString *logFileFailed = nullptr,
-                                     DRS4ScriptString *logFilePrintOut = nullptr);
+                                     DRS4ScriptString *logFile = DNULLPTR,
+                                     DRS4ScriptString *logFileSucceed = DNULLPTR,
+                                     DRS4ScriptString *logFileFailed = DNULLPTR,
+                                     DRS4ScriptString *logFilePrintOut = DNULLPTR);
     virtual ~DRS4ScriptEngineCommandCollector();
 
 public slots:
@@ -86,8 +113,6 @@ public slots:
     bool savePrintOutLogFile(const QString& fileName);
     bool saveSucceedLogFile(const QString& fileName);
     bool saveFailedLogFile(const QString& fileName);
-
-    bool saveTemperatureProfile(const QString& fileName);
 
     bool savePHSA(const QString& fileName);
     bool savePHSB(const QString& fileName);
@@ -109,8 +134,6 @@ public slots:
 
     void resetPHSA();
     void resetPHSB();
-
-    void resetTemperatureProfile();
 
     void resetAreaPlotA();
     void resetAreaPlotB();
@@ -234,7 +257,7 @@ class DRS4ScriptEngine : public QScriptEngine
 
     Q_OBJECT
 public:
-    DRS4ScriptEngine(DRS4ScriptString *logFile = nullptr, DRS4ScriptString *logFileSucceed = nullptr, DRS4ScriptString *logFileFailed = nullptr, DRS4ScriptString *logFilePrintOut = nullptr);
+    DRS4ScriptEngine(DRS4ScriptString *logFile = DNULLPTR, DRS4ScriptString *logFileSucceed = DNULLPTR, DRS4ScriptString *logFileFailed = DNULLPTR, DRS4ScriptString *logFilePrintOut = DNULLPTR);
     virtual ~DRS4ScriptEngine();
 
  private:
