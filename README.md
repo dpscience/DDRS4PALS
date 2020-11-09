@@ -87,7 +87,7 @@ DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 ### <br><b>detection of misshaped or artifact-afflicted pulses using shape-sensitive filtering</b><br>
 <br>![Shape-Filter](/images/shapeFilter.png)
 
-# License of DDRS4PALS (GNU General Public License) 
+# License of DDRS4PALS (GNU General Public License) <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
 
@@ -131,7 +131,7 @@ The following 3rd party libraries are used by <b>DDRS4PALS</b> software.<br>
 These files containing documentation, drivers, applications, C/C++ source code and the FPGA firmware in VHDL and compiled bit files.<br><br>
 <b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b><br><br>License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
 
-# Deploy DDRS4PALS on Windwos OS from source files using QtCreator <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+# Deploy DDRS4PALS on Windows OS from source files using QtCreator <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 1. Download the QtCreator and the [Qt-framework](https://www.qt.io/download) (at least v5.x).
 2. Download and Setup the MS Visual Studio compiler (at least version 2013). It should also work with any other compiler e.g. MinGW but I recommend using VS compiler.
 3. Open the .pro file in QtCreator. 
