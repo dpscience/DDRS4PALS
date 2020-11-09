@@ -13,8 +13,9 @@ Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 2. Unzip <b>DDRS4PALS_v112.rar</b>.
 3. Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 4. <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
-5. Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. Select the <b>DRS4 evaluation board<b> from the list of devices and click on "Install Driver".
-6. Run the <b>DDRS4PALS</b> executable.
+5. Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
+6. Select the <b>DRS4 evaluation board<b> from the list of devices and click on "Install Driver".
+7. Run the <b>DDRS4PALS</b> executable.
 
 # Related Publications <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
