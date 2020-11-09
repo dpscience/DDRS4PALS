@@ -7291,7 +7291,7 @@ void DRS4ScopeDlg::updateTemperature() {
 
     if (m_lastTemperatureInDegree >= 46.) {
         ui->label_temperatureState->setStyleSheet("QLabel {color: green}");
-        ui->label_temperatureState->setText("operation temperature achieved");
+        ui->label_temperatureState->setText("operation temperature reached");
     }
     else if (m_lastTemperatureInDegree < 46.) {
         ui->label_temperatureState->setStyleSheet("QLabel {color: red}");

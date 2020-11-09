@@ -85,7 +85,7 @@ std::string DMathConsoleTextBox::parse_identifier(char const*& input) {
     skip_spaces(input);
     std::string identifier(1, *input++);
 
-    while(std::isalnum(*input) || *input == '_')
+    while (std::isalnum(*input) || *input == '_')
         identifier += *input++;
 
     return identifier;
@@ -97,14 +97,14 @@ calculation_type DMathConsoleTextBox::parse_function_call(char const*& input) {
     {
         std::map<std::string,double>::iterator iter = constants.find(name);
 
-        if (iter != constants.end())
+        if( iter != constants.end() )
             return iter->second;
     }
 
     {
         std::map<std::string, calculation_type (*) ()>::iterator iter = nullary_functions.find(name);
 
-        if (iter != nullary_functions.end())
+        if(iter != nullary_functions.end())
             return iter->second();
     }
 
@@ -121,7 +121,7 @@ calculation_type DMathConsoleTextBox::parse_function_call(char const*& input) {
     {
         std::map<std::string, calculation_type (*) (calculation_type, calculation_type)>::iterator iter = binary_functions.find(name);
 
-        if (iter != binary_functions.end()) {
+        if (iter != binary_functions.end())  {
             calculation_type const arg1 = parse_primary_expression(input);
             calculation_type const arg2 = parse_primary_expression(input);
 
@@ -130,10 +130,7 @@ calculation_type DMathConsoleTextBox::parse_function_call(char const*& input) {
     }
 
     m_error = true;
-
     throw_error("[ERR] >> call to unknown function '" + QString::fromStdString(name) + "' ");
-
-    Q_UNREACHABLE();
 }
 
 calculation_type DMathConsoleTextBox::parse_group(char const*& input) {
@@ -170,26 +167,22 @@ calculation_type DMathConsoleTextBox::parse_primary_expression(char const*& inpu
     if (*input == '(' || *input == '[' || *input == '{')
         return parse_group(input);
 
-    if (*input == '|') {
+    if(*input == '|') {
         calculation_type const value = parse_group(input);
-
         return std::abs(value);
     }
 
     m_error = true;
-
     throw_error("[ERR] >> expected value here: " + QString::fromUtf8(input) + " ");
-
-    Q_UNREACHABLE();
 }
 
 calculation_type DMathConsoleTextBox::parse_infix_function_call(char const*& input) {
     calculation_type result = parse_primary_expression(input);
 
-    forever {
+    for(;;) {
         skip_spaces(input);
 
-        if(*input != ':')
+        if (*input != ':')
             break;
 
         std::string const name = parse_identifier(++input);
@@ -198,7 +191,6 @@ calculation_type DMathConsoleTextBox::parse_infix_function_call(char const*& inp
 
         if (*input != ':') {
             m_error = true;
-
             throw_error("[ERR] >> missing terminating ':' at infix call to function '" + QString::fromStdString(name) + "' ");
         }
 
@@ -209,7 +201,6 @@ calculation_type DMathConsoleTextBox::parse_infix_function_call(char const*& inp
         }
         else {
             m_error = true;
-
             throw_error("[ERR] >> infix call to unknown function '" + QString::fromStdString(name) + "' ");
         }
     }
@@ -233,7 +224,7 @@ calculation_type DMathConsoleTextBox::parse_power(char const*& input) {
 
     skip_spaces(input);
 
-    if (*input == '^')
+    if(*input == '^')
         power = std::pow(power, parse_power(++input));
 
     return power;
@@ -242,7 +233,7 @@ calculation_type DMathConsoleTextBox::parse_power(char const*& input) {
 calculation_type DMathConsoleTextBox::parse_product(char const*& input) {
     calculation_type product = parse_power(input);
 
-    forever {
+    for(;;) {
         skip_spaces(input);
 
         if (*input == '*')
@@ -251,8 +242,7 @@ calculation_type DMathConsoleTextBox::parse_product(char const*& input) {
             product /= parse_power(++input);
         else if (*input == '%')
             product = std::fmod(product, parse_power(++input));
-        else
-            break;
+        else break;
     }
 
     return product;
@@ -261,27 +251,28 @@ calculation_type DMathConsoleTextBox::parse_product(char const*& input) {
 calculation_type DMathConsoleTextBox::parse_sum(char const*& input) {
     calculation_type sum = parse_product(input);
 
-    forever {
+    for(;;) {
         skip_spaces(input);
 
         if (*input == '+')
             sum += parse_product(++input);
         else if (*input == '-')
             sum -= parse_product(++input);
-        else
-            break;
+        else break;
     }
 
     return sum;
 }
+
 
 QString DMathConsoleTextBox::eval_2(char const* input) {
     calculation_type result = parse_sum(input);
 
     skip_spaces(input);
 
-    if (!*input)
-        return QString::number(result, 'g', m_precision);
+    if (!*input) {
+        return QString::number(result,'g',m_precision);
+    }
     else {
         m_error = true;
 
@@ -516,11 +507,23 @@ void DMathConsoleTextBox::setTextFont(const QFont &font) {
 void DMathConsoleTextBox::clearOutput() {
     selectAll();
 
-    QKeyEvent * eventClear = new QKeyEvent(QEvent::KeyPress, Qt::Key_CapsLock, Qt::NoModifier, "");
+    setTextColor(m_tc);
+    setFont(m_nf);
 
-    keyPressEvent(eventClear);
+    insertPlainText("[CAL] << ");
 
-    //DDELETE_SAFETY(eventClear);
+    m_error = false;
+    m_ans = 0;
+
+    constants["OUT"] = m_ans;
+
+    QTextCursor cursor = textCursor();
+
+    cursor.movePosition(QTextCursor::EndOfWord);
+
+    setTextCursor(cursor);
+
+    setFocus();
 }
 
 DMathConsoleTextBox::DMathConsoleTextBox(QWidget *parent) :
@@ -608,7 +611,7 @@ DMathConsoleTextBox::DMathConsoleTextBox(QWidget *parent) :
                              Qt::TextEditorInteraction
                              );
 
-    setFontWeight( QFont::StyleItalic );
+    setFontWeight(QFont::StyleItalic);
     setTextColor(Qt::blue);
 
     m_outlet_functions.clear(); // not used
@@ -762,7 +765,7 @@ void DMathConsoleTextBox::keyPressEvent(QKeyEvent *e) {
                 if (e->key() == Qt::Key_Backspace) {
                     if (textCursor().columnNumber() < 10
                             || textCursor().blockNumber() + 1 != document()->blockCount()) {
-                            /* nothing here */
+                        /* nothing here */
                     }
                     else {
                         QTextEdit::keyPressEvent(e);
@@ -790,7 +793,7 @@ void DMathConsoleTextBox::keyPressEvent(QKeyEvent *e) {
                         && e->key() != Qt::Key_Right ) {
                     if (textCursor().columnNumber() < 9
                             || textCursor().blockNumber() + 1 != document()->blockCount() ) {
-                            /* nothing here */
+                        /* nothing here */
                     }
                     else {
                         QTextEdit::keyPressEvent(e);
@@ -889,7 +892,7 @@ void DMathConsoleTextBox::insertCompletion(const QString &completion) {
     if (completion.right(1) == ")")
         cursor.setPosition(cursor.position()-1);
 
-    setTextCursor( cursor );
+    setTextCursor(cursor);
 }
 
 QString DMathConsoleTextBox::textUnderCursor() const {

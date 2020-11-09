@@ -59,7 +59,7 @@
        <property name="styleSheet">
         <string notr="true">QPushButton {
 border-style: flat;
-background-color: white; 
+background-color: rgb(200,200,200);
 color: rgb(40,40,40);
 border-radius: 10;
 }
