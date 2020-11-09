@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #ifndef PLOT2DXWIDGET_H
 #define PLOT2DXWIDGET_H
@@ -46,8 +73,7 @@
 #include "plot2DXCurve.h"
 #include "plot2DXCanvas.h"
 
-class plot2DXWidget : public QWidget
-{
+class plot2DXWidget : public QWidget {
     friend class plot2DXCurve;
     friend class plot2DXCanvas;
     friend class plot2DXAxis;
@@ -77,9 +103,6 @@ public slots:
     void setXBottomGridPen(const QPen& pen);
     void setXTopGridPen(const QPen& pen);
 
-    /**
-     * This function clears the container and cache of all curve-objects as well clears the canvas and brings the axis to the dafault state.
-     */
     void reset();
     void autoscale();
 
@@ -88,7 +111,6 @@ protected:
     virtual void paintEvent(QPaintEvent *event);
 
 private:
-    //returns the plot-canvas:
     plot2DXCanvas *canvas() const;
 
     QVector<QPoint> pixelList(plot2DXCurve* curve);
@@ -98,13 +120,11 @@ private:
     double getMaximumXValue(const QVector<QPointF>& valueList);
 
 public:
-    //returns the axis:
     plot2DXAxis *yLeft() const;
     plot2DXAxis* yRight() const;
     plot2DXAxis* xTop() const;
     plot2DXAxis* xBottom() const;
 
-    //returns the plot-curves as list:
     QVector<plot2DXCurve*> curve() const;
 
     QColor getBackgroundColor() const;

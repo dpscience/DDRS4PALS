@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "plot2DXAxis.h"
 
@@ -97,14 +124,11 @@ plot2DXAxis::plot2DXAxis(plot2DXAxis::axisDockingPosition docking,
 {
     setFont(getLabelFont());
 
-    //inititialize the axis:
     m_axisPen.setColor(m_axisColor);
     m_axisPen.setWidth(m_axisWidth);
 
-    //set the pen for the increments:
     m_incrementPen.setColor(m_incrementTextColor);
 
-    //set the pen for the labels:
     m_labelPen.setColor(m_axisLabelColor);
 
     setGeometry(calculateDockingGeometry(parent->geometry(),rect));
@@ -129,9 +153,6 @@ void plot2DXAxis::setAxisRange(double axisMin, double axisMax)
 
     updateAxis();
 
-    /**
-      * !!!note: on plot-type: 'timePlot' this SIGNAL shouldn't be emitted to prohibit calling 'updatePlotView()'
-      **/
     if ( getAxisPlotType() != timePlot )
         emit scalingPropertyChanged();
 }
@@ -150,9 +171,6 @@ void plot2DXAxis::setAxisMinValue(double axisMin)
 
     updateAxis();
 
-    /**
-      * !!!note: on plot-type: 'timePlot' this SIGNAL shouldn't be emitted to prohibit calling 'updatePlotView()'
-      **/
     if ( getAxisPlotType() != timePlot )
         emit scalingPropertyChanged();
 }
@@ -171,9 +189,6 @@ void plot2DXAxis::setAxisMaxValue(double axisMax)
 
     updateAxis();
 
-    /**
-      * !!!note: on plot-type: 'timePlot' this SIGNAL shouldn't be emitted to prohibit calling 'updatePlotView()'
-      **/
     if ( getAxisPlotType() != timePlot )
         emit scalingPropertyChanged();
 }

@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #ifndef DRS4SCOPEDLG_H
 #define DRS4SCOPEDLG_H
@@ -89,7 +116,7 @@ class DRS4ScopeDlg : public QMainWindow, public DRSCallback
     friend class DRS4StreamManager;
     friend class DRS4FalseTruePulseStreamManager;
 public:
-    explicit DRS4ScopeDlg(const ProgramStartType& startType, bool *connectionLost, QWidget *parent = 0);
+    explicit DRS4ScopeDlg(const ProgramStartType& startType, QWidget *parent = DNULLPTR);
     virtual ~DRS4ScopeDlg();
 
 public:
@@ -137,7 +164,7 @@ private:
     bool ACCESSED_BY_SCRIPT_AND_GUI savePHSAFromExtern(const QString& fileName);
     bool ACCESSED_BY_SCRIPT_AND_GUI savePHSBFromExtern(const QString& fileName);
 
-    bool ACCESSED_BY_SCRIPT_AND_GUI saveTemperatureFromExtern(const QString& fileName);
+    //bool ACCESSED_BY_SCRIPT_AND_GUI saveTemperatureFromExtern(const QString& fileName);
 
     bool ACCESSED_BY_SCRIPT_AND_GUI startStreamingFromExtern(const QString& fileName, bool checkForExtension = true);
     bool ACCESSED_BY_SCRIPT_AND_GUI stopStreamingFromExtern();
@@ -220,7 +247,6 @@ private slots:
 
     void changePulseShapeFilterRecordScheme(int index);
 
-
     /* Baseline Correction/Baseline Filter */
 
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineStartCellA(int startCell, const FunctionSource& source = FunctionSource::AccessFromGUI);
@@ -265,7 +291,7 @@ private slots:
     void saveRiseTimeDistributionB();
     void saveAreaDistributionA();
     void saveAreaDistributionB();
-    void saveTemperature();
+    //void saveTemperature();
 
     void saveSettings();
     void saveAsSettings();
@@ -317,7 +343,9 @@ private slots:
     void plotLifetimeSpectra();
     void plotPersistance();
 
-    void plotTemperature();
+    //void plotTemperature();
+    void updateTemperature();
+    void checkForConnection();
 
 public slots:
     void ACCESSED_BY_SCRIPT_AND_GUI resetAllLTSpectra(const FunctionSource& source = FunctionSource::AccessFromGUI);
@@ -517,7 +545,7 @@ public slots:
     int ACCESSED_BY_SCRIPT_AND_GUI countsOfCoincidenceSpectrum() const;
 
     /* Temperature */
-    void ACCESSED_BY_SCRIPT_AND_GUI resetTemperatureProfile(const FunctionSource& source = FunctionSource::AccessFromGUI);
+    //void ACCESSED_BY_SCRIPT_AND_GUI resetTemperatureProfile(const FunctionSource& source = FunctionSource::AccessFromGUI);
 
 private:
     Ui::DRS4ScopeDlg *ui;
@@ -574,13 +602,16 @@ private:
     /* Board - Temperature */
     QTimer *m_temperatureTimer;
     double m_lastTemperatureInDegree;
-    qint64 m_time;
+    //qint64 m_time;
 
     /* Autosave */
     QTimer *m_autoSaveTimer;
 
     /* Autosave - Spectra */
     QTimer *m_autoSaveSpectraTimer;
+
+    /* Connection Check Timer */
+    QTimer *m_connectionTimer;
 
     /* Dialogs */
     DRS4AddInfoDlg *m_addInfoDlg;
@@ -618,6 +649,8 @@ private:
 
     double m_areaFilterBSlopeLower;
     double m_areaFilterBInterceptLower;
+
+    bool m_bConnectionLost;
 };
 
 #endif // DRS4SCOPEDLG_H

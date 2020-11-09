@@ -23,37 +23,98 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "drs4scopedlg.h"
 #include "ui_drs4scopedlg.h"
 
-DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLost, QWidget *parent) :
+#include <QGraphicsEffect>
+#include <QDesktopWidget>
+#include <QSplashScreen>
+
+class DRS4ConnectionLostEffect : public QGraphicsEffect {
+public:
+    void draw( QPainter* painter ) override {
+        QPixmap pixmap;
+        QPoint offset;
+
+        if (sourceIsPixmap())
+            pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
+        else {
+            pixmap = sourcePixmap(Qt::DeviceCoordinates, &offset);
+            painter->setWorldTransform(QTransform());
+        }
+
+        painter->setBrush(QColor(0, 0, 0, 255));
+        painter->drawRect(pixmap.rect());
+        painter->setOpacity(0.5);
+        painter->drawPixmap(offset, pixmap);
+    }
+};
+
+class DRS4ConnectionLostSplashScreen : public QSplashScreen {
+protected:
+    virtual void mousePressEvent(QMouseEvent *event) override {
+        event->ignore();
+
+        QSplashScreen::mousePressEvent(event);
+    }
+};
+
+DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::DRS4ScopeDlg),
-    m_worker(nullptr),
-    m_dataExchange(nullptr),
-    m_workerThread(nullptr),
-    m_currentSettingsFileLabel(nullptr),
-    m_pulseRequestTimer(nullptr),
-    m_phsRequestTimer(nullptr),
-    m_areaRequestTimer(nullptr),
-    m_riseTimeRequestTimer(nullptr),
-    m_pulseShapeFilterTimerA(nullptr),
-    m_pulseShapeFilterTimerB(nullptr),
-    m_lifetimeRequestTimer(nullptr),
-    m_temperatureTimer(nullptr),
-    m_autoSaveTimer(nullptr),
-    m_addInfoDlg(nullptr),
-    m_boardInfoDlg(nullptr),
-    m_scriptDlg(nullptr),
-    m_pulseSaveDlg(nullptr),
-    m_pulseSaveRangeDlg(nullptr),
-    m_burstModeTimer(nullptr),
-    m_autoSaveSpectraTimer(nullptr),
-    m_bSwapDirection(true) {
+    m_worker(DNULLPTR),
+    m_dataExchange(DNULLPTR),
+    m_workerThread(DNULLPTR),
+    m_currentSettingsFileLabel(DNULLPTR),
+    m_pulseRequestTimer(DNULLPTR),
+    m_phsRequestTimer(DNULLPTR),
+    m_areaRequestTimer(DNULLPTR),
+    m_riseTimeRequestTimer(DNULLPTR),
+    m_pulseShapeFilterTimerA(DNULLPTR),
+    m_pulseShapeFilterTimerB(DNULLPTR),
+    m_lifetimeRequestTimer(DNULLPTR),
+    m_temperatureTimer(DNULLPTR),
+    m_autoSaveTimer(DNULLPTR),
+    m_addInfoDlg(DNULLPTR),
+    m_boardInfoDlg(DNULLPTR),
+    m_scriptDlg(DNULLPTR),
+    m_pulseSaveDlg(DNULLPTR),
+    m_pulseSaveRangeDlg(DNULLPTR),
+    m_burstModeTimer(DNULLPTR),
+    m_autoSaveSpectraTimer(DNULLPTR),
+    m_connectionTimer(DNULLPTR),
+    m_bSwapDirection(true),
+    m_bConnectionLost(false) {
     ui->setupUi(this);
-
 #ifdef __DISABLE_SCRIPT
     ui->menuScript->setDisabled(true);
 #endif
@@ -77,8 +138,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     arrangeIcons();
 
-    *connectionLost = false;
-
     m_lastTemperatureInDegree = 0.0f;
 
     m_lastFWHMABInPs = 0.0f;
@@ -99,8 +158,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     m_currentSettingsFileLabel = new QLabel;
     m_currentSettingsFileLabel->setFont(QFont("Arial", 10));
     ui->statusbar->addPermanentWidget(m_currentSettingsFileLabel);
-
-    m_time = 0;
 
     m_areaFilterASlopeUpper = 0;
     m_areaFilterAInterceptUpper = 250;
@@ -198,13 +255,25 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(m_burstModeTimer, SIGNAL(timeout()), this, SLOT(updateInBurstMode()), Qt::QueuedConnection);
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
+        ui->tabWidget->removeTab(6); // initially T-Plot
+
+        ui->label_temperatureState->setStyleSheet("QLabel {color: white}");
+        ui->label_temperatureState->setText("");
+
         m_temperatureTimer = new QTimer;
         m_temperatureTimer->setInterval(5000);
         m_temperatureTimer->setSingleShot(false);
     }
     else {
         ui->menuDRS4_Board_Information->menuAction()->setVisible(false);
-        ui->tabWidget->removeTab(6); //T-Plot
+        ui->tabWidget->removeTab(6); // initially T-Plot
+
+        ui->progressBar_boardTemperature->setEnabled(false);
+        ui->label_149->setEnabled(false);
+        ui->label_temperatureState->setEnabled(false);
+        ui->label_temperatureState->setVisible(false);
+        ui->label_149->setVisible(false);
+        ui->progressBar_boardTemperature->setVisible(false);
     }
 
     m_autoSaveTimer = new QTimer();
@@ -289,7 +358,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     ui->widget_CFDAlgorithm->init(m_worker);
 
-    m_boardInfoDlg = new DRS4BoardInfoDlg(nullptr, m_worker);
+    m_boardInfoDlg = new DRS4BoardInfoDlg(DNULLPTR, m_worker);
     m_boardInfoDlg->hide();
 
     ui->widget_info->init(m_worker);
@@ -302,7 +371,8 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(loadSettings()));
     connect(ui->actionLoad_Autosave, SIGNAL(triggered()), this, SLOT(loadAutoSave()));
 
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(showAddInfoBox()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(showAddInfoBox()));    
+    connect(ui->pushButton_writeAComment, SIGNAL(clicked()), this, SLOT(showAddInfoBox()));
     connect(ui->actionOPen, SIGNAL(triggered()), this, SLOT(showBoardInfoBox()));
     connect(ui->actionOpen_script, SIGNAL(triggered()), this, SLOT(showScriptBox()));
     connect(ui->actionSave_next_N_Pulses, SIGNAL(triggered()), this, SLOT(showSavePulses()));
@@ -317,9 +387,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         DRS4BoardManager::sharedInstance()->currentBoard()->SetFrequency(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz(), true);
 
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1); //before 0
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
         DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1); //before 0
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);
 
         DRS4BoardManager::sharedInstance()->currentBoard()->SetInputRange(0.0); // +/-0.5V
 
@@ -552,7 +622,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        connect(m_temperatureTimer, SIGNAL(timeout()), this, SLOT(plotTemperature()), Qt::QueuedConnection);
+        connect(m_temperatureTimer, SIGNAL(timeout()), this, SLOT(updateTemperature()), Qt::QueuedConnection);
 
     connect(ui->pushButton_scaleRange, SIGNAL(clicked()), this, SLOT(scaleRange()));
     connect(ui->pushButton_fullRange, SIGNAL(clicked()), this, SLOT(fullRange()));
@@ -568,9 +638,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     connect(ui->pushButton_BAFit, SIGNAL(clicked()), this, SLOT(fitBAData()));
     connect(ui->pushButton_clearBAFitData, SIGNAL(clicked()), this, SLOT(clearBAFitData()));
-
-    connect(ui->pushButton_resetT, SIGNAL(clicked()), this, SLOT(resetTemperatureProfile()));
-    connect(ui->pushButton_saveT, SIGNAL(clicked()), this, SLOT(saveTemperature()));
 
     connect(m_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()), Qt::QueuedConnection);
 
@@ -682,6 +749,16 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
 
     m_autoSaveTimer->start();
     m_autoSaveSpectraTimer->start();
+
+    /* Connection Check Timer */
+    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
+        m_connectionTimer = new QTimer;
+        m_connectionTimer->setInterval(1000);
+
+        connect(m_connectionTimer, SIGNAL(timeout()), this, SLOT(checkForConnection()), Qt::QueuedConnection);
+
+        m_connectionTimer->start();
+    }
 
     /* CPU usage */
     connect(DRS4CPUUsageManager::sharedInstance(), SIGNAL(cpu(int)), ui->progressBar_cpuUsage, SLOT(setValue(int)));
@@ -929,6 +1006,13 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, bool *connectionLo
     }
 
     updateCurrentFileLabel();
+
+    ui->tabWidget->tabBar()->setTabTextColor(0, Qt::blue); // signal scope
+    ui->tabWidget->tabBar()->setTabTextColor(1, Qt::red); // phs
+    ui->tabWidget->tabBar()->setTabTextColor(2, Qt::darkGreen); // spec A-B
+    ui->tabWidget->tabBar()->setTabTextColor(3, Qt::darkGreen); // spec B-A
+    ui->tabWidget->tabBar()->setTabTextColor(4, Qt::darkGreen); // spec prompt
+    ui->tabWidget->tabBar()->setTabTextColor(5, Qt::darkGreen); // spec merged
 }
 
 DRS4ScopeDlg::~DRS4ScopeDlg()
@@ -982,6 +1066,7 @@ DRS4ScopeDlg::~DRS4ScopeDlg()
     DDELETE_SAFETY(m_riseTimeRequestTimer);
     DDELETE_SAFETY(m_persistanceRequestTimer);
     DDELETE_SAFETY(m_burstModeTimer);
+    DDELETE_SAFETY(m_connectionTimer);
     DDELETE_SAFETY(m_autoSaveSpectraTimer);
     DDELETE_SAFETY(m_pulseShapeFilterTimerA);
     DDELETE_SAFETY(m_pulseShapeFilterTimerB);
@@ -1570,6 +1655,26 @@ void DRS4ScopeDlg::initPulseAreaFilterA()
     ui->widget_plotAreaFilterA->curve().at(2)->setCurveWidth(4);
     ui->widget_plotAreaFilterA->curve().at(2)->setCurveColor(Qt::green);
 
+    //phs lower limit min:
+    ui->widget_plotAreaFilterA->curve().at(3)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterA->curve().at(3)->setCurveWidth(2);
+    ui->widget_plotAreaFilterA->curve().at(3)->setCurveColor(Qt::red);
+
+    //phs lower limit max:
+    ui->widget_plotAreaFilterA->curve().at(4)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterA->curve().at(4)->setCurveWidth(2);
+    ui->widget_plotAreaFilterA->curve().at(4)->setCurveColor(Qt::red);
+
+    //phs upper limit min:
+    ui->widget_plotAreaFilterA->curve().at(5)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterA->curve().at(5)->setCurveWidth(2);
+    ui->widget_plotAreaFilterA->curve().at(5)->setCurveColor(Qt::blue);
+
+    //phs upper limit max:
+    ui->widget_plotAreaFilterA->curve().at(6)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterA->curve().at(6)->setCurveWidth(2);
+    ui->widget_plotAreaFilterA->curve().at(6)->setCurveColor(Qt::blue);
+
     ui->widget_plotAreaFilterA->xBottom()->setAxisLabelText("Pulse-Height - Channel A [0.488mV]");
     ui->widget_plotAreaFilterA->yLeft()->setAxisLabelText("Norm. A");
 
@@ -1617,6 +1722,26 @@ void DRS4ScopeDlg::initPulseAreaFilterB()
     ui->widget_plotAreaFilterB_2->curve().at(2)->setCurveStyle(plot2DXCurve::line);
     ui->widget_plotAreaFilterB_2->curve().at(2)->setCurveWidth(4);
     ui->widget_plotAreaFilterB_2->curve().at(2)->setCurveColor(Qt::green);
+
+    //phs lower limit min:
+    ui->widget_plotAreaFilterB_2->curve().at(3)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterB_2->curve().at(3)->setCurveWidth(2);
+    ui->widget_plotAreaFilterB_2->curve().at(3)->setCurveColor(Qt::red);
+
+    //phs lower limit max:
+    ui->widget_plotAreaFilterB_2->curve().at(4)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterB_2->curve().at(4)->setCurveWidth(2);
+    ui->widget_plotAreaFilterB_2->curve().at(4)->setCurveColor(Qt::red);
+
+    //phs upper limit min:
+    ui->widget_plotAreaFilterB_2->curve().at(5)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterB_2->curve().at(5)->setCurveWidth(2);
+    ui->widget_plotAreaFilterB_2->curve().at(5)->setCurveColor(Qt::blue);
+
+    //phs upper limit max:
+    ui->widget_plotAreaFilterB_2->curve().at(6)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterB_2->curve().at(6)->setCurveWidth(2);
+    ui->widget_plotAreaFilterB_2->curve().at(6)->setCurveColor(Qt::blue);
 
     ui->widget_plotAreaFilterB_2->xBottom()->setAxisLabelText("Pulse-Height - Channel B [0.488mV]");
     ui->widget_plotAreaFilterB_2->yLeft()->setAxisLabelText("Norm. A");
@@ -1720,6 +1845,8 @@ void DRS4ScopeDlg::initPulseRiseTimeFilterB()
 
 bool DRS4ScopeDlg::loadSimulationToolSettingsFromExtern(const QString &path, bool checkForExtension)
 {
+    DUNUSED_PARAM(checkForExtension);
+
     QMutexLocker locker(&m_mutex);
 
     if ( DRS4StreamDataLoader::sharedInstance()->isArmed() )
@@ -1727,48 +1854,17 @@ bool DRS4ScopeDlg::loadSimulationToolSettingsFromExtern(const QString &path, boo
 
     QString filePath = path;
 
-    if ( checkForExtension )
-    {
-        if ( filePath.split(".").last() != EXT_SIMULATION_INPUT_FILE.remove(QChar('.')) )
-            filePath = filePath + EXT_SIMULATION_INPUT_FILE;
-    }
-
-    bool ok = false;
+     if ( filePath.split(".").last() != EXT_SIMULATION_INPUT_FILE.remove(QChar('.')) )
+        filePath = filePath + EXT_SIMULATION_INPUT_FILE;
 
     m_worker->setBusy(true);
 
     while(!m_worker->isBlocking()) {}
 
-    if ( !DRS4SimulationSettingsManager::sharedInstance()->load(filePath) )
-    {
-        if ( checkForExtension )
-        {
-            QString filePathDeprecated = path;
-
-            if ( filePathDeprecated.split(".").last() != EXT_SIMULATION_INPUT_FILE_DEPRECATED.remove(QChar('.')) )
-                filePathDeprecated = filePathDeprecated + EXT_SIMULATION_INPUT_FILE_DEPRECATED;
-
-            if ( !DRS4SimulationSettingsManager::sharedInstance()->load(filePathDeprecated) ) {
-                m_worker->setBusy(false);
-
-                return false;
-            }
-            else
-                ok = true;
-        }
-        else {
+    if ( !DRS4SimulationSettingsManager::sharedInstance()->load(filePath) ) {
             m_worker->setBusy(false);
 
             return false;
-        }
-    }
-    else
-        ok = true;
-
-    if ( !ok ) {
-        m_worker->setBusy(false);
-
-        return false;
     }
 
     if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
@@ -2220,57 +2316,6 @@ bool DRS4ScopeDlg::savePHSBFromExtern(const QString &fileName)
 
         file.close();
 
-        m_worker->setBusy(false);
-
-        return true;
-    }
-    else
-    {
-        m_worker->setBusy(false);
-
-        return false;
-    }
-
-    Q_UNREACHABLE();
-}
-
-bool DRS4ScopeDlg::saveTemperatureFromExtern(const QString &fileName)
-{
-    QMutexLocker locker(&m_mutex);
-
-    m_worker->setBusy(true);
-
-    while(!m_worker->isBlocking()) {}
-
-    if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-    {
-        m_worker->setBusy(false);
-        return false;
-    }
-
-    if ( fileName.isEmpty() )
-    {
-        m_worker->setBusy(false);
-        return false;
-    }
-
-    const QVector<QPointF> list = ui->widget_boardT->curve().at(0)->getData();
-
-    QFile file(fileName);
-    QTextStream stream(&file);
-
-    if ( file.open(QIODevice::WriteOnly) )
-    {
-        stream << "#" << "DRS4-Board Temperature-Profile\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
-        stream << "time-stamp [ms]\tT [°C]\n";
-
-        for ( int i = 0 ; i < list.size() ; ++ i )
-        {
-            stream << QVariant(list.at(i).x()).toString() << "\t" <<  QVariant(list.at(i).y()).toString() << "\n";
-        }
-
-        file.close();
         m_worker->setBusy(false);
 
         return true;
@@ -4475,7 +4520,7 @@ void DRS4ScopeDlg::resetPHSB(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetAllLTSpectraByPushButton(const FunctionSource &source)
 {
-    const QString text = "This action will reset the following spectra. Are you sure ?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Spec(Prompt/IRF)</li><li>Persistence</li><li>Filters</li></lu></b>";
+    const QString text = "This action will reset the following spectra. Are you sure ?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Spec(Prompt/IRF)</li><li>Persistence</li><li>All Filters</li></lu></b><br>The following spectra will not be resetted:<br><b><lu><li>PHS</li></lu></b>";
 
     const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset all Spectra?", text, QMessageBox::Yes|QMessageBox::No);
 
@@ -4741,19 +4786,6 @@ void DRS4ScopeDlg::resetLTSpectrumMerged(const FunctionSource &source)
     clearMergedFitData();
 
     m_worker->setBusy(false);
-}
-
-void DRS4ScopeDlg::resetTemperatureProfile(const FunctionSource &source)
-{
-    QMutexLocker locker(&m_mutex);
-
-    DUNUSED_PARAM(source);
-
-    ui->widget_boardT->curve().at(0)->clearCurveContent();
-    ui->widget_boardT->curve().at(0)->clearCurveCache();
-
-    m_time = 0;
-    initBoardTPlot();
 }
 
 void DRS4ScopeDlg::resetAreaPlotA(const FunctionSource &source)
@@ -5622,11 +5654,39 @@ void DRS4ScopeDlg::updatePulseAreaFilterALimits()
     limitsLower.append(QPointF(x1_lower, y1_lower));
     limitsLower.append(QPointF(x2_lower, y2_lower));
 
+    QVector<QPointF> phsStartMin;
+    phsStartMin.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneAMin(), 0));
+    phsStartMin.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneAMin(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA()));
+
+    QVector<QPointF> phsStartMax;
+    phsStartMax.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneAMax(), 0));
+    phsStartMax.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneAMax(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA()));
+
+    QVector<QPointF> phsStopMin;
+    phsStopMin.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneAMin(), 0));
+    phsStopMin.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneAMin(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA()));
+
+    QVector<QPointF> phsStopMax;
+    phsStopMax.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneAMax(), 0));
+    phsStopMax.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneAMax(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningA()));
+
     ui->widget_plotAreaFilterA->curve().at(1)->clearCurveContent();
     ui->widget_plotAreaFilterA->curve().at(1)->addData(limitsUpper);
 
     ui->widget_plotAreaFilterA->curve().at(2)->clearCurveContent();
     ui->widget_plotAreaFilterA->curve().at(2)->addData(limitsLower);
+
+    ui->widget_plotAreaFilterA->curve().at(3)->clearCurveContent();
+    ui->widget_plotAreaFilterA->curve().at(3)->addData(phsStartMin);
+
+    ui->widget_plotAreaFilterA->curve().at(4)->clearCurveContent();
+    ui->widget_plotAreaFilterA->curve().at(4)->addData(phsStartMax);
+
+    ui->widget_plotAreaFilterA->curve().at(5)->clearCurveContent();
+    ui->widget_plotAreaFilterA->curve().at(5)->addData(phsStopMin);
+
+    ui->widget_plotAreaFilterA->curve().at(6)->clearCurveContent();
+    ui->widget_plotAreaFilterA->curve().at(6)->addData(phsStopMax);
 
     ui->widget_plotAreaFilterA->replot();
 
@@ -5719,6 +5779,34 @@ void DRS4ScopeDlg::updatePulseAreaFilterBLimits()
 
     ui->widget_plotAreaFilterB_2->curve().at(2)->clearCurveContent();
     ui->widget_plotAreaFilterB_2->curve().at(2)->addData(limitsLower);
+
+    QVector<QPointF> phsStartMin;
+    phsStartMin.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneBMin(), 0));
+    phsStartMin.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneBMin(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB()));
+
+    QVector<QPointF> phsStartMax;
+    phsStartMax.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneBMax(), 0));
+    phsStartMax.append(QPointF(DRS4SettingsManager::sharedInstance()->startChanneBMax(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB()));
+
+    QVector<QPointF> phsStopMin;
+    phsStopMin.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneBMin(), 0));
+    phsStopMin.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneBMin(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB()));
+
+    QVector<QPointF> phsStopMax;
+    phsStopMax.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneBMax(), 0));
+    phsStopMax.append(QPointF(DRS4SettingsManager::sharedInstance()->stopChanneBMax(), DRS4SettingsManager::sharedInstance()->pulseAreaFilterBinningB()));
+
+    ui->widget_plotAreaFilterB_2->curve().at(3)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(3)->addData(phsStartMin);
+
+    ui->widget_plotAreaFilterB_2->curve().at(4)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(4)->addData(phsStartMax);
+
+    ui->widget_plotAreaFilterB_2->curve().at(5)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(5)->addData(phsStopMin);
+
+    ui->widget_plotAreaFilterB_2->curve().at(6)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(6)->addData(phsStopMax);
 
     ui->widget_plotAreaFilterB_2->replot();
 
@@ -6840,51 +6928,6 @@ void DRS4ScopeDlg::saveAreaDistributionB()
     }
 }
 
-void DRS4ScopeDlg::saveTemperature()
-{
-    m_worker->setBusy(true);
-
-    while(!m_worker->isBlocking()) {}
-
-    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-                               DRS4ProgramSettingsManager::sharedInstance()->saveTProfileFilePath(),
-                               tr("Data (*.dat *.txt *.log)"));
-
-    if ( fileName.isEmpty() )
-    {
-        m_worker->setBusy(false);
-        return;
-    }
-
-    DRS4ProgramSettingsManager::sharedInstance()->setSaveTProfilePath(fileName);
-
-    const QVector<QPointF> list = ui->widget_boardT->curve().at(0)->getData();
-
-    QFile file(fileName);
-    QTextStream stream(&file);
-
-    if ( file.open(QIODevice::WriteOnly) )
-    {
-        stream << "#" << "DRS4-Board Temperature-Profile\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
-        stream << "time-stamp [ms]\tT [°C]\n";
-
-        for ( int i = 0 ; i < list.size() ; ++ i )
-        {
-            stream << QVariant(list.at(i).x()).toString() << "\t" <<  QVariant(list.at(i).y()).toString() << "\n";
-        }
-
-        file.close();
-        MSGBOX("File written successfully!");
-        m_worker->setBusy(false);
-    }
-    else
-    {
-        MSGBOX("Error while writing file!");
-        m_worker->setBusy(false);
-    }
-}
-
 void DRS4ScopeDlg::changeNegativeLTAvailable(bool on)
 {
     m_worker->setBusy(true);
@@ -7017,6 +7060,10 @@ void DRS4ScopeDlg::changeBurstModeEnabled(bool on, const FunctionSource &source)
             DDELETE_SAFETY(m_pulseSaveRangeDlg);
             m_pulseSaveRangeDlg = new DRS4PulseSaveRangeDlg(m_worker);
         }
+
+        if (m_addInfoDlg->isVisible()) {
+            m_addInfoDlg->close();
+        }
     }
 
     m_worker->setBusy(true);
@@ -7082,6 +7129,7 @@ void DRS4ScopeDlg::changeBurstModeEnabled(bool on, const FunctionSource &source)
     ui->label_validCoincidencePerSec->setEnabled(!on);
 
     ui->pushButton_resetAll->setEnabled(!on);
+    ui->pushButton_writeAComment->setEnabled(!on);
 
     if ( on ) {
         m_pulseRequestTimer->stop();
@@ -7223,40 +7271,99 @@ bool DRS4ScopeDlg::isPositiveSignal() const
     return ui->checkBox_positivSignal->isChecked();
 }
 
-void DRS4ScopeDlg::plotTemperature()
-{
+void DRS4ScopeDlg::updateTemperature() {
     if (!m_worker)
         return;
-
-    m_temperatureTimer->stop();
 
     m_worker->setBusy(true);
 
     while(!m_worker->isBlocking()) {}
 
-    double  T = -100;
-
     try {
-        T = DRS4BoardManager::sharedInstance()->currentBoard()->GetTemperature();
+        m_lastTemperatureInDegree = DRS4BoardManager::sharedInstance()->currentBoard()->GetTemperature();
     } catch ( ... ) {
-        // DRS4BoardManager::sharedInstance()->log(QString(QDateTime::currentDateTime().toString() + "\ttTemp. try-catch"));
+        /* nothing here */
     }
-
-    m_time += m_temperatureTimer->interval();
-    const QPointF p((double)m_time, T);
-
-    m_lastTemperatureInDegree = p.y();
-
-    ui->tabWidget->setTabText(6, "DRS4 Board Temperature (" + QString::number(p.y(), 'f', 1) + " °C)");
 
     m_worker->setBusy(false);
 
-    if (ui->tab_6->isVisible()) {
-        ui->widget_boardT->curve().at(0)->addData(p.x(), p.y());
-        ui->widget_boardT->replot();
-    }
+    ui->progressBar_boardTemperature->setValue(m_lastTemperatureInDegree);
 
-    m_temperatureTimer->start();
+    if (m_lastTemperatureInDegree >= 46.) {
+        ui->label_temperatureState->setStyleSheet("QLabel {color: green}");
+        ui->label_temperatureState->setText("operation temperature reached");
+    }
+    else if (m_lastTemperatureInDegree < 46.) {
+        ui->label_temperatureState->setStyleSheet("QLabel {color: red}");
+        ui->label_temperatureState->setText("warming up to operation temperature (~47 °C) ...");
+    }
+}
+
+void DRS4ScopeDlg::checkForConnection() {
+    if (!m_worker)
+        return;
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    const int T = DRS4BoardManager::sharedInstance()->currentBoard()->GetTemperature();
+
+    m_worker->setBusy(false);
+
+    if (!T) {
+        m_bConnectionLost = true;
+
+        stopThread();
+
+        if (m_addInfoDlg)
+            m_addInfoDlg->close();
+
+        if (m_scriptDlg)
+            m_scriptDlg->close();
+
+        if (m_pulseSaveDlg)
+            m_pulseSaveDlg->close();
+
+        if (m_pulseSaveRangeDlg)
+            m_pulseSaveRangeDlg->close();
+
+        if (m_calculatorDlg)
+            m_calculatorDlg->close();
+
+        if (m_boardInfoDlg)
+            m_boardInfoDlg->close();
+
+        if ( DRS4StreamManager::sharedInstance()->isArmed() )
+            DRS4StreamManager::sharedInstance()->stopAndSave();
+
+        if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed() )
+            DRS4FalseTruePulseStreamManager::sharedInstance()->stopAndSave();
+
+        if ( DRS4StreamDataLoader::sharedInstance()->isArmed() )
+            DRS4StreamDataLoader::sharedInstance()->stop();
+
+        if ( DRS4TextFileStreamManager::sharedInstance()->isArmed() )
+            DRS4TextFileStreamManager::sharedInstance()->abort();
+
+        if ( DRS4TextFileStreamRangeManager::sharedInstance()->isArmed() )
+            DRS4TextFileStreamRangeManager::sharedInstance()->abort();
+
+        setEnabled(false);
+        ui->menubar->setEnabled(false);
+
+        /* gray out screen */
+        setGraphicsEffect(new DRS4ConnectionLostEffect);
+
+        /* place splashscreen at the center of the screen */
+        DRS4ConnectionLostSplashScreen splash;
+        splash.setPixmap(QPixmap::fromImage(QImage(":/images/connection_lost").scaledToWidth(QApplication::desktop()->availableGeometry().width()*0.4, Qt::SmoothTransformation)));
+        splash.show();
+
+        /* show this forever */
+        forever
+            QCoreApplication::processEvents();
+    }
 }
 
 void DRS4ScopeDlg::scaleRange()
@@ -7932,7 +8039,7 @@ void DRS4ScopeDlg::loadSimulationToolSettings()
 {
     const QString fileName = QFileDialog::getOpenFileName(this, tr("Load Simulation Input-File..."),
                                DRS4ProgramSettingsManager::sharedInstance()->simulationInputFilePath(),
-                               QString("Simulation Input-File (*" + EXT_SIMULATION_INPUT_FILE + " *" + EXT_SIMULATION_INPUT_FILE_DEPRECATED + ")"));
+                               QString("Simulation Input-File (*" + EXT_SIMULATION_INPUT_FILE + ")"));
 
     if ( fileName.isEmpty() )
         return;
@@ -9206,7 +9313,7 @@ void DRS4ScopeDlg::showEvent(QShowEvent *event)
     event->accept();
     QMainWindow::showEvent(event);
 
-    if (!DRS4BoardManager::sharedInstance()->isDemoModeEnabled()) {
+    /*if (!DRS4BoardManager::sharedInstance()->isDemoModeEnabled()) {
         const bool validVoltCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsVoltageCalibrationValid();
         const bool validTimingCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsTimingCalibrationValid();
 
@@ -9219,11 +9326,16 @@ void DRS4ScopeDlg::showEvent(QShowEvent *event)
 
             QMessageBox::information(this, "Calibration needed!", text);
         }
-    }
+    }*/
 }
 
 void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
 {
+    if (m_bConnectionLost) {
+        event->ignore();
+        return;
+    }
+
     const QMessageBox::StandardButton reply = QMessageBox::question(this, "Quit Program?", "Exit Program?", QMessageBox::Yes|QMessageBox::No);
 
     if (reply != QMessageBox::Yes) {
@@ -9237,12 +9349,23 @@ void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
         return;
     }
 
-    m_addInfoDlg->close();
-    m_addInfoDlg->close();
-    m_scriptDlg->close();
-    m_pulseSaveDlg->close();
-    m_pulseSaveRangeDlg->close();
-    m_calculatorDlg->close();
+    if (m_addInfoDlg)
+        m_addInfoDlg->close();
+
+    if (m_scriptDlg)
+        m_scriptDlg->close();
+
+    if (m_pulseSaveDlg)
+        m_pulseSaveDlg->close();
+
+    if (m_pulseSaveRangeDlg)
+        m_pulseSaveRangeDlg->close();
+
+    if (m_calculatorDlg)
+        m_calculatorDlg->close();
+
+    if (m_boardInfoDlg)
+        m_boardInfoDlg->close();
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         DRS4BoardManager::sharedInstance()->currentBoard()->SetCooldown(10000);

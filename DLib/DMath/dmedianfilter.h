@@ -148,8 +148,7 @@ private:
     }
 };
 
-class DMedianFilter
-{
+class DMedianFilter {
     DMedianFilter();
     virtual ~DMedianFilter();
 

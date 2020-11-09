@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include <DRS/musbstd.h>
+#include "musbstd.h"
 
 #ifdef _MSC_VER                 // Windows includes
 
@@ -63,7 +63,7 @@ DEFINE_GUID(GUID_CLASS_MSCB_BULK, 0xcbeb3fb1, 0xae9f, 0x471c, 0x90, 0x16, 0x9b, 
 
 #ifdef HAVE_LIBUSB10
 #include <errno.h>
-#include <include/libusb-1.0/libusb.h>
+#include "include/libusb-1.0/libusb.h"
 #endif
 
 #if !defined(HAVE_LIBUSB) && !defined(HAVE_LIBUSB10)

@@ -85,7 +85,7 @@
         <number>1</number>
        </property>
        <property name="maximum">
-        <number>10000</number>
+        <number>1000000</number>
        </property>
       </widget>
      </item>
@@ -98,7 +98,7 @@
         </font>
        </property>
        <property name="text">
-        <string>(Limited to 10000 Pulses)</string>
+        <string>(Limited to 1.000.000 Pulses)</string>
        </property>
       </widget>
      </item>

@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #ifndef DEFINES_H
 #define DEFINES_H
@@ -93,7 +120,6 @@
 #define DMSGBOX(__text__)            { QMessageBox msgBox; msgBox.setText(QVariant(__text__).toString()); msgBox.exec(); }
 #define DMSGBOX2(__text__, __title__)            { QMessageBox msgBox; msgBox.setWindowTitle(__title__); msgBox.setText(QVariant(__text__).toString()); msgBox.exec(); }
 
-// Necessary Macros //
 #define DLOG(format, ...)            d_log(format, ##__VA_ARGS__);
 #define DERRORLOG(format, ...)       d_errorLog(__FILE__, __LINE__, format, ##__VA_ARGS__);
 
@@ -121,7 +147,6 @@
 
 #define DMAX_LOG_LENGTH               16384
 
-// Scope Functions //
 void d_log(const char* format, ...);
 void d_errorLog(const char* file, int line, const char* format, ...);
 

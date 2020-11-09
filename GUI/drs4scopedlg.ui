@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1513</width>
+    <width>1806</width>
     <height>1105</height>
    </rect>
   </property>
@@ -98,7 +98,7 @@
        <widget class="QPushButton" name="pushButton_resetAll">
         <property name="minimumSize">
          <size>
-          <width>160</width>
+          <width>120</width>
           <height>30</height>
          </size>
         </property>
@@ -144,13 +144,142 @@ border-color: black;
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButton_writeAComment">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+border-style: flat;
+background-color: white; 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(216,216,216);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+        </property>
+        <property name="text">
+         <string>write a comment</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_149">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>DRS4 Board Temperature:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="progressBar_boardTemperature">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QProgressBar
+{
+    background: rgb(108, 180, 235);
+    color: black;
+    border-style: flat;
+    border-radius: 3px;
+    text-align: right;
+	/*text-margin-right: 5px;*/
+}
+QProgressBar::chunk
+{
+	border-radius: 3px;
+    background-color: rgba(199, 70, 195, 0.9);
+}</string>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="textDirection">
+         <enum>QProgressBar::BottomToTop</enum>
+        </property>
+        <property name="format">
+         <string>%p °C  </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_temperatureState">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>warming up ...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_42">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
+          <width>20</width>
           <height>20</height>
          </size>
         </property>
@@ -191,22 +320,6 @@ border-color: black;
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_43">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>10</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QCheckBox" name="checkBox_hyperthreading">
         <property name="font">
          <font>
@@ -240,7 +353,7 @@ border-color: black;
          <string notr="true">color: dark-blue</string>
         </property>
         <property name="text">
-         <string>[Number of CPU Cores: </string>
+         <string>[# CPU Cores: </string>
         </property>
        </widget>
       </item>
@@ -278,22 +391,6 @@ border-color: black;
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_44">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>10</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QLabel" name="label_88">
         <property name="font">
          <font>
@@ -303,7 +400,7 @@ border-color: black;
          </font>
         </property>
         <property name="text">
-         <string>Pulse-Pair Chunk Size:</string>
+         <string>Pulse Chunk Size:</string>
         </property>
        </widget>
       </item>
@@ -332,22 +429,6 @@ border-color: black;
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_45">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>10</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QLabel" name="label_141">
         <property name="font">
          <font>
@@ -365,13 +446,13 @@ border-color: black;
        <widget class="QProgressBar" name="progressBar_cpuUsage">
         <property name="minimumSize">
          <size>
-          <width>160</width>
+          <width>100</width>
           <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>160</width>
+          <width>100</width>
           <height>22</height>
          </size>
         </property>
@@ -399,6 +480,9 @@ QProgressBar::chunk
     background-color: rgba(71, 80, 99, 0.9);
 }
                           </string>
+        </property>
+        <property name="maximum">
+         <number>100</number>
         </property>
         <property name="value">
          <number>20</number>
@@ -1339,7 +1423,7 @@ border-color: black;
 </string>
                    </property>
                    <property name="text">
-                    <string>Rising Edge (or External Trigger) ? </string>
+                    <string>Rising Edge ? </string>
                    </property>
                    <property name="checked">
                     <bool>false</bool>
@@ -9135,7 +9219,7 @@ border-color: black;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1513</width>
+     <width>1806</width>
      <height>20</height>
     </rect>
    </property>

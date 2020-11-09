@@ -25,7 +25,8 @@ typedef struct {
 
 #elif defined(HAVE_LIBUSB10)
 
-#include <include/libusb-1.0/libusb.h>
+#include "include/libusb-1.0/libusb.h"
+
 typedef struct {
    libusb_device_handle *dev;
    int usb_configuration;

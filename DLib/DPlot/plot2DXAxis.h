@@ -23,7 +23,34 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #ifndef PLOT2DXAXIS_H
 #define PLOT2DXAXIS_H
@@ -42,91 +69,57 @@
 
 #include "plot2DXCanvas.h"
 
-class plot2DXAxis : public QWidget
-{
+class plot2DXAxis : public QWidget {
     friend class plot2DXWidget;
 
     Q_OBJECT
 public:
-    /**
-      * Axis-widget docking position according to its parent 'plot2DXWidget.h'.
-      */
-    typedef enum{
+    typedef enum {
         yLeft = 0,
         yRight = 1,
         xTop = 2,
         xBottom = 3
-    }axisDockingPosition;
+    } axisDockingPosition;
 
-    /**
-      * 'valuePlot': value-plot-type is suggested to use it for 'non-live data-acquisition'.
-      *
-      *              !note: Switch to that mode for zoom- or history operations.
-      *
-      * 'timePlot':  time-value-plot type  is suggested to use it for 'live data acquisition'.
-      *              The canvas 'plot2DXCanvas.h' will scroll the pixmap automatically and will append only the new data after calling replot() for
-      *              a better performance. Also the axis-increments and -labels will slide with the appended data-set.
-      *
-      *              !note: For plotting in live-mode, the xTop- and the xBottom-axis must have the SAME plot-type and the same axis-span!
-      **/
-    typedef enum{
+    typedef enum {
         timePlot = 0,
         valuePlot = 1
-    }axisPlotType;
+    } axisPlotType;
 
-    /**
-      * axis-scaling:
-      *
-      * !note: in 'axisPlotType::timePlot' the x-axis switch automatically to 'linear'-scaling. Only the y-axis can switch to logarithmic-scaling in that mode.
-      **/
-    typedef enum{
+    typedef enum {
         linear = 0,
         logarithmic = 1,
         errorfunction = 2
-    }axisScaling;
+    } axisScaling;
 
-    /**
-      * value number format:
-      *
-      * 'floating':     40.001
-      * 'exponential':  40001.0e-3
-      * 'automatic':    The class <QString> will choose the best number-format for displaying the value as string. In that case: "40.001".
-      */
-    typedef enum{
+    typedef enum {
         floating = 0,
         exponential = 1,
         automatic = 2
-    }numberFormat;
+    } numberFormat;
 
-    /**
-      * Position where the axis-label should be shown:
-      *
-      * 'valueStart': the label is found near the least-value of axis-scaling.
-      * 'valueEnd'  : the label is found near the largest-value of axis-scaling.
-      * 'middle'    : the label is found in the middle of the axis length.
-      */
-    typedef enum{
+    typedef enum {
         valueStart = 0,
         valueEnd = 1,
         middle = 2
-    }axisLabelPosition;
+    } axisLabelPosition;
 
     /**
       * value-display type:
       *
       * numbers:  60000.0  (display-mode depends on 'numberFormat')
-      * hh_mm_ss: 00:01,00 (display-mode is independing on 'numberFormat')
-      * hh_mm:    00:01    (display-mode is independing on 'numberFormat')
-      * mm_ss:    01:00    (display-mode is independing on 'numberFormat')
+      * hh_mm_ss: 00:01,00 (display-mode is indepent on 'numberFormat')
+      * hh_mm:    00:01    (display-mode is indepent on 'numberFormat')
+      * mm_ss:    01:00    (display-mode is indepent on 'numberFormat')
       * ss:       60,00    (display-mode depends on 'numberFormat')
       **/
-    typedef enum{
+    typedef enum {
         numbers = 0,
         hh_mm_ss = 1,
         hh_mm = 2,
         mm_ss = 3,
         ss = 4
-    }axisValueDisplay;
+    } axisValueDisplay;
 
     plot2DXAxis(axisDockingPosition docking = yLeft,
                      axisPlotType plotType       = timePlot,
@@ -159,20 +152,7 @@ public slots:
     void showHelpIncrements(bool show);
     void setValueDisplay(axisValueDisplay display);
 
-    /**
-     * At the moment this function isn't in use!
-     *
-     * It might be possible there should be an axis-adaption if only a few axis should be shown.
-       In that case the setVisible() function of QWidget must be overwritten.
-     */
     virtual void setVisible(bool visible);
-
-    /**
-     * This slot adapts the axis-widget according to its parent ('plot2DXWidget')
-     * and the canvas-Pixmap ('plot2DXCanvas').
-     *
-     * f.e. this function is called on using setGeometry(...) or resizeEvent(...) in the parent-class.
-     */
     void adaptGeometry(const QRect& parentGeometry, const QRect& canvasGeometry);
 
 public:
@@ -200,37 +180,18 @@ public:
     bool isHelpIncrementShown() const;
     axisValueDisplay getValueDisplay() const;
 
-    /**
-     * converts a real value (f.e. 2.45 as y-axis-value) to the pixel-value for drawing it on the canvas-pixmap.
-     */
     int ConvertToPixel(double point, axisScaling scaling);
-
-    /**
-     * vice versa to the above description!!!
-     */
     double ConvertFromPixel(int point, axisScaling scaling);
 
 signals:
-    /**
-     * This SIGNAL is emitted on every axis-property is made.
-     *
-     * f.e. the axis-range changed or the the help-increments shouldn't be shown furthermore.
-     */
     void scalingPropertyChanged();
     void visibleStateChanged(bool);
 
 protected:
-    /**
-     * update axis redraws the axis with all it's properties are set.
-     * It do nothing more than calling 'update()' to enter the paintEvent(...) - method.
-     */
     virtual void updateAxis();
     virtual void paintEvent(QPaintEvent *event);
 
 private slots:
-    /**
-     * Calls the three functions below in a row.
-     */
     void renew();
 
     void drawAxis();

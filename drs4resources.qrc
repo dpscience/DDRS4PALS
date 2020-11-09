@@ -28,5 +28,6 @@
         <file>images/log.png</file>
         <file>images/001-heart-rate-monitor.png</file>
         <file>iconDesign/iconDDRS4.ico</file>
+        <file alias="connection_lost">images/ConnectionLostOverlayer.png</file>
     </qresource>
 </RCC>

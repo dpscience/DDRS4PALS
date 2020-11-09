@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-**  DDRS4PALS, a for the acquisition of lifetime spectra based on the DRS4 evaluation board
-**  DRS4 Evaluation Board of PSI: https://www.psi.ch/drs/evaluation-board
+**  DDRS4PALS, a software for the acquisition of lifetime spectra using the
+**  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
 **  Copyright (C) 2016-2020 Danny Petschke
 **
@@ -23,18 +23,45 @@
 **  @author: Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
-*****************************************************************************/
+*****************************************************************************
+**
+** related publications:
+**
+** when using DDRS4PALS for your research purposes please cite:
+**
+** DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board:
+** https://www.sciencedirect.com/science/article/pii/S2352711019300676
+**
+** and
+**
+** Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS
+** https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub
+**
+** when using the integrated simulation tool /DLTPulseGenerator/ of DDRS4PALS for your research purposes please cite:
+**
+** DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300530
+**
+** Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018300694
+**
+** Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S2352711018301092
+**
+** Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses
+** https://www.sciencedirect.com/science/article/pii/S235271101930038X
+**/
 
 #include "drs4streammanager.h"
 
 #include "GUI/drs4scopedlg.h"
 
-DRS4StreamManager *__sharedInstanceStreamManager = nullptr;
+DRS4StreamManager *__sharedInstanceStreamManager = DNULLPTR;
 
 DRS4StreamManager::DRS4StreamManager()
 {
-    m_file = nullptr;
-    m_guiAccess = nullptr;
+    m_file = DNULLPTR;
+    m_guiAccess = DNULLPTR;
     m_isArmed = false;
     m_contentInByte = 0;
 }
@@ -153,13 +180,13 @@ qint64 DRS4StreamManager::streamedContentInBytes() const
 }
 
 
-DRS4FalseTruePulseStreamManager *__sharedInstanceDRS4FalseTruePulseStreamManager = nullptr;
+DRS4FalseTruePulseStreamManager *__sharedInstanceDRS4FalseTruePulseStreamManager = DNULLPTR;
 
 DRS4FalseTruePulseStreamManager::DRS4FalseTruePulseStreamManager()
 {
-    m_fileTrue = nullptr;
-    m_fileFalse = nullptr;
-    m_guiAccess = nullptr;
+    m_fileTrue = DNULLPTR;
+    m_fileFalse = DNULLPTR;
+    m_guiAccess = DNULLPTR;
     m_isArmed = false;
     m_contentInByte = 0;
     m_nameLiteral = "";
@@ -313,13 +340,13 @@ qint64 DRS4FalseTruePulseStreamManager::streamedContentInBytes() const
 }
 
 
-DRS4TextFileStreamManager *__sharedInstanceTextFileStreamManager = nullptr;
+DRS4TextFileStreamManager *__sharedInstanceTextFileStreamManager = DNULLPTR;
 
 DRS4TextFileStreamManager::DRS4TextFileStreamManager()
 {
     m_counts = 0;
     m_fileTag = "";
-    m_file = nullptr;
+    m_file = DNULLPTR;
     m_isArmed = false;
     m_counter = 0;
 
@@ -608,13 +635,13 @@ bool DRS4TextFileStreamManager::isArmed() const
 }
 
 
-DRS4TextFileStreamRangeManager *__sharedInstanceTextFileStreamRangeManager = nullptr;
+DRS4TextFileStreamRangeManager *__sharedInstanceTextFileStreamRangeManager = DNULLPTR;
 
 DRS4TextFileStreamRangeManager::DRS4TextFileStreamRangeManager()
 {
     m_counts = 0;
     m_fileTag = "";
-    m_file = nullptr;
+    m_file = DNULLPTR;
     m_isArmed = false;
     m_counter = 0;
 
