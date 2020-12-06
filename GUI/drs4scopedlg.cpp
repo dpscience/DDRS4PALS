@@ -216,43 +216,43 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_pulseRequestTimer = new QTimer;
     m_pulseRequestTimer->setInterval(120);
 
-    connect(m_pulseRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseScope()), Qt::QueuedConnection);
+    connect(m_pulseRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseScope()));//;, Qt::QueuedConnection);
 
     /* PHS-Plot */
     m_phsRequestTimer = new QTimer;
     m_phsRequestTimer->setInterval(200);
 
-    connect(m_phsRequestTimer, SIGNAL(timeout()), this, SLOT(plotPHS()), Qt::QueuedConnection);
+    connect(m_phsRequestTimer, SIGNAL(timeout()), this, SLOT(plotPHS()));//;, Qt::QueuedConnection);
 
     /* Area-Filter */
     m_areaRequestTimer = new QTimer;
     m_areaRequestTimer->setInterval(200);
 
-    connect(m_areaRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseAreaFilterData()), Qt::QueuedConnection);
+    connect(m_areaRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseAreaFilterData()));//;, Qt::QueuedConnection);
 
     /* Rise-Time Filter */
     m_riseTimeRequestTimer = new QTimer;
     m_riseTimeRequestTimer->setInterval(200);
 
-    connect(m_riseTimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotRiseTimeFilterData()), Qt::QueuedConnection);
+    connect(m_riseTimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotRiseTimeFilterData()));//;, Qt::QueuedConnection);
 
     /* Lifetime-Spectra */
     m_lifetimeRequestTimer = new QTimer;
     m_lifetimeRequestTimer->setInterval(200);
 
-    connect(m_lifetimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotLifetimeSpectra()), Qt::QueuedConnection);
+    connect(m_lifetimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotLifetimeSpectra()));//;, Qt::QueuedConnection);
 
     /* Persistance - Data */
     m_persistanceRequestTimer = new QTimer;
     m_persistanceRequestTimer->setInterval(200);
 
-    connect(m_persistanceRequestTimer, SIGNAL(timeout()), this, SLOT(plotPersistance()), Qt::QueuedConnection);
+    connect(m_persistanceRequestTimer, SIGNAL(timeout()), this, SLOT(plotPersistance()));//;, Qt::QueuedConnection);
 
     /* Burst - Mode - Timer */
     m_burstModeTimer = new QTimer;
     m_burstModeTimer->setInterval(500);
 
-    connect(m_burstModeTimer, SIGNAL(timeout()), this, SLOT(updateInBurstMode()), Qt::QueuedConnection);
+    connect(m_burstModeTimer, SIGNAL(timeout()), this, SLOT(updateInBurstMode()));//;, Qt::QueuedConnection);
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         ui->tabWidget->removeTab(6); // initially T-Plot
@@ -321,11 +321,11 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
 
     connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(showAboutBox()));
 
-    connect(this, SIGNAL(signalUpdateCurrentFileLabelFromScript(QString)), this, SLOT(updateCurrentFileLabelFromScript(QString)), Qt::QueuedConnection);
-    connect(this, SIGNAL(signalUpdateInfoDlgFromScript(QString)), this, SLOT(updateInfoDlgFromScript(QString)), Qt::QueuedConnection);
-    connect(this, SIGNAL(signalUpdateThreadRunning(QString,QString)), this, SLOT(updateThreadRunning(QString,QString)), Qt::QueuedConnection);
-    connect(this, SIGNAL(signalAddSampleSpeedWarningMessage(bool,bool)), this, SLOT(addSampleSpeedWarningMessage(bool,bool)), Qt::QueuedConnection);
-    connect(this, SIGNAL(signalChangeSampleSpeed(int,bool)), this, SLOT(changeSampleSpeed(int,bool)), Qt::QueuedConnection);
+    connect(this, SIGNAL(signalUpdateCurrentFileLabelFromScript(QString)), this, SLOT(updateCurrentFileLabelFromScript(QString)));//, Qt::QueuedConnection);
+    connect(this, SIGNAL(signalUpdateInfoDlgFromScript(QString)), this, SLOT(updateInfoDlgFromScript(QString)));//, Qt::QueuedConnection);
+    connect(this, SIGNAL(signalUpdateThreadRunning(QString,QString)), this, SLOT(updateThreadRunning(QString,QString)));//, Qt::QueuedConnection);
+    connect(this, SIGNAL(signalAddSampleSpeedWarningMessage(bool,bool)), this, SLOT(addSampleSpeedWarningMessage(bool,bool)));//, Qt::QueuedConnection);
+    connect(this, SIGNAL(signalChangeSampleSpeed(int,bool)), this, SLOT(changeSampleSpeed(int,bool)));//, Qt::QueuedConnection);
 
     m_dataExchange = new DRS4WorkerDataExchange(&m_areaFilterASlopeUpper,
                                            &m_areaFilterAInterceptUpper,
@@ -387,9 +387,37 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         DRS4BoardManager::sharedInstance()->currentBoard()->SetFrequency(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz(), true);
 
+        /*DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);
+
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);
+
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);*/
+
         DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
         DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
         DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);
+
+        /*DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);
+
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);
+
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);
+
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);*/
 
         DRS4BoardManager::sharedInstance()->currentBoard()->SetInputRange(0.0); // +/-0.5V
 
@@ -622,7 +650,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        connect(m_temperatureTimer, SIGNAL(timeout()), this, SLOT(updateTemperature()), Qt::QueuedConnection);
+        connect(m_temperatureTimer, SIGNAL(timeout()), this, SLOT(updateTemperature()));//;, Qt::QueuedConnection);
 
     connect(ui->pushButton_scaleRange, SIGNAL(clicked()), this, SLOT(scaleRange()));
     connect(ui->pushButton_fullRange, SIGNAL(clicked()), this, SLOT(fullRange()));
@@ -639,7 +667,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->pushButton_BAFit, SIGNAL(clicked()), this, SLOT(fitBAData()));
     connect(ui->pushButton_clearBAFitData, SIGNAL(clicked()), this, SLOT(clearBAFitData()));
 
-    connect(m_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()), Qt::QueuedConnection);
+    connect(m_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()));//;, Qt::QueuedConnection);
 
     ui->comboBox_triggerLogic->addItem("A");
     ui->comboBox_triggerLogic->addItem("B");
@@ -742,7 +770,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_autoSaveSpectraTimer = new QTimer;
     m_autoSaveSpectraTimer->setInterval(300000);
 
-    connect(m_autoSaveSpectraTimer, SIGNAL(timeout()), this, SLOT(autosaveAllSpectra()), Qt::QueuedConnection);
+    connect(m_autoSaveSpectraTimer, SIGNAL(timeout()), this, SLOT(autosaveAllSpectra()));//;, Qt::QueuedConnection);
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         m_temperatureTimer->start();
@@ -755,7 +783,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
         m_connectionTimer = new QTimer;
         m_connectionTimer->setInterval(1000);
 
-        connect(m_connectionTimer, SIGNAL(timeout()), this, SLOT(checkForConnection()), Qt::QueuedConnection);
+        connect(m_connectionTimer, SIGNAL(timeout()), this, SLOT(checkForConnection()));//;, Qt::QueuedConnection);
 
         m_connectionTimer->start();
     }
@@ -784,8 +812,8 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_pulseShapeFilterTimerB = new QTimer;
     m_pulseShapeFilterTimerB->setInterval(200);
 
-    connect(m_pulseShapeFilterTimerA, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressA()),  Qt::QueuedConnection);
-    connect(m_pulseShapeFilterTimerB, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressB()),  Qt::QueuedConnection);
+    connect(m_pulseShapeFilterTimerA, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressA()));//;, Qt::QueuedConnection);
+    connect(m_pulseShapeFilterTimerB, SIGNAL(timeout()), this, SLOT(incrementPulseShapeFilterProgressB()));//;, Qt::QueuedConnection);
 
     ui->widget_playPulseShapeFilterA->setLiteralSVG(":/images/images/play");
     ui->widget_playPulseShapeFilterB->setLiteralSVG(":/images/images/play");
@@ -2486,7 +2514,7 @@ void DRS4ScopeDlg::startThread()
     if ( !m_workerThread->isRunning() ) {
         connect(m_workerThread, SIGNAL(started()), m_worker, SLOT(start()), Qt::DirectConnection);
 
-        m_workerThread->start(QThread::HighestPriority);
+        m_workerThread->start(QThread::TimeCriticalPriority);//HighestPriority);
 
         while ( !m_workerThread->isRunning() ) { QApplication::processEvents(); }
     }
@@ -4113,6 +4141,8 @@ void DRS4ScopeDlg::plotPHSWindows()
 
 void DRS4ScopeDlg::plotPulseAreaFilterData()
 {
+    QMutexLocker locker(&m_mutex);
+
     if (!m_worker)
         return;
 
@@ -4166,6 +4196,8 @@ void DRS4ScopeDlg::plotPulseAreaFilterData()
 
 void DRS4ScopeDlg::plotRiseTimeFilterData()
 {
+    QMutexLocker locker(&m_mutex);
+
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
         return;
 
@@ -4216,6 +4248,8 @@ void DRS4ScopeDlg::plotRiseTimeFilterData()
 
 void DRS4ScopeDlg::plotLifetimeSpectra()
 {
+    QMutexLocker locker(&m_mutex);
+
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
         return;
 
@@ -4368,6 +4402,8 @@ void DRS4ScopeDlg::plotLifetimeSpectra()
 
 void DRS4ScopeDlg::plotPersistance()
 {
+    QMutexLocker locker(&m_mutex);
+
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
         return;
 
@@ -5373,8 +5409,6 @@ void DRS4ScopeDlg::changeChannelSettingsCoincidence(double sett)
 
     initCoincidenceLTSpectrum();
     resetLTSpectrumCoincidence();
-
-    //m_dopplerDlg->setMaximumCoincidenceChannel(DRS4SettingsManager::sharedInstance()->channelCntCoincindence());
 }
 
 void DRS4ScopeDlg::changeChannelSettingsCoincidence2(int sett)
@@ -5540,8 +5574,7 @@ void DRS4ScopeDlg::changeSampleSpeed(int index, bool accessFromScript)
     ui->horizontalSlider_triggerDelay->setRange(0, DRS4SettingsManager::sharedInstance()->sweepInNanoseconds());
     ui->horizontalSlider_triggerDelay->setValue(ratio*DRS4SettingsManager::sharedInstance()->sweepInNanoseconds());
 
-    if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-    {
+    if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         m_worker->setBusy(true);
 
         while(!m_worker->isBlocking()) {}
@@ -5552,15 +5585,6 @@ void DRS4ScopeDlg::changeSampleSpeed(int index, bool accessFromScript)
 
         return;
     }
-    else {
-        const bool validTimingCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsTimingCalibrationValid();
-
-        if (!validTimingCalib) {
-            ui->label_timingCalibrated->setText("not calibrated");
-        }
-        else
-            ui->label_timingCalibrated->setText("");
-    }
 
     m_worker->setBusy(true);
 
@@ -5570,6 +5594,16 @@ void DRS4ScopeDlg::changeSampleSpeed(int index, bool accessFromScript)
         DRS4BoardManager::sharedInstance()->currentBoard()->SetFrequency(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz(), true);
 
     m_worker->setBusy(false);
+
+    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
+        const bool validTimingCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsTimingCalibrationValid();
+
+        if (!validTimingCalib) {
+            ui->label_timingCalibrated->setText("missing calibration");
+        }
+        else
+            ui->label_timingCalibrated->setText("");
+    }
 }
 
 void DRS4ScopeDlg::updatePulseAreaFilterALimits()
@@ -7272,6 +7306,8 @@ bool DRS4ScopeDlg::isPositiveSignal() const
 }
 
 void DRS4ScopeDlg::updateTemperature() {
+    QMutexLocker locker(&m_mutex);
+
     if (!m_worker)
         return;
 
@@ -7289,17 +7325,19 @@ void DRS4ScopeDlg::updateTemperature() {
 
     ui->progressBar_boardTemperature->setValue(m_lastTemperatureInDegree);
 
-    if (m_lastTemperatureInDegree >= 46.) {
+    if (m_lastTemperatureInDegree >= 45.) {
         ui->label_temperatureState->setStyleSheet("QLabel {color: green}");
         ui->label_temperatureState->setText("operation temperature reached");
     }
-    else if (m_lastTemperatureInDegree < 46.) {
+    else if (m_lastTemperatureInDegree < 45.) {
         ui->label_temperatureState->setStyleSheet("QLabel {color: red}");
-        ui->label_temperatureState->setText("warming up to operation temperature (~47 °C) ...");
+        ui->label_temperatureState->setText("warming up to operation temperature (~ 45 °C) ...");
     }
 }
 
 void DRS4ScopeDlg::checkForConnection() {
+    QMutexLocker locker(&m_mutex);
+
     if (!m_worker)
         return;
 
@@ -8961,6 +8999,8 @@ void DRS4ScopeDlg::showCalculator()
 
 void DRS4ScopeDlg::updateInBurstMode()
 {
+    QMutexLocker locker(&m_mutex);
+
     if (!m_worker)
         return;
 
@@ -9145,6 +9185,8 @@ QString DRS4ScopeDlg::updateCurrentFileLabel(bool accessFromScript)
 
 void DRS4ScopeDlg::plotPulseScope()
 {
+    QMutexLocker locker(&m_mutex);
+
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
         return;
 
@@ -9185,6 +9227,8 @@ void DRS4ScopeDlg::plotPulseScope()
 
 void DRS4ScopeDlg::plotPHS()
 {
+    QMutexLocker locker(&m_mutex);
+
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
         return;
 

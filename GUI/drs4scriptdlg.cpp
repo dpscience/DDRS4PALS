@@ -181,7 +181,7 @@ void DRS4ScriptDlg::showEvent(QShowEvent *event)
 
 void DRS4ScriptDlg::loadScriptFile()
 {
-    const QString fileName = QFileDialog::getOpenFileName(this, tr("Load DRS4-Script File..."),
+    const QString fileName = QFileDialog::getOpenFileName(this, tr("Load a script file ..."),
                                DRS4ProgramSettingsManager::sharedInstance()->saveScriptFilePath(),
                                QString(" (*" + EXT_SCRIPT_FILE + ")"));
 
@@ -204,7 +204,7 @@ void DRS4ScriptDlg::loadScriptFile()
     }
     else
     {
-        MSGBOX("Sorry, cannot load this Script-File!");
+        MSGBOX("Sorry, cannot load the script!");
         return;
     }
 
@@ -223,16 +223,12 @@ void DRS4ScriptDlg::saveScriptFile()
     QFile file(m_currentScriptPath);
     QTextStream stream(&file);
 
-    if ( file.open(QIODevice::WriteOnly) )
-    {
+    if ( file.open(QIODevice::WriteOnly) ) {
         stream << ui->textEdit_scriptInput->toPlainText();
         file.close();
-
-        //MSGBOX("Script-File saved successfully!");
     }
-    else
-    {
-        MSGBOX("Sorry, an Error occurred while saving the Script-File!");
+    else {
+        MSGBOX("Sorry, an error occurred while saving your script!");
     }
 
     updateCurrentFileLabel();
@@ -240,7 +236,7 @@ void DRS4ScriptDlg::saveScriptFile()
 
 void DRS4ScriptDlg::saveAsScriptFile()
 {
-    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save DRS4-Script File..."),
+    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save a script file ..."),
                                DRS4ProgramSettingsManager::sharedInstance()->saveScriptFilePath(),
                                QString(" (*" + EXT_SCRIPT_FILE + ")"));
 
@@ -253,16 +249,12 @@ void DRS4ScriptDlg::saveAsScriptFile()
     QFile file(fileName);
     QTextStream stream(&file);
 
-    if ( file.open(QIODevice::WriteOnly) )
-    {
+    if ( file.open(QIODevice::WriteOnly) ) {
         stream << ui->textEdit_scriptInput->toPlainText();
         file.close();
-
-        //MSGBOX("Script-File saved successfully!");
     }
-    else
-    {
-        MSGBOX("Sorry, an Error occurred while saving the Script-File!");
+    else {
+        MSGBOX("Sorry, an error occurred while saving your script!");
     }
 
     m_currentScriptPath = fileName;
@@ -271,11 +263,10 @@ void DRS4ScriptDlg::saveAsScriptFile()
 
 void DRS4ScriptDlg::loadExample_DataAcqu_1()
 {
-    if ( !ui->textEdit_scriptInput->document()->isEmpty() )
-    {
+    if ( !ui->textEdit_scriptInput->document()->isEmpty() )  {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Loading a Script-File?");
-            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
+            msgBox.setWindowTitle("Loading a script ?");
+            msgBox.setText("Loading a script will overwrite your existing script. Are you really sure ?");
             msgBox.setStandardButtons(QMessageBox::Yes);
             msgBox.addButton(QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
@@ -300,7 +291,7 @@ void DRS4ScriptDlg::loadExample_DataAcqu_1()
     }
     else
     {
-        MSGBOX("Sorry, cannot load this Script-File!")
+        MSGBOX("Sorry, cannot load your script!")
     }
 }
 
@@ -309,8 +300,8 @@ void DRS4ScriptDlg::loadExample_PulseStream_1()
     if ( !ui->textEdit_scriptInput->document()->isEmpty() )
     {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Loading a Script-File?");
-            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
+            msgBox.setWindowTitle("Loading a script ?");
+            msgBox.setText("Loading a script will overwrite your existing script. Are you really sure ?");
             msgBox.setStandardButtons(QMessageBox::Yes);
             msgBox.addButton(QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
@@ -335,7 +326,7 @@ void DRS4ScriptDlg::loadExample_PulseStream_1()
     }
     else
     {
-        MSGBOX("Sorry, cannot load this Script-File!")
+        MSGBOX("Sorry, cannot load your script!")
     }
 }
 
@@ -344,8 +335,8 @@ void DRS4ScriptDlg::loadExample_WarmingUp_2()
     if ( !ui->textEdit_scriptInput->document()->isEmpty() )
     {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Loading a Script-File?");
-            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
+            msgBox.setWindowTitle("Loading a script ?");
+            msgBox.setText("Loading a script will overwrite your existing script. Are you really sure ?");
             msgBox.setStandardButtons(QMessageBox::Yes);
             msgBox.addButton(QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
@@ -370,7 +361,7 @@ void DRS4ScriptDlg::loadExample_WarmingUp_2()
     }
     else
     {
-        MSGBOX("Sorry, cannot load this Script-File!")
+        MSGBOX("Sorry, cannot load your script!")
     }
 }
 
@@ -379,8 +370,8 @@ void DRS4ScriptDlg::loadExample_Simulation_1()
     if ( !ui->textEdit_scriptInput->document()->isEmpty() )
     {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Loading a Script-File?");
-            msgBox.setText("Loading a Script will overwrite your existing Script. Are you sure?");
+            msgBox.setWindowTitle("Loading a script ?");
+            msgBox.setText("Loading a script will overwrite your existing script. Are you really sure ?");
             msgBox.setStandardButtons(QMessageBox::Yes);
             msgBox.addButton(QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
@@ -405,13 +396,13 @@ void DRS4ScriptDlg::loadExample_Simulation_1()
     }
     else
     {
-        MSGBOX("Sorry, cannot load this Script-File!")
+        MSGBOX("Sorry, cannot load tyour script!")
     }
 }
 
 void DRS4ScriptDlg::saveLogCompleteFile()
 {
-    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save Log-File..."),
+    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save log ..."),
                                DRS4ProgramSettingsManager::sharedInstance()->saveLogFilePath(),
                                tr(" (*.log)"));
 
@@ -431,13 +422,13 @@ void DRS4ScriptDlg::saveLogCompleteFile()
     }
     else
     {
-        MSGBOX("Sorry, an Error occurred while saving the Log-File!");
+        MSGBOX("Sorry, an error occurred while saving the log!");
     }
 }
 
 void DRS4ScriptDlg::saveLogSucceedFile()
 {
-    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save Log-File..."),
+    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save log ..."),
                                DRS4ProgramSettingsManager::sharedInstance()->saveLogFilePath(),
                                tr(" (*.log)"));
 
@@ -457,13 +448,13 @@ void DRS4ScriptDlg::saveLogSucceedFile()
     }
     else
     {
-        MSGBOX("Sorry, an Error occurred while saving the Log-File!");
+        MSGBOX("Sorry, an error occurred while saving the log!");
     }
 }
 
 void DRS4ScriptDlg::saveLogFailedFile()
 {
-    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save Log-File..."),
+    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save log ..."),
                                DRS4ProgramSettingsManager::sharedInstance()->saveLogFilePath(),
                                tr(" (*.log)"));
 
@@ -483,13 +474,13 @@ void DRS4ScriptDlg::saveLogFailedFile()
     }
     else
     {
-        MSGBOX("Sorry, an Error occurred while saving the Log-File!");
+        MSGBOX("Sorry, an error occurred while saving the log!");
     }
 }
 
 void DRS4ScriptDlg::saveLogPrintOutFile()
 {
-    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save Log-File..."),
+    const QString fileName = QFileDialog::getSaveFileName(this, tr("Save log ..."),
                                DRS4ProgramSettingsManager::sharedInstance()->saveLogFilePath(),
                                tr(" (*.log)"));
 
@@ -509,7 +500,7 @@ void DRS4ScriptDlg::saveLogPrintOutFile()
     }
     else
     {
-        MSGBOX("Sorry, an Error occurred while saving the Log-File!");
+        MSGBOX("Sorry, an error occurred while saving the log!");
     }
 }
 
@@ -525,7 +516,7 @@ void DRS4ScriptDlg::runScript()
 {
     if ( ui->textEdit_scriptInput->toPlainText().trimmed().isEmpty() )
     {
-        MSGBOX("No Script available!");
+        MSGBOX("Sorry, no script available!");
         return;
     }
 
@@ -539,7 +530,7 @@ void DRS4ScriptDlg::runScript()
     ui->textEdit_scriptInput->setEnabled(false);
 
     m_scriptIsRunning = true;
-    ui->pushButton_runScript->setText("Abort Running Script...");
+    ui->pushButton_runScript->setText("abort running script...");
 
     disconnect(ui->textEdit_scriptInput, SIGNAL(textChanged()), this, SLOT(updateScript()));
     disconnect(ui->textEdit_scriptInput, SIGNAL(cursorPositionChanged()), this, SLOT(updateScript()));
@@ -565,8 +556,8 @@ void DRS4ScriptDlg::abortScript()
     if ( m_scriptWorkerThread->isRunning() )
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Abort Running Script?");
-        msgBox.setText("Script is still Running. Do you really want to abort the Script?");
+        msgBox.setWindowTitle("abort running script?");
+        msgBox.setText("A script is still running. Do you really want to abort the running script?");
         msgBox.setStandardButtons(QMessageBox::Yes);
         msgBox.addButton(QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::No);
@@ -590,7 +581,7 @@ void DRS4ScriptDlg::abortScript()
     ui->textEdit_scriptInput->setEnabled(true);
 
     m_scriptIsRunning = false;
-    ui->pushButton_runScript->setText("Run Script...");
+    ui->pushButton_runScript->setText("run script ...");
 
     connect(ui->textEdit_scriptInput, SIGNAL(textChanged()), this, SLOT(updateScript()));
     connect(ui->textEdit_scriptInput, SIGNAL(cursorPositionChanged()), this, SLOT(updateScript()));
@@ -644,7 +635,7 @@ void DRS4ScriptDlg::finishScript()
     ui->textEdit_scriptInput->setEnabled(true);
 
     m_scriptIsRunning = false;
-    ui->pushButton_runScript->setText("Run Script...");
+    ui->pushButton_runScript->setText("run script ...");
 
     connect(ui->textEdit_scriptInput, SIGNAL(textChanged()), this, SLOT(updateScript()));
     connect(ui->textEdit_scriptInput, SIGNAL(cursorPositionChanged()), this, SLOT(updateScript()));
@@ -924,7 +915,7 @@ void DRS4ScriptTextEdit::highlightCurrentLine()
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = QColor(qRgb(153, 211, 232));//.lighter(160);
+        QColor lineColor = QColor(qRgb(153, 211, 232));
 
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);

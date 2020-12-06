@@ -1082,11 +1082,6 @@ void DRS4Worker::runSingleThreaded()
 
                         return;
                     }
-
-                    QTime dieTime= QTime::currentTime().addMSecs(25);
-
-                    while (QTime::currentTime() < dieTime)
-                        QCoreApplication::processEvents(QEventLoop::AllEvents);
                 }
             }
         }
@@ -1124,7 +1119,6 @@ void DRS4Worker::runSingleThreaded()
 
         std::fill(waveChannel0S, waveChannel0S + sizeof(waveChannel0S)*sizeOfFloat, 0);
         std::fill(waveChannel1S, waveChannel1S + sizeof(waveChannel1S)*sizeOfFloat, 0);
-
 
         if (!bDemoMode) {
             int retState = 1;
@@ -1179,6 +1173,7 @@ void DRS4Worker::runSingleThreaded()
                 retState = DRS4BoardManager::sharedInstance()->currentBoard()->StartDomino(); // returns always 1.
             }
             catch ( ... ) {
+                /* nothing here */
             }
         }
         else {
@@ -3080,11 +3075,6 @@ void DRS4Worker::runMultiThreaded()
 
                         return;
                     }
-
-                    QTime dieTime= QTime::currentTime().addMSecs(25);
-
-                    while (QTime::currentTime() < dieTime)
-                        QCoreApplication::processEvents(QEventLoop::AllEvents);
                 }
             }
         }

@@ -1,14 +1,27 @@
-/********************************************************************
+/*****************************************************************************
   DRS.h, S.Ritt, M. Schneebeli - PSI
 
   $Id: DRS.h 21309 2014-04-11 14:51:29Z ritt $
 
-********************************************************************/
+*****************************************************************************
+  Modified by Danny Petschke enabling threading using QThread
+
+  @author:   Danny Petschke
+  @contact: danny.petschke@uni-wuerzburg.de
+
+  @date:      2020-12-05
+
+/*****************************************************************************/
+
 #ifndef DRS_H
 #define DRS_H
 #include <stdio.h>
 #include <string.h>
 #include "averager.h"
+
+#ifdef USE_DRS_QT_MUTEX
+#include <QMutex>
+#endif
 
 #ifdef HAVE_LIBUSB
 #   ifndef HAVE_USB
@@ -570,6 +583,8 @@ protected:
 private:
    DRSBoard(const DRSBoard &c);              // not implemented
    DRSBoard &operator=(const DRSBoard &rhs); // not implemented
+
+   mutable QMutex m_mutex;
 
 public:
    // Public Methods

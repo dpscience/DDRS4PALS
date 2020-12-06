@@ -1,4 +1,4 @@
-/********************************************************************
+/*****************************************************************************
 
   Name:         DRS.cpp
   Created by:   Stefan Ritt, Matthias Schneebeli
@@ -7,7 +7,15 @@
 
   $Id: DRS.cpp 22289 2016-04-27 09:40:58Z ritt $
 
-\********************************************************************/
+*****************************************************************************
+  Modified by Danny Petschke enabling threading using QThread
+
+  @author:   Danny Petschke
+  @contact: danny.petschke@uni-wuerzburg.de
+
+  @date:      2020-12-05
+
+/*****************************************************************************/
 
 #define NEW_TIMING_CALIBRATION
 
@@ -1105,6 +1113,10 @@ int DRSBoard::InitFPGA(void)
 
 int DRSBoard::Write(int type, unsigned int addr, void *data, int size)
 {
+#ifdef USE_DRS_QT_MUTEX
+    QMutexLocker locker(&m_mutex);
+#endif
+
 #ifdef USE_DRS_MUTEX
    if (!s_drsMutex) {
       s_drsMutex = new wxMutex();
@@ -1321,6 +1333,10 @@ int DRSBoard::Write(int type, unsigned int addr, void *data, int size)
 
 int DRSBoard::Read(int type, void *data, unsigned int addr, int size)
 {
+#ifdef USE_DRS_QT_MUTEX
+    QMutexLocker locker(&m_mutex);
+#endif
+
 #ifdef USE_DRS_MUTEX
    if (!s_drsMutex) {
       s_drsMutex = new wxMutex();
