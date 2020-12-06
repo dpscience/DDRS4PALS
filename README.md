@@ -9,7 +9,7 @@ Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-1. Download the latest software release (<b>DDRS4PALS_v130.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+1. Download the latest software release (<b>DDRS4PALS_v113.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
 2. Unzip <b>DDRS4PALS_v113.rar</b>.
 3. Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 4. <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
