@@ -1,30 +1,31 @@
 //*************************************************************************/
 // All rights reserved by Danny Petschke (C) 2016-2020
 //
-// Author: Danny Petschke
-// Date: 17.04.2018
+// author: Danny Petschke
+// Date: 05.12.2020
 //
 //*************************************************************************/
 
-var __settingsFile__ = "C:/Users/User/Desktop/settings"; //extension is not necessary!
-var __dataStreamFile__ = "C:/Users/User/Desktop/dataStream"; //extension is not necessary!
+var __settingsFile__        = "C:/Users/User/Desktop/settings"; // you do not need to add an extension
+var __dataStreamFile__ = "C:/Users/User/Desktop/dataStream"; // you do not need to add an extension
 
 if (!loadSettingsFile(__settingsFile__)) {
-	print("An error occurred while loading the settings file!");
-	return;
+    print("An error occurred while loading the settings file!");
+    return;
 }
+
+stopAcquisition();
 
 resetAllSpectra();
 
 if (!loadDataStreamFile(__dataStreamFile__)) {
-	print("An error occurred while loading the data stream file!");
-	return;
+    print("An error occurred while loading the data stream file!");
+    return;
 }
 
 startAcquisition();
 
+// run until the end of the data stream ...
 while (isRunningFromDataStream()) {}
 
 stopAcquisition();
-
-// .....

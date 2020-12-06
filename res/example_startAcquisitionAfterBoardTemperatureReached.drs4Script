@@ -1,22 +1,24 @@
 //*************************************************************************/
-// All rights reserved by Danny Petschke (C) 2016-2018
+// All rights reserved by Danny Petschke (C) 2016-2020
 //
 // Author: Danny Petschke
-// Date: 17.04.2018
+// Date: 05.12.2020
 //
 //*************************************************************************/
 
-var __temperatureToBeReached__ = 48.0; // [°C]
+var __temperature_to_be_reached__ = 46.0; // [deg C]
 
-//disable burst-mode:
+// disable the burst-mode ...
 if (isBurstModeRunning()) {
-	changeBurstMode(false); 
+    changeBurstMode(false);
 }
 
-while (getBoardTemperatureInDegree() < __temperatureToBeReached__ ) {}
-print("DRS4-Board reached temperature of: " + getBoardTemperatureInDegree() + " °");
+// wait until temperature reached ...
+while (getBoardTemperatureInDegree() < __temperature_to_be_reached__ ) {}
+
+print("set board temperature reached: " + getBoardTemperatureInDegree() + " deg C");
 
 resetAllSpectra();
-startAcquisition();
 
-// ....
+// start the data acquisition ...
+startAcquisition();
