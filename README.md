@@ -8,7 +8,7 @@ Support this project and keep always updated about recent software releases, bug
 ![badge-stars](https://img.shields.io/github/stars/dpscience/DDRS4PALS?style=social)
 ![badge-forks](https://img.shields.io/github/forks/dpscience/DDRS4PALS?style=social)
 
-# DDRS4PALS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+# DDRS4PALS <img src="/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ![badge-license](https://img.shields.io/badge/OS-Windows-blue)
 ![badge-language](https://img.shields.io/badge/language-C++-blue)
