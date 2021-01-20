@@ -1,31 +1,39 @@
-Support this project and keep always updated about recent software releases, bug fixes and major improvements by [following on researchgate](https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board) or [github](https://github.com/dpscience?tab=followers).<br><br>
+![badge-OS](https://img.shields.io/badge/OS-tested%20under%20Windows%2010-brightgreen)
+
+Support this project and keep always updated about recent software releases, bug fixes and major improvements by [following on researchgate](https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board) or [github](https://github.com/dpscience?tab=followers).
+
+[![badge-researchGate](https://img.shields.io/badge/project-researchGate-brightgreen)](https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board)
+
+![badge-followers](https://img.shields.io/github/followers/dpscience?style=social)
+![badge-stars](https://img.shields.io/github/stars/dpscience/DDRS4PALS?style=social)
+![badge-forks](https://img.shields.io/github/forks/dpscience/DDRS4PALS?style=social)
 
 # DDRS4PALS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
+![badge-license](https://img.shields.io/badge/OS-Windows-blue)
+![badge-language](https://img.shields.io/badge/language-C++-blue)
+![badge-license](https://img.shields.io/badge/license-GPL-blue)
 
-<b>DDRS4PALS</b> - A software for the acquisition and simulation of Positron Lifetime Spectra (PALS) using the DRS4 evaluation board<br>
+Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br>
+
+<b>DDRS4PALS</b> - A software for the acquisition and simulation of positron lifetime spectra (PALS) using the DRS4 evaluation board<br>
+
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-1. Download the latest software release (<b>DDRS4PALS_v113.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
-2. Unzip <b>DDRS4PALS_v113.rar</b>.
-3. Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
-4. <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
-5. Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
-6. Select the <b>DRS4 evaluation board</b> from the list of devices and click on "Install Driver".
-7. Run the <b>DDRS4PALS</b> executable.
+* Download the latest software release (<b>DDRS4PALS_v113.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Unzip <b>DDRS4PALS_v113.rar</b>.
+* Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
+* <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
+* Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
+* Select the <b>DRS4 evaluation board</b> from the list of devices and click on "Install Driver".
+* Run the <b>DDRS4PALS</b> executable.
 
 # Related Publications <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ### Feb. 2019
 Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
-
-### Jun. 2019
-[DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
-
-# Documentation <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ### Jun. 2019
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
@@ -67,7 +75,7 @@ DDRS4PALS <b>v1.03</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219523.svg)](https://doi.org/10.5281/zenodo.1219523)<br>
 
-# Software Preview <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+# Insights ... <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ### <br><b>signal-scope: </b>monitor the acquired or simulated detector-output pulses<br>
 <br>![Detector-Pulse Monitor](/images/scope.png)
@@ -110,33 +118,33 @@ For more details see [GNU General Public License v3](https://www.gnu.org/license
 
 The following 3rd party libraries are used by <b>DDRS4PALS</b> software.<br>
 
-### ALGLIB
-- [ALGLIB: A cross-platform numerical analysis and data processing library](http://www.alglib.net/)<br><br>License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
+### ``ALGLIB``
+* [ALGLIB: A cross-platform numerical analysis and data processing library](http://www.alglib.net/)<br><br>License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
 
-### Tino Kluge
-- [Tino Kluge: A cubic spline interpolation library](http://kluge.in-chemnitz.de/opensource/spline/)<br><br>License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
+### ``Tino Kluge``
+* [Tino Kluge: A cubic spline interpolation library](http://kluge.in-chemnitz.de/opensource/spline/)<br><br>License: [GNU General Public License v2 or above](https://www.gnu.org/licenses/gpl-2.0)<br>
 
-### Sergejus Zabinski
-- [Sergejus Zabinski: FAST MEDIAN FILTERING](http://www.sergejusz.com/engineering_tips/median_filter.htm)<br><br>License: [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0)<br>
+### ``Sergejus Zabinski``
+* [Sergejus Zabinski: FAST MEDIAN FILTERING](http://www.sergejusz.com/engineering_tips/median_filter.htm)<br><br>License: [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0)<br>
 
-### Danny Petschke
-- [DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses](https://github.com/dpscience/DLTPulseGenerator)<br><br>License: [BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
+### ``Danny Petschke``
+* [DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses](https://github.com/dpscience/DLTPulseGenerator)<br><br>License: [BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
 
-### MPFIT (MINPACK-1)
-- [MPFIT: A MINPACK-1 Least Squares Fitting Library in C](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html)<br>
+### ``MPFIT (MINPACK-1)``
+* [MPFIT: A MINPACK-1 Least Squares Fitting Library in C](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html)<br>
 
-### libusb-1.0
-- [libusb-1.0 package: USB device access](http://libusb.info/)<br>
+### ``libusb-1.0``
+* [libusb-1.0 package: USB device access](http://libusb.info/)<br>
 
-### DRS4 evaluation board software and source code package
-- [Paul Scherrer Institut - PSI](https://www.psi.ch/drs/software-download)<br><br>
+### ``DRS4 evaluation board software and source code package``
+* [Paul Scherrer Institut - PSI](https://www.psi.ch/drs/software-download)<br><br>
 These files containing documentation, drivers, applications, C/C++ source code and the FPGA firmware in VHDL and compiled bit files.<br><br>
 <b>Note:</b> Some files containing source code which is part of <b>MIDAS XML Library</b><br><br>License: [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0)<br>
 
-# Deploy DDRS4PALS on Windows OS from source files using QtCreator <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
-1. Download the QtCreator and the [Qt-framework](https://www.qt.io/download) (at least v5.x).
-2. Download and Setup the MS Visual Studio compiler (at least version 2013). It should also work with any other compiler e.g. MinGW but I recommend using VS compiler.
-3. Open the .pro file in QtCreator. 
-4. Deploy DDRS4PALS. It should finish without any errors.
-4. Connect your DRS4-EB (if available) and start the simulation or acquisition mode.
-5. Finished.
+# Deploy DDRS4PALS on Windows OS from Source Files using QtCreator <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
+* Download the QtCreator and the [Qt-framework](https://www.qt.io/download) (at least v5.x).
+* Download and Setup the MS Visual Studio compiler (at least version 2013). It should also work with any other compiler e.g. MinGW but I recommend using VS compiler.
+* Open the .pro file in QtCreator. 
+* Deploy DDRS4PALS. It should finish without any errors.
+* Connect your DRS4-EB (if available) and start the simulation or acquisition mode.
+* Finished.
