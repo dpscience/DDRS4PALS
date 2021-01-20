@@ -32,22 +32,33 @@ Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 # Related Publications <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-### Feb. 2019
-Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
+### ``Publication in SoftwareX (Jun. 2019)``
 
-### Jun. 2019
+![DDRS4PALS](/images/softxPub_software.png)
+
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board (SoftwareX, Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br><br>
+
+### ``Publication in DIB (Feb. 2019)``
+
+![DIB](/images/dib.png)
+
+Experimentally obtained and simulated Positron Annihilation Lifetime Spectra (PALS) acquired on pure Tin (4N) using DDRS4PALS software were published in the following [Data in Brief (Elsevier)](https://www.sciencedirect.com/science/article/pii/S2352340918315142) article.<br><br>  
 
 # How to cite this Software? <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-<b>When running this software for your research purposes you should at least cite the following publication:</b><br><br>
+* <b>When running this software for your research purposes you should at least cite the following publication.</b><br>
+
+[![DOI](https://img.shields.io/badge/DOI-10.1016%2Fj.softx.2019.100261-yellowgreen)](https://doi.org/10.1016/j.softx.2019.100261)
+
 [DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board](https://www.sciencedirect.com/science/article/pii/S2352711019300676)<br>
 
-Additionally, you can cite all released software versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This DOI represents all versions, and will always resolve to the latest one.<br>
+* <b>Additionally, you must cite the applied version of this software in your study.</b><br>
+
+You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1219522</b>. This DOI represents all versions, and will always resolve to the latest one.<br>
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
-## v1.x
+## ``v1.x``
 
 DDRS4PALS <b>v1.13</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4308386.svg)](https://doi.org/10.5281/zenodo.4308386)<br>
 
@@ -77,24 +88,24 @@ DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 # Insights ... <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-### <br><b>signal-scope: </b>monitor the acquired or simulated detector-output pulses<br>
+### ``the signal-scope: monitor the acquired or simulated detector-output pulses``
 <br>![Detector-Pulse Monitor](/images/scope.png)
 
-### <br><b>pulse-height/energy spectra (PHS): </b>select the energy windows assigning the start & stop quanta<br>
+### ``the pulse-height/energy spectra (PHS): select the energy windows assigning the start & stop quanta``
 <br>![PHS](/images/phs.png)
 
-### <br><b>lifetime or prompt (IRF) spectra: </b>online tracking of the resulting spectra<br>
+### ``visualizing the lifetime or prompt (IRF) spectra: online tracking of the resulting data``
 <br>![Spectrum](/images/spec.png)<br>
 
-### high-quality lifetime spectra acquisition provided by easy and freely configurable physical filters:
+## producing high-quality lifetime spectra exploiting a set of easy and freely configurable physical filters:
 
-### <br><b>1D median filter for spike-removal and noise-reduction</b><br>
+### ``the 1D median filter for spike-removal and noise-reduction``
 <br>![Median-Filter](/images/spikeRemoval.png)
 
-### <br><b>pile-up rejection by area-filtering</b><br>
+### ``pile-up rejection by area-filtering``
 <br>![Area-Filter](/images/areaFilter.png)
 
-### <br><b>detection of misshaped or artifact-afflicted pulses using shape-sensitive filtering</b><br>
+### ``detection of misshaped or artifact-afflicted pulses using shape-sensitive filtering``
 <br>![Shape-Filter](/images/shapeFilter.png)
 
 # License of DDRS4PALS (GNU General Public License) <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
