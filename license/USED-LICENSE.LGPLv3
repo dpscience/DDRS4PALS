@@ -1,0 +1,19 @@
+This application 'DDRS4PALS' uses the following modules of the 'Qt Toolkit'
+
+1) QtCore
+2) QtGui
+3) QtWidgets 
+4) QtConcurrent
+5) QtNetwork
+6) QtPrintSupport
+7) QtScript
+8) QtSvg
+
+under the terms of the GNU General Public License version 3 (GPLv3).
+
+The corresponding license file 'LICENSE.GPLv3' is placed in the directories of
+
+i)  the source code and 
+ii) the executable version.
+
+
