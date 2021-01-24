@@ -97,18 +97,18 @@ DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 # Insights ... <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-### ``the signal-scope: monitor the acquired or simulated detector-output pulses``
+### ``signal-scope: monitor the acquired or simulated detector-output pulses``
 <br>![Detector-Pulse Monitor](/images/scope.png)
 
-### ``the pulse-height/energy spectra (PHS): select the energy windows assigning the start & stop quanta``
+### ``energy spectra (PHS): select the energy windows assigning the start & stop quanta``
 <br>![PHS](/images/phs.png)
 
-### ``visualizing the lifetime or prompt (IRF) spectra: online tracking of the resulting data``
+### ``online tracking of the resulting spectra``
 <br>![Spectrum](/images/spec.png)<br>
 
-## producing high-quality lifetime spectra exploiting a set of easy and freely configurable physical filters:
+## producing high-quality lifetime spectra exploiting a set of freely configurable physical filters:
 
-### ``the 1D median filter for spike-removal and noise-reduction``
+### ``1D median filter for spike-removal and noise-reduction``
 <br>![Median-Filter](/images/spikeRemoval.png)
 
 ### ``pile-up rejection by area-filtering``
