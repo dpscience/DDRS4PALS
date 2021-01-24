@@ -14,7 +14,7 @@ Support this project and keep always updated about recent software releases, bug
 ![badge-language](https://img.shields.io/badge/language-C++-blue)
 ![badge-license](https://img.shields.io/badge/license-GPL-blue)
 
-Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br>
+Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br>
 
 <b>DDRS4PALS</b> - A software for the acquisition and simulation of positron lifetime spectra (PALS) using the DRS4 evaluation board<br>
 
@@ -22,8 +22,17 @@ Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-* Download the latest software release (<b>DDRS4PALS_v113.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
-* Unzip <b>DDRS4PALS_v113.rar</b>.
+## ``Option 1: via installer``
+* Download the latest installer (<b>installer_DDRS4PALS-v1.14.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Run the installer.
+* <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
+* Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
+* Select the <b>DRS4 evaluation board</b> from the list of devices and click on "Install Driver".
+* Run the <b>DDRS4PALS</b> executable.
+
+## ``Option 2: manual installation``
+* Download the latest software release (<b>DDRS4PALS_v114.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Unzip <b>DDRS4PALS_v114.rar</b>.
 * Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
