@@ -52,44 +52,32 @@
 ** https://www.sciencedirect.com/science/article/pii/S235271101930038X
 **/
 
-#ifndef PROJECTMANAGER_H
-#define PROJECTMANAGER_H
+#include "drs4licensetextbox.h"
+#include "ui_drs4licensetextbox.h"
 
-#include "dversion.h"
-#include "settings.h"
+DRS4LicenseTextBox::DRS4LicenseTextBox(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::DRS4LicenseTextBox) {
+    ui->setupUi(this);
 
-class PALSProjectManager
-{
-    PALSProject*  m_project;
-    QString m_fileName;
-    int m_minChannel;
-    int m_maxChannel;
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(close()));    
+}
 
-    PALSProjectManager();
-    virtual ~PALSProjectManager();
+DRS4LicenseTextBox::~DRS4LicenseTextBox() {
+    DDELETE_SAFETY(ui)
+}
 
-public:
-    static PALSProjectManager *sharedInstance();
+void DRS4LicenseTextBox::addLicense(const QString &license, const QString &header) {
+    QFile file(license);
 
-    bool load(const QString& fileName);
-    bool save(const QString& fileName);
+    if (file.open(QIODevice::ReadOnly)) {
+        ui->plainTextEdit->appendPlainText(QString(file.readAll()));
 
-    void setFileName(const QString fileName);
-    QString getFileName() const;
+        file.close();
+    }
 
-    void setASCIIDataName(const QString& file);
-    QString getASCIIDataName() const;
+    setWindowTitle(header);
 
-    void setChannelRanges(int min, int max);
-
-    int getMinChannel() const;
-    int getMaxChannel() const;
-
-    PALSDataStructure *getDataStructure() const;
-    PALSResultHistorie *getResultHistorie() const;
-
-    ///Creates a default Project:
-    void createEmptyProject();
-};
-
-#endif // PROJECTMANAGER_H
+    ui->plainTextEdit->moveCursor(QTextCursor::Start);
+    ui->plainTextEdit->setReadOnly(true);
+}

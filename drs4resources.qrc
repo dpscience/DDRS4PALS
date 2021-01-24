@@ -30,4 +30,11 @@
         <file>iconDesign/iconDDRS4.ico</file>
         <file alias="connection_lost">images/ConnectionLostOverlayer.png</file>
     </qresource>
+    <qresource prefix="/license">
+        <file alias="copyright">license/COPYRIGHT</file>
+        <file alias="GPL">license/LICENSE.GPLv3</file>
+        <file alias="LGPL">license/LICENSE.LGPLv3</file>
+        <file alias="modifications">license/MODIFICATIONS</file>
+        <file alias="used-license">license/USED-LICENSE.GPLv3</file>
+    </qresource>
 </RCC>

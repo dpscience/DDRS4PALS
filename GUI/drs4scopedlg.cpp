@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2020 Danny Petschke
+**  Copyright (C) 2016-2021 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -105,6 +105,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_temperatureTimer(DNULLPTR),
     m_autoSaveTimer(DNULLPTR),
     m_addInfoDlg(DNULLPTR),
+    m_gplDialog(DNULLPTR),
+    m_lgplDialog(DNULLPTR),
+    m_usedgplDialog(DNULLPTR),
     m_boardInfoDlg(DNULLPTR),
     m_scriptDlg(DNULLPTR),
     m_pulseSaveDlg(DNULLPTR),
@@ -211,6 +214,18 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
 
     m_calculatorDlg = new DRS4CalculatorDlg;
     m_calculatorDlg->hide();
+
+    m_gplDialog = new DRS4LicenseTextBox;
+    m_gplDialog->addLicense(":/license/GPL", "License - GPLv3");
+    m_gplDialog->hide();
+
+    m_lgplDialog = new DRS4LicenseTextBox;
+    m_lgplDialog->addLicense(":/license/LGPL", "License - LGPLv3");
+    m_lgplDialog->hide();
+
+    m_usedgplDialog = new DRS4LicenseTextBox;
+    m_usedgplDialog->addLicense(":/license/used-license", "Used License - GPLv3");
+    m_usedgplDialog->hide();
 
     /* Pulse -Scope */
     m_pulseRequestTimer = new QTimer;
@@ -378,6 +393,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->actionSave_next_N_Pulses, SIGNAL(triggered()), this, SLOT(showSavePulses()));
     connect(ui->actionSave_next_N_Pulses_in_Range, SIGNAL(triggered()), this, SLOT(showSavePulsesRange()));
     connect(ui->actionOpen_calculator, SIGNAL(triggered()), this, SLOT(showCalculator()));
+    connect(ui->actionLicense_GPLv3, SIGNAL(triggered()), this, SLOT(showGPL()));
+    connect(ui->actionLicense_LGPLv3, SIGNAL(triggered()), this, SLOT(showLGPL()));
+    connect(ui->actionUsed_License_GPLv3, SIGNAL(triggered()), this, SLOT(showUsedGPL()));
 
     connect(ui->spinBox_fitIterations, SIGNAL(valueChanged(int)), this, SLOT(changeCoincidenceFitIterations(int)));
     connect(ui->spinBox_fitIterations_Merged, SIGNAL(valueChanged(int)), this, SLOT(changeMergedFitIterations(int)));
@@ -387,37 +405,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         DRS4BoardManager::sharedInstance()->currentBoard()->SetFrequency(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz(), true);
 
-        /*DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);
-
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);
-
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);*/
-
         DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(1);
         DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
         DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);
-
-        /*DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);
-
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);
-
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(0);
-
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetTranspMode(0);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoMode(1);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetDominoActive(1);*/
 
         DRS4BoardManager::sharedInstance()->currentBoard()->SetInputRange(0.0); // +/-0.5V
 
@@ -1064,6 +1054,15 @@ DRS4ScopeDlg::~DRS4ScopeDlg()
 
     m_calculatorDlg->close();
     DDELETE_SAFETY(m_calculatorDlg);
+
+    m_gplDialog->close();
+    DDELETE_SAFETY(m_gplDialog);
+
+    m_lgplDialog->close();
+    DDELETE_SAFETY(m_lgplDialog);
+
+    m_usedgplDialog->close();
+    DDELETE_SAFETY(m_usedgplDialog);
 
     if ( m_worker->isRecordingForPulseShapeFilterA() )
         stopAcquisitionOfPulseShapeFilterDataA();
@@ -8997,6 +8996,21 @@ void DRS4ScopeDlg::showCalculator()
     m_calculatorDlg->show();
 }
 
+void DRS4ScopeDlg::showGPL()
+{
+    m_gplDialog->show();
+}
+
+void DRS4ScopeDlg::showLGPL()
+{
+    m_lgplDialog->show();
+}
+
+void DRS4ScopeDlg::showUsedGPL()
+{
+    m_usedgplDialog->show();
+}
+
 void DRS4ScopeDlg::updateInBurstMode()
 {
     QMutexLocker locker(&m_mutex);
@@ -9453,6 +9467,9 @@ void DRS4ScopeDlg::arrangeIcons()
     ui->actionLoad_Streaming_Data_File->setIcon(QIcon(":/images/images/006-binary-code-loading-symbol.png"));
 
     ui->actionInfo->setIcon(QIcon(":/images/images/002-information.png"));
+    ui->actionLicense_GPLv3->setIcon(QIcon(":/images/images/002-information.png"));
+    ui->actionLicense_LGPLv3->setIcon(QIcon(":/images/images/002-information.png"));
+    ui->actionUsed_License_GPLv3->setIcon(QIcon(":/images/images/002-information.png"));
     ui->actionOpen_script->setIcon(QIcon(":/images/images/004-computing-script.png"));
     ui->actionOpen->setIcon(QIcon(":/images/images/003-chat.png"));
     ui->actionOpen_2->setIcon(QIcon(":/images/images/001-settings.png"));

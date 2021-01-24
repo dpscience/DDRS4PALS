@@ -52,44 +52,29 @@
 ** https://www.sciencedirect.com/science/article/pii/S235271101930038X
 **/
 
-#ifndef PROJECTMANAGER_H
-#define PROJECTMANAGER_H
+#ifndef DRS4LICENSETEXTBOX_H
+#define DRS4LICENSETEXTBOX_H
 
-#include "dversion.h"
-#include "settings.h"
+#include <QWidget>
+#include <QIODevice>
+#include <QFile>
 
-class PALSProjectManager
-{
-    PALSProject*  m_project;
-    QString m_fileName;
-    int m_minChannel;
-    int m_maxChannel;
+#include "DLib/DTypes/defines.h"
 
-    PALSProjectManager();
-    virtual ~PALSProjectManager();
+namespace Ui {
+class DRS4LicenseTextBox;
+}
 
+class DRS4LicenseTextBox : public QWidget {
+    Q_OBJECT
 public:
-    static PALSProjectManager *sharedInstance();
+    explicit DRS4LicenseTextBox(QWidget *parent = DNULLPTR);
+    virtual ~DRS4LicenseTextBox();
 
-    bool load(const QString& fileName);
-    bool save(const QString& fileName);
+    void addLicense(const QString& license, const QString& header);
 
-    void setFileName(const QString fileName);
-    QString getFileName() const;
-
-    void setASCIIDataName(const QString& file);
-    QString getASCIIDataName() const;
-
-    void setChannelRanges(int min, int max);
-
-    int getMinChannel() const;
-    int getMaxChannel() const;
-
-    PALSDataStructure *getDataStructure() const;
-    PALSResultHistorie *getResultHistorie() const;
-
-    ///Creates a default Project:
-    void createEmptyProject();
+private:
+    Ui::DRS4LicenseTextBox *ui;
 };
 
-#endif // PROJECTMANAGER_H
+#endif // DRS4LICENSETEXTBOX_H

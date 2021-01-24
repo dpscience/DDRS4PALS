@@ -41,7 +41,7 @@
          </font>
         </property>
         <property name="text">
-         <string>This Software is written by Danny Petschke (All rights reserved 2016-2020)</string>
+         <string>This Software is written by Danny Petschke (All rights reserved 2016-2021)</string>
         </property>
         <property name="textFormat">
          <enum>Qt::PlainText</enum>

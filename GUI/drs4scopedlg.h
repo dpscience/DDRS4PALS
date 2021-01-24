@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2020 Danny Petschke
+**  Copyright (C) 2016-2021 Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include <GUI/drs4pulsesavedlg.h>
 #include <GUI/drs4pulsesaverangedlg.h>
 #include <GUI/drs4calculatordlg.h>
+#include <GUI/drs4licensetextbox.h>
 
 #include "drs4boardmanager.h"
 #include "drs4worker.h"
@@ -331,6 +332,9 @@ private slots:
     void showSavePulses();
     void showSavePulsesRange();
     void showCalculator();
+    void showGPL();
+    void showLGPL();
+    void showUsedGPL();
 
 private slots:
     void updateInBurstMode();
@@ -620,6 +624,9 @@ private:
     DRS4PulseSaveDlg *m_pulseSaveDlg;
     DRS4PulseSaveRangeDlg *m_pulseSaveRangeDlg;
     DRS4CalculatorDlg *m_calculatorDlg;
+    DRS4LicenseTextBox *m_gplDialog;
+    DRS4LicenseTextBox *m_lgplDialog;
+    DRS4LicenseTextBox *m_usedgplDialog;
 
     /* Fit - Results */
     double m_lastFWHMABInPs;
