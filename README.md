@@ -30,6 +30,8 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 * Select the <b>DRS4 evaluation board</b> from the list of devices and click on "Install Driver".
 * Run the <b>DDRS4PALS</b> executable.
 
+<b>The repository of the DDRS4PALS-installer can be found</b> [here.](https://github.com/dpscience/DDRS4PALS-installer)
+
 ## ``Option 2: manual installation``
 * Download the latest software release (<b>DDRS4PALS_v114.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
 * Unzip <b>DDRS4PALS_v114.rar</b>.
@@ -68,6 +70,8 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## ``v1.x``
+
+DDRS4PALS <b>v1.14</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4460129.svg)](https://doi.org/10.5281/zenodo.4460129)<br>
 
 DDRS4PALS <b>v1.13</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4308386.svg)](https://doi.org/10.5281/zenodo.4308386)<br>
 
@@ -119,7 +123,7 @@ DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 # License of DDRS4PALS (GNU General Public License) <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
-Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br><br>
+Copyright (c) 2016-2020 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rights reserved.<br>
 
 <p align="justify">This program is free software: you can redistribute it and/or modify<br>
 it under the terms of the GNU General Public License as published by<br>
