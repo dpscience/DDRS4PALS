@@ -23,7 +23,7 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ## ``Option 1: via installer``
-* Download the latest installer (<b>installer_DDRS4PALS-v1.14.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Download the latest installer (<b>installer_DDRS4PALS-v1.15.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
 * Run the installer.
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
@@ -34,7 +34,7 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 ## ``Option 2: manual installation``
 * Download the latest software release (<b>DDRS4PALS_v114.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
-* Unzip <b>DDRS4PALS_v114.rar</b>.
+* Unzip <b>DDRS4PALS_v115.rar</b>.
 * Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
@@ -70,6 +70,8 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## ``v1.x``
+
+DDRS4PALS <b>v1.15</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4460129.svg)](https://doi.org/10.5281/zenodo.4730967)<br>
 
 DDRS4PALS <b>v1.14</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4460129.svg)](https://doi.org/10.5281/zenodo.4460129)<br>
 
