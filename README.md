@@ -73,6 +73,8 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 
 DDRS4PALS <b>v1.15</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4730967.svg)](https://doi.org/10.5281/zenodo.4730967)<br>
 
+Since this release [(v1.15)](https://doi.org/10.5281/zenodo.4730967), DDRS4PALS has implemented a freely configurable HTTP server enabling access to all measurement related relevant data and settings via browser, i.e. url requests.    
+
 DDRS4PALS <b>v1.14</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4460129.svg)](https://doi.org/10.5281/zenodo.4460129)<br>
 
 DDRS4PALS <b>v1.13</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4308386.svg)](https://doi.org/10.5281/zenodo.4308386)<br>
