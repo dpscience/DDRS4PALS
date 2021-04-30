@@ -60,9 +60,9 @@
 /* change here before releasing a new version **/
 #define NAME                               QString("DDRS4PALS")
 #define MAJOR_VERSION          QString("1")
-#define MINOR_VERSION           QString("14")
+#define MINOR_VERSION           QString("15")
 #define VERSION_EXTENSION  QString("- official -")
-#define DATE_EXTENSION         QString("2021-01-24")
+#define DATE_EXTENSION         QString("2021-04-30")
 
 /* streaming on external storage device */
 #define DATA_STREAM_VERSION 1
@@ -95,7 +95,8 @@
 
 #define MSGBOX(__text__) DMSGBOX2(__text__, PROGRAM_NAME);
 
-#define COPYRIGHT_NOTICE QString("(C) Copyright 2016-2021 by Danny Petschke. All rights reserved.")
+#define COPYRIGHT_DATE "2016-2021"
+#define COPYRIGHT_NOTICE QString("(C) Copyright %1 by Danny Petschke. All rights reserved.").arg(COPYRIGHT_DATE)
 
 #define SHOW_ABOUT() { const QString text = PROGRAM_NAME + "<br><br>" + COPYRIGHT_NOTICE + "<br><br>"; \
     const QString contact = "contact: <a href=\"danny.petschke@uni-wuerzburg.de\">danny.petschke@uni-wuerzburg.de</a><br><br>"; \

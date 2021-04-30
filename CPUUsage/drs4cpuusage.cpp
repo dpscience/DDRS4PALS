@@ -81,6 +81,11 @@ float DRS4CPUUsageManager::releaseCPULoad()
     return percent * 100;
 }
 
+float DRS4CPUUsageManager::avgCPULoad()
+{
+    return m_avgCPUUsage;
+}
+
 void DRS4CPUUsageManager::start(int intervalInMilliseconds)
 {
     if (intervalInMilliseconds != -1)

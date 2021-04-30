@@ -84,28 +84,10 @@ public:
     qint64 integralCountsMerged() const;
     qint64 integralCountsCoincidence() const;
 
-    bool isAcquisitionStopped();
-    bool isAcquisitionRunning();
-
-    int getLastFitStateOfABSpectrum();
-    int getLastFitStateOfBASpectrum();
-    int getLastFitStateOfMergedSpectrum();
-    int getLastFitStateOfCoincidenceSpectrum();
-
-    double getT0OfABSpectrumInPicoseconds();
-    double getT0OfBASpectrumInPicoseconds();
-    double getT0OfMergedSpectrumInPicoseconds();
-    double getT0OfCoincidenceSpectrumInPicoseconds();
-
-    double getFWHMOfABSpectrumInPicoseconds();
-    double getFWHMOfBASpectrumInPicoseconds();
-    double getFWHMOfMergedSpectrumInPicoseconds();
-    double getFWHMOfCoincidenceSpectrumInPicoseconds();
+    /*bool isAcquisitionStopped();
+    bool isAcquisitionRunning();*/
 
     double getBoardTemperatureInDegree();
-
-    int getStartCell();
-    int getStopCell();
 
     QString getCurrentSettingsFile();
 
@@ -119,22 +101,11 @@ public:
 
     double getATSInPicoseconds();
 
-    int getCoincidenceFitIterations();
-    int getABFitIterations();
-    int getBAFitIterations();
-    int getMergedFitIterations();
-
-    bool isPositiveTriggerPolarity();
-    bool isPositiveSignal();
-
-    void stop();
-    void start();
+    /*void stop();
+    void start();*/
 
     void resetPHSA();
     void resetPHSB();
-
-    void resetAreaPlotA();
-    void resetAreaPlotB();
 
     void resetAllSpectra();
 
@@ -161,33 +132,12 @@ public:
 
     void changeTriggerDelayInNanoseconds(int delay);
 
-    void changeStartCell(int cell);
-    void changeStopCell(int cell);
-
     void changeATSInPicoseconds(double ps);
-
-    void changeCoincidenceDataMaxFitIterations(unsigned int iterations);
-    void changeMergedDataMaxFitIterations(unsigned int iterations);
-    void changeABDataMaxFitIterations(unsigned int iterations);
-    void changeBADataMaxFitIterations(unsigned int iterations);
-
-    void changePulseAreaFilterEnabled(bool enabled);
-
-    void changeBurstMode(bool burstMode);
-    bool isBurstModeRunning();
 
     bool waitForCountsAB(int counts);
     bool waitForCountsBA(int counts);
     bool waitForCountsMerged(int counts);
     bool waitForCountsPrompt(int counts);
-
-    void changeUsingPositiveTriggerPolarity(bool positive);
-    void changeToHavingPositiveSignal(bool positive);
-
-    void fitGaussianOnCoincidenceData();
-    void fitGaussianOnMergedData();
-    void fitGaussianOnABData();
-    void fitGaussianOnBAData();
 
     bool loadSimulationInputFile(const QString& path);
 

@@ -93,6 +93,7 @@ void DRS4UpdateNotifier::updateReplyFinished(QNetworkReply *reply)
             const QString latestReleaseTag = obj.value("tag_name").toString();
             const QString latestReleaseUrl = obj.value("html_url").toString();
             const QDateTime latestReleasePublishDateTime = QDateTime::fromString(obj.value("published_at").toString(), Qt::ISODate);
+            const QString changes = obj.value("body").toString();
 
             if (!latestReleaseTag.isEmpty()
                     && !latestReleaseTag.isNull()) {

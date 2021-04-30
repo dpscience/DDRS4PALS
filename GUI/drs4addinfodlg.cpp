@@ -81,12 +81,12 @@ void DRS4AddInfoDlg::setAddInfo(const QString &info)
     QMutexLocker locker(&m_mutex);
 
     ui->textBrowser_addInfo->clear();
-    ui->textBrowser_addInfo->setHtml(info);
+    ui->textBrowser_addInfo->setText(info);
 }
 
 QString DRS4AddInfoDlg::getInfo() const
 {
-    return ui->textBrowser_addInfo->toHtml();
+    return ui->textBrowser_addInfo->toPlainText();
 }
 
 void DRS4AddInfoDlg::updateText()

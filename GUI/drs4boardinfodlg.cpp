@@ -118,7 +118,6 @@ void DRS4BoardInfoDlg::updateInfo()
 
     m_worker->setBusy(false);
 
-
     ui->groupBox_mainBoard->setTitle("Serial Number: " + QVariant(SN).toString());
 
     ui->label_boardType->setText("<b>" + QVariant(BT).toString() + "</b>");
@@ -130,8 +129,8 @@ void DRS4BoardInfoDlg::updateInfo()
     ui->label_numberOfReadoutChannels->setText("<b>" + QVariant(numberOfReadOutChannel).toString() + "</b>");
     ui->label_numberOfInputs->setText("<b>" + QVariant(numberOfInputs).toString() + "</b>");
 
-    ui->label_calibratedFrequency->setText("<b>" + QVariant(caliFreq).toString() + "</b>");
-    ui->label_runningFrequency->setText("<b>" + QVariant(trueFreq).toString() + "</b>");
+    ui->label_calibratedFrequency->setText("<b>" + QString::number(caliFreq, 'f', 2) + "</b>");
+    ui->label_runningFrequency->setText("<b>" + QString::number(trueFreq, 'f', 2) + "</b>");
     ui->label_calibratedVoltage->setText("<b>" + QVariant(caliVolt).toString() + "</b>");
 
     ui->label_validVotageCalib->setText("<b>" + QString(validVoltCalib?"<font color=\"Green\">OK</font>":"<font color=\"Red\">NO</font>") + "</b>");

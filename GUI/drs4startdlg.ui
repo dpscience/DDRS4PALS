@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>509</width>
-    <height>500</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>509</width>
-    <height>500</height>
+    <height>550</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>509</width>
-    <height>500</height>
+    <height>550</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -426,6 +426,91 @@ border-color: black;
       </item>
       <item>
        <spacer name="horizontalSpacer_11">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <spacer name="horizontalSpacer_22">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_calibration">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>120</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+border-style: flat;
+background-color: rgb(232, 97, 237); 
+color: rgb(240, 245, 241);
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(196, 165, 199);
+color: rgb(240, 245, 241);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: green;
+border-radius: 2;
+border-color: black;
+}</string>
+        </property>
+        <property name="text">
+         <string>Calibrate ...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_23">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+
+<head>
+<title>DDRS4PALS-vVERSION_INFO</title>
+
+<style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+body {font-family: Arial;}
+
+/* horizontal alignment */
+.text-center {
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<!--*************************************************************** software info ************************************************************-->
+<blockquote>
+<h4 style="text-align: center;"><span style="color: #808080;">Copyright</span> &copy; <span style="color: #808080;">Danny Petschke COPYRIGHT_DATE</span> (<a href="mailto:danny.petschke@uni-wuerzburg.de">danny.petschke@uni-wuerzburg.de</a>)&nbsp;<span style="color: #808080;">All rights reserved.</span></h4>
+</blockquote>
+<h1 style="text-align: center;"><span style="color: #3366ff;"><strong>&nbsp; <span style="color: #800080;">DDRS4PALS-vVERSION_INFO</span></strong></span></h1>
+
+<!--******************************************* status (temperature, CPU, sampling frequency) *****************************************-->
+<hr />
+<h3 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp; <span style="color: #000000;">/online mode</span><span style="color: MEASUREMENT_STATE_COLOR;"> MEASUREMENT_STATE</span>&nbsp; <span style="color: #000000;">/parallel computation:</span><span style="color: PARALLEL_INFO_COLOR;"> PARALLEL_INFO</span></strong></span></h3>
+<hr />
+<h3 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp; <span style="color: #000000;">/streaming to external drive:</span><span style="color: STREAMING_STATE_COLOR;"> STREAMING_STATE</span>&nbsp; <span style="color: #000000;">/file-size:</span><span style="color: STREAMING_FILE_SIZE_COLOR;"> STREAMING_FILE_SIZE</span> MB</strong></span></h3>
+<hr />
+<h3 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp; <span style="color: #000000;">/downloading from external drive:</span><span style="color: DOWNLOAD_STATE_COLOR;"> DOWNLOAD_STATE</span>&nbsp; <span style="color: #000000;">/progress:</span><span style="color: DOWNLOAD_PROGRESS_COLOR;"> DOWNLOAD_PROGRESS</span> %</strong></span></h3>
+<hr />
+<blockquote>
+<h4 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp;/sampling-frequency:<span style="color: SAMPLING_VALUE_COLOR;"> SAMPLING_VALUE</span> Hz</strong></span></h4>
+<h4 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp;/CPU usage:<span style="color: CPU_VALUE_COLOR;"> CPU_VALUE</span> %</strong></span></h4>
+</blockquote>
+<hr />
+<blockquote>
+<div class="text-center">
+<button onclick="window.location.href='/software-settings'">open software-settings ...</button>
+</div>
+</blockquote>
+<blockquote>
+<div class="text-center">
+<button onclick="window.location.href='/simulation-input'">open simulation-input ...</button>
+</div>
+</blockquote>
+
+<!--************************************************************ lifetime spectra *************************************************************-->
+<!--******************************************************************* A-B *******************************************************************-->
+<hr />
+<div class="text-center">
+<button onclick="window.location.href='/spectrum-A-B'">show spectrum A-B ...</button>
+<h4 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp;/integral counts:</span><span style="color: COUNTS_AB_COLOR;"> COUNTS_AB</span><span style="color: #000000;">&nbsp;/efficiency:</span><span style="color: EFFICIENCY_AB_COLOR;"> EFFICIENCY_AB</span> Hz</strong></h4>
+</div>
+<!--******************************************************************* B-A *******************************************************************-->
+<hr />
+<div class="text-center">
+<button onclick="window.location.href='/spectrum-B-A'">show spectrum B-A ...</button>
+<h4 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp;/integral counts:</span><span style="color: COUNTS_BA_COLOR;"> COUNTS_BA</span><span style="color: #000000;">&nbsp;/efficiency:</span><span style="color: EFFICIENCY_BA_COLOR;"> EFFICIENCY_BA</span> Hz</strong></h4>
+</div>
+<!--***************************************************************** merged ****************************************************************-->
+<hr />
+<div class="text-center">
+<button onclick="window.location.href='/spectrum-merged'">show merged spectrum ...</button>
+<h4 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp;/integral counts:</span><span style="color: COUNTS_MERGED_COLOR;"> COUNTS_MERGED</span><span style="color: #000000;">&nbsp;/efficiency:</span><span style="color: EFFICIENCY_MERGED_COLOR;"> EFFICIENCY_MERGED</span> Hz</strong></h4>
+</div>
+<!--***************************************************************** prompt ****************************************************************-->
+<hr />
+<div class="text-center">
+<button onclick="window.location.href='/spectrum-prompt'">show prompt spectrum ...</button>
+<h4 style="text-align: center;"><span style="color: #000000;"><strong>&nbsp;/integral counts:</span><span style="color: COUNTS_PROMPT_COLOR;"> COUNTS_PROMPT</span><span style="color: #000000;">&nbsp;/efficiency:</span><span style="color: EFFICIENCY_PROMPT_COLOR;"> EFFICIENCY_PROMPT</span> Hz</strong></h4>
+<hr />
+</div>
+<p><span style="color: #808080;">GitHub: <a href="https://github.com/dpscience/DDRS4PALS">https://github.com/dpscience/DDRS4PALS</a></span></p>
+<p><span style="color: #808080;">researchGate: <a href="https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board">https://www.researchgate.net</a></span></p>
+<p><span style="color: #808080;">related publication: <a href="https://www.sciencedirect.com/science/article/pii/S2352711019300676">DDRS4PALS (Elsevier/SoftwareX)</a></span></p>
+<meta http-equiv="refresh" content="UPDATE_RATE;url=URL">
+</body>
+</html>

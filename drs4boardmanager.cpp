@@ -97,6 +97,11 @@ bool DRS4BoardManager::connect()
         return false;
 }
 
+bool DRS4BoardManager::isConnected() const
+{
+    return m_drsBoard != DNULLPTR;
+}
+
 DRSBoard *DRS4BoardManager::currentBoard() const
 {
     QMutexLocker locker(&m_mutex);
@@ -132,3 +137,44 @@ bool DRS4BoardManager::usingStreamDataOnDemoMode() const
     return m_demoFromStreamData;
 }
 
+QJsonDocument DRS4BoardManager::hardwareInfo() const
+{
+    QJsonObject main;
+
+    /* specifications */
+    QJsonObject specs;
+
+    specs["no. of inputs"] = currentBoard()->GetNumberOfInputs();
+    specs["no. of channels"] = currentBoard()->GetNumberOfChannels();
+    specs["no. of chips"] = currentBoard()->GetNumberOfChips();
+    specs["no. of readout-channels"] = currentBoard()->GetNumberOfReadoutChannels();
+    specs["firmware-version"] = currentBoard()->GetFirmwareVersion();
+    specs["chip-type"] = currentBoard()->GetDRSType();
+    specs["board-type"] = currentBoard()->GetBoardType();
+    specs["serial-number"] = currentBoard()->GetBoardSerialNumber();
+
+    /* calibration */
+    QJsonObject calib;
+
+    calib["calibrated temperature"] = QString::number(currentBoard()->GetCalibratedTemperature(), 'f', 2) + QString(" °C");
+    calib["calibrated voltage input-range"] = currentBoard()->GetCalibratedInputRange();
+    calib["is voltage-calibration valid?"] = currentBoard()->IsVoltageCalibrationValid() ? "true" : "false";
+    calib["calibrated frequency"] = QString::number(currentBoard()->GetCalibratedFrequency(), 'f', 2) + QString(" GHz");
+    calib["is timing-calibration valid?"] = currentBoard()->IsTimingCalibrationValid() ? "true" : "false";
+
+    /* trigger */
+    QJsonObject trigger;
+
+    trigger["trigger-delay"] = QString::number(currentBoard()->GetTriggerDelayNs(), 'f', 2) + QString(" ns");
+    trigger["trigger-source"] = currentBoard()->GetTriggerSource();
+
+    main["trigger-configuration"] = trigger;
+    main["calibration"] = calib;
+    main["board-temperature"] = QString::number(currentBoard()->GetTemperature(), 'f', 2) + QString(" °C");
+    main["true-frequency"] = QString::number(currentBoard()->GetTrueFrequency(), 'f', 2) + QString(" GHz");
+    main["nominal-frequency"] = QString::number(currentBoard()->GetNominalFrequency(), 'f', 2) + QString(" GHz");
+    main["voltage input-range"] = currentBoard()->GetInputRange();
+    main["specifications"] = specs;
+
+    return QJsonDocument(main);
+}

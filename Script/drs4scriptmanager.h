@@ -135,9 +135,6 @@ public slots:
     void resetPHSA();
     void resetPHSB();
 
-    void resetAreaPlotA();
-    void resetAreaPlotB();
-
     void resetAllSpectra();
     void resetABSpectrum();
     void resetBASpectrum();
@@ -162,64 +159,25 @@ public slots:
 
     void changeTriggerDelayInNanoseconds(int delay);
 
-    void changeStartCell(int cell);
-    void changeStopCell(int cell);
-
     void changeATSInPicoseconds(double ps);
-
-    void changeUsingPositiveTriggerPolarity(bool positive);
-    void changeToHavingPositiveSignal(bool positive);
-
-    void changePromtDataMaxFitIterations(unsigned int iterations);
-    void changeMergedDataMaxFitIterations(unsigned int iterations);
-    void changeABDataMaxFitIterations(unsigned int iterations);
-    void changeBADataMaxFitIterations(unsigned int iterations);
 
     bool waitForCountsAB(int counts);
     bool waitForCountsBA(int counts);
     bool waitForCountsMerged(int counts);
     bool waitForCountsPrompt(int counts);
 
-    void fitGaussianOnPromtData();
-    void fitGaussianOnMergedData();
-    void fitGaussianOnABData();
-    void fitGaussianOnBAData();
-
-    void changeBurstMode(bool burstMode);
-    bool isBurstModeRunning();
-
-    void changePulseAreaFilterEnabled(bool enabled);
-
-    void startAcquisition();
-    void stopAcquisition();
+    /*void startAcquisition();
+    void stopAcquisition();*/
 
     int getCountsOfABSpectrum();
     int getCountsOfBASpectrum();
     int getCountsOfMergedSpectrum();
     int getCountsOfPromtSpectrum();
 
-    bool isAcquisitionStopped();
-    bool isAcquisitionRunning();
-
-    int getLastFitStateOfABSpectrum();
-    int getLastFitStateOfBASpectrum();
-    int getLastFitStateOfMergedSpectrum();
-    int getLastFitStateOfPromtSpectrum();
-
-    double getT0OfABSpectrumInPicoseconds();
-    double getT0OfBASpectrumInPicoseconds();
-    double getT0OfMergedSpectrumInPicoseconds();
-    double getT0OfPromtSpectrumInPicoseconds();
-
-    double getFWHMOfABSpectrumInPicoseconds();
-    double getFWHMOfBASpectrumInPicoseconds();
-    double getFWHMOfMergedSpectrumInPicoseconds();
-    double getFWHMOfPromtSpectrumInPicoseconds();
+    /*bool isAcquisitionStopped();
+    bool isAcquisitionRunning();*/
 
     double getBoardTemperatureInDegree();
-
-    int getStartCell();
-    int getStopCell();
 
     QString getCurrentSettingsFile();
 
@@ -232,14 +190,6 @@ public slots:
     double getCFDLevelB();
 
     double getATSInPicoseconds();
-
-    int getPromtFitIterations();
-    int getABFitIterations();
-    int getBAFitIterations();
-    int getMergedFitIterations();
-
-    bool isPositiveTriggerPolarity();
-    bool isPositiveSignal();
 };
 
 /* ----> /Script-Engine Functions <----*/

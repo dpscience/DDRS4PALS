@@ -52,49 +52,43 @@
 ** https://www.sciencedirect.com/science/article/pii/S235271101930038X
 **/
 
-#ifndef DRS4BOARDMANAGER_H
-#define DRS4BOARDMANAGER_H
+#ifndef DRS4HTTPSERVERCONFIGDLG_H
+#define DRS4HTTPSERVERCONFIGDLG_H
 
-#include <QMutex>
-#include <QMutexLocker>
-
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonValue>
+#include "dversion.h"
+#include "WebServer/drs4webserver.h"
+#include "drs4programsettingsmanager.h"
+#include "drs4worker.h"
 
 #include "DLib.h"
-#include "DRS/drs507/DRS.h"
 
-class DRS4BoardManager
-{
-    DRS4BoardManager();
-    virtual ~DRS4BoardManager();
+#include <QMainWindow>
 
-    DRS *m_drs;
-    DRSBoard *m_drsBoard;
+namespace Ui {
+class DRS4HttpServerConfigDlg;
+}
 
-    bool m_demoMode;
-    bool m_demoFromStreamData;
-
-    mutable QMutex m_mutex;
+class DRS4HttpServerConfigDlg : public QMainWindow {
+    Q_OBJECT
 
 public:
-    static DRS4BoardManager *sharedInstance();
+    explicit DRS4HttpServerConfigDlg(DRS4Worker *worker, QWidget *parent = DNULLPTR);
+    virtual ~DRS4HttpServerConfigDlg();
 
-    bool connect();
+protected:
+    virtual void showEvent(QShowEvent *event);
 
-    bool isConnected() const;
+private slots:
+    void updateServer();
+    void changeAutostart(bool on);
+    void changePort(int port);
+    void changeUpdateRate(int rate);
+    void startStopServer();
 
-    DRSBoard *currentBoard() const;
+private:
+    Ui::DRS4HttpServerConfigDlg *ui;
 
-    void setDemoMode(bool demoMode);
-    void setDemoFromStreamData(bool usingStreamData);
-
-    bool isDemoModeEnabled() const;
-    bool usingStreamDataOnDemoMode() const;
-
-    QJsonDocument hardwareInfo() const;
+    DRS4Worker *m_worker;
 };
 
-#endif // DRS4BOARDMANAGER_H
+#endif // DRS4HTTPSERVERCONFIGDLG_H

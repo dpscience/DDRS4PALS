@@ -57,7 +57,7 @@ QT       += core gui concurrent script printsupport network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = DDRS4PALS_1_0_14
+TARGET = DDRS4PALS_1_0_15
 TEMPLATE = app
 
 RC_FILE = softwareIcon.rc
@@ -108,7 +108,11 @@ SOURCES += main.cpp\
     CPUUsage/drs4cpuusage.cpp \
     GUI/drs4doublespinbox.cpp \
     GUI/drs4spinbox.cpp \
-    GUI/drs4licensetextbox.cpp
+    GUI/drs4licensetextbox.cpp \
+    GUI/drs4boardcalibrationdlg.cpp \
+    WebServer/drs4webserver.cpp \
+    GUI/drs4httpserverconfigdlg.cpp \
+    GUI/drs4blinkinglight.cpp
 
 HEADERS  += DRS/drs507/DRS.h \
     DRS/drs507/averager.h\
@@ -149,7 +153,11 @@ HEADERS  += DRS/drs507/DRS.h \
     CPUUsage/drs4cpuusage.h \
     GUI/drs4doublespinbox.h \
     GUI/drs4spinbox.h \
-    GUI/drs4licensetextbox.h
+    GUI/drs4licensetextbox.h \
+    GUI/drs4boardcalibrationdlg.h \
+    WebServer/drs4webserver.h \
+    GUI/drs4httpserverconfigdlg.h \
+    GUI/drs4blinkinglight.h
 
 FORMS    += GUI/drs4scopedlg.ui \
     GUI/drs4addinfodlg.ui \
@@ -161,7 +169,10 @@ FORMS    += GUI/drs4scopedlg.ui \
     GUI/drs4pulsesaverangedlg.ui \
     GUI/drs4calculatordlg.ui \
     GUI/drs4cfdalgorithmdlg.ui \
-    GUI/drs4licensetextbox.ui
+    GUI/drs4licensetextbox.ui \
+    GUI/drs4boardcalibrationdlg.ui \
+    GUI/drs4httpserverconfigdlg.ui \
+    GUI/drs4blinkinglight.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -llibusb-1.0
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -llibusb-1.0

@@ -73,6 +73,8 @@
 
 #define __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER 4381
 
+#define __DISABLE_MUTEX_LOCKER
+
 struct DRS4PulseShapeFilterRecordScheme {
     enum Scheme : int {
         RC_AB = 0,
@@ -868,6 +870,7 @@ public:
     int channelCntMerged() const;
 
     int triggerSource() const;
+    int triggerSource_index() const;
     bool isTriggerPolarityPositive() const;
 
     double triggerLevelAmV() const;

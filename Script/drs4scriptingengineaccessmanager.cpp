@@ -112,7 +112,7 @@ qint64 DRS4ScriptingEngineAccessManager::integralCountsCoincidence() const
     return m_dlgAccess->countsOfCoincidenceSpectrum();
 }
 
-bool DRS4ScriptingEngineAccessManager::isAcquisitionStopped()
+/*bool DRS4ScriptingEngineAccessManager::isAcquisitionStopped()
 {
     QMutexLocker locker(&m_mutex);
 
@@ -130,127 +130,7 @@ bool DRS4ScriptingEngineAccessManager::isAcquisitionRunning()
         return false;
 
     return m_dlgAccess->isAcquisitionRunning();
-}
-
-int DRS4ScriptingEngineAccessManager::getLastFitStateOfABSpectrum()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return -1;
-
-    return m_dlgAccess->lastFitResultAB();
-}
-
-int DRS4ScriptingEngineAccessManager::getLastFitStateOfBASpectrum()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return -1;
-
-    return m_dlgAccess->lastFitResultBA();
-}
-
-int DRS4ScriptingEngineAccessManager::getLastFitStateOfMergedSpectrum()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return -1;
-
-    return m_dlgAccess->lastFitResultMerged();
-}
-
-int DRS4ScriptingEngineAccessManager::getLastFitStateOfCoincidenceSpectrum()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return -1;
-
-    return m_dlgAccess->lastFitResultCoincidence();
-}
-
-double DRS4ScriptingEngineAccessManager::getT0OfABSpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastt0ABInPs();
-}
-
-double DRS4ScriptingEngineAccessManager::getT0OfBASpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastt0BAInPs();
-}
-
-double DRS4ScriptingEngineAccessManager::getT0OfMergedSpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastt0MergedInPs();
-}
-
-double DRS4ScriptingEngineAccessManager::getT0OfCoincidenceSpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastt0CoincidenceInPs();
-}
-
-double DRS4ScriptingEngineAccessManager::getFWHMOfABSpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastFWHMABInPs();
-}
-
-double DRS4ScriptingEngineAccessManager::getFWHMOfBASpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastFWHMBAInPs();
-}
-
-double DRS4ScriptingEngineAccessManager::getFWHMOfMergedSpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastFWHMMergedInPs();
-}
-
-double DRS4ScriptingEngineAccessManager::getFWHMOfCoincidenceSpectrumInPicoseconds()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0.0f;
-
-    return m_dlgAccess->lastFWHMCoincidenceInPs();
-}
+}*/
 
 double DRS4ScriptingEngineAccessManager::getBoardTemperatureInDegree()
 {
@@ -260,26 +140,6 @@ double DRS4ScriptingEngineAccessManager::getBoardTemperatureInDegree()
         return 0.0f;
 
     return m_dlgAccess->lastBoardTemperature();
-}
-
-int DRS4ScriptingEngineAccessManager::getStartCell()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return -1;
-
-    return m_dlgAccess->startCell();
-}
-
-int DRS4ScriptingEngineAccessManager::getStopCell()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return -1;
-
-    return m_dlgAccess->stopCell();
 }
 
 QString DRS4ScriptingEngineAccessManager::getCurrentSettingsFile()
@@ -355,67 +215,7 @@ double DRS4ScriptingEngineAccessManager::getATSInPicoseconds()
     return m_dlgAccess->meanCableDelayInPicoseconds();
 }
 
-int DRS4ScriptingEngineAccessManager::getCoincidenceFitIterations()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0;
-
-    return m_dlgAccess->coincidenceFitIterations();
-}
-
-int DRS4ScriptingEngineAccessManager::getABFitIterations()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0;
-
-    return m_dlgAccess->ABFitIterations();
-}
-
-int DRS4ScriptingEngineAccessManager::getBAFitIterations()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0;
-
-    return m_dlgAccess->BAFitIterations();
-}
-
-int DRS4ScriptingEngineAccessManager::getMergedFitIterations()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return 0;
-
-    return m_dlgAccess->mergedFitIterations();
-}
-
-bool DRS4ScriptingEngineAccessManager::isPositiveTriggerPolarity()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return false;
-
-    return m_dlgAccess->isPositivTriggerPolarity();
-}
-
-bool DRS4ScriptingEngineAccessManager::isPositiveSignal()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return false;
-
-    return m_dlgAccess->isPositiveSignal();
-}
-
-void DRS4ScriptingEngineAccessManager::stop()
+/*void DRS4ScriptingEngineAccessManager::stop()
 {
     QMutexLocker locker(&m_mutex);
 
@@ -433,7 +233,7 @@ void DRS4ScriptingEngineAccessManager::start()
         return;
 
     m_dlgAccess->startAcquisition(FunctionSource::AccessFromScript);
-}
+}*/
 
 void DRS4ScriptingEngineAccessManager::resetPHSA()
 {
@@ -453,26 +253,6 @@ void DRS4ScriptingEngineAccessManager::resetPHSB()
         return;
 
     m_dlgAccess->resetPHSB(FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::resetAreaPlotA()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->resetAreaPlotA(FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::resetAreaPlotB()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->resetAreaPlotB(FunctionSource::AccessFromScript);
 }
 
 void DRS4ScriptingEngineAccessManager::resetAllSpectra()
@@ -655,26 +435,6 @@ void DRS4ScriptingEngineAccessManager::changeTriggerDelayInNanoseconds(int delay
     m_dlgAccess->changeTriggerDelay(delay, FunctionSource::AccessFromScript);
 }
 
-void DRS4ScriptingEngineAccessManager::changeStartCell(int cell)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changeStartCell(cell, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::changeStopCell(int cell)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changeStopCell(cell, FunctionSource::AccessFromScript);
-}
-
 void DRS4ScriptingEngineAccessManager::changeATSInPicoseconds(double ps)
 {
     QMutexLocker locker(&m_mutex);
@@ -685,82 +445,12 @@ void DRS4ScriptingEngineAccessManager::changeATSInPicoseconds(double ps)
     m_dlgAccess->changeMeanCableDelayPs(ps, FunctionSource::AccessFromScript);
 }
 
-void DRS4ScriptingEngineAccessManager::changeCoincidenceDataMaxFitIterations(unsigned int iterations)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changeCoincidenceFitIterations(iterations, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::changeMergedDataMaxFitIterations(unsigned int iterations)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changeMergedFitIterations(iterations, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::changeABDataMaxFitIterations(unsigned int iterations)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changeABFitIterations(iterations, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::changeBADataMaxFitIterations(unsigned int iterations)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changeBAFitIterations(iterations, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::changePulseAreaFilterEnabled(bool enabled)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changePulseAreaFilterEnabled(enabled, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::changeBurstMode(bool burstMode)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changeBurstModeEnabled(burstMode, FunctionSource::AccessFromScript);
-}
-
-bool DRS4ScriptingEngineAccessManager::isBurstModeRunning()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return false;
-
-    return m_dlgAccess->isBurstModeRunning();
-}
-
 bool DRS4ScriptingEngineAccessManager::waitForCountsAB(int counts)
 {
     if ( !m_dlgAccess )
         return false;
 
-    while (m_dlgAccess->countsOfABSpectrum() < counts) {}
+    while (m_dlgAccess->countsOfABSpectrum() < counts) { QApplication::processEvents(); }
 
     return true;
 }
@@ -770,7 +460,7 @@ bool DRS4ScriptingEngineAccessManager::waitForCountsBA(int counts)
     if ( !m_dlgAccess )
         return false;
 
-    while (m_dlgAccess->countsOfBASpectrum() < counts) {}
+    while (m_dlgAccess->countsOfBASpectrum() < counts) { QApplication::processEvents(); }
 
     return true;
 }
@@ -780,7 +470,7 @@ bool DRS4ScriptingEngineAccessManager::waitForCountsMerged(int counts)
     if ( !m_dlgAccess )
         return false;
 
-    while (m_dlgAccess->countsOfMergedSpectrum() < counts) {}
+    while (m_dlgAccess->countsOfMergedSpectrum() < counts) { QApplication::processEvents(); }
 
     return true;
 }
@@ -790,69 +480,9 @@ bool DRS4ScriptingEngineAccessManager::waitForCountsPrompt(int counts)
     if ( !m_dlgAccess )
         return false;
 
-    while (m_dlgAccess->countsOfCoincidenceSpectrum() < counts) {}
+    while (m_dlgAccess->countsOfCoincidenceSpectrum() < counts) { QApplication::processEvents(); }
 
     return true;
-}
-
-void DRS4ScriptingEngineAccessManager::changeUsingPositiveTriggerPolarity(bool positive)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changePositivTriggerPolarity(positive, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::changeToHavingPositiveSignal(bool positive)
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->changePositivSignal(positive, FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::fitGaussianOnCoincidenceData()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->fitCoincidenceData(FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::fitGaussianOnMergedData()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->fitMergedData(FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::fitGaussianOnABData()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->fitABData(FunctionSource::AccessFromScript);
-}
-
-void DRS4ScriptingEngineAccessManager::fitGaussianOnBAData()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if ( !m_dlgAccess )
-        return;
-
-    m_dlgAccess->fitBAData(FunctionSource::AccessFromScript);
 }
 
 bool DRS4ScriptingEngineAccessManager::loadSimulationInputFile(const QString &path)

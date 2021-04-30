@@ -76,6 +76,8 @@ public:
     static DRS4CPUUsageManager *sharedInstance();
 
     int interval() const;
+    float releaseCPULoad();
+    float avgCPULoad();
 
 signals:
     void cpu(int);
@@ -86,8 +88,6 @@ private slots:
 private:
     DRS4CPUUsageManager(QObject *parent = DNULLPTR);
     virtual ~DRS4CPUUsageManager();
-
-    float releaseCPULoad();
 
     QTimer m_timer;
     int m_interval;

@@ -1092,9 +1092,15 @@ void DRS4Worker::runSingleThreaded()
 
         m_isBlocking = false;
 
+        const int chnA = DRS4SettingsManager::sharedInstance()->channelNumberA();
+        const int chnB = DRS4SettingsManager::sharedInstance()->channelNumberB();
+
         if (!bDemoMode) {
             try {
-                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 3);
+                const int minChn = qMin(chnA, chnB);
+                const int maxChn = qMax(chnA, chnB);
+
+                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(minChn, maxChn);
             }
             catch (...) {
                 continue;
@@ -1126,7 +1132,7 @@ void DRS4Worker::runSingleThreaded()
             int retStateV = kSuccess;
 
             try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel0);
+                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2*chnA, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel0);
             }
             catch ( ... ) {               
                 continue;
@@ -1137,7 +1143,7 @@ void DRS4Worker::runSingleThreaded()
             }
 
             try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel1);
+                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2*chnB ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), tChannel1);
             }
             catch ( ... ) {
                 continue;
@@ -1148,7 +1154,7 @@ void DRS4Worker::runSingleThreaded()
             }
 
             try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, waveChannel0);
+                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2*chnA, waveChannel0);
             }
             catch ( ... ) {
                 continue;
@@ -1159,7 +1165,7 @@ void DRS4Worker::runSingleThreaded()
             }
 
             try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, waveChannel1);
+                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2*chnB, waveChannel1);
             }
             catch ( ... ) {
                 continue;
@@ -1260,7 +1266,7 @@ void DRS4Worker::runSingleThreaded()
         const bool bUsingTinoKluge = ((interpolationType == DRS4InterpolationType::type::spline) && (splineInterpolationType == 6));
         const bool bUsingLinearInterpol = ((interpolationType == DRS4InterpolationType::type::spline) && (splineInterpolationType == 1));
         const int intraRenderPoints = (DRS4InterpolationType::type::spline == interpolationType)?(DRS4SettingsManager::sharedInstance()->splineIntraSamplingCounts()):(DRS4SettingsManager::sharedInstance()->polynomialSamplingCounts());
-        const int streamIntraRenderPoints = DRS4ProgramSettingsManager::sharedInstance()->splineIntraPoints();
+        const int streamIntraRenderPoints =  DRS4ProgramSettingsManager::sharedInstance()->splineIntraPoints();
 
         const bool bMedianFilterA = DRS4SettingsManager::sharedInstance()->medianFilterAEnabled();
         const bool bMedianFilterB = DRS4SettingsManager::sharedInstance()->medianFilterBEnabled();
@@ -3085,9 +3091,15 @@ void DRS4Worker::runMultiThreaded()
 
         m_isBlocking = false;
 
+        const int chnA = DRS4SettingsManager::sharedInstance()->channelNumberA();
+        const int chnB = DRS4SettingsManager::sharedInstance()->channelNumberB();
+
         if (!bDemoMode) {
             try {
-                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(0, 3);
+                const int minChn = qMin(chnA, chnB);
+                const int maxChn = qMax(chnA, chnB);
+
+                DRS4BoardManager::sharedInstance()->currentBoard()->TransferWaves(minChn, maxChn);
             }
             catch (...) {
                 continue;
@@ -3122,7 +3134,7 @@ void DRS4Worker::runMultiThreaded()
             int retStateV = kSuccess;
 
             try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 0, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel0);
+                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2*chnA, DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel0);
             }
             catch ( ... ) {
                 continue;
@@ -3133,7 +3145,7 @@ void DRS4Worker::runMultiThreaded()
             }
 
             try {
-                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2 ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel1);
+                retStateT = DRS4BoardManager::sharedInstance()->currentBoard()->GetTime(0, 2*chnB ,DRS4BoardManager::sharedInstance()->currentBoard()->GetTriggerCell(0), inputData.m_tChannel1);
             }
             catch ( ... ) {
                 continue;
@@ -3144,7 +3156,7 @@ void DRS4Worker::runMultiThreaded()
             }
 
             try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 0, inputData.m_waveChannel0);
+                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2*chnA, inputData.m_waveChannel0);
             }
             catch ( ... ) {
                 continue;
@@ -3155,7 +3167,7 @@ void DRS4Worker::runMultiThreaded()
             }
 
             try {
-                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2, inputData.m_waveChannel1);
+                retStateV = DRS4BoardManager::sharedInstance()->currentBoard()->GetWave(0, 2*chnB, inputData.m_waveChannel1);
             }
             catch ( ... ) {
                 continue;

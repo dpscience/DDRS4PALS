@@ -123,6 +123,7 @@ DRS4ScriptDlg::DRS4ScriptDlg(DRS4ScopeDlg *dlg, QWidget *parent) :
     connect(ui->actionOptimize_FWHM_by_CFD_Levels, SIGNAL(triggered()), this, SLOT(loadExample_PulseStream_1()));
     connect(ui->actionWarming_Up_DRS4_Board_and_Start_Measurement, SIGNAL(triggered()), this, SLOT(loadExample_WarmingUp_2()));
     connect(ui->actionLoading_a_Simulation_Input_File, SIGNAL(triggered()), this, SLOT(loadExample_Simulation_1()));
+    connect(ui->actionIn_situ_measurement, SIGNAL(triggered()), this, SLOT(loadExample_Insitu_1()));
 
     if (DRS4BoardManager::sharedInstance()->isDemoModeEnabled()) {
         ui->actionWarming_Up_DRS4_Board_and_Start_Measurement->setEnabled(false);
@@ -397,6 +398,41 @@ void DRS4ScriptDlg::loadExample_Simulation_1()
     else
     {
         MSGBOX("Sorry, cannot load tyour script!")
+    }
+}
+
+void DRS4ScriptDlg::loadExample_Insitu_1()
+{
+    if ( !ui->textEdit_scriptInput->document()->isEmpty() )
+    {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Loading a script ?");
+            msgBox.setText("Loading a script will overwrite your existing script. Are you really sure ?");
+            msgBox.setStandardButtons(QMessageBox::Yes);
+            msgBox.addButton(QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+
+            const int retVal = msgBox.exec();
+
+            if ( retVal == QMessageBox::No
+                 ||  retVal == QMessageBox::Cancel  )
+                return;
+    }
+
+    QFile file(":/settings/Insitu");
+
+    if ( file.open(QIODevice::ReadOnly) )
+    {
+        ui->textEdit_scriptInput->clear();
+        ui->textEdit_scriptInput->appendPlainText(QString(file.readAll()));
+
+        emit ui->textEdit_scriptInput->textChanged();
+
+        file.close();
+    }
+    else
+    {
+        MSGBOX("Sorry, cannot load your script!")
     }
 }
 

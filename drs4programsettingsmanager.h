@@ -83,6 +83,10 @@ class DRS4ProgramSettingsManager
     DSimpleXMLNode *m_lastRiseTimeDistrPathNode;
     DSimpleXMLNode *m_lastAreaDistrPathNode;
 
+    DSimpleXMLNode *m_httpServerPort;
+    DSimpleXMLNode *m_httpServerAutoStart;
+    DSimpleXMLNode *m_httpServerUrlUpdateRate;
+
     DSimpleXMLNode *m_multicoreThreadingParentNode;
         DSimpleXMLNode *m_enableMulticoreThreadingNode;
         DSimpleXMLNode *m_pulsePairChunkSizeNode;
@@ -112,6 +116,10 @@ public:
     void setSaveRiseTimeDistributionDataFilePath(const QString& path);
     void setSaveAreaDistributionDataFilePath(const QString& path);
 
+    void setHttpServerAutostart(bool on);
+    void setHttpServerPort(int port);
+    void setHttpServerUrlUpdateRate(int rate);
+
     void setEnableMulticoreThreading(bool on);
     void setPulsePairChunkSize(int size);
 
@@ -127,6 +135,10 @@ public:
     QString savePHSDataFilePath();
     QString saveRiseTimeDistributionDataFilePath();
     QString saveAreaDistributionDataFilePath();
+
+    bool httpServerAutostart();
+    int httpServerPort();
+    int httpServerUrlUpdateRate();
 
     bool isMulticoreThreadingEnabled();
     int pulsePairChunkSize();

@@ -7,6 +7,7 @@
         <file alias="PulseStream_1">res/example_loadingDataStreamFile.drs4Script</file>
         <file alias="WarmingUp_1">res/example_startAcquisitionAfterBoardTemperatureReached.drs4Script</file>
         <file alias="Simulation_1">res/example_loadingSimulationInputFile.drs4Script</file>
+        <file alias="Insitu">res/example_insitu.drs4Script</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/007-folder-3.png</file>
@@ -29,6 +30,8 @@
         <file>images/001-heart-rate-monitor.png</file>
         <file>iconDesign/iconDDRS4.ico</file>
         <file alias="connection_lost">images/ConnectionLostOverlayer.png</file>
+        <file alias="icon">iconDesign/IconPNGRounded_red.png</file>
+        <file alias="server">images/001-http.png</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="copyright">license/COPYRIGHT</file>
@@ -36,5 +39,11 @@
         <file alias="LGPL">license/LICENSE.LGPLv3</file>
         <file alias="modifications">license/MODIFICATIONS</file>
         <file alias="used-license">license/USED-LICENSE.GPLv3</file>
+    </qresource>
+    <qresource prefix="/webcontent">
+        <file alias="main_template_offline">WebServer/content/main_offline.html</file>
+        <file alias="main_template_online">WebServer/content/main_online.html</file>
+        <file alias="info_template">WebServer/content/info_template.html</file>
+        <file alias="plot_template">WebServer/content/spectra_plot_template.html</file>
     </qresource>
 </RCC>

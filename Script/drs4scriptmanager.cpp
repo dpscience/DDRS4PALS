@@ -75,14 +75,14 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
 {
     QStringList list;
 
-    list.append("startAcquisition()");
+    /*list.append("startAcquisition()");
     list.append("stopAcquisition()");
 
     list.append("isAcquisitionStopped() << bool");
-    list.append("isAcquisitionRunning() << bool");
+    list.append("isAcquisitionRunning() << bool");*/
 
-    list.append("changeBurstMode(__bool_burstMode?__)");
-    list.append("isBurstModeRunning() << bool");
+    /*list.append("changeBurstMode(__bool_burstMode?__)");
+    list.append("isBurstModeRunning() << bool");*/
 
     list.append("saveDataOfPromptSpectrum(\"__name_of_file__\") << bool");
     list.append("saveDataOfMergedSpectrum(\"__name_of_file__\") << bool");
@@ -124,8 +124,8 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
     list.append("resetPromptSpectrum()");
     list.append("resetMergedSpectrum()");
 
-    list.append("resetAreaPlotA()");
-    list.append("resetAreaPlotB()");
+    /*list.append("resetAreaPlotA()");
+    list.append("resetAreaPlotB()");*/
 
     list.append("changePHSStartMinA(__int_value_of_maximum_1024__)");
     list.append("changePHSStartMinB(__int_value_of_maximum_1024__)");
@@ -150,13 +150,13 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
 
     list.append("changeATSInPicoseconds(__double_value_in_picoseconds__)");
 
-    list.append("changeUsingPositiveTriggerPolarity(__bool_positive?__)");
-    list.append("changeToHavingPositiveSignal(__bool_positive?__)");
+    /*list.append("changeUsingPositiveTriggerPolarity(__bool_positive?__)");
+    list.append("changeToHavingPositiveSignal(__bool_positive?__)");*/
 
-    list.append("changePromptDataMaxFitIterations(__int_value__)");
+    /*list.append("changePromptDataMaxFitIterations(__int_value__)");
     list.append("changeMergedDataMaxFitIterations(__int_value__)");
     list.append("changeABDataMaxFitIterations(__int_value__)");
-    list.append("changeBADataMaxFitIterations(__int_value__)");
+    list.append("changeBADataMaxFitIterations(__int_value__)");*/
 
     list.append("changePulseAreaFilterEnabled(__bool_areaFilter?__)");
 
@@ -165,17 +165,17 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
     list.append("waitForCountsMerged(__int__counts__) << bool");
     list.append("waitForCountsPrompt(__int__counts__) << bool");
 
-    list.append("fitGaussianOnPromptData()");
+    /*list.append("fitGaussianOnPromptData()");
     list.append("fitGaussianOnMergedData()");
     list.append("fitGaussianOnABData()");
-    list.append("fitGaussianOnBAData()");
+    list.append("fitGaussianOnBAData()");*/
 
     list.append("getCountsOfABSpectrum() << int");
     list.append("getCountsOfBASpectrum() << int");
     list.append("getCountsOfMergedSpectrum() << int");
     list.append("getCountsOfPromptSpectrum() << int");
 
-    list.append("getLastFitStateOfABSpectrum() << int");
+    /*list.append("getLastFitStateOfABSpectrum() << int");
     list.append("getLastFitStateOfBASpectrum() << int");
     list.append("getLastFitStateOfMergedSpectrum() << int");
     list.append("getLastFitStateOfPromptSpectrum() << int");
@@ -188,13 +188,13 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
     list.append("getFWHMOfABSpectrumInPicoseconds() << double");
     list.append("getFWHMOfBASpectrumInPicoseconds() << double");
     list.append("getFWHMOfMergedSpectrumInPicoseconds() << double");
-    list.append("getFWHMOfPromptSpectrumInPicoseconds() << double");
+    list.append("getFWHMOfPromptSpectrumInPicoseconds() << double");*/
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         list.append("getBoardTemperatureInDegree() << double");
 
-    list.append("getStartCell() << int");
-    list.append("getStopCell() << int");
+    /*list.append("getStartCell() << int");
+    list.append("getStopCell() << int");*/
 
     list.append("getCurrentSettingsFile() << string");
 
@@ -208,13 +208,13 @@ QStringList DRS4ScriptEngineCommandCollector::functionCollection() const
 
     list.append("getATSInPicoseconds() << double");
 
-    list.append("getPromptFitIterations() << int");
+    /*list.append("getPromptFitIterations() << int");
     list.append("getABFitIterations() << int");
     list.append("getBAFitIterations() << int");
     list.append("getMergedFitIterations() << int");
 
     list.append("isPositiveTriggerPolarity() << bool");
-    list.append("isPositiveSignal() << bool");
+    list.append("isPositiveSignal() << bool");*/
 
     list.append("print(__variant__)");
 
@@ -691,32 +691,6 @@ void DRS4ScriptEngineCommandCollector::resetPHSB()
     mapMsg("PHS of B reseted.", DRS4LogType::SUCCEED);
 
     DRS4ScriptingEngineAccessManager::sharedInstance()->resetPHSB();
-}
-
-void DRS4ScriptEngineCommandCollector::resetAreaPlotA()
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("Area-Plot A was reseted.", DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->resetAreaPlotA();
-}
-
-void DRS4ScriptEngineCommandCollector::resetAreaPlotB()
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("Area-Plot B was reseted.", DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->resetAreaPlotB();
 }
 
 void DRS4ScriptEngineCommandCollector::resetAllSpectra()
@@ -1245,90 +1219,6 @@ void DRS4ScriptEngineCommandCollector::changeTriggerDelayInNanoseconds(int delay
     DRS4ScriptingEngineAccessManager::sharedInstance()->changeTriggerDelayInNanoseconds(delay);
 }
 
-void DRS4ScriptEngineCommandCollector::changeStartCell(int cell)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    if ( cell >= getStopCell() )
-    {
-        mapMsg("Change of Start-Cell to " + QVariant(cell).toString() + " was ignored - Set value was larger than Stop-Cell", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    if ( cell < 0 )
-    {
-        cell = 0;
-
-        mapMsg("Start-Cell changed to " + QVariant(cell).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        DRS4ScriptingEngineAccessManager::sharedInstance()->changeStartCell(cell);
-
-        return;
-    }
-
-    if ( cell > 1023 )
-    {
-        cell = 1023;
-
-        mapMsg("Start-Cell changed to " + QVariant(cell).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        DRS4ScriptingEngineAccessManager::sharedInstance()->changeStartCell(cell);
-
-        return;
-    }
-
-    mapMsg("Start-Cell changed to " + QVariant(cell).toString(), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeStartCell(cell);
-}
-
-void DRS4ScriptEngineCommandCollector::changeStopCell(int cell)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    if ( cell >= getStartCell() )
-    {
-        mapMsg("Change of Stop-Cell to " + QVariant(cell).toString() + " was ignored - Set value was lower than Stop-Cell", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    if ( cell < 0 )
-    {
-        cell = 0;
-
-        mapMsg("Stop-Cell changed to " + QVariant(cell).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        DRS4ScriptingEngineAccessManager::sharedInstance()->changeStopCell(cell);
-
-        return;
-    }
-
-    if ( cell > 1023 )
-    {
-        cell = 1023;
-
-        mapMsg("Stop-Cell changed to " + QVariant(cell).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        DRS4ScriptingEngineAccessManager::sharedInstance()->changeStopCell(cell);
-
-        return;
-    }
-
-    mapMsg("Stop-Cell changed to " + QVariant(cell).toString(), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeStopCell(cell);
-}
-
 void DRS4ScriptEngineCommandCollector::changeATSInPicoseconds(double ps)
 {
     if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
@@ -1340,156 +1230,6 @@ void DRS4ScriptEngineCommandCollector::changeATSInPicoseconds(double ps)
     mapMsg("ATS changed to: " + QVariant(ps).toString() + " ps", DRS4LogType::SUCCEED);
 
     DRS4ScriptingEngineAccessManager::sharedInstance()->changeATSInPicoseconds(ps);
-}
-
-void DRS4ScriptEngineCommandCollector::changeUsingPositiveTriggerPolarity(bool positive)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("Positive Trigger-Polarity? " + QString(positive?"ON":"OFF"), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeUsingPositiveTriggerPolarity(positive);
-}
-
-void DRS4ScriptEngineCommandCollector::changeToHavingPositiveSignal(bool positive)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("Positive Signal-Form? " + QString(positive?"ON":"OFF"), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeToHavingPositiveSignal(positive);
-}
-
-void DRS4ScriptEngineCommandCollector::changePromtDataMaxFitIterations(unsigned int iterations)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    if ( iterations <= 0 )
-    {
-        iterations = 40;
-
-        mapMsg("Promt LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    if ( iterations > 1000 )
-    {
-        iterations = 40;
-
-        mapMsg("Promt LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    mapMsg("Promt LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString(), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeCoincidenceDataMaxFitIterations(iterations);
-}
-
-void DRS4ScriptEngineCommandCollector::changeMergedDataMaxFitIterations(unsigned int iterations)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    if ( iterations <= 0 )
-    {
-        iterations = 40;
-
-        mapMsg("Merged LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    if ( iterations > 1000 )
-    {
-        iterations = 40;
-
-        mapMsg("Merged LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    mapMsg("Merged LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString(), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeMergedDataMaxFitIterations(iterations);
-}
-
-void DRS4ScriptEngineCommandCollector::changeABDataMaxFitIterations(unsigned int iterations)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    if ( iterations <= 0 )
-    {
-        iterations = 40;
-
-        mapMsg("AB LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    if ( iterations > 1000 )
-    {
-        iterations = 40;
-
-        mapMsg("AB LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    mapMsg("AB LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString(), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeABDataMaxFitIterations(iterations);
-}
-
-void DRS4ScriptEngineCommandCollector::changeBADataMaxFitIterations(unsigned int iterations)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    if ( iterations <= 0 )
-    {
-        iterations = 40;
-
-        mapMsg("BA LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    if ( iterations > 1000 )
-    {
-        iterations = 40;
-
-        mapMsg("BA LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString() + " - Set value reached limit - value was adapted", DRS4LogType::FAILED);
-
-        return;
-    }
-
-    mapMsg("BA LT-Spectrum Fit-Iterations changed to " + QVariant(iterations).toString(), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeBADataMaxFitIterations(iterations);
 }
 
 bool DRS4ScriptEngineCommandCollector::waitForCountsAB(int counts)
@@ -1532,84 +1272,7 @@ bool DRS4ScriptEngineCommandCollector::waitForCountsPrompt(int counts)
     return DRS4ScriptingEngineAccessManager::sharedInstance()->waitForCountsPrompt(counts);
 }
 
-void DRS4ScriptEngineCommandCollector::fitGaussianOnPromtData()
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("Promt LT-Spectrum fitted.", DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->fitGaussianOnCoincidenceData();
-}
-
-void DRS4ScriptEngineCommandCollector::fitGaussianOnMergedData()
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("Merged LT-Spectrum fitted.", DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->fitGaussianOnMergedData();
-}
-
-void DRS4ScriptEngineCommandCollector::fitGaussianOnABData()
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("AB LT-Spectrum fitted.", DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->fitGaussianOnABData();
-}
-
-void DRS4ScriptEngineCommandCollector::fitGaussianOnBAData()
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("BA LT-Spectrum fitted.", DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->fitGaussianOnBAData();
-}
-
-void DRS4ScriptEngineCommandCollector::changeBurstMode(bool burstMode)
-{
-    mapMsg("Burst-Mode: " + QString(burstMode?"ENABLED":"DISABLED"), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changeBurstMode(burstMode);
-}
-
-bool DRS4ScriptEngineCommandCollector::isBurstModeRunning()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->isBurstModeRunning();
-}
-
-void DRS4ScriptEngineCommandCollector::changePulseAreaFilterEnabled(bool enabled)
-{
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return;
-    }
-
-    mapMsg("Pulse-Area Filter changed to: " + QString(enabled?"ENABLED":"DISABLED"), DRS4LogType::SUCCEED);
-
-    DRS4ScriptingEngineAccessManager::sharedInstance()->changePulseAreaFilterEnabled(enabled);
-}
-
-void DRS4ScriptEngineCommandCollector::startAcquisition()
+/*void DRS4ScriptEngineCommandCollector::startAcquisition()
 {
     if ( DRS4ScriptingEngineAccessManager::sharedInstance()->isAcquisitionRunning() )
     {
@@ -1633,53 +1296,29 @@ void DRS4ScriptEngineCommandCollector::stopAcquisition()
     mapMsg("Data-Acquisition stopped.", DRS4LogType::SUCCEED);
 
     DRS4ScriptingEngineAccessManager::sharedInstance()->stop();
-}
+}*/
 
 int DRS4ScriptEngineCommandCollector::getCountsOfABSpectrum()
 {
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return false;
-    }
-
     return DRS4ScriptingEngineAccessManager::sharedInstance()->integralCountsAB();
 }
 
 int DRS4ScriptEngineCommandCollector::getCountsOfBASpectrum()
 {
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return false;
-    }
-
     return DRS4ScriptingEngineAccessManager::sharedInstance()->integralCountsBA();
 }
 
 int DRS4ScriptEngineCommandCollector::getCountsOfMergedSpectrum()
 {
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return false;
-    }
-
     return DRS4ScriptingEngineAccessManager::sharedInstance()->integralCountsMerged();
 }
 
 int DRS4ScriptEngineCommandCollector::getCountsOfPromtSpectrum()
 {
-    if ( DRS4SettingsManager::sharedInstance()->isBurstMode() )
-    {
-        mapMsg("Function call  denied. Burst-Mode is running.", DRS4LogType::FAILED);
-        return false;
-    }
-
     return DRS4ScriptingEngineAccessManager::sharedInstance()->integralCountsCoincidence();
 }
 
-bool DRS4ScriptEngineCommandCollector::isAcquisitionStopped()
+/*bool DRS4ScriptEngineCommandCollector::isAcquisitionStopped()
 {
     return DRS4ScriptingEngineAccessManager::sharedInstance()->isAcquisitionStopped();
 }
@@ -1687,81 +1326,11 @@ bool DRS4ScriptEngineCommandCollector::isAcquisitionStopped()
 bool DRS4ScriptEngineCommandCollector::isAcquisitionRunning()
 {
     return DRS4ScriptingEngineAccessManager::sharedInstance()->isAcquisitionRunning();
-}
-
-int DRS4ScriptEngineCommandCollector::getLastFitStateOfABSpectrum()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getLastFitStateOfABSpectrum();
-}
-
-int DRS4ScriptEngineCommandCollector::getLastFitStateOfBASpectrum()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getLastFitStateOfBASpectrum();
-}
-
-int DRS4ScriptEngineCommandCollector::getLastFitStateOfMergedSpectrum()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getLastFitStateOfMergedSpectrum();
-}
-
-int DRS4ScriptEngineCommandCollector::getLastFitStateOfPromtSpectrum()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getLastFitStateOfCoincidenceSpectrum();
-}
-
-double DRS4ScriptEngineCommandCollector::getT0OfABSpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getT0OfABSpectrumInPicoseconds();
-}
-
-double DRS4ScriptEngineCommandCollector::getT0OfBASpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getT0OfBASpectrumInPicoseconds();
-}
-
-double DRS4ScriptEngineCommandCollector::getT0OfMergedSpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getT0OfMergedSpectrumInPicoseconds();
-}
-
-double DRS4ScriptEngineCommandCollector::getT0OfPromtSpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getT0OfCoincidenceSpectrumInPicoseconds();
-}
-
-double DRS4ScriptEngineCommandCollector::getFWHMOfABSpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getFWHMOfABSpectrumInPicoseconds();
-}
-
-double DRS4ScriptEngineCommandCollector::getFWHMOfBASpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getFWHMOfBASpectrumInPicoseconds();
-}
-
-double DRS4ScriptEngineCommandCollector::getFWHMOfMergedSpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getFWHMOfMergedSpectrumInPicoseconds();
-}
-
-double DRS4ScriptEngineCommandCollector::getFWHMOfPromtSpectrumInPicoseconds()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getFWHMOfCoincidenceSpectrumInPicoseconds();
-}
+}*/
 
 double DRS4ScriptEngineCommandCollector::getBoardTemperatureInDegree()
 {
     return DRS4ScriptingEngineAccessManager::sharedInstance()->getBoardTemperatureInDegree();
-}
-
-int DRS4ScriptEngineCommandCollector::getStartCell()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getStartCell();
-}
-
-int DRS4ScriptEngineCommandCollector::getStopCell()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getStopCell();
 }
 
 QString DRS4ScriptEngineCommandCollector::getCurrentSettingsFile()
@@ -1797,36 +1366,6 @@ double DRS4ScriptEngineCommandCollector::getCFDLevelB()
 double DRS4ScriptEngineCommandCollector::getATSInPicoseconds()
 {
     return DRS4ScriptingEngineAccessManager::sharedInstance()->getATSInPicoseconds();
-}
-
-int DRS4ScriptEngineCommandCollector::getPromtFitIterations()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getCoincidenceFitIterations();
-}
-
-int DRS4ScriptEngineCommandCollector::getABFitIterations()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getABFitIterations();
-}
-
-int DRS4ScriptEngineCommandCollector::getBAFitIterations()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getBAFitIterations();
-}
-
-int DRS4ScriptEngineCommandCollector::getMergedFitIterations()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->getMergedFitIterations();
-}
-
-bool DRS4ScriptEngineCommandCollector::isPositiveTriggerPolarity()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->isPositiveTriggerPolarity();
-}
-
-bool DRS4ScriptEngineCommandCollector::isPositiveSignal()
-{
-    return DRS4ScriptingEngineAccessManager::sharedInstance()->isPositiveSignal();
 }
 
 bool DRS4ScriptEngineCommandCollector::isRunningFromDataStream()

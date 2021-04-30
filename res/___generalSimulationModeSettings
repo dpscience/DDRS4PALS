@@ -13,7 +13,7 @@ p, li { white-space: pre-wrap; }
         <analog-input-channel-A>0</analog-input-channel-A>
         <analog-input-channel-B>1</analog-input-channel-B>
         <ignore-busy-state?>false</ignore-busy-state?>
-        <trigger-source>768</trigger-source>
+        <trigger-source>2</trigger-source>
         <trigger-polarity?>true</trigger-polarity?>
         <trigger-level-channel-A-in-mV>-30</trigger-level-channel-A-in-mV>
         <trigger-level-channel-B-in-mV>-30</trigger-level-channel-B-in-mV>

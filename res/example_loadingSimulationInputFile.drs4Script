@@ -1,26 +1,21 @@
-//*************************************************************************/
-// All rights reserved by Danny Petschke (C) 2016-2021
-//
-// author: Danny Petschke
-// date: 05.12.2020
-//
-//*************************************************************************/
+var __settingsFile__     = "C:/settings"; // extension can be ignored ...
+var __simulationFile__ = "C:/dataStream";
 
-var __settingsFile__     = "C:/Users/User/Desktop/settings"; // you do not need to add an extension
-var __simulationFile__ = "C:/Users/User/Desktop/dataStream"; // you do not need to add an extension
+// your acquisition should already be running ...
 
 if (!loadSettingsFile(__settingsFile__)) {
     print("An error occurred while loading the settings file!");
+
     return;
 }
-
-stopAcquisition();
 
 resetAllSpectra();
 
 if (!loadSimulationInputFile(__simulationFile__)) {
     print("An error occurred while loading the data simulation input file!");
+
     return;
 }
 
-startAcquisition();
+// ...
+

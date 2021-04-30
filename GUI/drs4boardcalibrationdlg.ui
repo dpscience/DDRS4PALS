@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DRS4BoardCalibrationDlg</class>
+ <widget class="QMainWindow" name="DRS4BoardCalibrationDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>228</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>600</width>
+    <height>228</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>600</width>
+    <height>228</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QGroupBox" name="groupBox_time">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="title">
+       <string>&gt;&gt; timing calibration</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>sampling frequency [GHz]:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_frequ">
+           <property name="minimumSize">
+            <size>
+             <width>140</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>140</width>
+             <height>28</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QProgressBar" name="progressBar_freq">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QProgressBar
+{
+    background: rgb(108, 180, 235);
+    color: black;
+    border-style: flat;
+    border-radius: 3px;
+    text-align: right;
+	/*text-margin-right: 5px;*/
+}
+QProgressBar::chunk
+{
+	border-radius: 3px;
+    background-color: rgba(199, 70, 195, 0.9);
+}</string>
+           </property>
+           <property name="value">
+            <number>24</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_freqCalib">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+border-style: flat;
+background-color: white; 
+color: green;
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(216,216,216);
+color: green;
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: green;
+border-radius: 2;
+border-color: black;
+}</string>
+           </property>
+           <property name="text">
+            <string>calibrate</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_volt">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="title">
+       <string>&gt;&gt; voltage calibration</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QProgressBar" name="progressBar_volt">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QProgressBar
+{
+    background: rgb(108, 180, 235);
+    color: black;
+    border-style: flat;
+    border-radius: 3px;
+    text-align: right;
+	/*text-margin-right: 5px;*/
+}
+QProgressBar::chunk
+{
+	border-radius: 3px;
+    background-color: rgba(199, 70, 195, 0.9);
+}</string>
+           </property>
+           <property name="value">
+            <number>24</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_voltCalib">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+border-style: flat;
+background-color: white; 
+color: green;
+border-radius: 10;
+}
+
+QPushButton:disabled {
+border-style: flat;
+background-color:  rgb(236,236,236); 
+color: rgb(140,140,140);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(216,216,216);
+color: green;
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: green;
+border-radius: 2;
+border-color: black;
+}</string>
+           </property>
+           <property name="text">
+            <string>calibrate</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

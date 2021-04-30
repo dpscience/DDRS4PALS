@@ -56,8 +56,7 @@
 
 static DRS4ProgramSettingsManager *__sharedInstanceProgramSettingsManager = DNULLPTR;
 
-DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
-{
+DRS4ProgramSettingsManager::DRS4ProgramSettingsManager() {
     m_parentNode = new DSimpleXMLNode("DDRS4PALSProgramSettings");
 
     m_lastSaveDateNode = new DSimpleXMLNode("last-save-date");
@@ -104,6 +103,15 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
     m_pulsePairChunkSizeNode = new DSimpleXMLNode("pulsePairChunkSize");
     m_pulsePairChunkSizeNode->setValue(1);
 
+    m_httpServerPort = new DSimpleXMLNode("httpServerPort");
+    m_httpServerPort->setValue(8080);
+
+    m_httpServerUrlUpdateRate = new DSimpleXMLNode("httpServerUrlUpdateRate");
+    m_httpServerUrlUpdateRate->setValue(8080);
+
+    m_httpServerAutoStart = new DSimpleXMLNode("httpServerAutoStart");
+    m_httpServerAutoStart->setValue(false);
+
     (*m_parentNode) << m_lastSaveDateNode
                     << m_renderPointsNode
                     << m_lastSettingsFilePathNode
@@ -115,7 +123,10 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
                     << m_lastSaveLogFilePathNode
                     << m_lastPHSSaveFilePathNode
                     << m_lastRiseTimeDistrPathNode
-                    << m_lastAreaDistrPathNode;
+                    << m_lastAreaDistrPathNode
+                    << m_httpServerPort
+                    << m_httpServerAutoStart
+                    << m_httpServerUrlUpdateRate;
 
     (*m_multicoreThreadingParentNode) << m_enableMulticoreThreadingNode
                     << m_pulsePairChunkSizeNode;
@@ -123,27 +134,17 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager()
      (*m_parentNode) << m_multicoreThreadingParentNode;
 }
 
-DRS4ProgramSettingsManager::~DRS4ProgramSettingsManager()
-{
+DRS4ProgramSettingsManager::~DRS4ProgramSettingsManager() {
     DDELETE_SAFETY(m_multicoreThreadingParentNode);
     DDELETE_SAFETY(m_parentNode);
     DDELETE_SAFETY(__sharedInstanceProgramSettingsManager);
 }
 
-DRS4ProgramSettingsManager *DRS4ProgramSettingsManager::sharedInstance()
-{
+DRS4ProgramSettingsManager *DRS4ProgramSettingsManager::sharedInstance() {
     if ( !__sharedInstanceProgramSettingsManager )
         __sharedInstanceProgramSettingsManager = new DRS4ProgramSettingsManager();
 
     return __sharedInstanceProgramSettingsManager;
-}
-
-void DRS4ProgramSettingsManager::setSplineIntraPoints(int points)
-{
-    QMutexLocker locker(&m_mutex);
-
-    m_renderPointsNode->setValue(points);
-    save();
 }
 
 bool DRS4ProgramSettingsManager::load()
@@ -166,6 +167,9 @@ bool DRS4ProgramSettingsManager::load()
         m_lastAreaDistrPathNode->setValue("/home");
         m_enableMulticoreThreadingNode->setValue(false);
         m_pulsePairChunkSizeNode->setValue(1);
+        m_httpServerPort->setValue(8080);
+        m_httpServerUrlUpdateRate->setValue(5);
+        m_httpServerAutoStart->setValue(false);
 
         return true;
     }
@@ -188,9 +192,30 @@ bool DRS4ProgramSettingsManager::load()
         m_lastAreaDistrPathNode->setValue("/home");
         m_enableMulticoreThreadingNode->setValue(false);
         m_pulsePairChunkSizeNode->setValue(1);
+        m_httpServerPort->setValue(8080);
+        m_httpServerUrlUpdateRate->setValue(5);
+        m_httpServerAutoStart->setValue(false);
 
         return true;
     }
+
+    const int port = pTag.getValueAt(m_httpServerPort, &ok).toInt();
+    if ( ok )
+        m_httpServerPort->setValue(port);
+    else
+        m_httpServerPort->setValue(8080);
+
+    const int rate = pTag.getValueAt(m_httpServerUrlUpdateRate, &ok).toInt();
+    if ( ok )
+        m_httpServerUrlUpdateRate->setValue(rate);
+    else
+        m_httpServerUrlUpdateRate->setValue(5);
+
+    const bool autoStartServer = pTag.getValueAt(m_httpServerAutoStart, &ok).toBool();
+    if ( ok )
+        m_httpServerAutoStart->setValue(autoStartServer);
+    else
+        m_httpServerAutoStart->setValue(false);
 
     const QString lastDate = pTag.getValueAt(m_lastSaveDateNode, &ok).toString();
     if ( ok )
@@ -285,6 +310,8 @@ bool DRS4ProgramSettingsManager::load()
        m_pulsePairChunkSizeNode->setValue(count);
    else
        m_pulsePairChunkSizeNode->setValue(1);
+
+   return true;
 }
 
 bool DRS4ProgramSettingsManager::save()
@@ -294,6 +321,13 @@ bool DRS4ProgramSettingsManager::save()
     DSimpleXMLWriter writer("settings" + EXT_PROGRAM_SETTINGS_FILE);
 
     return writer.writeToFile(m_parentNode, true, PROGRAM_SETTINGS_ENCRYPTION_KEY.toStdString().c_str());
+}
+
+void DRS4ProgramSettingsManager::setSplineIntraPoints(int points) {
+    QMutexLocker locker(&m_mutex);
+
+    m_renderPointsNode->setValue(points);
+    save();
 }
 
 void DRS4ProgramSettingsManager::setSimulationInputFilePath(const QString &path)
@@ -373,6 +407,30 @@ void DRS4ProgramSettingsManager::setSaveAreaDistributionDataFilePath(const QStri
     QMutexLocker locker(&m_mutex);
 
     m_lastAreaDistrPathNode->setValue(path);
+    save();
+}
+
+void DRS4ProgramSettingsManager::setHttpServerAutostart(bool on)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_httpServerAutoStart->setValue(on);
+    save();
+}
+
+void DRS4ProgramSettingsManager::setHttpServerPort(int port)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_httpServerPort->setValue(port);
+    save();
+}
+
+void DRS4ProgramSettingsManager::setHttpServerUrlUpdateRate(int rate)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_httpServerUrlUpdateRate->setValue(rate);
     save();
 }
 
@@ -501,6 +559,30 @@ QString DRS4ProgramSettingsManager::saveAreaDistributionDataFilePath()
 
     load();
     return m_lastAreaDistrPathNode->getValue().toString();
+}
+
+bool DRS4ProgramSettingsManager::httpServerAutostart()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_httpServerAutoStart->getValue().toBool();
+}
+
+int DRS4ProgramSettingsManager::httpServerPort()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_httpServerPort->getValue().toInt();
+}
+
+int DRS4ProgramSettingsManager::httpServerUrlUpdateRate()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_httpServerUrlUpdateRate->getValue().toInt();
 }
 
 bool DRS4ProgramSettingsManager::isMulticoreThreadingEnabled()

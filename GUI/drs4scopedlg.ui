@@ -607,14 +607,14 @@ QProgressBar::chunk
                </font>
               </property>
               <property name="text">
-               <string>A:</string>
+               <string>A &gt;&gt; </string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="checkBox_chn1_A">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="font">
                <font>
@@ -636,7 +636,16 @@ QProgressBar::chunk
             <item>
              <widget class="QCheckBox" name="checkBox_chn2_A">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 2</string>
@@ -646,7 +655,16 @@ QProgressBar::chunk
             <item>
              <widget class="QCheckBox" name="checkBox_chn3_A">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 3</string>
@@ -656,7 +674,16 @@ QProgressBar::chunk
             <item>
              <widget class="QCheckBox" name="checkBox_chn4_A">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 4</string>
@@ -824,14 +851,23 @@ QProgressBar::chunk
                </font>
               </property>
               <property name="text">
-               <string>B: </string>
+               <string>B &gt;&gt;</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="checkBox_chn1_B">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 1</string>
@@ -841,7 +877,7 @@ QProgressBar::chunk
             <item>
              <widget class="QCheckBox" name="checkBox_chn2_B">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="font">
                <font>
@@ -863,7 +899,16 @@ QProgressBar::chunk
             <item>
              <widget class="QCheckBox" name="checkBox_chn3_B">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 3</string>
@@ -873,7 +918,16 @@ QProgressBar::chunk
             <item>
              <widget class="QCheckBox" name="checkBox_chn4_B">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: blue</string>
               </property>
               <property name="text">
                <string>Chn 4</string>
@@ -9156,21 +9210,44 @@ border-color: black;
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label_phsCntPerSecA">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
+     <layout class="QHBoxLayout" name="horizontalLayout_63">
+      <property name="topMargin">
+       <number>0</number>
       </property>
-      <property name="styleSheet">
-       <string notr="true">color: blue
+      <item>
+       <widget class="QLabel" name="label_phsCntPerSecA">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: blue
 </string>
-      </property>
-      <property name="text">
-       <string>Sample Rate [Hz]: </string>
-      </property>
-     </widget>
+        </property>
+        <property name="text">
+         <string>Sample Rate [Hz]: </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_43">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="DRS4BlinkingLight" name="widget_serverState" native="true"/>
+      </item>
+     </layout>
     </item>
     <item>
      <widget class="Line" name="line_2">
@@ -9225,7 +9302,7 @@ border-color: black;
    </property>
    <widget class="QMenu" name="menuTrigger_Source">
     <property name="title">
-     <string>Pulse-Stream</string>
+     <string>Stream</string>
     </property>
     <addaction name="action_StartDAQStreaming"/>
     <addaction name="actionStop_Running"/>
@@ -9257,13 +9334,13 @@ border-color: black;
    </widget>
    <widget class="QMenu" name="menuDRS4_Board_Information">
     <property name="title">
-     <string>Hardware-Info</string>
+     <string>Hardware Config</string>
     </property>
     <addaction name="actionOPen"/>
    </widget>
    <widget class="QMenu" name="menuScript">
     <property name="title">
-     <string>Script (beta)</string>
+     <string>Script/Jobmanager</string>
     </property>
     <addaction name="actionOpen_script"/>
    </widget>
@@ -9283,10 +9360,17 @@ border-color: black;
     </property>
     <addaction name="actionOpen_calculator"/>
    </widget>
+   <widget class="QMenu" name="menuServer">
+    <property name="title">
+     <string>Server Config</string>
+    </property>
+    <addaction name="actionOpen_serverConfig"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuScript"/>
    <addaction name="menuTrigger_Source"/>
    <addaction name="menuDRS4_Board_Information"/>
+   <addaction name="menuServer"/>
    <addaction name="menuAdditional_Information"/>
    <addaction name="menuCalculator"/>
    <addaction name="menuAbout"/>
@@ -9484,6 +9568,11 @@ border-color: black;
     <string>Used License-GPLv3</string>
    </property>
   </action>
+  <action name="actionOpen_serverConfig">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -9519,6 +9608,12 @@ border-color: black;
    <class>DRS4SpinBox</class>
    <extends>QSpinBox</extends>
    <header location="global">GUI/drs4spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DRS4BlinkingLight</class>
+   <extends>QWidget</extends>
+   <header location="global">GUI/drs4blinkinglight.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

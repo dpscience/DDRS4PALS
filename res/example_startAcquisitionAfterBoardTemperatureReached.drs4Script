@@ -1,17 +1,6 @@
-//*************************************************************************/
-// All rights reserved by Danny Petschke (C) 2016-2021
-//
-// author: Danny Petschke
-// date: 05.12.2020
-//
-//*************************************************************************/
-
 var __temperature_to_be_reached__ = 46.0; // [deg C]
 
-// disable the burst-mode ...
-if (isBurstModeRunning()) {
-    changeBurstMode(false);
-}
+// your acquisition should already be running ...
 
 // wait until temperature reached ...
 while (getBoardTemperatureInDegree() < __temperature_to_be_reached__ ) {}
@@ -20,5 +9,4 @@ print("set board temperature reached: " + getBoardTemperatureInDegree() + " deg 
 
 resetAllSpectra();
 
-// start the data acquisition ...
-startAcquisition();
+// ...

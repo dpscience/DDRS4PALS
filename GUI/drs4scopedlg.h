@@ -55,8 +55,6 @@
 #ifndef DRS4SCOPEDLG_H
 #define DRS4SCOPEDLG_H
 
-//#define __DISABLE_SCRIPT
-
 #include "dversion.h"
 
 #include <QMainWindow>
@@ -65,13 +63,14 @@
 #include <QDateTime>
 #include <QTimer>
 
-#include <GUI/drs4addinfodlg.h>
-#include <GUI/drs4boardinfodlg.h>
-#include <GUI/drs4scriptdlg.h>
-#include <GUI/drs4pulsesavedlg.h>
-#include <GUI/drs4pulsesaverangedlg.h>
-#include <GUI/drs4calculatordlg.h>
-#include <GUI/drs4licensetextbox.h>
+#include "GUI/drs4addinfodlg.h"
+#include "GUI/drs4boardinfodlg.h"
+#include "GUI/drs4scriptdlg.h"
+#include "GUI/drs4pulsesavedlg.h"
+#include "GUI/drs4pulsesaverangedlg.h"
+#include "GUI/drs4calculatordlg.h"
+#include "GUI/drs4licensetextbox.h"
+#include "GUI/drs4httpserverconfigdlg.h"
 
 #include "drs4boardmanager.h"
 #include "drs4worker.h"
@@ -90,6 +89,8 @@
 #include "DLib/DPlot/plot2DXWidget.h"
 #include "Fit/fitengine.h"
 
+#include "WebServer/drs4webserver.h"
+
 #include "alglib.h"
 
 #include "DQuickLTFit/projectmanager.h"
@@ -103,12 +104,13 @@ typedef enum
 } FunctionSource;
 
 class DRS4ScriptDlg;
+class DRS4HttpServerConfigDlg;
 
 namespace Ui {
 class DRS4ScopeDlg;
 }
 
-class DRS4ScopeDlg : public QMainWindow, public DRSCallback
+class DRS4ScopeDlg : public QMainWindow
 {
     Q_OBJECT
 
@@ -116,12 +118,11 @@ class DRS4ScopeDlg : public QMainWindow, public DRSCallback
     friend class DRS4StreamDataLoader;
     friend class DRS4StreamManager;
     friend class DRS4FalseTruePulseStreamManager;
+
+    DRS4HttpServerConfigDlg *m_serverDlg;
 public:
     explicit DRS4ScopeDlg(const ProgramStartType& startType, QWidget *parent = DNULLPTR);
     virtual ~DRS4ScopeDlg();
-
-public:
-    virtual void Progress(int value);
 
 protected:
     virtual void showEvent(QShowEvent *event);
@@ -164,8 +165,6 @@ private:
 
     bool ACCESSED_BY_SCRIPT_AND_GUI savePHSAFromExtern(const QString& fileName);
     bool ACCESSED_BY_SCRIPT_AND_GUI savePHSBFromExtern(const QString& fileName);
-
-    //bool ACCESSED_BY_SCRIPT_AND_GUI saveTemperatureFromExtern(const QString& fileName);
 
     bool ACCESSED_BY_SCRIPT_AND_GUI startStreamingFromExtern(const QString& fileName, bool checkForExtension = true);
     bool ACCESSED_BY_SCRIPT_AND_GUI stopStreamingFromExtern();
@@ -292,7 +291,6 @@ private slots:
     void saveRiseTimeDistributionB();
     void saveAreaDistributionA();
     void saveAreaDistributionB();
-    //void saveTemperature();
 
     void saveSettings();
     void saveAsSettings();
@@ -335,8 +333,11 @@ private slots:
     void showGPL();
     void showLGPL();
     void showUsedGPL();
+    void showServerConfig();
 
 private slots:
+    void changeServerState(bool active);
+
     void updateInBurstMode();
 
     void plotPulseScope();
@@ -347,14 +348,13 @@ private slots:
     void plotLifetimeSpectra();
     void plotPersistance();
 
-    //void plotTemperature();
     void updateTemperature();
     void checkForConnection();
 
 public slots:
     void ACCESSED_BY_SCRIPT_AND_GUI resetAllLTSpectra(const FunctionSource& source = FunctionSource::AccessFromGUI);
 
-    void ACCESSED_BY_SCRIPT_AND_GUI startAcquisition(const FunctionSource &source);
+    void ACCESSED_BY_SCRIPT_AND_GUI startAcquisition(const FunctionSource &source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI stopAcquisition(const FunctionSource &source);
 
     bool ACCESSED_BY_SCRIPT_AND_GUI isAcquisitionRunning() const;
@@ -368,6 +368,20 @@ public slots:
 
     bool ACCESSED_BY_SCRIPT_AND_GUI isBurstModeRunning() const;
     bool ACCESSED_BY_SCRIPT_AND_GUI isMulticoreThreadingEnabled() const;
+
+    void changeChannel1_A(bool on);
+    void changeChannel2_A(bool on);
+    void changeChannel3_A(bool on);
+    void changeChannel4_A(bool on);
+
+    void changeChannels_A(int set_chn);
+
+    void changeChannel1_B(bool on);
+    void changeChannel2_B(bool on);
+    void changeChannel3_B(bool on);
+    void changeChannel4_B(bool on);
+
+    void changeChannels_B(int set_chn);
 
     QString ACCESSED_BY_SCRIPT_AND_GUI currentSettingsFile() const;
 
@@ -547,9 +561,6 @@ public slots:
     int ACCESSED_BY_SCRIPT_AND_GUI countsOfBASpectrum() const;
     int ACCESSED_BY_SCRIPT_AND_GUI countsOfMergedSpectrum() const;
     int ACCESSED_BY_SCRIPT_AND_GUI countsOfCoincidenceSpectrum() const;
-
-    /* Temperature */
-    //void ACCESSED_BY_SCRIPT_AND_GUI resetTemperatureProfile(const FunctionSource& source = FunctionSource::AccessFromGUI);
 
 private:
     Ui::DRS4ScopeDlg *ui;

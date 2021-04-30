@@ -58,6 +58,7 @@
 DRS4StartDlg::DRS4StartDlg(ProgramStartType *startType, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::DRS4StartDlg),
+    m_calibDlg(DNULLPTR),
     m_startType(startType),
     m_drs4BoardConnected(true),
     m_simulationLibIsLoaded(true),
@@ -72,6 +73,7 @@ DRS4StartDlg::DRS4StartDlg(ProgramStartType *startType, QWidget *parent) :
 }
 
 DRS4StartDlg::~DRS4StartDlg() {
+    DDELETE_SAFETY(m_calibDlg);
     DDELETE_SAFETY(ui);
 }
 
@@ -85,6 +87,11 @@ void DRS4StartDlg::startDataAquistion() {
     *m_startType = ProgramStartType::DataAcquisition;
 
     close();
+}
+
+void DRS4StartDlg::openCalibration() {
+    if (m_calibDlg)
+        m_calibDlg->show();
 }
 
 void DRS4StartDlg::quit() {
@@ -111,6 +118,26 @@ void DRS4StartDlg::showUpdateRequestUpdateAvailable(QString tag, QString url, QD
 
     ui->updateLabel->setStyleSheet("color: blue");
     ui->updateLabel->setText("update to DDRS4PALS v" + tag + " (" + releaseDateTime.toString() + ") is available ... ");
+}
+
+void DRS4StartDlg::adaptCalibStatus()
+{
+    const bool validVoltCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsVoltageCalibrationValid();
+
+    ui->label_boardTimingCal->setStyleSheet("QLabel {color: green;}");
+
+    ui->label_boardTimingCal->setText(QString("[ok] timing calibrated for frequency %1 GHz").arg(DRS4BoardManager::sharedInstance()->currentBoard()->GetCalibratedFrequency()));
+
+    if (validVoltCalib) {
+        ui->label_boardVoltageCal->setStyleSheet("QLabel {color: green;}");
+
+        ui->label_boardVoltageCal->setText(QString("[ok] voltage calibrated"));
+    }
+    else {
+        ui->label_boardVoltageCal->setStyleSheet("QLabel {color: red;}");
+
+        ui->label_boardVoltageCal->setText(QString("[x] missing voltage calibration"));
+    }
 }
 
 void DRS4StartDlg::showUpdateRequestStartUp() {
@@ -152,12 +179,14 @@ void DRS4StartDlg::showEvent(QShowEvent *event) {
     connect(ui->pushButton_real, SIGNAL(clicked()), this, SLOT(startDataAquistion()));
     connect(ui->pushButton_quit, SIGNAL(clicked()), this, SLOT(quit()));
     connect(ui->pushButton_info, SIGNAL(clicked()), this, SLOT(showAbout()));
+    connect(ui->pushButton_calibration, SIGNAL(clicked()), this, SLOT(openCalibration()));
 
     /* no board found */
     if ( !m_drs4BoardConnected ) {
         ui->label_boardConnectionState->setStyleSheet("QLabel {color: red;}");
 
         ui->pushButton_real->setEnabled(false);
+        ui->pushButton_calibration->setEnabled(false);
 
         if ( m_simulationLibIsLoaded ) {
             const QString versionStr = QString("v%1.%2").arg(DLTPULSEGENERATOR_MAJOR_VERSION).arg(DLTPULSEGENERATOR_MINOR_VERSION);
@@ -180,6 +209,16 @@ void DRS4StartDlg::showEvent(QShowEvent *event) {
     /* board found */
     else {
         ui->pushButton_real->setEnabled(true);
+        ui->pushButton_calibration->setEnabled(true);
+
+        if (m_calibDlg) {
+            delete m_calibDlg;
+            m_calibDlg = DNULLPTR;
+        }
+
+        m_calibDlg = new DRS4BoardCalibrationDlg;
+
+        connect(m_calibDlg, SIGNAL(statusChanged()), this, SLOT(adaptCalibStatus()));
 
         ui->label_boardConnectionState->setStyleSheet("QLabel {color: green;}");
 
@@ -192,18 +231,10 @@ void DRS4StartDlg::showEvent(QShowEvent *event) {
             ui->label_boardConnectionState->setText("connected to DRS4 board " + QVariant(DRS4BoardManager::sharedInstance()->currentBoard()->GetBoardSerialNumber()).toString());
 
             const bool validVoltCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsVoltageCalibrationValid();
-            const bool validTimingCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsTimingCalibrationValid();
 
-            if (validTimingCalib) {
-                ui->label_boardTimingCal->setStyleSheet("QLabel {color: green;}");
+            ui->label_boardTimingCal->setStyleSheet("QLabel {color: green;}");
 
-                ui->label_boardTimingCal->setText(QString("[ok] timing calibrated for frequency %1 GHz").arg(DRS4BoardManager::sharedInstance()->currentBoard()->GetCalibratedFrequency()));
-            }
-            else {
-                ui->label_boardTimingCal->setStyleSheet("QLabel {color: red;}");
-
-                ui->label_boardTimingCal->setText(QString("[x] missing timing calibration"));
-            }
+            ui->label_boardTimingCal->setText(QString("[ok] timing calibrated for frequency %1 GHz").arg(DRS4BoardManager::sharedInstance()->currentBoard()->GetCalibratedFrequency()));
 
             if (validVoltCalib) {
                 ui->label_boardVoltageCal->setStyleSheet("QLabel {color: green;}");

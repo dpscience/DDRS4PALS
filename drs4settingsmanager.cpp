@@ -222,7 +222,7 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_channelCountBA(4096),
     m_channelCountCoincidence(4096),
     m_channelCountMerged(4096),
-    m_triggerSource((1<<8)|(1<<9)), //AND logic (Chn 1 && Chn 2)
+    m_triggerSource(2), //AND logic
     m_isTriggerPolarityPositive(false),
     m_triggerLevelA(-15),
     m_triggerLevelB(-15),
@@ -3666,13 +3666,44 @@ int DRS4SettingsManager::channelCntMerged() const
     return m_channelCountMergedNode->getValue().toInt();
 }
 
-int DRS4SettingsManager::triggerSource() const
+int DRS4SettingsManager::triggerSource_index() const
 {
 #ifndef __DISABLE_MUTEX_LOCKER
     QMutexLocker locker(&m_mutex);
 #endif
 
     return m_triggerSourceNode->getValue().toInt();
+}
+
+int DRS4SettingsManager::triggerSource() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    const int tiggerSource_id = m_triggerSourceNode->getValue().toInt();
+
+    const int chn_A_index = DRS4SettingsManager::sharedInstance()->channelNumberA();
+    const int chn_B_index = DRS4SettingsManager::sharedInstance()->channelNumberB();
+
+    switch ( tiggerSource_id )
+    {
+    case 0: // A
+        return (1<<chn_A_index);
+    case 1: // B
+        return (1<<chn_B_index);
+    case 2: // A && B
+        return (1<<(8+chn_A_index))|(1<<(8+chn_B_index));
+    case 3: // A || B
+        return ((1<<chn_A_index)|(1<<chn_B_index));
+    case 4: // external
+        return ((1<<4)|(1<<12));
+
+    default:
+        break;
+    }
+
+    return 0;
 }
 
 bool DRS4SettingsManager::isTriggerPolarityPositive() const

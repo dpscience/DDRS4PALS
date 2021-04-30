@@ -1,35 +1,21 @@
-//*************************************************************************/
-// All rights reserved by Danny Petschke (C) 2016-2021
-//
-// author: Danny Petschke
-// date: 05.12.2020
-//
-//*************************************************************************/
-
-var __name_of_settingsfile_ = "C:/Users/Name/Desktop/settingsForDataOfABSpectrum.drs4LTsettings";
-var __saveFileName__          = "C:/Users/Name/Desktop/dataOfABSpectrum.txt"
+var __name_of_settingsfile_ = "C:/settings"; // extension can be ignored ...
+var __saveFileName__          = "C:/dataOfABSpectrum.txt"
 
 var __counts_to_be_reached = 2500000
 
+// your acquisition should already be running ...
+
 if ( !loadSettingsFile(__name_of_settingsfile_) )  {
     print("An error occurred while loading the settings file!");
-    return;
-}
 
-// disable the burst-mode ...
-if (isBurstModeRunning()) {
-    changeBurstMode(false);
+    return;
 }
 
 // reset all spectra before starting the data-acquisition ...
 resetAllSpectra();
 
-startAcquisition();
-
 // run until counts reached ....
 while(getCountsOfABSpectrum() < __counts_to_be_reached) {}
-
-stopAcquisition();
 
 if (saveDataOfABSpectrum(__saveFileName__)) {
     print("AB spectrum saved successfully!");
@@ -37,3 +23,5 @@ if (saveDataOfABSpectrum(__saveFileName__)) {
 else {
     print("An error occurred while saving AB spectrum!");
 }
+
+// ...

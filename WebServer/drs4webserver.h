@@ -52,49 +52,83 @@
 ** https://www.sciencedirect.com/science/article/pii/S235271101930038X
 **/
 
-#ifndef DRS4BOARDMANAGER_H
-#define DRS4BOARDMANAGER_H
+#ifndef DRS4WEBSERVER_H
+#define DRS4WEBSERVER_H
 
-#include <QMutex>
-#include <QMutexLocker>
+#include <QObject>
 
+#include <QNetworkAccessManager>
+#include <QUrl>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QDesktopServices>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <QTcpServer>
 
+#include "dversion.h"
+#include "drs4worker.h"
+#include "Stream/drs4streamdataloader.h"
+#include "Stream/drs4streammanager.h"
+#include "CPUUsage/drs4cpuusage.h"
 #include "DLib.h"
-#include "DRS/drs507/DRS.h"
 
-class DRS4BoardManager
-{
-    DRS4BoardManager();
-    virtual ~DRS4BoardManager();
+class DRS4ClientConnection;
 
-    DRS *m_drs;
-    DRSBoard *m_drsBoard;
+typedef struct {
+    enum code {
+        ok = 0,
+        failed = 1
+    };
+} DRS4HttpReturnCode;
 
-    bool m_demoMode;
-    bool m_demoFromStreamData;
-
-    mutable QMutex m_mutex;
-
+class DRS4WebServer : public QTcpServer  {
+    Q_OBJECT
 public:
-    static DRS4BoardManager *sharedInstance();
+    static DRS4WebServer *sharedInstance();
 
-    bool connect();
+public slots:
+    void start(DRS4Worker *worker);
+    void stop();
 
-    bool isConnected() const;
+private slots:
+    void handleIncomingConnection();
+    void handleServerError(QAbstractSocket::SocketError error);
 
-    DRSBoard *currentBoard() const;
+signals:
+    void stateChanged(bool active);
 
-    void setDemoMode(bool demoMode);
-    void setDemoFromStreamData(bool usingStreamData);
+private:
+    DRS4WebServer();
+    virtual ~DRS4WebServer();
 
-    bool isDemoModeEnabled() const;
-    bool usingStreamDataOnDemoMode() const;
+    DRS4Worker *m_worker;
 
-    QJsonDocument hardwareInfo() const;
+    QList<QTcpSocket*> m_sockerList;
 };
 
-#endif // DRS4BOARDMANAGER_H
+class DRS4ClientConnection : public QObject {
+    Q_OBJECT
+public:
+    DRS4ClientConnection(QTcpSocket *socket, DRS4Worker *worker, QObject *parent = DNULLPTR);
+    virtual ~DRS4ClientConnection();
+
+private slots:
+    void readyRead();
+    void handleMessage(const QString &data);
+
+private:
+    void respond(const DRS4HttpReturnCode::code& code, const QString& response = "");
+     void createTableRecursively(DSimpleXMLNode *node, QString *content);
+
+private:
+    QTcpSocket *m_socket;
+
+    DRS4Worker *m_worker;
+
+    mutable QMutex m_mutex;
+};
+
+#endif // DRS4WEBSERVER_H

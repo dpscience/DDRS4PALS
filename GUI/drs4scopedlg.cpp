@@ -106,6 +106,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_autoSaveTimer(DNULLPTR),
     m_addInfoDlg(DNULLPTR),
     m_gplDialog(DNULLPTR),
+    m_serverDlg(DNULLPTR),
     m_lgplDialog(DNULLPTR),
     m_usedgplDialog(DNULLPTR),
     m_boardInfoDlg(DNULLPTR),
@@ -118,9 +119,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_bSwapDirection(true),
     m_bConnectionLost(false) {
     ui->setupUi(this);
-#ifdef __DISABLE_SCRIPT
-    ui->menuScript->setDisabled(true);
-#endif
 
     /* Check if DQuickLTFit Software is available? */
     QFile file("DQuickLTFit.exe");
@@ -231,43 +229,43 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_pulseRequestTimer = new QTimer;
     m_pulseRequestTimer->setInterval(120);
 
-    connect(m_pulseRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseScope()));//;, Qt::QueuedConnection);
+    connect(m_pulseRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseScope()));
 
     /* PHS-Plot */
     m_phsRequestTimer = new QTimer;
     m_phsRequestTimer->setInterval(200);
 
-    connect(m_phsRequestTimer, SIGNAL(timeout()), this, SLOT(plotPHS()));//;, Qt::QueuedConnection);
+    connect(m_phsRequestTimer, SIGNAL(timeout()), this, SLOT(plotPHS()));
 
     /* Area-Filter */
     m_areaRequestTimer = new QTimer;
     m_areaRequestTimer->setInterval(200);
 
-    connect(m_areaRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseAreaFilterData()));//;, Qt::QueuedConnection);
+    connect(m_areaRequestTimer, SIGNAL(timeout()), this, SLOT(plotPulseAreaFilterData()));
 
     /* Rise-Time Filter */
     m_riseTimeRequestTimer = new QTimer;
     m_riseTimeRequestTimer->setInterval(200);
 
-    connect(m_riseTimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotRiseTimeFilterData()));//;, Qt::QueuedConnection);
+    connect(m_riseTimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotRiseTimeFilterData()));
 
     /* Lifetime-Spectra */
     m_lifetimeRequestTimer = new QTimer;
     m_lifetimeRequestTimer->setInterval(200);
 
-    connect(m_lifetimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotLifetimeSpectra()));//;, Qt::QueuedConnection);
+    connect(m_lifetimeRequestTimer, SIGNAL(timeout()), this, SLOT(plotLifetimeSpectra()));
 
     /* Persistance - Data */
     m_persistanceRequestTimer = new QTimer;
     m_persistanceRequestTimer->setInterval(200);
 
-    connect(m_persistanceRequestTimer, SIGNAL(timeout()), this, SLOT(plotPersistance()));//;, Qt::QueuedConnection);
+    connect(m_persistanceRequestTimer, SIGNAL(timeout()), this, SLOT(plotPersistance()));
 
     /* Burst - Mode - Timer */
     m_burstModeTimer = new QTimer;
     m_burstModeTimer->setInterval(500);
 
-    connect(m_burstModeTimer, SIGNAL(timeout()), this, SLOT(updateInBurstMode()));//;, Qt::QueuedConnection);
+    connect(m_burstModeTimer, SIGNAL(timeout()), this, SLOT(updateInBurstMode()));
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         ui->tabWidget->removeTab(6); // initially T-Plot
@@ -336,11 +334,11 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
 
     connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(showAboutBox()));
 
-    connect(this, SIGNAL(signalUpdateCurrentFileLabelFromScript(QString)), this, SLOT(updateCurrentFileLabelFromScript(QString)));//, Qt::QueuedConnection);
-    connect(this, SIGNAL(signalUpdateInfoDlgFromScript(QString)), this, SLOT(updateInfoDlgFromScript(QString)));//, Qt::QueuedConnection);
-    connect(this, SIGNAL(signalUpdateThreadRunning(QString,QString)), this, SLOT(updateThreadRunning(QString,QString)));//, Qt::QueuedConnection);
-    connect(this, SIGNAL(signalAddSampleSpeedWarningMessage(bool,bool)), this, SLOT(addSampleSpeedWarningMessage(bool,bool)));//, Qt::QueuedConnection);
-    connect(this, SIGNAL(signalChangeSampleSpeed(int,bool)), this, SLOT(changeSampleSpeed(int,bool)));//, Qt::QueuedConnection);
+    connect(this, SIGNAL(signalUpdateCurrentFileLabelFromScript(QString)), this, SLOT(updateCurrentFileLabelFromScript(QString)));
+    connect(this, SIGNAL(signalUpdateInfoDlgFromScript(QString)), this, SLOT(updateInfoDlgFromScript(QString)));
+    connect(this, SIGNAL(signalUpdateThreadRunning(QString,QString)), this, SLOT(updateThreadRunning(QString,QString)));
+    connect(this, SIGNAL(signalAddSampleSpeedWarningMessage(bool,bool)), this, SLOT(addSampleSpeedWarningMessage(bool,bool)));
+    connect(this, SIGNAL(signalChangeSampleSpeed(int,bool)), this, SLOT(changeSampleSpeed(int,bool)));
 
     m_dataExchange = new DRS4WorkerDataExchange(&m_areaFilterASlopeUpper,
                                            &m_areaFilterAInterceptUpper,
@@ -353,6 +351,14 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
 
     m_worker = new DRS4Worker(m_dataExchange);
     m_workerThread = new QThread;
+
+    connect(DRS4WebServer::sharedInstance(), SIGNAL(stateChanged(bool)), this, SLOT(changeServerState(bool)));
+
+    /* start web server ... */
+    if (DRS4ProgramSettingsManager::sharedInstance()->httpServerAutostart())
+        DRS4WebServer::sharedInstance()->start(m_worker);
+
+    connect(ui->widget_serverState, SIGNAL(clicked()), this, SLOT(showServerConfig()));
 
     m_worker->moveToThread(m_workerThread);
 
@@ -381,6 +387,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_pulseSaveRangeDlg = new DRS4PulseSaveRangeDlg(m_worker);
     m_pulseSaveRangeDlg->hide();
 
+    m_serverDlg = new DRS4HttpServerConfigDlg(m_worker);
+    m_serverDlg->hide();
+
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveSettings()));
     connect(ui->actionSave_as, SIGNAL(triggered()), this, SLOT(saveAsSettings()));
     connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(loadSettings()));
@@ -396,6 +405,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->actionLicense_GPLv3, SIGNAL(triggered()), this, SLOT(showGPL()));
     connect(ui->actionLicense_LGPLv3, SIGNAL(triggered()), this, SLOT(showLGPL()));
     connect(ui->actionUsed_License_GPLv3, SIGNAL(triggered()), this, SLOT(showUsedGPL()));
+    connect(ui->actionOpen_serverConfig, SIGNAL(triggered()), this, SLOT(showServerConfig()));
 
     connect(ui->spinBox_fitIterations, SIGNAL(valueChanged(int)), this, SLOT(changeCoincidenceFitIterations(int)));
     connect(ui->spinBox_fitIterations_Merged, SIGNAL(valueChanged(int)), this, SLOT(changeMergedFitIterations(int)));
@@ -412,9 +422,8 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
         DRS4BoardManager::sharedInstance()->currentBoard()->SetInputRange(0.0); // +/-0.5V
 
         DRS4BoardManager::sharedInstance()->currentBoard()->SetTriggerPolarity(true); //false=positive, true=negative
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(0, -0.015);
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(1, -0.015);
-        DRS4BoardManager::sharedInstance()->currentBoard()->EnableTrigger(1, 0);//(1, 1); //before 1,0
+
+        DRS4BoardManager::sharedInstance()->currentBoard()->EnableTrigger(1, 0);
         DRS4BoardManager::sharedInstance()->currentBoard()->SetTriggerDelayNs(0);
     }
 
@@ -640,7 +649,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->spinBox_medianFilterWindowSizeB, SIGNAL(valueChanged(int)), this, SLOT(changeMedianFilterWindowSizeB(int)));
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        connect(m_temperatureTimer, SIGNAL(timeout()), this, SLOT(updateTemperature()));//;, Qt::QueuedConnection);
+        connect(m_temperatureTimer, SIGNAL(timeout()), this, SLOT(updateTemperature()));
 
     connect(ui->pushButton_scaleRange, SIGNAL(clicked()), this, SLOT(scaleRange()));
     connect(ui->pushButton_fullRange, SIGNAL(clicked()), this, SLOT(fullRange()));
@@ -657,7 +666,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->pushButton_BAFit, SIGNAL(clicked()), this, SLOT(fitBAData()));
     connect(ui->pushButton_clearBAFitData, SIGNAL(clicked()), this, SLOT(clearBAFitData()));
 
-    connect(m_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()));//;, Qt::QueuedConnection);
+    connect(m_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()));
 
     ui->comboBox_triggerLogic->addItem("A");
     ui->comboBox_triggerLogic->addItem("B");
@@ -678,8 +687,51 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->comboBox_triggerLogic, SIGNAL(currentIndexChanged(int)), this, SLOT(changeTriggerLogic(int)));
     connect(ui->comboBox_sampleSpeed, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSampleSpeed(int)));
 
-    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
+    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         DRS4BoardManager::sharedInstance()->currentBoard()->SetTriggerSource(DRS4SettingsManager::sharedInstance()->triggerSource());
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(DRS4SettingsManager::sharedInstance()->channelNumberA(), -0.015);
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(DRS4SettingsManager::sharedInstance()->channelNumberB(), -0.015);
+    }
+
+    /* set analog channels to default */
+    connect(ui->checkBox_chn1_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel1_A(bool)));
+    connect(ui->checkBox_chn1_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel1_B(bool)));
+
+    connect(ui->checkBox_chn2_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel2_A(bool)));
+    connect(ui->checkBox_chn2_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel2_B(bool)));
+
+    connect(ui->checkBox_chn3_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel3_A(bool)));
+    connect(ui->checkBox_chn3_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel3_B(bool)));
+
+    connect(ui->checkBox_chn4_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel4_A(bool)));
+    connect(ui->checkBox_chn4_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel4_B(bool)));
+
+    emit ui->checkBox_chn1_A->clicked(true);
+    emit ui->checkBox_chn2_B->clicked(true);
+
+    if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
+        ui->checkBox_chn1_A->setDisabled(true);
+        ui->checkBox_chn2_A->setDisabled(true);
+        ui->checkBox_chn3_A->setDisabled(true);
+        ui->checkBox_chn4_A->setDisabled(true);
+
+        ui->checkBox_chn1_B->setDisabled(true);
+        ui->checkBox_chn2_B->setDisabled(true);
+        ui->checkBox_chn3_B->setDisabled(true);
+        ui->checkBox_chn4_B->setDisabled(true);
+
+        disconnect(ui->checkBox_chn1_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel1_A(bool)));
+        disconnect(ui->checkBox_chn1_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel1_B(bool)));
+
+        disconnect(ui->checkBox_chn2_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel2_A(bool)));
+        disconnect(ui->checkBox_chn2_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel2_B(bool)));
+
+        disconnect(ui->checkBox_chn3_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel3_A(bool)));
+        disconnect(ui->checkBox_chn3_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel3_B(bool)));
+
+        disconnect(ui->checkBox_chn4_A, SIGNAL(clicked(bool)), this, SLOT(changeChannel4_A(bool)));
+        disconnect(ui->checkBox_chn4_B, SIGNAL(clicked(bool)), this, SLOT(changeChannel4_B(bool)));
+    }
 
     /* pulse shape filter record scheme */
     ui->comboBox_pulseShapeFilterRecordScheme->addItem("AB: A (start) - B (stop)");
@@ -760,7 +812,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_autoSaveSpectraTimer = new QTimer;
     m_autoSaveSpectraTimer->setInterval(300000);
 
-    connect(m_autoSaveSpectraTimer, SIGNAL(timeout()), this, SLOT(autosaveAllSpectra()));//;, Qt::QueuedConnection);
+    connect(m_autoSaveSpectraTimer, SIGNAL(timeout()), this, SLOT(autosaveAllSpectra()));
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         m_temperatureTimer->start();
@@ -773,7 +825,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
         m_connectionTimer = new QTimer;
         m_connectionTimer->setInterval(1000);
 
-        connect(m_connectionTimer, SIGNAL(timeout()), this, SLOT(checkForConnection()));//;, Qt::QueuedConnection);
+        connect(m_connectionTimer, SIGNAL(timeout()), this, SLOT(checkForConnection()));
 
         m_connectionTimer->start();
     }
@@ -793,7 +845,6 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     ui->label_threadRunning->setStyleSheet("color: blue");
 
     ui->widget_stop->enableWidget(false);
-
 
     /* Pulse-Shape Filter */
     m_pulseShapeFilterTimerA = new QTimer;
@@ -1035,34 +1086,16 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
 
 DRS4ScopeDlg::~DRS4ScopeDlg()
 {
-    DRS4CPUUsageManager::sharedInstance()->stop();
-
-    m_pulseSaveDlg->close();
     DDELETE_SAFETY(m_pulseSaveDlg);
-
-    m_pulseSaveRangeDlg->close();
     DDELETE_SAFETY(m_pulseSaveRangeDlg);
-
-    m_addInfoDlg->close();
     DDELETE_SAFETY(m_addInfoDlg);
-
-    m_boardInfoDlg->close();
     DDELETE_SAFETY(m_boardInfoDlg);
-
-    m_scriptDlg->close();
     DDELETE_SAFETY(m_scriptDlg);
-
-    m_calculatorDlg->close();
     DDELETE_SAFETY(m_calculatorDlg);
-
-    m_gplDialog->close();
     DDELETE_SAFETY(m_gplDialog);
-
-    m_lgplDialog->close();
     DDELETE_SAFETY(m_lgplDialog);
-
-    m_usedgplDialog->close();
     DDELETE_SAFETY(m_usedgplDialog);
+    DDELETE_SAFETY(m_serverDlg);
 
     if ( m_worker->isRecordingForPulseShapeFilterA() )
         stopAcquisitionOfPulseShapeFilterDataA();
@@ -2513,7 +2546,7 @@ void DRS4ScopeDlg::startThread()
     if ( !m_workerThread->isRunning() ) {
         connect(m_workerThread, SIGNAL(started()), m_worker, SLOT(start()), Qt::DirectConnection);
 
-        m_workerThread->start(QThread::TimeCriticalPriority);//HighestPriority);
+        m_workerThread->start(QThread::TimeCriticalPriority);
 
         while ( !m_workerThread->isRunning() ) { QApplication::processEvents(); }
     }
@@ -4657,16 +4690,9 @@ void DRS4ScopeDlg::autosaveAllSpectra()
     while(!m_worker->isBlocking()) {}
 
     saveABSpectrum(true);
-    // saveABSpectrumDQuickLTFit(true);
     saveBASpectrum(true);
-    // saveBASpectrumDQuickLTFit(true);
     saveCoincidenceSpectrum(true);
-    // saveCoincidenceSpectrumDQuickLTFit(true);
     saveMergedSpectrum(true);
-    // saveMergedSpectrumDQuickLTFit(true);
-
-    // savePHSA(true);
-    // savePHSB(true);
 
     m_worker->setBusy(false);
 
@@ -5198,7 +5224,7 @@ void DRS4ScopeDlg::changeTriggerLevelA(int levelMilliVolt, const FunctionSource 
     while(!m_worker->isBlocking()) {}
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(0, ((double)levelMilliVolt/1000.0f));
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(DRS4SettingsManager::sharedInstance()->channelNumberA(), ((double)levelMilliVolt/1000.0f));
 
     DRS4SettingsManager::sharedInstance()->setTriggerLevelAmV(levelMilliVolt);
 
@@ -5230,7 +5256,7 @@ void DRS4ScopeDlg::changeTriggerLevelB(int levelMilliVolt, const FunctionSource 
     while(!m_worker->isBlocking()) {}
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(1, ((double)levelMilliVolt/1000.0f));
+        DRS4BoardManager::sharedInstance()->currentBoard()->SetIndividualTriggerLevel(DRS4SettingsManager::sharedInstance()->channelNumberB(), ((double)levelMilliVolt/1000.0f));
 
     DRS4SettingsManager::sharedInstance()->setTriggerLevelBmV(levelMilliVolt);
 
@@ -5437,31 +5463,7 @@ void DRS4ScopeDlg::changeChannelSettingsMerged2(int sett)
 
 void DRS4ScopeDlg::changeTriggerLogic(int index)
 {
-    switch ( index )
-    {
-    case 0:
-        DRS4SettingsManager::sharedInstance()->setTriggerSource((1<<0));
-        break;
-
-    case 1:
-        DRS4SettingsManager::sharedInstance()->setTriggerSource((1<<1));
-        break;
-
-    case 2:
-        DRS4SettingsManager::sharedInstance()->setTriggerSource((1<<8)|(1<<9));
-        break;
-
-    case 3:
-        DRS4SettingsManager::sharedInstance()->setTriggerSource((1<<0)|(1<<1));
-        break;
-
-    case 4:
-        DRS4SettingsManager::sharedInstance()->setTriggerSource((1<<4)|(1<<12));
-        break;
-
-    default:
-        break;
-    }
+    DRS4SettingsManager::sharedInstance()->setTriggerSource(index);
 
     if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         return;
@@ -7305,6 +7307,8 @@ bool DRS4ScopeDlg::isPositiveSignal() const
 }
 
 void DRS4ScopeDlg::updateTemperature() {
+    double opTemp = 0.;
+
     QMutexLocker locker(&m_mutex);
 
     if (!m_worker)
@@ -7316,6 +7320,7 @@ void DRS4ScopeDlg::updateTemperature() {
 
     try {
         m_lastTemperatureInDegree = DRS4BoardManager::sharedInstance()->currentBoard()->GetTemperature();
+        opTemp = DRS4BoardManager::sharedInstance()->currentBoard()->GetCalibratedTemperature();
     } catch ( ... ) {
         /* nothing here */
     }
@@ -7324,13 +7329,13 @@ void DRS4ScopeDlg::updateTemperature() {
 
     ui->progressBar_boardTemperature->setValue(m_lastTemperatureInDegree);
 
-    if (m_lastTemperatureInDegree >= 45.) {
+    if (m_lastTemperatureInDegree >= opTemp ) {
         ui->label_temperatureState->setStyleSheet("QLabel {color: green}");
-        ui->label_temperatureState->setText("operation temperature reached");
+        ui->label_temperatureState->setText(QString("operation temperature reached (calibrated at %1 °C)").arg(opTemp));
     }
-    else if (m_lastTemperatureInDegree < 45.) {
+    else if (m_lastTemperatureInDegree < opTemp) {
         ui->label_temperatureState->setStyleSheet("QLabel {color: red}");
-        ui->label_temperatureState->setText("warming up to operation temperature (~ 45 °C) ...");
+        ui->label_temperatureState->setText(QString("warming up to operation temperature (calibrated at %1 °C)").arg(opTemp));
     }
 }
 
@@ -7940,25 +7945,7 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     connect(ui->doubleSpinBox_persistanceRightA, SIGNAL(valueChanged(double)), this, SLOT(changeRightAPersistance(double)));
     connect(ui->doubleSpinBox_persistanceRightB, SIGNAL(valueChanged(double)), this, SLOT(changeRightBPersistance(double)));
 
-    switch ( DRS4SettingsManager::sharedInstance()->triggerSource() ) {
-    case (1<<0):
-        ui->comboBox_triggerLogic->setCurrentIndex(0);
-        break;
-    case (1<<1):
-        ui->comboBox_triggerLogic->setCurrentIndex(1);
-        break;
-    case (1<<8)|(1<<9):
-        ui->comboBox_triggerLogic->setCurrentIndex(2);
-        break;
-    case (1<<0)|(1<<1):
-        ui->comboBox_triggerLogic->setCurrentIndex(3);
-        break;
-    case (1<<4)|(1<<12):
-        ui->comboBox_triggerLogic->setCurrentIndex(4);
-        break;
-    default:
-        break;
-    }
+    ui->comboBox_triggerLogic->setCurrentIndex(DRS4SettingsManager::sharedInstance()->triggerSource_index());
 
     switch ( (int)DRS4SettingsManager::sharedInstance()->sweepInNanoseconds() ) {
     case 200: //5GHz
@@ -7976,6 +7963,42 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     default:
         break;
     }
+
+   switch (DRS4SettingsManager::sharedInstance()->channelNumberA()) {
+   case 0:
+       emit ui->checkBox_chn1_A->clicked(true);
+       break;
+
+   case 1:
+       emit ui->checkBox_chn2_A->clicked(true);
+       break;
+
+   case 2:
+       emit ui->checkBox_chn3_A->clicked(true);
+       break;
+
+   case 3:
+       emit ui->checkBox_chn4_A->clicked(true);
+       break;
+   }
+
+   switch (DRS4SettingsManager::sharedInstance()->channelNumberB()) {
+   case 0:
+       emit ui->checkBox_chn1_B->clicked(true);
+       break;
+
+   case 1:
+       emit ui->checkBox_chn2_B->clicked(true);
+       break;
+
+   case 2:
+       emit ui->checkBox_chn3_B->clicked(true);
+       break;
+
+   case 3:
+       emit ui->checkBox_chn4_B->clicked(true);
+       break;
+   }
 
     ui->comboBox_pulseShapeFilterRecordScheme->setCurrentIndex((int)DRS4SettingsManager::sharedInstance()->pulseShapeFilterRecordScheme());
 
@@ -9011,6 +9034,25 @@ void DRS4ScopeDlg::showUsedGPL()
     m_usedgplDialog->show();
 }
 
+void DRS4ScopeDlg::showServerConfig()
+{
+    m_serverDlg->show();
+}
+
+void DRS4ScopeDlg::changeServerState(bool active)
+{
+    QString msg = "";
+
+    if (active) {
+        msg = QString("server is active (listening to port %1)").arg(DRS4ProgramSettingsManager::sharedInstance()->httpServerPort());
+    }
+    else {
+        msg = QString("server is not activated ...");
+    }
+
+    ui->widget_serverState->setActive(active, msg);
+}
+
 void DRS4ScopeDlg::updateInBurstMode()
 {
     QMutexLocker locker(&m_mutex);
@@ -9154,6 +9196,157 @@ bool DRS4ScopeDlg::isMulticoreThreadingEnabled() const
     QMutexLocker locker(&m_mutex);
 
     return DRS4ProgramSettingsManager::sharedInstance()->isMulticoreThreadingEnabled();
+}
+
+void DRS4ScopeDlg::changeChannels_A(int set_chn) {
+    DRS4SettingsManager::sharedInstance()->setChannelNumberA(set_chn);
+
+    changeTriggerLogic(ui->comboBox_triggerLogic->currentIndex());
+    changeTriggerLevelA(DRS4SettingsManager::sharedInstance()->triggerLevelAmV());
+}
+
+void DRS4ScopeDlg::changeChannels_B(int set_chn)
+{
+    DRS4SettingsManager::sharedInstance()->setChannelNumberB(set_chn);
+
+    changeTriggerLogic(ui->comboBox_triggerLogic->currentIndex());
+    changeTriggerLevelB(DRS4SettingsManager::sharedInstance()->triggerLevelBmV());
+}
+
+void DRS4ScopeDlg::changeChannel1_A(bool on)
+{
+    if (on) {
+        changeChannels_A(0);
+
+        ui->checkBox_chn1_A->setChecked(on);
+        ui->checkBox_chn2_A->setChecked(!on);
+        ui->checkBox_chn3_A->setChecked(!on);
+        ui->checkBox_chn4_A->setChecked(!on);
+
+        ui->checkBox_chn1_A->setDisabled(on);
+        ui->checkBox_chn2_A->setDisabled(!on);
+        ui->checkBox_chn3_A->setDisabled(!on);
+        ui->checkBox_chn4_A->setDisabled(!on);
+    }
+}
+
+void DRS4ScopeDlg::changeChannel2_A(bool on)
+{
+    if (on) {
+        changeChannels_A(1);
+
+        ui->checkBox_chn2_A->setChecked(on);
+        ui->checkBox_chn1_A->setChecked(!on);
+        ui->checkBox_chn3_A->setChecked(!on);
+        ui->checkBox_chn4_A->setChecked(!on);
+
+        ui->checkBox_chn2_A->setDisabled(on);
+        ui->checkBox_chn1_A->setDisabled(!on);
+        ui->checkBox_chn3_A->setDisabled(!on);
+        ui->checkBox_chn4_A->setDisabled(!on);
+    }
+}
+
+void DRS4ScopeDlg::changeChannel3_A(bool on)
+{
+    if (on) {
+        changeChannels_A(2);
+
+        ui->checkBox_chn3_A->setChecked(on);
+        ui->checkBox_chn1_A->setChecked(!on);
+        ui->checkBox_chn2_A->setChecked(!on);
+        ui->checkBox_chn4_A->setChecked(!on);
+
+        ui->checkBox_chn3_A->setDisabled(on);
+        ui->checkBox_chn1_A->setDisabled(!on);
+        ui->checkBox_chn2_A->setDisabled(!on);
+        ui->checkBox_chn4_A->setDisabled(!on);
+    }
+}
+
+void DRS4ScopeDlg::changeChannel4_A(bool on)
+{
+    if (on) {
+        changeChannels_A(3);
+
+        ui->checkBox_chn4_A->setChecked(on);
+        ui->checkBox_chn1_A->setChecked(!on);
+        ui->checkBox_chn2_A->setChecked(!on);
+        ui->checkBox_chn3_A->setChecked(!on);
+
+        ui->checkBox_chn4_A->setDisabled(on);
+        ui->checkBox_chn1_A->setDisabled(!on);
+        ui->checkBox_chn2_A->setDisabled(!on);
+        ui->checkBox_chn3_A->setDisabled(!on);
+    }
+}
+
+void DRS4ScopeDlg::changeChannel1_B(bool on)
+{
+    if (on) {
+        changeChannels_B(0);
+
+        ui->checkBox_chn1_B->setChecked(on);
+        ui->checkBox_chn2_B->setChecked(!on);
+        ui->checkBox_chn3_B->setChecked(!on);
+        ui->checkBox_chn4_B->setChecked(!on);
+
+        ui->checkBox_chn1_B->setDisabled(on);
+        ui->checkBox_chn2_B->setDisabled(!on);
+        ui->checkBox_chn3_B->setDisabled(!on);
+        ui->checkBox_chn4_B->setDisabled(!on);
+    }
+}
+
+void DRS4ScopeDlg::changeChannel2_B(bool on)
+{
+    if (on) {
+        changeChannels_B(1);
+
+        ui->checkBox_chn2_B->setChecked(on);
+        ui->checkBox_chn1_B->setChecked(!on);
+        ui->checkBox_chn3_B->setChecked(!on);
+        ui->checkBox_chn4_B->setChecked(!on);
+
+        ui->checkBox_chn2_B->setDisabled(on);
+        ui->checkBox_chn1_B->setDisabled(!on);
+        ui->checkBox_chn3_B->setDisabled(!on);
+        ui->checkBox_chn4_B->setDisabled(!on);
+    }
+}
+
+void DRS4ScopeDlg::changeChannel3_B(bool on)
+{
+    if (on) {
+        changeChannels_B(2);
+
+        ui->checkBox_chn3_B->setChecked(on);
+        ui->checkBox_chn1_B->setChecked(!on);
+        ui->checkBox_chn2_B->setChecked(!on);
+        ui->checkBox_chn4_B->setChecked(!on);
+
+        ui->checkBox_chn3_B->setDisabled(on);
+        ui->checkBox_chn1_B->setDisabled(!on);
+        ui->checkBox_chn2_B->setDisabled(!on);
+        ui->checkBox_chn4_B->setDisabled(!on);
+    }
+}
+
+void DRS4ScopeDlg::changeChannel4_B(bool on)
+{
+    if (on) {
+        changeChannels_B(3);
+
+        ui->checkBox_chn4_B->setChecked(on);
+        ui->checkBox_chn1_B->setChecked(!on);
+        ui->checkBox_chn2_B->setChecked(!on);
+        ui->checkBox_chn3_B->setChecked(!on);
+
+        ui->checkBox_chn4_B->setDisabled(on);
+        ui->checkBox_chn1_B->setDisabled(!on);
+        ui->checkBox_chn2_B->setDisabled(!on);
+        ui->checkBox_chn3_B->setDisabled(!on);
+    }
 }
 
 void DRS4ScopeDlg::startAcquisition(const FunctionSource &source)
@@ -9361,30 +9554,10 @@ void DRS4ScopeDlg::plotPHS()
     m_phsRequestTimer->start();
 }
 
-void DRS4ScopeDlg::Progress(int value)
-{
-    qDebug() << value;
-}
-
 void DRS4ScopeDlg::showEvent(QShowEvent *event)
 {
     event->accept();
     QMainWindow::showEvent(event);
-
-    /*if (!DRS4BoardManager::sharedInstance()->isDemoModeEnabled()) {
-        const bool validVoltCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsVoltageCalibrationValid();
-        const bool validTimingCalib = DRS4BoardManager::sharedInstance()->currentBoard()->IsTimingCalibrationValid();
-
-        if (!validVoltCalib
-                || !validTimingCalib) {
-            const QString voltStr = !validVoltCalib ?QString( "<font color=\"red\">[ x ]&emsp;voltage calibration ?</font>") : QString("<font color=\"green\">[ ok ]&emsp;voltage calibration ?</font>");
-            const QString timeStr = !validTimingCalib ? QString("<font color=\"red\">[ x ]&emsp;timing calibration (%1 GHz) ?</font>").arg(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz()) : QString("<font color=\"green\">[ ok ]&emsp;timing calibration (%1 GHz) ?</font>").arg(DRS4SettingsManager::sharedInstance()->sampleSpeedInGHz());
-
-            const QString text = QString(QString("<nobr>The DRS4 evaluation board need to be calibrated:</nobr><br><lu><li>") + voltStr + QString("</li>") + QString("<li>") + timeStr + QString("</li></lu>"));
-
-            QMessageBox::information(this, "Calibration needed!", text);
-        }
-    }*/
 }
 
 void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
@@ -9424,6 +9597,21 @@ void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
 
     if (m_boardInfoDlg)
         m_boardInfoDlg->close();
+
+    if (m_gplDialog)
+        m_gplDialog->close();
+
+    if (m_lgplDialog)
+        m_lgplDialog->close();
+
+    if (m_usedgplDialog)
+        m_usedgplDialog->close();
+
+    if (m_serverDlg)
+        m_serverDlg->close();
+
+    if (DRS4WebServer::sharedInstance()->isListening())
+        DRS4WebServer::sharedInstance()->stop();
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         DRS4BoardManager::sharedInstance()->currentBoard()->SetCooldown(10000);
@@ -9475,4 +9663,7 @@ void DRS4ScopeDlg::arrangeIcons()
     ui->actionOpen_2->setIcon(QIcon(":/images/images/001-settings.png"));
 
     ui->actionOpen_calculator->setIcon(QIcon(":/images/images/calculator73.svg"));
+
+    ui->actionOPen->setIcon(QIcon(":/images/images/001-heart-rate-monitor.png"));
+    ui->actionOpen_serverConfig->setIcon(QIcon(":/images/server"));
 }

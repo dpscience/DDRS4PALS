@@ -52,49 +52,59 @@
 ** https://www.sciencedirect.com/science/article/pii/S235271101930038X
 **/
 
-#ifndef DRS4BOARDMANAGER_H
-#define DRS4BOARDMANAGER_H
+#ifndef DRS4BOARDCALIBRATIONDLG_H
+#define DRS4BOARDCALIBRATIONDLG_H
 
-#include <QMutex>
-#include <QMutexLocker>
-
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonValue>
-
-#include "DLib.h"
+#include "dversion.h"
+#include "drs4boardmanager.h"
 #include "DRS/drs507/DRS.h"
 
-class DRS4BoardManager
-{
-    DRS4BoardManager();
-    virtual ~DRS4BoardManager();
+#include "DLib.h"
 
-    DRS *m_drs;
-    DRSBoard *m_drsBoard;
+#include <QMainWindow>
+#include <QTimer>
 
-    bool m_demoMode;
-    bool m_demoFromStreamData;
+namespace Ui {
+class DRS4BoardCalibrationDlg;
+}
 
-    mutable QMutex m_mutex;
+class DRS4BoardCalibrationDlg : public QMainWindow, public DRSCallback {
+    Q_OBJECT
 
 public:
-    static DRS4BoardManager *sharedInstance();
+    explicit DRS4BoardCalibrationDlg(QWidget *parent = DNULLPTR);
+    virtual ~DRS4BoardCalibrationDlg();
 
-    bool connect();
+    virtual void Progress(int value);
 
-    bool isConnected() const;
+protected:
+    virtual void closeEvent(QCloseEvent *event);
 
-    DRSBoard *currentBoard() const;
+private slots:
+    void runVoltageCalibration();
+    void runTimingCalibration();
 
-    void setDemoMode(bool demoMode);
-    void setDemoFromStreamData(bool usingStreamData);
+    void changeSampleFreq(int id);
+    void updateStatus(bool bConnected = true);
 
-    bool isDemoModeEnabled() const;
-    bool usingStreamDataOnDemoMode() const;
+private:
+    void enableControls(bool on);
 
-    QJsonDocument hardwareInfo() const;
+signals:
+    void progress(int value);
+    void statusChanged();
+
+private:
+    Ui::DRS4BoardCalibrationDlg *ui;
+
+    QTimer m_statusReqTimer;
+
+    QLabel *m_infoLabel;
+    QLabel *m_statusLabelV;
+    QLabel *m_statusLabelT;
+    QLabel *m_statusBoardTemp;
+
+    bool m_bIsRunning;
 };
 
-#endif // DRS4BOARDMANAGER_H
+#endif // DRS4BOARDCALIBRATIONDLG_H

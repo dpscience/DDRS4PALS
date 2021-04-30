@@ -59,6 +59,8 @@
 #include "drs4boardmanager.h"
 #include "UpdateNotifier/drs4updatenotifier.h"
 
+#include "drs4boardcalibrationdlg.h"
+
 #include "DLib.h"
 
 #include <QMainWindow>
@@ -72,12 +74,13 @@ class DRS4StartDlg : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit DRS4StartDlg(ProgramStartType *startType, QWidget *parent = 0);
+    explicit DRS4StartDlg(ProgramStartType *startType, QWidget *parent = DNULLPTR);
     virtual ~DRS4StartDlg();
 
 public slots:
     void startDemoMode();
     void startDataAquistion();
+    void openCalibration();
 
     void quit();
     void showAbout();
@@ -87,6 +90,7 @@ private slots:
     void showUpdateRequestLatestReleaseIsRunning();
     void showUpdateRequestError();
     void showUpdateRequestUpdateAvailable(QString tag, QString url, QDateTime releaseDateTime);
+    void adaptCalibStatus();
 
 protected:
     virtual void showEvent(QShowEvent *event);
@@ -103,6 +107,8 @@ private:
     bool m_isFinished;
 
     ProgramStartType *m_startType;
+
+    DRS4BoardCalibrationDlg *m_calibDlg;
 };
 
 #endif // DRS4STARTDLG_H
