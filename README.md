@@ -33,7 +33,7 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 <b>The repository of the DDRS4PALS-installer can be found</b> [here.](https://github.com/dpscience/DDRS4PALS-installer)
 
 ## ``Option 2: manual installation``
-* Download the latest software release (<b>DDRS4PALS_v114.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Download the latest software release (<b>DDRS4PALS_v115.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
 * Unzip <b>DDRS4PALS_v115.rar</b>.
 * Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
