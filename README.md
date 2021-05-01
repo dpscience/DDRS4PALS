@@ -115,7 +115,7 @@ DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 ### ``online tracking of the resulting spectra``
 <br>![Spectrum](/images/spec.png)<br>
 
-### ``DRS4 eval board calibration without the need of DRSOsc software``
+### ``timing & voltage/gain calibration without the need of running DRSOsc software``
 <br>![calibration](/images/calibration.png)<br>
 
 ### ``accessing DDRS4PALS remotely via internet browser``
