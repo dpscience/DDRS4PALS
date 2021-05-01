@@ -21,10 +21,6 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 ### ``preview of the user interface of DDRS4PALS``
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
-### ``accessing DDRS4PALS remotely via internet browser``
-<br>![DDRS4PALS-http](/images/server-integration-DDRS4PALS.png)
-<br>![DDRS4PALS-http](/images/main.png)
-
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ## ``Option 1: via installer``
@@ -118,6 +114,13 @@ DDRS4PALS <b>v1.02</b> (<b>DLTPulseGenerator v1.1</b>):<br>[![DOI](https://zenod
 
 ### ``online tracking of the resulting spectra``
 <br>![Spectrum](/images/spec.png)<br>
+
+### ``DRS4 eval board calibration without the need of DRSOsc software``
+<br>![calibration](/images/calibration.png)<br>
+
+### ``accessing DDRS4PALS remotely via internet browser``
+<br>![DDRS4PALS-http](/images/server-integration-DDRS4PALS.png)
+<br>![DDRS4PALS-http-url](/images/main.png)
 
 ## producing high-quality lifetime spectra exploiting a set of freely configurable physical filters:
 
