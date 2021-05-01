@@ -23,6 +23,7 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 ### ``accessing DDRS4PALS remotely via internet browser``
 <br>![DDRS4PALS-http](/images/server-integration-DDRS4PALS.png)
+<br>![DDRS4PALS-http](/images/main.png)
 
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
