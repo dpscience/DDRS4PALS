@@ -20,6 +20,8 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
+<br>![DDRS4PALS-http](/images/server-integration-DDRS4PALS.png)
+
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ## ``Option 1: via installer``
