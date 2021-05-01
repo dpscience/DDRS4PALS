@@ -18,8 +18,10 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 <b>DDRS4PALS</b> - A software for the acquisition and simulation of positron lifetime spectra (PALS) using the DRS4 evaluation board<br>
 
+### ``preview of the user interface of DDRS4PALS``
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
+### ``accessing DDRS4PALS remotely via internet browser``
 <br>![DDRS4PALS-http](/images/server-integration-DDRS4PALS.png)
 
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
