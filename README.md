@@ -24,7 +24,7 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ## ``Option 1: via installer``
-* Download the latest installer (<b>installer_DDRS4PALS-v1.15.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Download the latest installer (<b>installer_DDRS4PALS-v1.16.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
 * Run the installer.
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
@@ -34,8 +34,8 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 <b>The repository of the DDRS4PALS-installer can be found</b> [here.](https://github.com/dpscience/DDRS4PALS-installer)
 
 ## ``Option 2: manual installation``
-* Download the latest software release (<b>DDRS4PALS_v115.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
-* Unzip <b>DDRS4PALS_v115.rar</b>.
+* Download the latest software release (<b>DDRS4PALS_v116.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Unzip <b>DDRS4PALS_v116.rar</b>.
 * Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
@@ -71,6 +71,10 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## ``v1.x``
+
+DDRS4PALS <b>v1.16</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4730967.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
+
+Please, upgrade to <b>v1.16</b> since v.1.15 is skipping the pulse-shape filter data section during loading from a settings file.
 
 DDRS4PALS <b>v1.15</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4730967.svg)](https://doi.org/10.5281/zenodo.4730967)<br>
 
