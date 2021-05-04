@@ -357,6 +357,8 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     /* start web server ... */
     if (DRS4ProgramSettingsManager::sharedInstance()->httpServerAutostart())
         DRS4WebServer::sharedInstance()->start(m_worker);
+    else
+        emit DRS4WebServer::sharedInstance()->stateChanged(false);
 
     connect(ui->widget_serverState, SIGNAL(clicked()), this, SLOT(showServerConfig()));
 
