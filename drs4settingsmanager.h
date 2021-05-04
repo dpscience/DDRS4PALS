@@ -73,7 +73,7 @@
 
 #define __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER 4381
 
-// #define __DISABLE_MUTEX_LOCKER
+#define __DISABLE_MUTEX_LOCKER
 
 struct DRS4PulseShapeFilterRecordScheme {
     enum Scheme : int {
