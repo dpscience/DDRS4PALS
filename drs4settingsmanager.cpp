@@ -110,7 +110,6 @@ DRS4PulseShapeFilterData& DRS4PulseShapeFilterData::operator=(const DRS4PulseSha
     if (copy.m_stdDevTraceDataYArray)
         memcpy(m_stdDevTraceDataYArray, copy.m_stdDevTraceDataYArray, __PULSESHAPEFILTER_SPLINE_TRACE_NUMBER*sizeof(float));
 
-
     return *this;
 }
 
@@ -1089,7 +1088,8 @@ bool DRS4SettingsManager::load(const QString &path)
                             parsePulseShapeData(m_pulseShapeFilter_meanDataA_Node, &meanData);
                             parsePulseShapeData(m_pulseShapeFilter_stddevDataA_Node, &stdDevData);
 
-                            if (meanData.isEmpty() || stdDevData.isEmpty()) {
+                            if (meanData.isEmpty()
+                                    || stdDevData.isEmpty()) {
                                 setPulseShapeFilterDataA(DRS4PulseShapeFilterData(), false);
 
                                 m_pulseShapeFilterEnabledA_Node->setValue(false);
@@ -1102,6 +1102,8 @@ bool DRS4SettingsManager::load(const QString &path)
 
                                 m_pulseShapeFilterEnabledA_Node->setValue(pPulseShapeFilterSettingsTag.getValueAt(m_pulseShapeFilterEnabledA_Node, &ok));
                                 if (!ok) m_pulseShapeFilterEnabledA_Node->setValue(m_pulseShapeFilterEnabledA);
+
+
                             }
                         }
                     }
@@ -2591,10 +2593,11 @@ void DRS4SettingsManager::setPulseShapeFilterStdDevLowerFractionB(double value)
 
 void DRS4SettingsManager::setPulseShapeFilterDataA(const DRS4PulseShapeFilterData &data, bool lockMutex)
 {
-    if (lockMutex)
+    if (lockMutex) {
 #ifndef __DISABLE_MUTEX_LOCKER
         QMutexLocker locker(&m_mutex);
 #endif
+    }
 
     m_pulseShapeFilterDataA = data;
 
@@ -2612,10 +2615,11 @@ void DRS4SettingsManager::setPulseShapeFilterDataA(const DRS4PulseShapeFilterDat
 
 void DRS4SettingsManager::setPulseShapeFilterDataB(const DRS4PulseShapeFilterData &data, bool lockMutex)
 {
-    if (lockMutex)
+    if (lockMutex) {
 #ifndef __DISABLE_MUTEX_LOCKER
         QMutexLocker locker(&m_mutex);
 #endif
+    }
 
     m_pulseShapeFilterDataB = data;
 

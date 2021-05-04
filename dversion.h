@@ -60,9 +60,9 @@
 /* change here before releasing a new version **/
 #define NAME                               QString("DDRS4PALS")
 #define MAJOR_VERSION          QString("1")
-#define MINOR_VERSION           QString("15")
+#define MINOR_VERSION           QString("16")
 #define VERSION_EXTENSION  QString("- official -")
-#define DATE_EXTENSION         QString("2021-04-30")
+#define DATE_EXTENSION         QString("2021-05-04")
 
 /* streaming on external storage device */
 #define DATA_STREAM_VERSION 1
