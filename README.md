@@ -72,7 +72,7 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 
 ## ``v1.x``
 
-DDRS4PALS <b>v1.16</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4730967.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
+DDRS4PALS <b>v1.16</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4736899.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
 
 Please, upgrade to <b>v1.16</b> since v.1.15 is skipping the pulse-shape filter data section during loading from a settings file.
 
