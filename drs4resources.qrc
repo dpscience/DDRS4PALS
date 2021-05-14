@@ -32,6 +32,7 @@
         <file alias="connection_lost">images/ConnectionLostOverlayer.png</file>
         <file alias="icon">iconDesign/IconPNGRounded_red.png</file>
         <file alias="server">images/001-http.png</file>
+        <file alias="rc">images/001-controle-remoto.png</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="copyright">license/COPYRIGHT</file>

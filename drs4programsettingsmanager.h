@@ -87,6 +87,9 @@ class DRS4ProgramSettingsManager
     DSimpleXMLNode *m_httpServerAutoStart;
     DSimpleXMLNode *m_httpServerUrlUpdateRate;
 
+    DSimpleXMLNode *m_rcServerPort;
+    DSimpleXMLNode *m_rcServerAutoStart;
+
     DSimpleXMLNode *m_multicoreThreadingParentNode;
         DSimpleXMLNode *m_enableMulticoreThreadingNode;
         DSimpleXMLNode *m_pulsePairChunkSizeNode;
@@ -120,6 +123,9 @@ public:
     void setHttpServerPort(int port);
     void setHttpServerUrlUpdateRate(int rate);
 
+    void setRemoteControlServerAutostart(bool on);
+    void setRemoteControlServerPort(int port);
+
     void setEnableMulticoreThreading(bool on);
     void setPulsePairChunkSize(int size);
 
@@ -139,6 +145,9 @@ public:
     bool httpServerAutostart();
     int httpServerPort();
     int httpServerUrlUpdateRate();
+
+    bool remoteControlServerAutostart();
+    int remoteControlServerPort();
 
     bool isMulticoreThreadingEnabled();
     int pulsePairChunkSize();

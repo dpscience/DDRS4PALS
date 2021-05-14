@@ -106,11 +106,17 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager() {
     m_httpServerPort = new DSimpleXMLNode("httpServerPort");
     m_httpServerPort->setValue(8080);
 
+    m_rcServerPort = new DSimpleXMLNode("rcServerPort");
+    m_rcServerPort->setValue(5000);
+
     m_httpServerUrlUpdateRate = new DSimpleXMLNode("httpServerUrlUpdateRate");
     m_httpServerUrlUpdateRate->setValue(8080);
 
     m_httpServerAutoStart = new DSimpleXMLNode("httpServerAutoStart");
     m_httpServerAutoStart->setValue(false);
+
+    m_rcServerAutoStart = new DSimpleXMLNode("rcServerAutoStart");
+    m_rcServerAutoStart->setValue(false);
 
     (*m_parentNode) << m_lastSaveDateNode
                     << m_renderPointsNode
@@ -126,7 +132,9 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager() {
                     << m_lastAreaDistrPathNode
                     << m_httpServerPort
                     << m_httpServerAutoStart
-                    << m_httpServerUrlUpdateRate;
+                    << m_httpServerUrlUpdateRate
+                    << m_rcServerPort
+                    << m_rcServerAutoStart;
 
     (*m_multicoreThreadingParentNode) << m_enableMulticoreThreadingNode
                     << m_pulsePairChunkSizeNode;
@@ -168,8 +176,10 @@ bool DRS4ProgramSettingsManager::load()
         m_enableMulticoreThreadingNode->setValue(false);
         m_pulsePairChunkSizeNode->setValue(1);
         m_httpServerPort->setValue(8080);
+        m_rcServerPort->setValue(5000);
         m_httpServerUrlUpdateRate->setValue(5);
         m_httpServerAutoStart->setValue(false);
+        m_rcServerAutoStart->setValue(false);
 
         return true;
     }
@@ -193,17 +203,25 @@ bool DRS4ProgramSettingsManager::load()
         m_enableMulticoreThreadingNode->setValue(false);
         m_pulsePairChunkSizeNode->setValue(1);
         m_httpServerPort->setValue(8080);
+        m_rcServerPort->setValue(5000);
         m_httpServerUrlUpdateRate->setValue(5);
         m_httpServerAutoStart->setValue(false);
+        m_rcServerAutoStart->setValue(false);
 
         return true;
     }
 
-    const int port = pTag.getValueAt(m_httpServerPort, &ok).toInt();
+    int port = pTag.getValueAt(m_httpServerPort, &ok).toInt();
     if ( ok )
         m_httpServerPort->setValue(port);
     else
         m_httpServerPort->setValue(8080);
+
+    port = pTag.getValueAt(m_rcServerPort, &ok).toInt();
+    if ( ok )
+        m_rcServerPort->setValue(port);
+    else
+        m_rcServerPort->setValue(5000);
 
     const int rate = pTag.getValueAt(m_httpServerUrlUpdateRate, &ok).toInt();
     if ( ok )
@@ -211,11 +229,17 @@ bool DRS4ProgramSettingsManager::load()
     else
         m_httpServerUrlUpdateRate->setValue(5);
 
-    const bool autoStartServer = pTag.getValueAt(m_httpServerAutoStart, &ok).toBool();
+    bool autoStartServer = pTag.getValueAt(m_httpServerAutoStart, &ok).toBool();
     if ( ok )
         m_httpServerAutoStart->setValue(autoStartServer);
     else
         m_httpServerAutoStart->setValue(false);
+
+    autoStartServer = pTag.getValueAt(m_rcServerAutoStart, &ok).toBool();
+    if ( ok )
+        m_rcServerAutoStart->setValue(autoStartServer);
+    else
+        m_rcServerAutoStart->setValue(false);
 
     const QString lastDate = pTag.getValueAt(m_lastSaveDateNode, &ok).toString();
     if ( ok )
@@ -434,6 +458,22 @@ void DRS4ProgramSettingsManager::setHttpServerUrlUpdateRate(int rate)
     save();
 }
 
+void DRS4ProgramSettingsManager::setRemoteControlServerAutostart(bool on)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_rcServerAutoStart->setValue(on);
+    save();
+}
+
+void DRS4ProgramSettingsManager::setRemoteControlServerPort(int port)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_rcServerPort->setValue(port);
+    save();
+}
+
 void DRS4ProgramSettingsManager::setEnableMulticoreThreading(bool on)
 {
     QMutexLocker locker(&m_mutex);
@@ -569,12 +609,28 @@ bool DRS4ProgramSettingsManager::httpServerAutostart()
     return m_httpServerAutoStart->getValue().toBool();
 }
 
+bool DRS4ProgramSettingsManager::remoteControlServerAutostart()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_rcServerAutoStart->getValue().toBool();
+}
+
 int DRS4ProgramSettingsManager::httpServerPort()
 {
     QMutexLocker locker(&m_mutex);
 
     load();
     return m_httpServerPort->getValue().toInt();
+}
+
+int DRS4ProgramSettingsManager::remoteControlServerPort()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_rcServerPort->getValue().toInt();
 }
 
 int DRS4ProgramSettingsManager::httpServerUrlUpdateRate()

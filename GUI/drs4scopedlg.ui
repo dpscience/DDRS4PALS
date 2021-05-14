@@ -9245,6 +9245,9 @@ border-color: black;
        </spacer>
       </item>
       <item>
+       <widget class="DRS4BlinkingLight" name="widget_rcServerState" native="true"/>
+      </item>
+      <item>
        <widget class="DRS4BlinkingLight" name="widget_serverState" native="true"/>
       </item>
      </layout>
@@ -9365,6 +9368,7 @@ border-color: black;
      <string>Server Config</string>
     </property>
     <addaction name="actionOpen_serverConfig"/>
+    <addaction name="actionRemote_Control_server"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuScript"/>
@@ -9570,7 +9574,12 @@ border-color: black;
   </action>
   <action name="actionOpen_serverConfig">
    <property name="text">
-    <string>Open</string>
+    <string>Http server</string>
+   </property>
+  </action>
+  <action name="actionRemote_Control_server">
+   <property name="text">
+    <string>Remote Control server</string>
    </property>
   </action>
  </widget>

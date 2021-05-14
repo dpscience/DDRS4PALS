@@ -107,6 +107,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_addInfoDlg(DNULLPTR),
     m_gplDialog(DNULLPTR),
     m_serverDlg(DNULLPTR),
+    m_rcServerDlg(DNULLPTR),
     m_lgplDialog(DNULLPTR),
     m_usedgplDialog(DNULLPTR),
     m_boardInfoDlg(DNULLPTR),
@@ -353,6 +354,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_workerThread = new QThread;
 
     connect(DRS4WebServer::sharedInstance(), SIGNAL(stateChanged(bool)), this, SLOT(changeServerState(bool)));
+    connect(DRS4RemoteControlServer::sharedInstance(), SIGNAL(stateChanged(bool)), this, SLOT(changeServerState(bool)));
 
     /* start web server ... */
     if (DRS4ProgramSettingsManager::sharedInstance()->httpServerAutostart())
@@ -361,6 +363,13 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
         emit DRS4WebServer::sharedInstance()->stateChanged(false);
 
     connect(ui->widget_serverState, SIGNAL(clicked()), this, SLOT(showServerConfig()));
+    connect(ui->widget_rcServerState, SIGNAL(clicked()), this, SLOT(showRCServerConfig()));
+
+    /* start remote control server ... */
+    if (DRS4ProgramSettingsManager::sharedInstance()->remoteControlServerAutostart())
+        DRS4RemoteControlServer::sharedInstance()->start(m_worker);
+    else
+        emit DRS4RemoteControlServer::sharedInstance()->stateChanged(false);
 
     m_worker->moveToThread(m_workerThread);
 
@@ -392,6 +401,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     m_serverDlg = new DRS4HttpServerConfigDlg(m_worker);
     m_serverDlg->hide();
 
+    m_rcServerDlg = new DRS4RemoteControlServerConfigDlg(m_worker);
+    m_rcServerDlg->hide();
+
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveSettings()));
     connect(ui->actionSave_as, SIGNAL(triggered()), this, SLOT(saveAsSettings()));
     connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(loadSettings()));
@@ -408,6 +420,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->actionLicense_LGPLv3, SIGNAL(triggered()), this, SLOT(showLGPL()));
     connect(ui->actionUsed_License_GPLv3, SIGNAL(triggered()), this, SLOT(showUsedGPL()));
     connect(ui->actionOpen_serverConfig, SIGNAL(triggered()), this, SLOT(showServerConfig()));
+    connect(ui->actionRemote_Control_server, SIGNAL(triggered()), this, SLOT(showRCServerConfig()));
 
     connect(ui->spinBox_fitIterations, SIGNAL(valueChanged(int)), this, SLOT(changeCoincidenceFitIterations(int)));
     connect(ui->spinBox_fitIterations_Merged, SIGNAL(valueChanged(int)), this, SLOT(changeMergedFitIterations(int)));
@@ -1098,6 +1111,7 @@ DRS4ScopeDlg::~DRS4ScopeDlg()
     DDELETE_SAFETY(m_lgplDialog);
     DDELETE_SAFETY(m_usedgplDialog);
     DDELETE_SAFETY(m_serverDlg);
+    DDELETE_SAFETY(m_rcServerDlg);
 
     if ( m_worker->isRecordingForPulseShapeFilterA() )
         stopAcquisitionOfPulseShapeFilterDataA();
@@ -9041,18 +9055,37 @@ void DRS4ScopeDlg::showServerConfig()
     m_serverDlg->show();
 }
 
+void DRS4ScopeDlg::showRCServerConfig()
+{
+    m_rcServerDlg->show();
+}
+
 void DRS4ScopeDlg::changeServerState(bool active)
 {
-    QString msg = "";
+    if (sender() == qobject_cast<QObject*>(DRS4WebServer::sharedInstance())) {
+        QString msg = "";
 
-    if (active) {
-        msg = QString("server is active (listening to port %1)").arg(DRS4ProgramSettingsManager::sharedInstance()->httpServerPort());
-    }
-    else {
-        msg = QString("server is not activated ...");
-    }
+        if (active) {
+            msg = QString("http server is active (listening to port %1)").arg(DRS4ProgramSettingsManager::sharedInstance()->httpServerPort());
+        }
+        else {
+            msg = QString("http server is not activated ...");
+        }
 
-    ui->widget_serverState->setActive(active, msg);
+        ui->widget_serverState->setActive(active, msg);
+    }
+    else if (sender() == qobject_cast<QObject*>(DRS4RemoteControlServer::sharedInstance())) {
+        QString msg = "";
+
+        if (active) {
+            msg = QString("remote control server is active (listening to port %1)").arg(DRS4ProgramSettingsManager::sharedInstance()->remoteControlServerPort());
+        }
+        else {
+            msg = QString("remote control server is not activated ...");
+        }
+
+        ui->widget_rcServerState->setActive(active, msg);
+    }
 }
 
 void DRS4ScopeDlg::updateInBurstMode()
@@ -9612,8 +9645,14 @@ void DRS4ScopeDlg::closeEvent(QCloseEvent *event)
     if (m_serverDlg)
         m_serverDlg->close();
 
+    if (m_rcServerDlg)
+        m_rcServerDlg->close();
+
     if (DRS4WebServer::sharedInstance()->isListening())
         DRS4WebServer::sharedInstance()->stop();
+
+    if (DRS4RemoteControlServer::sharedInstance()->isListening())
+        DRS4RemoteControlServer::sharedInstance()->stop();
 
     if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
         DRS4BoardManager::sharedInstance()->currentBoard()->SetCooldown(10000);
@@ -9668,4 +9707,5 @@ void DRS4ScopeDlg::arrangeIcons()
 
     ui->actionOPen->setIcon(QIcon(":/images/images/001-heart-rate-monitor.png"));
     ui->actionOpen_serverConfig->setIcon(QIcon(":/images/server"));
+    ui->actionRemote_Control_server->setIcon(QIcon(":/images/rc"));
 }

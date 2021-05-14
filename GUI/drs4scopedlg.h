@@ -71,6 +71,7 @@
 #include "GUI/drs4calculatordlg.h"
 #include "GUI/drs4licensetextbox.h"
 #include "GUI/drs4httpserverconfigdlg.h"
+#include "GUI/drs4remotecontrolserverconfigdlg.h"
 
 #include "drs4boardmanager.h"
 #include "drs4worker.h"
@@ -90,6 +91,7 @@
 #include "Fit/fitengine.h"
 
 #include "WebServer/drs4webserver.h"
+#include "RemoteControlServer/drs4remotecontrolserver.h"
 
 #include "alglib.h"
 
@@ -105,6 +107,7 @@ typedef enum
 
 class DRS4ScriptDlg;
 class DRS4HttpServerConfigDlg;
+class DRS4RemoteControlServerConfigDlg;
 
 namespace Ui {
 class DRS4ScopeDlg;
@@ -119,7 +122,6 @@ class DRS4ScopeDlg : public QMainWindow
     friend class DRS4StreamManager;
     friend class DRS4FalseTruePulseStreamManager;
 
-    DRS4HttpServerConfigDlg *m_serverDlg;
 public:
     explicit DRS4ScopeDlg(const ProgramStartType& startType, QWidget *parent = DNULLPTR);
     virtual ~DRS4ScopeDlg();
@@ -334,6 +336,7 @@ private slots:
     void showLGPL();
     void showUsedGPL();
     void showServerConfig();
+    void showRCServerConfig();
 
 private slots:
     void changeServerState(bool active);
@@ -638,6 +641,8 @@ private:
     DRS4LicenseTextBox *m_gplDialog;
     DRS4LicenseTextBox *m_lgplDialog;
     DRS4LicenseTextBox *m_usedgplDialog;
+    DRS4HttpServerConfigDlg *m_serverDlg;
+    DRS4RemoteControlServerConfigDlg *m_rcServerDlg;
 
     /* Fit - Results */
     double m_lastFWHMABInPs;

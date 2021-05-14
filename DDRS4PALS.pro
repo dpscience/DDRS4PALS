@@ -111,8 +111,10 @@ SOURCES += main.cpp\
     GUI/drs4licensetextbox.cpp \
     GUI/drs4boardcalibrationdlg.cpp \
     WebServer/drs4webserver.cpp \
+    RemoteControlServer\drs4remotecontrolserver.cpp \
     GUI/drs4httpserverconfigdlg.cpp \
-    GUI/drs4blinkinglight.cpp
+    GUI/drs4blinkinglight.cpp \
+    GUI/drs4remotecontrolserverconfigdlg.cpp
 
 HEADERS  += DRS/drs507/DRS.h \
     DRS/drs507/averager.h\
@@ -156,8 +158,10 @@ HEADERS  += DRS/drs507/DRS.h \
     GUI/drs4licensetextbox.h \
     GUI/drs4boardcalibrationdlg.h \
     WebServer/drs4webserver.h \
+    RemoteControlServer\drs4remotecontrolserver.h \
     GUI/drs4httpserverconfigdlg.h \
-    GUI/drs4blinkinglight.h
+    GUI/drs4blinkinglight.h \
+    GUI/drs4remotecontrolserverconfigdlg.h
 
 FORMS    += GUI/drs4scopedlg.ui \
     GUI/drs4addinfodlg.ui \
@@ -172,7 +176,8 @@ FORMS    += GUI/drs4scopedlg.ui \
     GUI/drs4licensetextbox.ui \
     GUI/drs4boardcalibrationdlg.ui \
     GUI/drs4httpserverconfigdlg.ui \
-    GUI/drs4blinkinglight.ui
+    GUI/drs4blinkinglight.ui \
+    GUI/drs4remotecontrolserverconfigdlg.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -llibusb-1.0
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -llibusb-1.0
