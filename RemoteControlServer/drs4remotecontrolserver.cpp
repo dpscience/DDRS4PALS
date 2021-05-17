@@ -161,10 +161,52 @@ void DRS4RCClientConnection::handleMessage(const QString &data) {
     }
 
     if (id == 0) { // start acqusition ...
+        QMutexLocker locker(&m_mutex);
 
+        if (!m_worker)
+            return;
+
+        m_worker->setBusy(true);
+
+        while(!m_worker->isBlocking()) {}
+
+        const bool bRunning = m_worker->isRunning();
+
+        m_worker->setBusy(false);
+
+        if (bRunning) {
+            respond(DRS4RCReturnCode::code::ok, id, "1");
+
+            return;
+        }
+
+        emit qobject_cast<DRS4RemoteControlServer*>(parent())->startAcquisition();
+
+        respond(DRS4RCReturnCode::code::ok, id, "1");
     }
     else if (id == 1) { // stop acqusition ...
+        QMutexLocker locker(&m_mutex);
 
+        if (!m_worker)
+            return;
+
+        m_worker->setBusy(true);
+
+        while(!m_worker->isBlocking()) {}
+
+        const bool bRunning = m_worker->isRunning();
+
+        m_worker->setBusy(false);
+
+        if (!bRunning) {
+            respond(DRS4RCReturnCode::code::ok, id, "1");
+
+            return;
+        }
+
+        emit qobject_cast<DRS4RemoteControlServer*>(parent())->stopAcquisition();
+
+        respond(DRS4RCReturnCode::code::ok, id, "1");
     }
     else if (id == 2) { // is acqusition running ?
         QMutexLocker locker(&m_mutex);
@@ -180,7 +222,7 @@ void DRS4RCClientConnection::handleMessage(const QString &data) {
 
         m_worker->setBusy(false);
 
-        respond(DRS4RCReturnCode::code::ok, id, QVariant(bRunning).toString());
+        respond(DRS4RCReturnCode::code::ok, id, QVariant(int(bRunning)).toString());
     }
     else if (id == 3) { // reset all (A-B, B-A, merged, prompt) spectra ...
         QMutexLocker locker(&m_mutex);
@@ -449,6 +491,25 @@ void DRS4RCClientConnection::handleMessage(const QString &data) {
 
         respond(DRS4RCReturnCode::code::ok, id, QVariant(counts).toString());
     }
+    else if (id == 16) { // get settings
+        QMutexLocker locker(&m_mutex);
+
+        if (!m_worker)
+            return;
+
+        m_worker->setBusy(true);
+
+        while(!m_worker->isBlocking()) {}
+
+        const QString sData = DRS4SettingsManager::sharedInstance()->xmlContent();
+
+        m_worker->setBusy(false);
+
+        respond(DRS4RCReturnCode::code::ok, id, sData);
+    } // get version
+    else if (id == 17) {
+        respond(DRS4RCReturnCode::code::ok, id, QString("<major>%1</major><minor>%2</minor>").arg(MAJOR_VERSION).arg(MINOR_VERSION));
+    }
     else
         respond(DRS4RCReturnCode::code::failed, -1);
 }
@@ -460,5 +521,4 @@ void DRS4RCClientConnection::respond(const DRS4RCReturnCode::code &code, int req
     const QString replyString = QString("<reply><request-id>%1</request-id><request-valid?>%2</request-valid?><reply-data>%3</reply-data></reply>").arg(request_id).arg(code == DRS4RCReturnCode::code::ok ? 1 : 0).arg(response);
 
     m_socket->write(replyString.toStdString().c_str());
-    // m_socket->flush();
 }

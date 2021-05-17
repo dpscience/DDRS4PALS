@@ -356,6 +356,9 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(DRS4WebServer::sharedInstance(), SIGNAL(stateChanged(bool)), this, SLOT(changeServerState(bool)));
     connect(DRS4RemoteControlServer::sharedInstance(), SIGNAL(stateChanged(bool)), this, SLOT(changeServerState(bool)));
 
+    connect(DRS4RemoteControlServer::sharedInstance(), SIGNAL(startAcquisition()), this, SLOT(startStopThread()));
+    connect(DRS4RemoteControlServer::sharedInstance(), SIGNAL(stopAcquisition()), this, SLOT(startStopThread()));
+
     /* start web server ... */
     if (DRS4ProgramSettingsManager::sharedInstance()->httpServerAutostart())
         DRS4WebServer::sharedInstance()->start(m_worker);

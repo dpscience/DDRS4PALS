@@ -100,6 +100,9 @@ private slots:
 signals:
     void stateChanged(bool active);
 
+    void startAcquisition();
+    void stopAcquisition();
+
 private:
     DRS4RemoteControlServer();
     virtual ~DRS4RemoteControlServer();
