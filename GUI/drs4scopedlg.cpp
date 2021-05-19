@@ -4712,6 +4712,8 @@ void DRS4ScopeDlg::autosaveAllSpectra()
     saveBASpectrum(true);
     saveCoincidenceSpectrum(true);
     saveMergedSpectrum(true);
+    savePHSA(true);
+    savePHSB(true);
 
     m_worker->setBusy(false);
 
