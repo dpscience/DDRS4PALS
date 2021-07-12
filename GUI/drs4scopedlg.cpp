@@ -9454,6 +9454,11 @@ QString DRS4ScopeDlg::updateCurrentFileLabel(bool accessFromScript)
         else
             m_currentSettingsFileLabel->setText(m_currentSettingsPath);
 
+        if (DRS4BoardManager::sharedInstance()->isDemoModeEnabled())
+            setWindowTitle(PROGRAM_NAME + " - SIMULATION-MODE" + " - " + m_currentSettingsPath + " [" + DRS4SettingsManager::sharedInstance()->lastSaveDate() + "]");
+        else
+            setWindowTitle(PROGRAM_NAME + " - " + m_currentSettingsPath + " [" + DRS4SettingsManager::sharedInstance()->lastSaveDate() + "]");
+
         update();
     }
     else {
@@ -9461,6 +9466,11 @@ QString DRS4ScopeDlg::updateCurrentFileLabel(bool accessFromScript)
             str = QString(m_currentSettingsPath + " <font color=\"blue\">[" + DRS4SettingsManager::sharedInstance()->lastSaveDate() + "]</font>");
         else
             str = QString(m_currentSettingsPath);
+
+        if (DRS4BoardManager::sharedInstance()->isDemoModeEnabled())
+            setWindowTitle(PROGRAM_NAME + " - SIMULATION-MODE" + " - " + m_currentSettingsPath + " [" + DRS4SettingsManager::sharedInstance()->lastSaveDate() + "]");
+        else
+            setWindowTitle(PROGRAM_NAME + " - " + m_currentSettingsPath + " [" + DRS4SettingsManager::sharedInstance()->lastSaveDate() + "]");
     }
 
     return str;
