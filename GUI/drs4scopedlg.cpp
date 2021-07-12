@@ -6113,8 +6113,17 @@ void DRS4ScopeDlg::saveABSpectrum(bool autosave, const QString &fileNameAutosave
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSAB()/(double)DRS4SettingsManager::sharedInstance()->channelCntAB(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Channel2 - Channel1]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "#" << "Lifetime: [Channel-B - Channel-A]\n";
+
+        QDateTime start = m_worker->m_startAqAB;
+        QDateTime finish = QDateTime::currentDateTime();
+
+        const qint64 seconds = start.secsTo(finish);
+        const qint64 hours = (seconds/60)/60;
+
+        stream << "# Acquisition started: " << start.toString() << "\n";
+        stream << "# Acquisition finished: " << finish.toString() << "\n";
+        stream << "# Acquisition time: " << QString::number(hours, 'f', 4) << "h\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumAB()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";
@@ -6263,8 +6272,17 @@ void DRS4ScopeDlg::saveBASpectrum(bool autosave, const QString &fileNameAutosave
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntBA(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Channel1 - Channel2]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "#" << "Lifetime: [Channel-A - Channel-B]\n";
+
+        QDateTime start = m_worker->m_startAqBA;
+        QDateTime finish = QDateTime::currentDateTime();
+
+        const qint64 seconds = start.secsTo(finish);
+        const qint64 hours = (seconds/60)/60;
+
+        stream << "# Acquisition started: " << start.toString() << "\n";
+        stream << "# Acquisition finished: " << finish.toString() << "\n";
+        stream << "# Acquisition time: " << QString::number(hours, 'f', 4) << "h\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumBA()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";
@@ -6413,8 +6431,17 @@ void DRS4ScopeDlg::saveCoincidenceSpectrum(bool autosave, const QString &fileNam
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSCoincidence()/(double)DRS4SettingsManager::sharedInstance()->channelCntCoincindence(), 'f', 4);
 
-        stream << "#" << "Lifetime: Prompt [Channel2 (Stop)- Channel1 (Stop)]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "#" << "Zero-Lifetime: [Channel-B/Stop - Channel-A/Stop]\n";
+
+        QDateTime start = m_worker->m_startAqPrompt;
+        QDateTime finish = QDateTime::currentDateTime();
+
+        const qint64 seconds = start.secsTo(finish);
+        const qint64 hours = (seconds/60)/60;
+
+        stream << "# Acquisition started: " << start.toString() << "\n";
+        stream << "# Acquisition finished: " << finish.toString() << "\n";
+        stream << "# Acquisition time: " << QString::number(hours, 'f', 4) << "h\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumCoincidence()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";
@@ -6564,8 +6591,17 @@ void DRS4ScopeDlg::saveMergedSpectrum(bool autosave, const QString &fileNameAuto
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSMerged()/(double)DRS4SettingsManager::sharedInstance()->channelCntMerged(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Merged]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "#" << "Merged Lifetime Spectrum:\n";
+
+        QDateTime start = m_worker->m_startAqMerged;
+        QDateTime finish = QDateTime::currentDateTime();
+
+        const qint64 seconds = start.secsTo(finish);
+        const qint64 hours = (seconds/60)/60;
+
+        stream << "# Acquisition started: " << start.toString() << "\n";
+        stream << "# Acquisition finished: " << finish.toString() << "\n";
+        stream << "# Acquisition time: " << QString::number(hours, 'f', 4) << "h\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumMerged()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";

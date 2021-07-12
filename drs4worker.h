@@ -343,6 +343,11 @@ public:
     int m_abCounts, m_baCounts, m_mergedCounts, m_coincidenceCounts;
     int m_maxY_ABSpectrum, m_maxY_BASpectrum, m_maxY_CoincidenceSpectrum, m_maxY_MergedSpectrum;
 
+    QDateTime m_startAqAB;
+    QDateTime m_startAqBA;
+    QDateTime m_startAqPrompt;
+    QDateTime m_startAqMerged;
+
 private:
     double m_summedABSpecCountRateInSeconds, m_summedBASpecCountRateInSeconds, m_summedMergedSpecCountRateInSeconds,m_summedCoincidenceSpecCountRateInSeconds;
     double m_currentABSpecCountRateInSeconds, m_currentBASpecCountRateInSeconds, m_currentMergedSpecCountRateInSeconds, m_currentCoincidenceSpecCountRateInSeconds;

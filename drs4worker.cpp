@@ -81,6 +81,9 @@ DRS4Worker::DRS4Worker(DRS4WorkerDataExchange *dataExchange, QObject *parent) :
     resetPulseShapeFilterA();
     resetPulseShapeFilterB();
 
+    resetABSpectrum();
+    resetBASpectrum();
+    resetCoincidenceSpectrum();
     resetMergedSpectrum();
 
     resetLifetimeEfficiencyCounter();
@@ -710,6 +713,8 @@ void DRS4Worker::resetABSpectrum()
     m_lifeTimeDataAB.fill(0, DRS4SettingsManager::sharedInstance()->channelCntAB());
 
     m_maxY_ABSpectrum = 0;
+
+    m_startAqAB = QDateTime::currentDateTime();
 }
 
 void DRS4Worker::resetBASpectrum()
@@ -720,6 +725,8 @@ void DRS4Worker::resetBASpectrum()
     m_lifeTimeDataBA.fill(0, DRS4SettingsManager::sharedInstance()->channelCntBA());
 
     m_maxY_BASpectrum = 0;
+
+    m_startAqBA = QDateTime::currentDateTime();
 }
 
 void DRS4Worker::resetMergedSpectrum()
@@ -740,6 +747,11 @@ void DRS4Worker::resetMergedSpectrum()
     m_maxY_BASpectrum = 0;
     m_maxY_MergedSpectrum = 0;
     m_maxY_CoincidenceSpectrum = 0;
+
+    m_startAqMerged = QDateTime::currentDateTime();
+    m_startAqBA = QDateTime::currentDateTime();
+    m_startAqAB = QDateTime::currentDateTime();
+    m_startAqPrompt = QDateTime::currentDateTime();
 }
 
 void DRS4Worker::resetCoincidenceSpectrum()
@@ -750,6 +762,8 @@ void DRS4Worker::resetCoincidenceSpectrum()
     m_lifeTimeDataCoincidence.fill(0, DRS4SettingsManager::sharedInstance()->channelCntCoincindence());
 
     m_maxY_CoincidenceSpectrum = 0;
+
+    m_startAqPrompt = QDateTime::currentDateTime();
 }
 
 QVector<int> *DRS4Worker::spectrumAB()
