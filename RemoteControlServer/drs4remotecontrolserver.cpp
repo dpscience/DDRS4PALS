@@ -68,7 +68,7 @@ DRS4RemoteControlServer *DRS4RemoteControlServer::sharedInstance() {
 void DRS4RemoteControlServer::start(DRS4Worker *worker) {
     m_worker = worker;
 
-    listen(QHostAddress::Any, DRS4ProgramSettingsManager::sharedInstance()->remoteControlServerPort());
+    listen(QHostAddress::Any/*QHostAddress(DRS4ProgramSettingsManager::sharedInstance()->remoteControlServerIP())*/, DRS4ProgramSettingsManager::sharedInstance()->remoteControlServerPort());
 
     emit stateChanged(true);
 }

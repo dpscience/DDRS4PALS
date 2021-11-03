@@ -28,6 +28,7 @@ private slots:
     void updateServer();
     void changeAutostart(bool on);
     void changePort(int port);
+    void changeIP(const QString& ip);
     void startStopServer();
 
 private:

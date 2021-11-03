@@ -515,7 +515,7 @@ QProgressBar::chunk
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>8</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -5382,7 +5382,7 @@ border-color: black;
                 <item>
                  <widget class="QTabWidget" name="tabWidget_6">
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
                   <widget class="QWidget" name="tab_13">
                    <attribute name="title">

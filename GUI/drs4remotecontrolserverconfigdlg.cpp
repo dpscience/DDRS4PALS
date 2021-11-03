@@ -9,6 +9,13 @@ DRS4RemoteControlServerConfigDlg::DRS4RemoteControlServerConfigDlg(DRS4Worker *w
 
     setWindowTitle(PROGRAM_NAME);
 
+    QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
+    QRegExp ipRegex ("^" + ipRange
+                     + "\\." + ipRange
+                     + "\\." + ipRange
+                     + "\\." + ipRange + "$");
+    QRegExpValidator *ipValidator = new QRegExpValidator(ipRegex, this);
+
     connect(ui->checkBox_autoLaunch, SIGNAL(clicked(bool)), this, SLOT(changeAutostart(bool)));
     connect(ui->spinBox_port, SIGNAL(valueChanged(int)), this, SLOT(changePort(int)));
     connect(ui->pushButton_start, SIGNAL(clicked()), this, SLOT(startStopServer()));
@@ -48,6 +55,12 @@ void DRS4RemoteControlServerConfigDlg::changeAutostart(bool on) {
 
 void DRS4RemoteControlServerConfigDlg::changePort(int port) {
     DRS4ProgramSettingsManager::sharedInstance()->setRemoteControlServerPort(port);
+
+    updateServer();
+}
+
+void DRS4RemoteControlServerConfigDlg::changeIP(const QString &ip) {
+    DRS4ProgramSettingsManager::sharedInstance()->setRemoteControlServerIP(ip);
 
     updateServer();
 }

@@ -109,6 +109,9 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager() {
     m_rcServerPort = new DSimpleXMLNode("rcServerPort");
     m_rcServerPort->setValue(5000);
 
+    m_rcServerIP = new DSimpleXMLNode("rcServerIP");
+    m_rcServerIP->setValue("127.0.0.1");
+
     m_httpServerUrlUpdateRate = new DSimpleXMLNode("httpServerUrlUpdateRate");
     m_httpServerUrlUpdateRate->setValue(8080);
 
@@ -133,6 +136,7 @@ DRS4ProgramSettingsManager::DRS4ProgramSettingsManager() {
                     << m_httpServerPort
                     << m_httpServerAutoStart
                     << m_httpServerUrlUpdateRate
+                    << m_rcServerIP
                     << m_rcServerPort
                     << m_rcServerAutoStart;
 
@@ -177,6 +181,7 @@ bool DRS4ProgramSettingsManager::load()
         m_pulsePairChunkSizeNode->setValue(1);
         m_httpServerPort->setValue(8080);
         m_rcServerPort->setValue(5000);
+        m_rcServerIP->setValue("127.0.0.1");
         m_httpServerUrlUpdateRate->setValue(5);
         m_httpServerAutoStart->setValue(false);
         m_rcServerAutoStart->setValue(false);
@@ -204,6 +209,7 @@ bool DRS4ProgramSettingsManager::load()
         m_pulsePairChunkSizeNode->setValue(1);
         m_httpServerPort->setValue(8080);
         m_rcServerPort->setValue(5000);
+        m_rcServerIP->setValue("127.0.0.1");
         m_httpServerUrlUpdateRate->setValue(5);
         m_httpServerAutoStart->setValue(false);
         m_rcServerAutoStart->setValue(false);
@@ -222,6 +228,12 @@ bool DRS4ProgramSettingsManager::load()
         m_rcServerPort->setValue(port);
     else
         m_rcServerPort->setValue(5000);
+
+    QString ip = pTag.getValueAt(m_rcServerIP, &ok).toString();
+    if ( ok )
+        m_rcServerIP->setValue(ip);
+    else
+        m_rcServerIP->setValue("127.0.0.1");
 
     const int rate = pTag.getValueAt(m_httpServerUrlUpdateRate, &ok).toInt();
     if ( ok )
@@ -474,6 +486,14 @@ void DRS4ProgramSettingsManager::setRemoteControlServerPort(int port)
     save();
 }
 
+void DRS4ProgramSettingsManager::setRemoteControlServerIP(const QString& ip)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_rcServerIP->setValue(ip);
+    save();
+}
+
 void DRS4ProgramSettingsManager::setEnableMulticoreThreading(bool on)
 {
     QMutexLocker locker(&m_mutex);
@@ -631,6 +651,14 @@ int DRS4ProgramSettingsManager::remoteControlServerPort()
 
     load();
     return m_rcServerPort->getValue().toInt();
+}
+
+QString DRS4ProgramSettingsManager::remoteControlServerIP()
+{
+    QMutexLocker locker(&m_mutex);
+
+    load();
+    return m_rcServerIP->getValue().toString();
 }
 
 int DRS4ProgramSettingsManager::httpServerUrlUpdateRate()
