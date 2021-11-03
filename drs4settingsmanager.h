@@ -245,7 +245,7 @@ typedef struct {
 public:
     static QStringList typeList() {
         QStringList list;
-        list.append("Polynomial - ALGLIB");
+        list.append("Barycentric Repr. - ALGLIB");
         list.append("Spline & Fitting");
 
         return list;
@@ -284,6 +284,22 @@ public:
         tk_cubic = 6
     };
 } DRS4SplineInterpolationType;
+
+typedef struct {
+public:
+    static QStringList typeList() {
+        QStringList list;
+        list.append("fixed");
+        list.append("dynamic");
+
+        return list;
+    }
+
+    enum type : int {
+        fixed = 0,
+        dynamic = 1
+    };
+} DRS4BaselineCorrectionType;
 
 class DRS4SettingsManager
 {
@@ -396,19 +412,33 @@ class DRS4SettingsManager
 
     DRS4PulseShapeFilterRecordScheme::Scheme m_pulseShapeFilterRecordScheme;
 
+    DRS4BaselineCorrectionType::type m_baselineCorrTypeA;
+    bool m_baseLineCorrectionEnabledA;
+
     int m_baseLineCorrectionStartCellA;
     int m_baseLineCorrectionRegionA;
+
+    int m_baseLineCorrectionStartPeakCellA;
+    int m_baseLineCorrectionWindowA;
+
     double m_baseLineCorrectionShiftValueA;
-    bool m_baseLineCorrectionEnabledA;
-    double m_baseLineCorrectionLimitA;
+
     bool m_baseLineCorrectionLimitExceededRejectA;
+    double m_baseLineCorrectionLimitA;
+
+    DRS4BaselineCorrectionType::type m_baselineCorrTypeB;
+    bool m_baseLineCorrectionEnabledB;
 
     int m_baseLineCorrectionStartCellB;
     int m_baseLineCorrectionRegionB;
+
+    int m_baseLineCorrectionStartPeakCellB;
+    int m_baseLineCorrectionWindowB;
+
     double m_baseLineCorrectionShiftValueB;
-    bool m_baseLineCorrectionEnabledB;
-    double m_baseLineCorrectionLimitB;
+
     bool m_baseLineCorrectionLimitExceededRejectB;
+    double m_baseLineCorrectionLimitB;
 
     DSimpleXMLNode *m_parentNode;
     DSimpleXMLNode *m_versionNode;
@@ -552,6 +582,9 @@ class DRS4SettingsManager
 
     DSimpleXMLNode *m_baseLineFilterSettingsNode;
 
+    DSimpleXMLNode *m_baseLineCorrectionMethodA_Node;
+    DSimpleXMLNode *m_baseLineCorrectionStartCellPeakA_Node;
+    DSimpleXMLNode *m_baseLineCorrectionWindowA_Node;
     DSimpleXMLNode *m_baseLineCorrectionStartCellA_Node;
     DSimpleXMLNode *m_baseLineCorrectionRegionA_Node;
     DSimpleXMLNode *m_baseLineCorrectionShiftValueA_Node;
@@ -559,6 +592,9 @@ class DRS4SettingsManager
     DSimpleXMLNode *m_baseLineCorrectionLimitA_Node;
     DSimpleXMLNode *m_baseLineCorrectionLimitExceededRejectA_Node;
 
+    DSimpleXMLNode *m_baseLineCorrectionMethodB_Node;
+    DSimpleXMLNode *m_baseLineCorrectionStartCellPeakB_Node;
+    DSimpleXMLNode *m_baseLineCorrectionWindowB_Node;
     DSimpleXMLNode *m_baseLineCorrectionStartCellB_Node;
     DSimpleXMLNode *m_baseLineCorrectionRegionB_Node;
     DSimpleXMLNode *m_baseLineCorrectionShiftValueB_Node;
@@ -730,6 +766,9 @@ public:
 
     void setPulseShapeFilterRecordScheme(const DRS4PulseShapeFilterRecordScheme::Scheme& rc);
 
+    void setBaselineCorrectionMethodA(DRS4BaselineCorrectionType::type type);
+    void setBaselineCorrectionCalculationStartPeakCellA(int cell);
+    void setBaselineCorrectionCalculationWindowA(int region);
     void setBaselineCorrectionCalculationStartCellA(int cell);
     void setBaselineCorrectionCalculationRegionA(int region);
     void setBaselineCorrectionCalculationEnabledA(bool enabled);
@@ -737,6 +776,9 @@ public:
     void setBaselineCorrectionCalculationLimitInPercentageA(double limit);
     void setBaselineCorrectionCalculationLimitRejectLimitA(bool reject);
 
+    DRS4BaselineCorrectionType::type baselineCorrectionMethodA() const;
+    int baselineCorrectionCalculationStartPeakCellA() const;
+    int baselineCorrectionCalculationWindowA() const;
     int baselineCorrectionCalculationStartCellA() const;
     int baselineCorrectionCalculationRegionA() const;
     bool baselineCorrectionCalculationEnabledA() const;
@@ -744,6 +786,9 @@ public:
     double baselineCorrectionCalculationLimitInPercentageA() const;
     bool baselineCorrectionCalculationLimitRejectLimitA() const;
 
+    void setBaselineCorrectionMethodB(DRS4BaselineCorrectionType::type type);
+    void setBaselineCorrectionCalculationStartPeakCellB(int cell);
+    void setBaselineCorrectionCalculationWindowB(int region);
     void setBaselineCorrectionCalculationStartCellB(int cell);
     void setBaselineCorrectionCalculationRegionB(int region);
     void setBaselineCorrectionCalculationEnabledB(bool enabled);
@@ -751,6 +796,9 @@ public:
     void setBaselineCorrectionCalculationLimitInPercentageB(double limit);
     void setBaselineCorrectionCalculationLimitRejectLimitB(bool reject);
 
+    DRS4BaselineCorrectionType::type baselineCorrectionMethodB() const;
+    int baselineCorrectionCalculationStartPeakCellB() const;
+    int baselineCorrectionCalculationWindowB() const;
     int baselineCorrectionCalculationStartCellB() const;
     int baselineCorrectionCalculationRegionB() const;
     bool baselineCorrectionCalculationEnabledB() const;

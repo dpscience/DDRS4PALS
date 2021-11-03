@@ -108,7 +108,7 @@
                  <string notr="true">color: blue</string>
                 </property>
                 <property name="text">
-                 <string>Nth Order Polynomial Interpolation</string>
+                 <string>Polynomial Interpolation</string>
                 </property>
                </widget>
               </item>

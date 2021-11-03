@@ -257,6 +257,9 @@ private slots:
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterRejectionLimitA(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineCorrectionEnabledA(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterEnabledA(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineMethodA(int method, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselinePeakStartCellA(int startCell, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineWindowA(int window, const FunctionSource& source = FunctionSource::AccessFromGUI);
 
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineStartCellB(int startCell, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineRegionB(int region, const FunctionSource& source = FunctionSource::AccessFromGUI);
@@ -264,6 +267,9 @@ private slots:
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterRejectionLimitB(double value, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineCorrectionEnabledB(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
     void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineFilterEnabledB(bool enabled, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineMethodB(int method, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselinePeakStartCellB(int startCell, const FunctionSource& source = FunctionSource::AccessFromGUI);
+    void ACCESSED_BY_SCRIPT_AND_GUI changeBaselineWindowB(int window, const FunctionSource& source = FunctionSource::AccessFromGUI);
 
     void resetAllLTSpectraByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);
     void resetLTSpectrumABByPushButton(const FunctionSource& source = FunctionSource::AccessFromGUI);

@@ -989,6 +989,26 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     changeUpperStdDevFractionBPulseShapeFilter(DRS4SettingsManager::sharedInstance()->pulseShapeFilterStdDevUpperFractionB());
 
     /* Baseline Jitter Correction/Filter */
+    connect(ui->comboBox_BaselineCorrMethod_A, SIGNAL(currentIndexChanged(int)), this, SLOT(changeBaselineMethodA(int)));
+
+    ui->comboBox_BaselineCorrMethod_A->addItems(DRS4BaselineCorrectionType::typeList());
+
+    changeBaselineMethodA(DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodA());
+
+    ui->spinBox_baseLineStartCellPeakMax_A->setRange(10, 350);
+    ui->spinBox_baseLineStartCellPeakMax_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellA());
+
+    connect(ui->spinBox_baseLineStartCellPeakMax_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselinePeakStartCellA(int)));
+
+    changeBaselinePeakStartCellA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellA());
+
+    ui->spinBox_baseLine_window_A->setRange(5, 50);
+    ui->spinBox_baseLine_window_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowA());
+
+    connect(ui->spinBox_baseLine_window_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineWindowA(int)));
+
+    changeBaselineWindowA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowA());
+
     ui->spinBox_baseLineStartCell_A->setRange(0, 700);
     ui->spinBox_baseLineStartCell_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellA());
 
@@ -1028,6 +1048,26 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
     connect(ui->checkBox_baseLineReject_A, SIGNAL(clicked(bool)), this, SLOT(changeBaselineFilterEnabledA(bool)));
 
     changeBaselineFilterEnabledA(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitA());
+
+    connect(ui->comboBox_baselineCorrMethodB, SIGNAL(currentIndexChanged(int)), this, SLOT(changeBaselineMethodB(int)));
+
+    ui->comboBox_baselineCorrMethodB->addItems(DRS4BaselineCorrectionType::typeList());
+
+    changeBaselineMethodB(DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodB());
+
+    ui->spinBox_baseLineStartCellPeakMax_B->setRange(10, 350);
+    ui->spinBox_baseLineStartCellPeakMax_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellB());
+
+    connect(ui->spinBox_baseLineStartCellPeakMax_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselinePeakStartCellB(int)));
+
+    changeBaselinePeakStartCellB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellB());
+
+    ui->spinBox_baseLine_window_B->setRange(5, 50);
+    ui->spinBox_baseLine_window_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowB());
+
+    connect(ui->spinBox_baseLine_window_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineWindowB(int)));
+
+    changeBaselineWindowB(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowB());
 
     ui->spinBox_baseLineStartCell_B->setRange(0, 700);
     ui->spinBox_baseLineStartCell_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellB());
@@ -1207,6 +1247,7 @@ void DRS4ScopeDlg::initScopePlots()
 
 void DRS4ScopeDlg::initPulseHeightSpectraPlots()
 {
+    // pre
     ui->widget_phs_A->showXBottomGrid(false);
     ui->widget_phs_A->showXTopGrid(false);
     ui->widget_phs_A->showYLeftGrid(false);
@@ -1327,6 +1368,128 @@ void DRS4ScopeDlg::initPulseHeightSpectraPlots()
 
     ui->widget_phs_A->xBottom()->setAxisLabelText("Channels [#]");
     ui->widget_phs_A->yLeft()->setAxisLabelText("Counts [#]");
+
+    // post
+    ui->widget_phs_A_post->showXBottomGrid(false);
+    ui->widget_phs_A_post->showXTopGrid(false);
+    ui->widget_phs_A_post->showYLeftGrid(false);
+    ui->widget_phs_A_post->showYRightGrid(false);
+
+    ui->widget_phs_B_post->showXBottomGrid(false);
+    ui->widget_phs_B_post->showXTopGrid(false);
+    ui->widget_phs_B_post->showYLeftGrid(false);
+    ui->widget_phs_B_post->showYRightGrid(false);
+
+    ui->widget_phs_A_post->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_phs_A_post->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
+
+    ui->widget_phs_B_post->xBottom()->setAxisPlotType(plot2DXAxis::valuePlot);
+    ui->widget_phs_B_post->xTop()->setAxisPlotType(plot2DXAxis::valuePlot);
+
+    ui->widget_phs_A_post->yLeft()->setAxisRange(0, 500);
+    ui->widget_phs_B_post->yLeft()->setAxisRange(0, 500);
+
+    ui->widget_phs_A_post->xBottom()->setAxisRange(0, kNumberOfBins);
+    ui->widget_phs_B_post->xBottom()->setAxisRange(0, kNumberOfBins);
+
+    ui->widget_phs_A_post->yLeft()->setAxisDistribution(1);
+    ui->widget_phs_B_post->yLeft()->setAxisDistribution(1);
+
+    ui->widget_phs_A_post->xBottom()->setAxisDistribution(8);
+    ui->widget_phs_B_post->xBottom()->setAxisDistribution(8);
+
+    ui->widget_phs_A_post->yLeft()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_phs_A_post->yLeft()->setNumberPrecision(0);
+
+    ui->widget_phs_A_post->xBottom()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_phs_A_post->xBottom()->setNumberPrecision(0);
+
+    ui->widget_phs_B_post->yLeft()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_phs_B_post->yLeft()->setNumberPrecision(0);
+
+    ui->widget_phs_B_post->xBottom()->setNumberFormat(plot2DXAxis::floating);
+    ui->widget_phs_B_post->xBottom()->setNumberPrecision(0);
+
+    ui->widget_phs_A_post->xBottom()->showHelpIncrements(false);
+    ui->widget_phs_B_post->xBottom()->showHelpIncrements(false);
+
+    ui->widget_phs_A_post->yLeft()->showHelpIncrements(false);
+    ui->widget_phs_B_post->yLeft()->showHelpIncrements(false);
+
+
+    ui->widget_phs_A_post->curve().at(0)->setCurveStyle(plot2DXCurve::cross);
+    ui->widget_phs_A_post->curve().at(0)->setCurveWidth(4);
+    ui->widget_phs_A_post->curve().at(0)->setCurveColor(Qt::green);
+
+    ui->widget_phs_A_post->curve().at(1)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_A_post->curve().at(1)->setCurveWidth(1);
+    ui->widget_phs_A_post->curve().at(1)->setCurveColor(Qt::gray);
+
+    ui->widget_phs_B_post->curve().at(0)->setCurveStyle(plot2DXCurve::cross);
+    ui->widget_phs_B_post->curve().at(0)->setCurveWidth(4);
+    ui->widget_phs_B_post->curve().at(0)->setCurveColor(Qt::green);
+
+    ui->widget_phs_B_post->curve().at(1)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_B_post->curve().at(1)->setCurveWidth(1);
+    ui->widget_phs_B_post->curve().at(1)->setCurveColor(Qt::gray);
+
+
+    //phs windows A:
+    ui->widget_phs_A_post->curve().at(2)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_A_post->curve().at(2)->setCurveWidth(1);
+    ui->widget_phs_A_post->curve().at(2)->setCurveColor(Qt::red);
+
+    ui->widget_phs_A_post->curve().at(3)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_A_post->curve().at(3)->setCurveWidth(1);
+    ui->widget_phs_A_post->curve().at(3)->setCurveColor(Qt::red);
+
+    ui->widget_phs_A_post->curve().at(4)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_A_post->curve().at(4)->setCurveWidth(1);
+    ui->widget_phs_A_post->curve().at(4)->setCurveColor(Qt::blue);
+
+    ui->widget_phs_A_post->curve().at(5)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_A_post->curve().at(5)->setCurveWidth(1);
+    ui->widget_phs_A_post->curve().at(5)->setCurveColor(Qt::blue);
+
+    ui->widget_phs_A_post->curve().at(6)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_A_post->curve().at(6)->setCurveWidth(1);
+    ui->widget_phs_A_post->curve().at(6)->setCurveColor(Qt::red);
+
+    ui->widget_phs_A_post->curve().at(7)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_A_post->curve().at(7)->setCurveWidth(1);
+    ui->widget_phs_A_post->curve().at(7)->setCurveColor(Qt::blue);
+
+    //phs windows B:
+    ui->widget_phs_B_post->curve().at(2)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_B_post->curve().at(2)->setCurveWidth(1);
+    ui->widget_phs_B_post->curve().at(2)->setCurveColor(Qt::red);
+
+    ui->widget_phs_B_post->curve().at(3)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_B_post->curve().at(3)->setCurveWidth(1);
+    ui->widget_phs_B_post->curve().at(3)->setCurveColor(Qt::red);
+
+    ui->widget_phs_B_post->curve().at(4)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_B_post->curve().at(4)->setCurveWidth(1);
+    ui->widget_phs_B_post->curve().at(4)->setCurveColor(Qt::blue);
+
+    ui->widget_phs_B_post->curve().at(5)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_B_post->curve().at(5)->setCurveWidth(1);
+    ui->widget_phs_B_post->curve().at(5)->setCurveColor(Qt::blue);
+
+    ui->widget_phs_B_post->curve().at(6)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_B_post->curve().at(6)->setCurveWidth(1);
+    ui->widget_phs_B_post->curve().at(6)->setCurveColor(Qt::red);
+
+    ui->widget_phs_B_post->curve().at(7)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_phs_B_post->curve().at(7)->setCurveWidth(1);
+    ui->widget_phs_B_post->curve().at(7)->setCurveColor(Qt::blue);
+
+
+    ui->widget_phs_B_post->xBottom()->setAxisLabelText("Channels [#]");
+    ui->widget_phs_B_post->yLeft()->setAxisLabelText("Counts [#]");
+
+    ui->widget_phs_A_post->xBottom()->setAxisLabelText("Channels [#]");
+    ui->widget_phs_A_post->yLeft()->setAxisLabelText("Counts [#]");
 }
 
 void DRS4ScopeDlg::initABLTSpectrum()
@@ -1720,7 +1883,7 @@ void DRS4ScopeDlg::initPulseAreaFilterA()
     ui->widget_plotAreaFilterA->xBottom()->showHelpIncrements(false);
 
     //data:
-    ui->widget_plotAreaFilterA->curve().at(0)->setCurveStyle(plot2DXCurve::cross);
+    ui->widget_plotAreaFilterA->curve().at(0)->setCurveStyle(plot2DXCurve::circle);
     ui->widget_plotAreaFilterA->curve().at(0)->setCurveWidth(4);
     ui->widget_plotAreaFilterA->curve().at(0)->setCurveColor(Qt::blue);
 
@@ -1753,6 +1916,11 @@ void DRS4ScopeDlg::initPulseAreaFilterA()
     ui->widget_plotAreaFilterA->curve().at(6)->setCurveStyle(plot2DXCurve::line);
     ui->widget_plotAreaFilterA->curve().at(6)->setCurveWidth(2);
     ui->widget_plotAreaFilterA->curve().at(6)->setCurveColor(Qt::blue);
+
+    //mean trace:
+    ui->widget_plotAreaFilterA->curve().at(7)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterA->curve().at(7)->setCurveWidth(2);
+    ui->widget_plotAreaFilterA->curve().at(7)->setCurveColor(Qt::black);
 
     ui->widget_plotAreaFilterA->xBottom()->setAxisLabelText("Pulse-Height - Channel A [0.488mV]");
     ui->widget_plotAreaFilterA->yLeft()->setAxisLabelText("Norm. A");
@@ -1788,7 +1956,7 @@ void DRS4ScopeDlg::initPulseAreaFilterB()
     ui->widget_plotAreaFilterB_2->yLeft()->setNumberPrecision(0);
 
     //data:
-    ui->widget_plotAreaFilterB_2->curve().at(0)->setCurveStyle(plot2DXCurve::cross);
+    ui->widget_plotAreaFilterB_2->curve().at(0)->setCurveStyle(plot2DXCurve::circle);
     ui->widget_plotAreaFilterB_2->curve().at(0)->setCurveWidth(4);
     ui->widget_plotAreaFilterB_2->curve().at(0)->setCurveColor(Qt::blue);
 
@@ -1821,6 +1989,11 @@ void DRS4ScopeDlg::initPulseAreaFilterB()
     ui->widget_plotAreaFilterB_2->curve().at(6)->setCurveStyle(plot2DXCurve::line);
     ui->widget_plotAreaFilterB_2->curve().at(6)->setCurveWidth(2);
     ui->widget_plotAreaFilterB_2->curve().at(6)->setCurveColor(Qt::blue);
+
+    //mean trace:
+    ui->widget_plotAreaFilterB_2->curve().at(7)->setCurveStyle(plot2DXCurve::line);
+    ui->widget_plotAreaFilterB_2->curve().at(7)->setCurveWidth(2);
+    ui->widget_plotAreaFilterB_2->curve().at(7)->setCurveColor(Qt::black);
 
     ui->widget_plotAreaFilterB_2->xBottom()->setAxisLabelText("Pulse-Height - Channel B [0.488mV]");
     ui->widget_plotAreaFilterB_2->yLeft()->setAxisLabelText("Norm. A");
@@ -2147,8 +2320,8 @@ bool DRS4ScopeDlg::saveABSpectrumFromExtern(const QString &fileName)
     {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSAB()/(double)DRS4SettingsManager::sharedInstance()->channelCntAB(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Channel2 - Channel1]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Lifetime: [Channel2 - Channel1]\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumAB()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";
@@ -2195,8 +2368,8 @@ bool DRS4ScopeDlg::saveBASpectrumFromExtern(const QString &fileName)
     {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntBA(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Channel1 - Channel2]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Lifetime: [Channel1 - Channel2]\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumBA()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";
@@ -2242,8 +2415,8 @@ bool DRS4ScopeDlg::saveMergedSpectrumFromExtern(const QString &fileName)
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSMerged()/(double)DRS4SettingsManager::sharedInstance()->channelCntMerged(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Merged]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Lifetime: [Merged]\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumMerged()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";
@@ -2289,8 +2462,8 @@ bool DRS4ScopeDlg::saveCoincidenceSpectrumFromExtern(const QString &fileName)
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSCoincidence()/(double)DRS4SettingsManager::sharedInstance()->channelCntCoincindence(), 'f', 4);
 
-        stream << "#" << "Lifetime: Prompt [Channel2 (Stop)- Channel1 (Stop)]\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Lifetime: Prompt [Channel2 (Stop)- Channel1 (Stop)]\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "ps\n";
         stream << "# Total Counts: " << QString::number(QVariant(m_worker->countsSpectrumCoincidence()).toDouble(), 'f', 0) << "[#]\n";
         stream << "channel\tcounts\n";
@@ -2337,14 +2510,16 @@ bool DRS4ScopeDlg::savePHSAFromExtern(const QString &fileName)
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(500.0f/(float)(kNumberOfBins), 'f', 3);
 
-        stream << "#" << "PHS - A\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "PHS - A\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "mV\n";
-        stream << "# Total Counts: " << QString::number((double)m_worker->phsACounts(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts\n";
+        stream << "# Total Counts (Accepted Events): " << QString::number((double)m_worker->phsACounts(), 'f', 0) << " (" << QString::number((double)m_worker->phsACounts_post(), 'f', 0) << ")" << "\n";
+        stream << "# Start-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneAMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneAMax(), 'f', 0) << "\n";
+        stream << "# Stop-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneAMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneAMax(), 'f', 0) << "\n";
+        stream << "channel\tcounts\tcounts (accepted)\n";
 
         for ( int i = 0 ; i < m_worker->phsA()->size() ; ++ i ) {
-            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsA()->at(i)).toString() << "\n";
+            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsA()->at(i)).toString() << "\t" <<  QVariant(m_worker->phsA_post()->at(i)).toString() << "\n";
         }
 
         file.close();
@@ -2383,14 +2558,16 @@ bool DRS4ScopeDlg::savePHSBFromExtern(const QString &fileName)
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(500.0f/((float)kNumberOfBins), 'f', 3);
 
-        stream << "#" << "PHS - B\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "PHS - B\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "mV\n";
-        stream << "# Total Counts: " << QString::number((double)m_worker->phsBCounts(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts\n";
+        stream << "# Total Counts (Accepted Events): " << QString::number((double)m_worker->phsBCounts(), 'f', 0) << " (" << QString::number((double)m_worker->phsBCounts_post(), 'f', 0) << ")" << "\n";
+        stream << "# Start-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneBMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneBMax(), 'f', 0) << "\n";
+        stream << "# Stop-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneBMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneBMax(), 'f', 0) << "\n";
+        stream << "channel\tcounts\tcounts (accepted)\n";
 
         for ( int i = 0 ; i < m_worker->phsB()->size() ; ++ i ) {
-            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsB()->at(i)).toString() << "\n";
+            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsB()->at(i)).toString() << "\t" <<  QVariant(m_worker->phsB_post()->at(i)).toString() << "\n";
         }
 
         file.close();
@@ -3556,6 +3733,61 @@ void DRS4ScopeDlg::changeBaselineFilterEnabledA(bool enabled, const FunctionSour
     m_worker->setBusy(false);
 }
 
+void DRS4ScopeDlg::changeBaselineMethodA(int method, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    DUNUSED_PARAM(source);
+
+    ui->stackedWidget_baselineA->setCurrentIndex(method);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionMethodA((DRS4BaselineCorrectionType::type)method);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselinePeakStartCellA(int startCell, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLineStartCellPeakMax_A->setValue(startCell);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationStartPeakCellA(startCell);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineWindowA(int window, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLine_window_A->setValue(window);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationWindowA(window);
+
+    m_worker->setBusy(false);
+}
+
 void DRS4ScopeDlg::changeBaselineStartCellB(int startCell, const FunctionSource &source)
 {
     QMutexLocker locker(&m_mutex);
@@ -3669,6 +3901,61 @@ void DRS4ScopeDlg::changeBaselineFilterEnabledB(bool enabled, const FunctionSour
     while(!m_worker->isBlocking()) {}
 
     DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationLimitRejectLimitB(enabled);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineMethodB(int method, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    DUNUSED_PARAM(source);
+
+    ui->stackedWidget->setCurrentIndex(method);
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionMethodB((DRS4BaselineCorrectionType::type)method);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselinePeakStartCellB(int startCell, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLineStartCellPeakMax_B->setValue(startCell);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationStartPeakCellB(startCell);
+
+    m_worker->setBusy(false);
+}
+
+void DRS4ScopeDlg::changeBaselineWindowB(int window, const FunctionSource &source)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if ( source == FunctionSource::AccessFromScript )
+    {
+        ui->spinBox_baseLine_window_B->setValue(window);
+        return;
+    }
+
+    m_worker->setBusy(true);
+
+    while(!m_worker->isBlocking()) {}
+
+    DRS4SettingsManager::sharedInstance()->setBaselineCorrectionCalculationWindowB(window);
 
     m_worker->setBusy(false);
 }
@@ -4127,6 +4414,7 @@ void DRS4ScopeDlg::changePulseAreaFilterB(int value, const FunctionSource &sourc
 
 void DRS4ScopeDlg::plotPHSWindows()
 {
+    // pre
     const double yMaxValA = ui->widget_phs_A->yLeft()->getAxisMaxValue();
 
     ui->widget_phs_A->curve().at(2)->clearCurveContent();
@@ -4188,6 +4476,69 @@ void DRS4ScopeDlg::plotPHSWindows()
     ui->widget_phs_B->curve().at(5)->addData(pList4B);
 
     ui->widget_phs_B->replot();
+
+    // post
+    const double yMaxValA_post = ui->widget_phs_A_post->yLeft()->getAxisMaxValue();
+
+    ui->widget_phs_A_post->curve().at(2)->clearCurveContent();
+    ui->widget_phs_A_post->curve().at(3)->clearCurveContent();
+    ui->widget_phs_A_post->curve().at(4)->clearCurveContent();
+    ui->widget_phs_A_post->curve().at(5)->clearCurveContent();
+
+    const QPointF p1A_post(ui->spinBox_startMinA->value(), 0);
+    const QPointF p2A_post(ui->spinBox_startMinA->value(), yMaxValA_post);
+
+    const QPointF p3A_post(ui->spinBox_startMaxA->value(), 0);
+    const QPointF p4A_post(ui->spinBox_startMaxA->value(), yMaxValA_post);
+
+    const QPointF p5A_post(ui->spinBox_stopMinA->value(), 0);
+    const QPointF p6A_post(ui->spinBox_stopMinA->value(), yMaxValA_post);
+
+    const QPointF p7A_post(ui->spinBox_stopMaxA->value(), 0);
+    const QPointF p8A_post(ui->spinBox_stopMaxA->value(), yMaxValA_post);
+
+    QVector<QPointF> pList1A_post; pList1A_post << p1A_post <<p2A_post;
+    QVector<QPointF> pList2A_post; pList2A_post << p3A_post <<p4A_post;
+    QVector<QPointF> pList3A_post; pList3A_post << p5A_post <<p6A_post;
+    QVector<QPointF> pList4A_post; pList4A_post << p7A_post <<p8A_post;
+
+    ui->widget_phs_A_post->curve().at(2)->addData(pList1A_post);
+    ui->widget_phs_A_post->curve().at(3)->addData(pList2A_post);
+    ui->widget_phs_A_post->curve().at(4)->addData(pList3A_post);
+    ui->widget_phs_A_post->curve().at(5)->addData(pList4A_post);
+
+    ui->widget_phs_A_post->replot();
+
+    const double yMaxValB_post = ui->widget_phs_B_post->yLeft()->getAxisMaxValue();
+
+    ui->widget_phs_B_post->curve().at(2)->clearCurveContent();
+    ui->widget_phs_B_post->curve().at(3)->clearCurveContent();
+    ui->widget_phs_B_post->curve().at(4)->clearCurveContent();
+    ui->widget_phs_B_post->curve().at(5)->clearCurveContent();
+
+    const QPointF p1B_post(ui->spinBox_startMinB->value(), 0);
+    const QPointF p2B_post(ui->spinBox_startMinB->value(), yMaxValB_post);
+
+    const QPointF p3B_post(ui->spinBox_startMaxB->value(), 0);
+    const QPointF p4B_post(ui->spinBox_startMaxB->value(), yMaxValB_post);
+
+    const QPointF p5B_post(ui->spinBox_stopMinB->value(), 0);
+    const QPointF p6B_post(ui->spinBox_stopMinB->value(), yMaxValB_post);
+
+    const QPointF p7B_post(ui->spinBox_stopMaxB->value(), 0);
+    const QPointF p8B_post(ui->spinBox_stopMaxB->value(), yMaxValB_post);
+
+    QVector<QPointF> pList1B_post; pList1B_post << p1B_post <<p2B_post;
+    QVector<QPointF> pList2B_post; pList2B_post << p3B_post <<p4B_post;
+    QVector<QPointF> pList3B_post; pList3B_post << p5B_post <<p6B_post;
+    QVector<QPointF> pList4B_post; pList4B_post << p7B_post <<p8B_post;
+
+    ui->widget_phs_B_post->curve().at(2)->addData(pList1B_post);
+    ui->widget_phs_B_post->curve().at(3)->addData(pList2B_post);
+    ui->widget_phs_B_post->curve().at(4)->addData(pList3B_post);
+    ui->widget_phs_B_post->curve().at(5)->addData(pList4B_post);
+
+    ui->widget_phs_B_post->replot();
 }
 
 void DRS4ScopeDlg::plotPulseAreaFilterData()
@@ -4224,6 +4575,9 @@ void DRS4ScopeDlg::plotPulseAreaFilterData()
     ui->widget_plotAreaFilterA->curve().at(0)->clearCurveContent();
     ui->widget_plotAreaFilterB_2->curve().at(0)->clearCurveContent();
 
+    ui->widget_plotAreaFilterA->curve().at(7)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(7)->clearCurveContent();
+
     m_worker->setBusy(true);
 
     while(!m_worker->isBlocking()) {}
@@ -4233,6 +4587,21 @@ void DRS4ScopeDlg::plotPulseAreaFilterData()
 
     ui->label_areaCollectedCountsA->setNum(m_worker->countsCollectedInAreaFilterA());
     ui->label_areaCollectedCountsB->setNum(m_worker->countsCollectedInAreaFilterB());
+
+    QVector<QPointF> cA, cB;
+    for ( int i = 0 ; i < kNumberOfBins ; ++ i ) {
+        const double yA = (*m_worker->areaFilterACollectedData_raw())[i];
+        const double yB = (*m_worker->areaFilterBCollectedData_raw())[i];
+
+        const QPointF valueA(i, yA);
+        const QPointF valueB(i, yB);
+
+        cA.append(valueA);
+        cB.append(valueB);
+    }
+
+    ui->widget_plotAreaFilterA->curve().at(7)->addData(cA);
+    ui->widget_plotAreaFilterB_2->curve().at(7)->addData(cB);
 
     m_worker->setBusy(false);
 
@@ -4607,7 +4976,7 @@ void DRS4ScopeDlg::resetPHSB(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetAllLTSpectraByPushButton(const FunctionSource &source)
 {
-    const QString text = "This action will reset the following spectra. Are you sure ?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Spec(Prompt/IRF)</li><li>Persistence</li><li>All Filters</li></lu></b><br>The following spectra will not be resetted:<br><b><lu><li>PHS</li></lu></b>";
+    const QString text = "This action will reset the following spectra. Are you sure ?<br><b><lu><li>Spec (A-B)</li><li>Spec (B-A)</li><li>Spec (Merged)</li><li>Spec(Prompt/IRF)</li><li>PHS</li><li>Persistence</li><li>All Filters</li></lu></b>";
 
     const QMessageBox::StandardButton reply = QMessageBox::question(this, "Reset all Spectra?", text, QMessageBox::Yes|QMessageBox::No);
 
@@ -4781,6 +5150,9 @@ void DRS4ScopeDlg::resetAllLTSpectra(const FunctionSource &source)
 
     locker.unlock();
 
+    resetPHSA(source);
+    resetPHSB(source);
+
     resetPersistancePlotA(source);
     resetPersistancePlotB(source);
 
@@ -4886,6 +5258,7 @@ void DRS4ScopeDlg::resetAreaPlotA(const FunctionSource &source)
     m_worker->resetAreaFilterA();
 
     ui->widget_plotAreaFilterA->curve().at(0)->clearCurveContent();
+    ui->widget_plotAreaFilterA->curve().at(7)->clearCurveContent();
     ui->widget_plotAreaFilterA->replot();
 
     updatePulseAreaFilterALimits();
@@ -4909,6 +5282,7 @@ void DRS4ScopeDlg::resetAreaPlotB(const FunctionSource &source)
     m_worker->resetAreaFilterB();
 
     ui->widget_plotAreaFilterB_2->curve().at(0)->clearCurveContent();
+    ui->widget_plotAreaFilterB_2->curve().at(7)->clearCurveContent();
     ui->widget_plotAreaFilterB_2->replot();
 
     updatePulseAreaFilterBLimits();
@@ -6113,7 +6487,7 @@ void DRS4ScopeDlg::saveABSpectrum(bool autosave, const QString &fileNameAutosave
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSAB()/(double)DRS4SettingsManager::sharedInstance()->channelCntAB(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Channel-B - Channel-A]\n";
+        stream << "# " << "Lifetime: [Channel-B - Channel-A]\n";
 
         QDateTime start = m_worker->m_startAqAB;
         QDateTime finish = QDateTime::currentDateTime();
@@ -6272,7 +6646,7 @@ void DRS4ScopeDlg::saveBASpectrum(bool autosave, const QString &fileNameAutosave
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSBA()/(double)DRS4SettingsManager::sharedInstance()->channelCntBA(), 'f', 4);
 
-        stream << "#" << "Lifetime: [Channel-A - Channel-B]\n";
+        stream << "# " << "Lifetime: [Channel-A - Channel-B]\n";
 
         QDateTime start = m_worker->m_startAqBA;
         QDateTime finish = QDateTime::currentDateTime();
@@ -6431,7 +6805,7 @@ void DRS4ScopeDlg::saveCoincidenceSpectrum(bool autosave, const QString &fileNam
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSCoincidence()/(double)DRS4SettingsManager::sharedInstance()->channelCntCoincindence(), 'f', 4);
 
-        stream << "#" << "Zero-Lifetime: [Channel-B/Stop - Channel-A/Stop]\n";
+        stream << "# " << "Zero-Lifetime: [Channel-B/Stop - Channel-A/Stop]\n";
 
         QDateTime start = m_worker->m_startAqPrompt;
         QDateTime finish = QDateTime::currentDateTime();
@@ -6591,7 +6965,7 @@ void DRS4ScopeDlg::saveMergedSpectrum(bool autosave, const QString &fileNameAuto
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(1000.0f*DRS4SettingsManager::sharedInstance()->scalerInNSMerged()/(double)DRS4SettingsManager::sharedInstance()->channelCntMerged(), 'f', 4);
 
-        stream << "#" << "Merged Lifetime Spectrum:\n";
+        stream << "# " << "Merged Lifetime Spectrum:\n";
 
         QDateTime start = m_worker->m_startAqMerged;
         QDateTime finish = QDateTime::currentDateTime();
@@ -6750,14 +7124,16 @@ void DRS4ScopeDlg::savePHSA(bool autosave, const QString &fileNameAutosave)
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(500.0f/((float)kNumberOfBins), 'f', 3);
 
-        stream << "#" << "PHS - A\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "PHS - A\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "mV\n";
-        stream << "# Total Counts: " << QString::number((double)m_worker->phsACounts(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts\n";
+        stream << "# Total Counts (Accepted Events): " << QString::number((double)m_worker->phsACounts(), 'f', 0) << " (" << QString::number((double)m_worker->phsACounts_post(), 'f', 0) << ")" << "\n";
+        stream << "# Start-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneAMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneAMax(), 'f', 0) << "\n";
+        stream << "# Stop-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneAMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneAMax(), 'f', 0) << "\n";
+        stream << "channel\tcounts\tcounts (accepted)\n";
 
         for ( int i = 0 ; i < m_worker->phsA()->size() ; ++ i ) {
-            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsA()->at(i)).toString() << "\n";
+            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsA()->at(i)).toString() << "\t" <<  QVariant(m_worker->phsA_post()->at(i)).toString() << "\n";
         }
 
         file.close();
@@ -6804,14 +7180,16 @@ void DRS4ScopeDlg::savePHSB(bool autosave, const QString &fileNameAutosave)
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(500.0f/((float)kNumberOfBins), 'f', 3);
 
-        stream << "#" << "PHS - B\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "PHS - B\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Channel-Resolution: " << res << "mV\n";
-        stream << "# Total Counts: " << QString::number((double)m_worker->phsBCounts(), 'f', 0) << "[#]\n";
-        stream << "channel\tcounts\n";
+        stream << "# Total Counts (Accepted Events): " << QString::number((double)m_worker->phsBCounts(), 'f', 0) << " (" << QString::number((double)m_worker->phsBCounts_post(), 'f', 0) << ")" << "\n";
+        stream << "# Start-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneBMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->startChanneBMax(), 'f', 0) << "\n";
+        stream << "# Stop-Channels: " << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneBMin(), 'f', 0)  << ":" << QString::number((double)DRS4SettingsManager::sharedInstance()->stopChanneBMax(), 'f', 0) << "\n";
+        stream << "channel\tcounts\tcounts (accepted)\n";
 
         for ( int i = 0 ; i < m_worker->phsB()->size() ; ++ i ) {
-            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsB()->at(i)).toString() << "\n";
+            stream << QVariant(i).toString() << "\t" <<  QVariant(m_worker->phsB()->at(i)).toString() << "\t" <<  QVariant(m_worker->phsB_post()->at(i)).toString() << "\n";
         }
 
         file.close();
@@ -6853,8 +7231,8 @@ void DRS4ScopeDlg::saveRiseTimeDistributionA()
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfA()/DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfA(), 'f', 3);
 
-        stream << "#" << "Rise-Time (10% >> 90% CF Level) Distribution - A\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Rise-Time (10% >> 90% CF Level) Distribution - A\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Bin-Resolution [ns]: " << res << "\n";
         stream << "# Total Counts: " << QString::number((double)m_worker->m_riseTimeFilterACounter, 'f', 0) << "[#]\n";
         stream << "bin\tcounts\n";
@@ -6905,8 +7283,8 @@ void DRS4ScopeDlg::saveRiseTimeDistributionB()
     if ( file.open(QIODevice::WriteOnly) ) {
         const QString res = QString::number(DRS4SettingsManager::sharedInstance()->riseTimeFilterScaleInNanosecondsOfB()/DRS4SettingsManager::sharedInstance()->riseTimeFilterBinningOfB(), 'f', 3);
 
-        stream << "#" << "Rise-Time (10% >> 90% CF Level) Distribution - B\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Rise-Time (10% >> 90% CF Level) Distribution - B\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "# Bin-Resolution [ns]: " << res << "\n";
         stream << "# Total Counts: " << QString::number((double)m_worker->m_riseTimeFilterBCounter, 'f', 0) << "[#]\n";
         stream << "bin\tcounts\n";
@@ -6957,8 +7335,8 @@ void DRS4ScopeDlg::saveAreaDistributionA()
     if ( file.open(QIODevice::WriteOnly) ) {
         const double res = 500.0f/(float)kNumberOfBins;
 
-        stream << "#" << "Area Distribution - A\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Area Distribution - A\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "amplitude [mV]\tarea mean [a.u.]\tarea stddev [a.u.]\n";
 
         for ( int i = 0 ; i < m_worker->m_areaFilterCollectedDataA.size() ; ++ i ) {
@@ -7002,8 +7380,8 @@ void DRS4ScopeDlg::saveAreaDistributionB()
     if ( file.open(QIODevice::WriteOnly) ) {
         const double res = 500.0f/(float)kNumberOfBins;
 
-        stream << "#" << "Area Distribution - B\n";
-        stream << "#" << QDateTime::currentDateTime().toString() << "\n";
+        stream << "# " << "Area Distribution - B\n";
+        stream << "# " << QDateTime::currentDateTime().toString() << "\n";
         stream << "amplitude [mV]\tarea mean [a.u.]\tarea stddev [a.u.]\n";
 
         for ( int i = 0 ; i < m_worker->m_areaFilterCollectedDataB.size() ; ++ i ) {
@@ -7804,6 +8182,12 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     disconnect(ui->doubleSpinBox_shapeFilterLLStddevB, SIGNAL(valueChanged(double)), this, SLOT(changeLowerStdDevFractionBPulseShapeFilter(double)));
     disconnect(ui->doubleSpinBox_shapeFilterULStddevB, SIGNAL(valueChanged(double)), this, SLOT(changeUpperStdDevFractionBPulseShapeFilter(double)));
 
+    disconnect(ui->spinBox_baseLineStartCellPeakMax_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselinePeakStartCellA(int)));
+    disconnect(ui->spinBox_baseLine_window_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineWindowA(int)));
+
+    disconnect(ui->spinBox_baseLineStartCellPeakMax_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselinePeakStartCellB(int)));
+    disconnect(ui->spinBox_baseLine_window_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineWindowB(int)));
+
     disconnect(ui->spinBox_baseLineStartCell_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellA(int)));
     disconnect(ui->spinBox_baseLine_region_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionA(int)));
     disconnect(ui->doubleSpinBox_baseLineValue_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueA(double)));
@@ -7895,11 +8279,15 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
         m_pulseShapeSplineDataA = *DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrA();
         m_pulseShapeSplineDataB = *DRS4SettingsManager::sharedInstance()->pulseShapeFilterDataPtrB();
 
+        ui->spinBox_baseLineStartCellPeakMax_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellA());
+        ui->spinBox_baseLine_window_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowA());
         ui->spinBox_baseLineStartCell_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellA());
         ui->spinBox_baseLine_region_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionA());
         ui->doubleSpinBox_baseLineValue_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVA());
         ui->doubleSpinBox_baseLineLimit_A->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageA());
 
+        ui->spinBox_baseLineStartCellPeakMax_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellB());
+        ui->spinBox_baseLine_window_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowB());
         ui->spinBox_baseLineStartCell_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellB());
         ui->spinBox_baseLine_region_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionB());
         ui->doubleSpinBox_baseLineValue_B->setValue(DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationShiftValueInMVB());
@@ -7984,6 +8372,12 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
     connect(ui->doubleSpinBox_shapeFilterLLStddevB, SIGNAL(valueChanged(double)), SLOT(changeLowerStdDevFractionBPulseShapeFilter(double)));
     connect(ui->doubleSpinBox_shapeFilterULStddevB, SIGNAL(valueChanged(double)), SLOT(changeUpperStdDevFractionBPulseShapeFilter(double)));
 
+    connect(ui->spinBox_baseLineStartCellPeakMax_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselinePeakStartCellA(int)));
+    connect(ui->spinBox_baseLine_window_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineWindowA(int)));
+
+    connect(ui->spinBox_baseLineStartCellPeakMax_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselinePeakStartCellB(int)));
+    connect(ui->spinBox_baseLine_window_B, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineWindowB(int)));
+
     connect(ui->spinBox_baseLineStartCell_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineStartCellA(int)));
     connect(ui->spinBox_baseLine_region_A, SIGNAL(valueChanged(int)), this, SLOT(changeBaselineRegionA(int)));
     connect(ui->doubleSpinBox_baseLineValue_A, SIGNAL(valueChanged(double)), this, SLOT(changeBaselineShiftValueA(double)));
@@ -8056,6 +8450,9 @@ void DRS4ScopeDlg::setup(double oldValue, double oldSweep, double ratio)
        emit ui->checkBox_chn4_B->clicked(true);
        break;
    }
+
+   ui->comboBox_BaselineCorrMethod_A->setCurrentIndex((int)DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodA());
+   ui->comboBox_baselineCorrMethodB->setCurrentIndex((int)DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodB());
 
     ui->comboBox_pulseShapeFilterRecordScheme->setCurrentIndex((int)DRS4SettingsManager::sharedInstance()->pulseShapeFilterRecordScheme());
 
@@ -9139,8 +9536,14 @@ void DRS4ScopeDlg::updateInBurstMode()
     QVector<QPointF> phsAListStart, phsAListStop, phsBListStart, phsBListStop;
     QVector<QPointF> phsA, phsB;
 
+    QVector<QPointF> phsAListStart_post, phsAListStop_post, phsBListStart_post, phsBListStop_post;
+    QVector<QPointF> phsA_post, phsB_post;
+
     int yMaxA = -INT_MAX;
     int yMaxB = -INT_MAX;
+
+    int yMaxA_post = -INT_MAX;
+    int yMaxB_post = -INT_MAX;
 
     m_burstModeTimer->stop();
 
@@ -9160,10 +9563,10 @@ void DRS4ScopeDlg::updateInBurstMode()
     const double countCoincidenceHz = m_worker->currentLifetimeCoincidenceCountRateInHz();
     const double avgCountCoincidenceHz = m_worker->avgLifetimeCoincidenceCountRateInHz();
 
-    const int yABMax = m_worker->maxYValueABSpectrum();
+    /*const int yABMax = m_worker->maxYValueABSpectrum();
     const int yBAMax = m_worker->maxYValueBASpectrum();
     const int yMergedMax = m_worker->maxYValueMergedSpectrum();
-    const int yCoincidenceMax = m_worker->maxYValueCoincidenceSpectrum();
+    const int yCoincidenceMax = m_worker->maxYValueCoincidenceSpectrum();*/
 
     const int abCounts = m_worker->countsSpectrumAB();
     const int baCounts = m_worker->countsSpectrumBA();
@@ -9176,6 +9579,12 @@ void DRS4ScopeDlg::updateInBurstMode()
     int cntAStart = 0, cntAStop = 0;
     int cntBStart = 0, cntBStop = 0;
 
+    const int cntA_post = m_worker->phsACounts_post();
+    const int cntB_post = m_worker->phsBCounts_post();
+
+    int cntAStart_post = 0, cntAStop_post = 0;
+    int cntBStart_post = 0, cntBStop_post = 0;
+
     for ( int i = 0 ; i < kNumberOfBins ; ++ i ) {
         const int yA = (*m_worker->phsA())[i];
         const int yB = (*m_worker->phsB())[i];
@@ -9185,6 +9594,15 @@ void DRS4ScopeDlg::updateInBurstMode()
 
         phsA.append(valueA);
         phsB.append(valueB);
+
+        const int yA_post = (*m_worker->phsA_post())[i];
+        const int yB_post = (*m_worker->phsB_post())[i];
+
+        const QPointF valueA_post(i, yA_post);
+        const QPointF valueB_post(i, yB_post);
+
+        phsA_post.append(valueA_post);
+        phsB_post.append(valueB_post);
 
         if ( i <= DRS4SettingsManager::sharedInstance()->startChanneAMax()
              && i >= DRS4SettingsManager::sharedInstance()->startChanneAMin() ) {
@@ -9214,6 +9632,35 @@ void DRS4ScopeDlg::updateInBurstMode()
             yMaxA = qMax(yMaxA, yA);
             yMaxB = qMax(yMaxB, yB);
         }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->startChanneAMax()
+             && i >= DRS4SettingsManager::sharedInstance()->startChanneAMin() ) {
+            cntAStart_post += yA_post;
+            phsAListStart_post.append(valueA_post);
+        }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->startChanneBMax()
+             && i >= DRS4SettingsManager::sharedInstance()->startChanneBMin() ) {
+            cntBStart_post += yB_post;
+            phsBListStart_post.append(valueB_post);
+        }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->stopChanneAMax()
+             && i >= DRS4SettingsManager::sharedInstance()->stopChanneAMin() ) {
+            cntAStop_post += yA_post;
+            phsAListStop_post.append(valueA_post);
+        }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->stopChanneBMax()
+             && i >= DRS4SettingsManager::sharedInstance()->stopChanneBMin() ) {
+            cntBStop_post += yB_post;
+            phsBListStop_post.append(valueB_post);
+        }
+
+        if ( i >= 30 ) { // <- spurious values?
+            yMaxA_post = qMax(yMaxA_post, yA_post);
+            yMaxB_post = qMax(yMaxB_post, yB_post);
+        }
     }
 
     m_worker->setBusy(false);
@@ -9223,13 +9670,13 @@ void DRS4ScopeDlg::updateInBurstMode()
     ui->label_countsIntergralMerged->setNum(mergedCounts);
     ui->label_countsIntergralCoincidence->setNum(coincidenceCounts);
 
-    ui->label_phsACounts->setNum(cntA);
-    ui->label_phsBCounts->setNum(cntB);
+    ui->label_phsACounts->setText(QVariant(cntA).toString() + " (" + QVariant(cntA_post).toString() + ")");
+    ui->label_phsBCounts->setText(QVariant(cntB).toString() + " (" + QVariant(cntB_post).toString() + ")");
 
-    ui->label_countsStartA->setNum(cntAStart);
-    ui->label_countsStartB->setNum(cntBStart);
-    ui->label_countsStopA->setNum(cntAStop);
-    ui->label_countsStopB->setNum(cntBStop);
+    ui->label_countsStartA->setText(QVariant(cntAStart).toString() + " (" + QVariant(cntAStart_post).toString() + ")");
+    ui->label_countsStartB->setText(QVariant(cntBStart).toString() + " (" + QVariant(cntBStart_post).toString() + ")");
+    ui->label_countsStopA->setText(QVariant(cntAStop).toString() + " (" + QVariant(cntAStop_post).toString() + ")");
+    ui->label_countsStopB->setText(QVariant(cntBStop).toString() + " (" + QVariant(cntBStop_post).toString() + ")");
 
     ui->label_valiLTPerSec->setText("Lifetime Efficiency\t[Hz]:\t[A-B] " + QString::number(avgCountABHz, 'f', 2) + " (" + QString::number(countABHz, 'f', 2) + ") [B-A] " + QString::number(avgCountBAHz, 'f', 2) + " (" + QString::number(countBAHz, 'f', 2) + ") [Merged] " + QString::number(avgCountMergedHz, 'f', 2) + " (" + QString::number(countMergedHz, 'f', 2) + ")");
     ui->label_validCoincidencePerSec->setText("Prompt Efficiency\t[Hz]:\t" + QString::number(avgCountCoincidenceHz, 'f', 2) + " (" + QString::number(countCoincidenceHz, 'f', 2) + ")" );
@@ -9556,11 +10003,27 @@ void DRS4ScopeDlg::plotPHS()
     ui->widget_phs_B->curve().at(6)->clearCurveContent();
     ui->widget_phs_B->curve().at(7)->clearCurveContent();
 
+    ui->widget_phs_A_post->curve().at(0)->clearCurveContent();
+    ui->widget_phs_A_post->curve().at(1)->clearCurveContent();
+    ui->widget_phs_A_post->curve().at(6)->clearCurveContent();
+    ui->widget_phs_A_post->curve().at(7)->clearCurveContent();
+
+    ui->widget_phs_B_post->curve().at(0)->clearCurveContent();
+    ui->widget_phs_B_post->curve().at(1)->clearCurveContent();
+    ui->widget_phs_B_post->curve().at(6)->clearCurveContent();
+    ui->widget_phs_B_post->curve().at(7)->clearCurveContent();
+
     QVector<QPointF> phsAListStart, phsAListStop, phsBListStart, phsBListStop;
     QVector<QPointF> phsA, phsB;
 
+    QVector<QPointF> phsAListStart_post, phsAListStop_post, phsBListStart_post, phsBListStop_post;
+    QVector<QPointF> phsA_post, phsB_post;
+
     int yMaxA = -INT_MAX;
     int yMaxB = -INT_MAX;
+
+    int yMaxA_post = -INT_MAX;
+    int yMaxB_post = -INT_MAX;
 
     m_worker->setBusy(true);
 
@@ -9569,8 +10032,14 @@ void DRS4ScopeDlg::plotPHS()
     const int cntA = m_worker->phsACounts();
     const int cntB = m_worker->phsBCounts();
 
+    const int cntA_post = m_worker->phsACounts_post();
+    const int cntB_post = m_worker->phsBCounts_post();
+
     int cntAStart = 0, cntAStop = 0;
     int cntBStart = 0, cntBStop = 0;
+
+    int cntAStart_post = 0, cntAStop_post = 0;
+    int cntBStart_post = 0, cntBStop_post = 0;
 
     for ( int i = 0 ; i < kNumberOfBins ; ++ i ) {
         const int yA = (*m_worker->phsA())[i];
@@ -9581,6 +10050,15 @@ void DRS4ScopeDlg::plotPHS()
 
         phsA.append(valueA);
         phsB.append(valueB);
+
+        const int yA_post = (*m_worker->phsA_post())[i];
+        const int yB_post = (*m_worker->phsB_post())[i];
+
+        const QPointF valueA_post(i, yA_post);
+        const QPointF valueB_post(i, yB_post);
+
+        phsA_post.append(valueA_post);
+        phsB_post.append(valueB_post);
 
         if ( i <= DRS4SettingsManager::sharedInstance()->startChanneAMax()
              && i >= DRS4SettingsManager::sharedInstance()->startChanneAMin() ) {
@@ -9610,6 +10088,35 @@ void DRS4ScopeDlg::plotPHS()
             yMaxA = qMax(yMaxA, yA);
             yMaxB = qMax(yMaxB, yB);
         }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->startChanneAMax()
+             && i >= DRS4SettingsManager::sharedInstance()->startChanneAMin() ) {
+            cntAStart_post += yA_post;
+            phsAListStart_post.append(valueA_post);
+        }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->startChanneBMax()
+             && i >= DRS4SettingsManager::sharedInstance()->startChanneBMin() ) {
+            cntBStart_post += yB_post;
+            phsBListStart_post.append(valueB_post);
+        }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->stopChanneAMax()
+             && i >= DRS4SettingsManager::sharedInstance()->stopChanneAMin() ) {
+            cntAStop_post += yA_post;
+            phsAListStop_post.append(valueA_post);
+        }
+
+        if ( i <= DRS4SettingsManager::sharedInstance()->stopChanneBMax()
+             && i >= DRS4SettingsManager::sharedInstance()->stopChanneBMin() ) {
+            cntBStop_post += yB_post;
+            phsBListStop_post.append(valueB_post);
+        }
+
+        if ( i >= 30 ) { // <- spurious values?
+            yMaxA_post = qMax(yMaxA_post, yA_post);
+            yMaxB_post = qMax(yMaxB_post, yB_post);
+        }
     }
 
     ui->label_phsCntPerSecA->setText("Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
@@ -9627,15 +10134,26 @@ void DRS4ScopeDlg::plotPHS()
     ui->widget_phs_B->curve().at(6)->addData(phsBListStart);
     ui->widget_phs_B->curve().at(7)->addData(phsBListStop);
 
+    ui->widget_phs_A_post->yLeft()->setAxisRange(0, yMaxA_post);
+    ui->widget_phs_B_post->yLeft()->setAxisRange(0, yMaxB_post);
+
+    ui->widget_phs_A_post->curve().at(1)->addData(phsA_post);
+    ui->widget_phs_A_post->curve().at(6)->addData(phsAListStart_post);
+    ui->widget_phs_A_post->curve().at(7)->addData(phsAListStop_post);
+
+    ui->widget_phs_B_post->curve().at(1)->addData(phsB_post);
+    ui->widget_phs_B_post->curve().at(6)->addData(phsBListStart_post);
+    ui->widget_phs_B_post->curve().at(7)->addData(phsBListStop_post);
+
     plotPHSWindows();
 
-    ui->label_phsACounts->setNum(cntA);
-    ui->label_phsBCounts->setNum(cntB);
+    ui->label_phsACounts->setText(QVariant(cntA).toString() + " (" + QVariant(cntA_post).toString() + ")");
+    ui->label_phsBCounts->setText(QVariant(cntB).toString() + " (" + QVariant(cntB_post).toString() + ")");
 
-    ui->label_countsStartA->setNum(cntAStart);
-    ui->label_countsStartB->setNum(cntBStart);
-    ui->label_countsStopA->setNum(cntAStop);
-    ui->label_countsStopB->setNum(cntBStop);
+    ui->label_countsStartA->setText(QVariant(cntAStart).toString() + " (" + QVariant(cntAStart_post).toString() + ")");
+    ui->label_countsStartB->setText(QVariant(cntBStart).toString() + " (" + QVariant(cntBStart_post).toString() + ")");
+    ui->label_countsStopA->setText(QVariant(cntAStop).toString() + " (" + QVariant(cntAStop_post).toString() + ")");
+    ui->label_countsStopB->setText(QVariant(cntBStop).toString() + " (" + QVariant(cntBStop_post).toString() + ")");
 
     m_phsRequestTimer->start();
 }

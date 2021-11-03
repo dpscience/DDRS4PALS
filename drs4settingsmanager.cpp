@@ -293,19 +293,24 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_pulseShapeFilterRecordScheme(DRS4PulseShapeFilterRecordScheme::Scheme::RC_AB),
     m_pulseShapeFilterEnabledA(false),
     m_pulseShapeFilterEnabledB(false),
+    m_baseLineCorrectionStartPeakCellA(25),
+    m_baseLineCorrectionWindowA(5),
+    m_baselineCorrTypeA(DRS4BaselineCorrectionType::type::fixed),
     m_baseLineCorrectionStartCellA(5),
     m_baseLineCorrectionRegionA(25),
     m_baseLineCorrectionShiftValueA(0.0),
     m_baseLineCorrectionEnabledA(false),
     m_baseLineCorrectionLimitA(3.0),
     m_baseLineCorrectionLimitExceededRejectA(false),
+    m_baselineCorrTypeB(DRS4BaselineCorrectionType::type::fixed),
+    m_baseLineCorrectionStartPeakCellB(25),
+    m_baseLineCorrectionWindowB(5),
     m_baseLineCorrectionStartCellB(5),
     m_baseLineCorrectionRegionB(25),
     m_baseLineCorrectionShiftValueB(0.0),
     m_baseLineCorrectionEnabledB(false),
     m_baseLineCorrectionLimitB(3.0),
-    m_baseLineCorrectionLimitExceededRejectB(false)
-{
+    m_baseLineCorrectionLimitExceededRejectB(false) {
     m_parentNode = new DSimpleXMLNode("DDRS4PALS");
 
     m_versionNode = new DSimpleXMLNode("file-version");
@@ -640,6 +645,13 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_pulseShapeFilter_stddevDataB_Node = new DSimpleXMLNode("pulse-shape-filter-content-stddev-trace-B");
     m_pulseShapeFilter_stddevDataB_Node->setValue("");
 
+    m_baseLineCorrectionMethodA_Node = new DSimpleXMLNode("baseline-jitter-correction-method-A");
+    m_baseLineCorrectionMethodA_Node->setValue(m_baselineCorrTypeA);
+    m_baseLineCorrectionStartCellPeakA_Node = new DSimpleXMLNode("baseline-jitter-correction-pre-peak-cell-region-A");
+    m_baseLineCorrectionStartCellPeakA_Node->setValue(m_baseLineCorrectionStartPeakCellA);
+    m_baseLineCorrectionWindowA_Node = new DSimpleXMLNode("baseline-jitter-correction-cell-window-A");
+    m_baseLineCorrectionWindowA_Node->setValue(m_baseLineCorrectionWindowA);
+
     m_baseLineCorrectionStartCellA_Node = new DSimpleXMLNode("baseline-jitter-correction-start-cell-A");
     m_baseLineCorrectionStartCellA_Node->setValue(m_baseLineCorrectionStartCellA);
     m_baseLineCorrectionRegionA_Node = new DSimpleXMLNode("baseline-jitter-correction-cell-region-A");
@@ -652,6 +664,13 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_baseLineCorrectionLimitA_Node->setValue(m_baseLineCorrectionLimitA);
     m_baseLineCorrectionLimitExceededRejectA_Node = new DSimpleXMLNode("baseline-filter-enabled-A?");
     m_baseLineCorrectionLimitExceededRejectA_Node->setValue(m_baseLineCorrectionLimitExceededRejectA);
+
+    m_baseLineCorrectionMethodB_Node = new DSimpleXMLNode("baseline-jitter-correction-method-B");
+    m_baseLineCorrectionMethodB_Node->setValue(m_baselineCorrTypeB);
+    m_baseLineCorrectionStartCellPeakB_Node = new DSimpleXMLNode("baseline-jitter-correction-pre-peak-cell-region-B");
+    m_baseLineCorrectionStartCellPeakB_Node->setValue(m_baseLineCorrectionStartPeakCellB);
+    m_baseLineCorrectionWindowB_Node = new DSimpleXMLNode("baseline-jitter-correction-cell-window-B");
+    m_baseLineCorrectionWindowB_Node->setValue(m_baseLineCorrectionWindowB);
 
     m_baseLineCorrectionStartCellB_Node = new DSimpleXMLNode("baseline-jitter-correction-start-cell-B");
     m_baseLineCorrectionStartCellB_Node->setValue(m_baseLineCorrectionStartCellB);
@@ -667,6 +686,9 @@ DRS4SettingsManager::DRS4SettingsManager() :
     m_baseLineCorrectionLimitExceededRejectB_Node->setValue(m_baseLineCorrectionLimitExceededRejectB);
 
     (*m_baseLineFilterSettingsNode) << m_baseLineCorrectionEnabledA_Node << m_baseLineCorrectionEnabledB_Node
+                                    << m_baseLineCorrectionMethodA_Node  << m_baseLineCorrectionMethodB_Node
+                                    << m_baseLineCorrectionStartCellPeakA_Node << m_baseLineCorrectionStartCellPeakB_Node
+                                    << m_baseLineCorrectionWindowA_Node << m_baseLineCorrectionWindowB_Node
                                     << m_baseLineCorrectionStartCellA_Node << m_baseLineCorrectionStartCellB_Node
                                     << m_baseLineCorrectionRegionA_Node << m_baseLineCorrectionRegionB_Node
                                     << m_baseLineCorrectionShiftValueA_Node << m_baseLineCorrectionShiftValueB_Node
@@ -1161,17 +1183,32 @@ bool DRS4SettingsManager::load(const QString &path)
                     m_baseLineCorrectionShiftValueA_Node->setValue(m_baseLineCorrectionShiftValueA);
                     m_baseLineCorrectionLimitA_Node->setValue(m_baseLineCorrectionLimitA);
                     m_baseLineCorrectionLimitExceededRejectA_Node->setValue(m_baseLineCorrectionLimitExceededRejectA);
+                    m_baseLineCorrectionMethodA_Node->setValue(m_baselineCorrTypeA);
+                    m_baseLineCorrectionStartCellPeakA_Node->setValue(m_baseLineCorrectionStartPeakCellA);
+                    m_baseLineCorrectionWindowA_Node->setValue(m_baseLineCorrectionWindowA);
 
                     m_baseLineCorrectionEnabledB_Node->setValue(m_baseLineCorrectionEnabledB);
                     m_baseLineCorrectionStartCellB_Node->setValue(m_baseLineCorrectionStartCellB);
                     m_baseLineCorrectionRegionB_Node->setValue(m_baseLineCorrectionRegionB);
                     m_baseLineCorrectionShiftValueB_Node->setValue(m_baseLineCorrectionShiftValueB);
                     m_baseLineCorrectionLimitB_Node->setValue(m_baseLineCorrectionLimitB);
-                    m_baseLineCorrectionLimitExceededRejectB_Node->setValue(m_baseLineCorrectionLimitExceededRejectB);
+                    m_baseLineCorrectionLimitExceededRejectB_Node->setValue(m_baseLineCorrectionLimitExceededRejectB);                 
+                    m_baseLineCorrectionMethodB_Node->setValue(m_baselineCorrTypeB);
+                    m_baseLineCorrectionStartCellPeakB_Node->setValue(m_baseLineCorrectionStartPeakCellB);
+                    m_baseLineCorrectionWindowB_Node->setValue(m_baseLineCorrectionWindowB);
                 }
                 else {
                     m_baseLineCorrectionEnabledA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionEnabledA_Node, &ok));
                     if (!ok) m_baseLineCorrectionEnabledA_Node->setValue(m_baseLineCorrectionEnabledA);
+
+                    m_baseLineCorrectionMethodA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionMethodA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionMethodA_Node->setValue(m_baselineCorrTypeA);
+
+                    m_baseLineCorrectionStartCellPeakA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionStartCellPeakA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionStartCellPeakA_Node->setValue(m_baseLineCorrectionStartPeakCellA);
+
+                    m_baseLineCorrectionWindowA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionWindowA_Node, &ok));
+                    if (!ok) m_baseLineCorrectionWindowA_Node->setValue(m_baseLineCorrectionWindowA);
 
                     m_baseLineCorrectionStartCellA_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionStartCellA_Node, &ok));
                     if (!ok) m_baseLineCorrectionStartCellA_Node->setValue(m_baseLineCorrectionStartCellA);
@@ -1191,6 +1228,15 @@ bool DRS4SettingsManager::load(const QString &path)
 
                     m_baseLineCorrectionEnabledB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionEnabledB_Node, &ok));
                     if (!ok) m_baseLineCorrectionEnabledB_Node->setValue(m_baseLineCorrectionEnabledB);
+
+                    m_baseLineCorrectionMethodB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionMethodB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionMethodB_Node->setValue(m_baselineCorrTypeB);
+
+                    m_baseLineCorrectionStartCellPeakB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionStartCellPeakB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionStartCellPeakB_Node->setValue(m_baseLineCorrectionStartPeakCellB);
+
+                    m_baseLineCorrectionWindowB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionWindowB_Node, &ok));
+                    if (!ok) m_baseLineCorrectionWindowB_Node->setValue(m_baseLineCorrectionWindowB);
 
                     m_baseLineCorrectionStartCellB_Node->setValue(pBaselineCorrectionSettingsTag.getValueAt(m_baseLineCorrectionStartCellB_Node, &ok));
                     if (!ok) m_baseLineCorrectionStartCellB_Node->setValue(m_baseLineCorrectionStartCellB);
@@ -2662,6 +2708,33 @@ void DRS4SettingsManager::setPulseShapeFilterRecordScheme(const DRS4PulseShapeFi
     m_pulseShapeFilterRecordScheme_Node->setValue(rc);
 }
 
+void DRS4SettingsManager::setBaselineCorrectionCalculationStartPeakCellA(int cell)
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    m_baseLineCorrectionStartCellPeakA_Node->setValue(cell);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationWindowA(int region)
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    m_baseLineCorrectionWindowA_Node->setValue(region);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionMethodA(DRS4BaselineCorrectionType::type type)
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    m_baseLineCorrectionMethodA_Node->setValue(type);
+}
+
 void DRS4SettingsManager::setBaselineCorrectionCalculationStartCellA(int cell)
 {
 #ifndef __DISABLE_MUTEX_LOCKER
@@ -2714,6 +2787,33 @@ void DRS4SettingsManager::setBaselineCorrectionCalculationLimitRejectLimitA(bool
 #endif
 
     m_baseLineCorrectionLimitExceededRejectA_Node->setValue(reject);
+}
+
+DRS4BaselineCorrectionType::type DRS4SettingsManager::baselineCorrectionMethodA() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    return (DRS4BaselineCorrectionType::type)m_baseLineCorrectionMethodA_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationStartPeakCellA() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    return m_baseLineCorrectionStartCellPeakA_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationWindowA() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    return m_baseLineCorrectionWindowA_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::baselineCorrectionCalculationStartCellA() const
@@ -2770,6 +2870,33 @@ bool DRS4SettingsManager::baselineCorrectionCalculationLimitRejectLimitA() const
     return m_baseLineCorrectionLimitExceededRejectA_Node->getValue().toBool();
 }
 
+void DRS4SettingsManager::setBaselineCorrectionCalculationStartPeakCellB(int cell)
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    m_baseLineCorrectionStartCellPeakB_Node->setValue(cell);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionCalculationWindowB(int region)
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    m_baseLineCorrectionWindowB_Node->setValue(region);
+}
+
+void DRS4SettingsManager::setBaselineCorrectionMethodB(DRS4BaselineCorrectionType::type type)
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    m_baseLineCorrectionMethodB_Node->setValue(type);
+}
+
 void DRS4SettingsManager::setBaselineCorrectionCalculationStartCellB(int cell)
 {
 #ifndef __DISABLE_MUTEX_LOCKER
@@ -2822,6 +2949,33 @@ void DRS4SettingsManager::setBaselineCorrectionCalculationLimitRejectLimitB(bool
 #endif
 
     m_baseLineCorrectionLimitExceededRejectB_Node->setValue(reject);
+}
+
+DRS4BaselineCorrectionType::type DRS4SettingsManager::baselineCorrectionMethodB() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    return (DRS4BaselineCorrectionType::type)m_baseLineCorrectionMethodB_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationStartPeakCellB() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    return m_baseLineCorrectionStartCellPeakB_Node->getValue().toInt();
+}
+
+int DRS4SettingsManager::baselineCorrectionCalculationWindowB() const
+{
+#ifndef __DISABLE_MUTEX_LOCKER
+    QMutexLocker locker(&m_mutex);
+#endif
+
+    return m_baseLineCorrectionWindowB_Node->getValue().toInt();
 }
 
 int DRS4SettingsManager::baselineCorrectionCalculationStartCellB() const

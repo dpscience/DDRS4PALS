@@ -62,7 +62,7 @@
 #define MAJOR_VERSION          QString("1")
 #define MINOR_VERSION           QString("17")
 #define VERSION_EXTENSION  QString("- official -")
-#define DATE_EXTENSION         QString("2021-05-17")
+#define DATE_EXTENSION         QString("2021-11-04")
 
 /* streaming on external storage device */
 #define DATA_STREAM_VERSION 1

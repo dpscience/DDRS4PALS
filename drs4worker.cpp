@@ -466,8 +466,10 @@ void DRS4Worker::resetPHSA()
     QMutexLocker locker(&m_mutex);
 
     m_phsACounts = 0;
+    m_phsACounts_post = 0;
 
     m_phsA.fill(0, kNumberOfBins);
+    m_phsA_post.fill(0, kNumberOfBins);
 
     m_currentPulseCountRateInSeconds = 0.0f;
     m_avgPulseCountRateInSeconds = 0.0f;
@@ -482,8 +484,10 @@ void DRS4Worker::resetPHSB()
     QMutexLocker locker(&m_mutex);
 
     m_phsBCounts = 0;
+    m_phsBCounts_post = 0;
 
     m_phsB.fill(0, kNumberOfBins);
+    m_phsB_post.fill(0, kNumberOfBins);
 
     m_currentPulseCountRateInSeconds = 0.0f;
     m_avgPulseCountRateInSeconds = 0.0f;
@@ -565,6 +569,34 @@ int DRS4Worker::phsBCounts() const
     return m_phsBCounts;
 }
 
+QVector<int> *DRS4Worker::phsA_post()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_phsA_post;
+}
+
+QVector<int> *DRS4Worker::phsB_post()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_phsB_post;
+}
+
+int DRS4Worker::phsACounts_post() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phsACounts_post;
+}
+
+int DRS4Worker::phsBCounts_post() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phsBCounts_post;
+}
+
 double DRS4Worker::avgPulseCountRateInHz() const
 {
     QMutexLocker locker(&m_mutex);
@@ -588,6 +620,7 @@ void DRS4Worker::resetAreaFilterA()
 
     m_areaFilterCollectedACounter = 0;
     m_areaFilterCollectedDataA.fill(QPointF(0.0, 0.0), kNumberOfBins);
+    m_areaFilterCollectedDataA_raw.fill(0., kNumberOfBins);
     m_areaFilterCollectedDataCounterA.fill(0, kNumberOfBins);
 }
 
@@ -600,6 +633,7 @@ void DRS4Worker::resetAreaFilterB()
 
     m_areaFilterCollectedBCounter = 0;
     m_areaFilterCollectedDataB.fill(QPointF(0.0, 0.0), kNumberOfBins);
+    m_areaFilterCollectedDataB_raw.fill(0., kNumberOfBins);
     m_areaFilterCollectedDataCounterB.fill(0, kNumberOfBins);
 }
 
@@ -624,6 +658,13 @@ QVector<QPointF> *DRS4Worker::areaFilterACollectedData()
     return &m_areaFilterCollectedDataA;
 }
 
+QVector<double> *DRS4Worker::areaFilterACollectedData_raw()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_areaFilterCollectedDataA_raw;
+}
+
 QVector<int> *DRS4Worker::cntsAreaFilterACollectedData()
 {
     QMutexLocker locker(&m_mutex);
@@ -636,6 +677,13 @@ QVector<QPointF> *DRS4Worker::areaFilterBCollectedData()
     QMutexLocker locker(&m_mutex);
 
     return &m_areaFilterCollectedDataB;
+}
+
+QVector<double> *DRS4Worker::areaFilterBCollectedData_raw()
+{
+    QMutexLocker locker(&m_mutex);
+
+    return &m_areaFilterCollectedDataB_raw;
 }
 
 QVector<int> *DRS4Worker::cntsAreaFilterBCollectedData()
@@ -1288,6 +1336,9 @@ void DRS4Worker::runSingleThreaded()
         const int medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
 
         /* Baseline - Jitter Corrections */
+        DRS4BaselineCorrectionType::type blTypeA = DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodA();
+        int bl_peakCellA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellA();
+        int bl_windowA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowA();
         bool bUseBaseLineCorrectionA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledA();
         int bl_startCellA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellA();
         int bl_cellRegionA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionA();
@@ -1295,6 +1346,9 @@ void DRS4Worker::runSingleThreaded()
         bool bUseBaseLineCorrectionRejectionA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitA();
         double bl_rejectionLimitA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageA();
 
+        DRS4BaselineCorrectionType::type blTypeB = DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodB();
+        int bl_peakCellB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellB();
+        int bl_windowB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowB();
         bool bUseBaseLineCorrectionB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledB();
         int bl_startCellB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellB();
         int bl_cellRegionB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionB();
@@ -1330,41 +1384,227 @@ void DRS4Worker::runSingleThreaded()
 
         /* baseline - jitter corrections */
         if (bUseBaseLineCorrectionA) {
-            const int endRegionA = (bl_startCellA + bl_cellRegionA - 1);
+            if (blTypeA == DRS4BaselineCorrectionType::type::fixed) {
+                const int endRegionA = (bl_startCellA + bl_cellRegionA - 1);
 
-            double blA = 0.0f;
+                double blA = 0.0f;
 
-            for (int i = bl_startCellA ; i  < endRegionA ; ++ i )
-                blA += waveChannel0[i];
+                for (int i = bl_startCellA ; i  < endRegionA ; ++ i )
+                    blA += waveChannel0[i];
 
-            blA /= bl_cellRegionA;
+                blA /= bl_cellRegionA;
 
-            const bool limitExceededA = (abs(blA - bl_valueA)/500.0) > bl_rejectionLimitA*0.01;
+                const bool limitExceededA = (abs(blA - bl_valueA)/500.0) > bl_rejectionLimitA*0.01;
 
-            if (bUseBaseLineCorrectionRejectionA && limitExceededA)
-                continue;
+                if (bUseBaseLineCorrectionRejectionA && limitExceededA)
+                    continue;
 
-            for (int i = 0 ; i < kNumberOfBins ; ++ i)
-                waveChannel0[i] -= blA;
+                for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                    waveChannel0[i] -= blA;
+            }
+            else if (blTypeA == DRS4BaselineCorrectionType::type::dynamic) {
+                float minV = 500.0;
+                float maxV = -500.0;
+
+                int iMinV = -1;
+                int iMaxV = -1;
+
+                int iStart = -1;
+                int iStop = -1;
+
+                for (int i = 0 ; i < kNumberOfBins ; ++ i) {
+                    if (waveChannel0[i] < minV) {
+                        iMinV = i;
+                        minV = waveChannel0[i];
+                    }
+
+                    if (waveChannel0[i] > maxV) {
+                        iMaxV = i;
+                        maxV = waveChannel0[i];
+                    }
+                }
+
+                if (positiveSignal) {
+                    iStop = iMaxV;
+
+                    if (iMaxV - bl_peakCellA < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMaxV - bl_peakCellA;
+                }
+                else {
+                    iStop = iMinV;
+
+                    if (iMinV - bl_peakCellA < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMinV - bl_peakCellA;
+                }
+
+                int lastIndex = -1;
+                for (int i = iStart ; i <  iStop - bl_windowA ; ++ i) {
+                    // mean + stddev
+                    float mean = 0.;
+                    float stddev = 0.;
+
+                    for (int s = 0 ; s < bl_windowA ; ++ s)
+                         mean +=  waveChannel0[i+s];
+
+                    mean /= bl_windowA;
+
+                    for (int s = 0 ; s < bl_windowA ; ++ s)
+                        stddev += (waveChannel0[i+s] - mean)*(waveChannel0[i+s] - mean);
+
+                    stddev /= (bl_windowA-1);
+
+                    if (positiveSignal) {
+                        if (waveChannel0[i+bl_windowA] > mean + stddev
+                                || waveChannel0[i+bl_windowA] < mean - stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                    else {
+                        if (waveChannel0[i+bl_windowA] < mean - stddev
+                                || waveChannel0[i+bl_windowA] > mean + stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                const int length = lastIndex - iStart;
+
+                if (length) {
+                    float mean = 0.;
+                    for (int i = 0 ; i < length ; ++ i)
+                        mean += waveChannel0[iStart + i];
+
+                    mean /= length;
+
+                    const bool limitExceededA = (abs(mean - bl_valueA)/500.0) > bl_rejectionLimitA*0.01;
+
+                    if (bUseBaseLineCorrectionRejectionA && limitExceededA)
+                        continue;
+
+                    for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                        waveChannel0[i] -= mean;
+                }
+                else
+                    continue;
+            }
         }
 
         if (bUseBaseLineCorrectionB) {
-            const int endRegionB = (bl_startCellB + bl_cellRegionB - 1);
+            if (blTypeB == DRS4BaselineCorrectionType::type::fixed) {
+                const int endRegionB = (bl_startCellB + bl_cellRegionB - 1);
 
-            double blB = 0.0f;
+                double blB = 0.0f;
 
-            for (int i = bl_startCellB ; i  < endRegionB ; ++ i )
-                blB += waveChannel1[i];
+                for (int i = bl_startCellB ; i  < endRegionB ; ++ i )
+                    blB += waveChannel1[i];
 
-            blB /= bl_cellRegionB;
+                blB /= bl_cellRegionB;
 
-            const bool limitExceededB = (abs(blB - bl_valueB)/500.0) > bl_rejectionLimitB*0.01;
+                const bool limitExceededB = (abs(blB - bl_valueB)/500.0) > bl_rejectionLimitB*0.01;
 
-            if (bUseBaseLineCorrectionRejectionB && limitExceededB)
-                continue;
+                if (bUseBaseLineCorrectionRejectionB && limitExceededB)
+                    continue;
 
-            for (int i = 0 ; i < kNumberOfBins ; ++ i)
-                waveChannel1[i] -= blB;
+                for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                    waveChannel1[i] -= blB;
+            }
+            else if (blTypeB == DRS4BaselineCorrectionType::type::dynamic) {
+                float minV = 500.0;
+                float maxV = -500.0;
+
+                int iMinV = -1;
+                int iMaxV = -1;
+
+                int iStart = -1;
+                int iStop = -1;
+
+                for (int i = 0 ; i < kNumberOfBins ; ++ i) {
+                    if (waveChannel1[i] < minV) {
+                        iMinV = i;
+                        minV = waveChannel1[i];
+                    }
+
+                    if (waveChannel1[i] > maxV) {
+                        iMaxV = i;
+                        maxV = waveChannel1[i];
+                    }
+                }
+
+                if (positiveSignal) {
+                    iStop = iMaxV;
+
+                    if (iMaxV - bl_peakCellB < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMaxV - bl_peakCellB;
+                }
+                else {
+                    iStop = iMinV;
+
+                    if (iMinV - bl_peakCellB < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMinV - bl_peakCellB;
+                }
+
+                int lastIndex = -1;
+                for (int i = iStart ; i <  iStop - bl_windowB ; ++ i) {
+                    // mean + stddev
+                    float mean = 0.;
+                    float stddev = 0.;
+
+                    for (int s = 0 ; s < bl_windowB ; ++ s)
+                         mean +=  waveChannel1[i+s];
+
+                    mean /= bl_windowB;
+
+                    for (int s = 0 ; s < bl_windowB ; ++ s)
+                        stddev += (waveChannel1[i+s] - mean)*(waveChannel1[i+s] - mean);
+
+                    stddev /= (bl_windowB-1);
+
+                    if (positiveSignal) {
+                        if (waveChannel1[i+bl_windowB] > mean + stddev
+                                || waveChannel1[i+bl_windowB] < mean - stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                    else {
+                        if (waveChannel1[i+bl_windowB] < mean - stddev
+                                || waveChannel1[i+bl_windowB] > mean + stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                const int length = lastIndex - iStart;
+
+                if (length) {
+                    float mean = 0.;
+                    for (int i = 0 ; i < length ; ++ i)
+                        mean += waveChannel1[iStart + i];
+
+                    mean /= length;
+
+                    const bool limitExceededB = (abs(mean - bl_valueB)/500.0) > bl_rejectionLimitB*0.01;
+
+                    if (bUseBaseLineCorrectionRejectionB && limitExceededB)
+                        continue;
+
+                    for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                        waveChannel1[i] -= mean;
+                }
+                else
+                    continue;
+            }
         }
 
         /* clear pulse-data for new visualization */
@@ -2422,6 +2662,9 @@ void DRS4Worker::runSingleThreaded()
         }
 
         /* area-Filter */
+        double areaA_raw = areaA*(double)pulseAreaFilterBinningA;
+        double areaB_raw = areaB*(double)pulseAreaFilterBinningB;
+
         if (!bBurstMode
                 && bPulseAreaPlot) {
             const int binA = areaA*(double)pulseAreaFilterBinningA;
@@ -2565,6 +2808,15 @@ void DRS4Worker::runSingleThreaded()
                 m_areaFilterCollectedDataA[indexPHSA].setX(meanA);
                 m_areaFilterCollectedDataA[indexPHSA].setY(stddevA);
 
+
+                /* incremental (mean ; stddev) - raw */
+                double meanA_raw  = m_areaFilterCollectedDataA_raw[indexPHSA];
+
+                meanA_raw = (1/(float)m_areaFilterCollectedDataCounterA[indexPHSA])*(areaA_raw + float(m_areaFilterCollectedDataCounterA[indexPHSA] - 1)*meanA_raw);
+
+                m_areaFilterCollectedDataA_raw[indexPHSA] = meanA_raw;
+
+
                 m_areaFilterCollectedACounter ++;
             }
 
@@ -2586,6 +2838,14 @@ void DRS4Worker::runSingleThreaded()
 
                 m_areaFilterCollectedDataB[indexPHSB].setX(meanB);
                 m_areaFilterCollectedDataB[indexPHSB].setY(stddevB);
+
+                /* incremental (mean ; stddev) - raw */
+                double meanB_raw  = m_areaFilterCollectedDataB_raw[indexPHSB];
+
+                meanB_raw = (1/(float)m_areaFilterCollectedDataCounterB[indexPHSB])*(areaB_raw + float(m_areaFilterCollectedDataCounterB[indexPHSB] - 1)*meanB_raw);
+
+                m_areaFilterCollectedDataB_raw[indexPHSB] = meanB_raw;
+
 
                 m_areaFilterCollectedBCounter ++;
             }
@@ -2785,17 +3045,15 @@ void DRS4Worker::runSingleThreaded()
                     }
                 }
 
-                /******* count here for phs created of valid lifetimes ********************/
-                //if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
-                    //m_phsA[cellPHSA] ++;
-                    //m_phsACounts ++;
-                //}
+                if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    m_phsA_post[cellPHSA] ++;
+                    m_phsACounts_post ++;
+                }
 
-                //if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
-                    //m_phsB[cellPHSB] ++;
-                    //m_phsBCounts ++;
-                //}
-                /******* count here for phs created of valid lifetimes ********************/
+                if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                    m_phsB_post[cellPHSB] ++;
+                    m_phsBCounts_post ++;
+                }
 
                 /* calculate normalized persistance data */
                 if (bPersistance && bValidLifetime2 && !bBurstMode) {
@@ -2941,18 +3199,15 @@ void DRS4Worker::runSingleThreaded()
                     }
                 }
 
-                /*******count here for phs created of valid lifetimes********************/
-                /*if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
-                    m_phsA[cellPHSA] ++;
-                    m_phsACounts ++;
+                if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    m_phsA_post[cellPHSA] ++;
+                    m_phsACounts_post ++;
                 }
 
                 if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
-                    m_phsB[cellPHSB] ++;
-                    m_phsBCounts ++;
-                }*/
-
-                 /*******count here for phs created of valid lifetimes********************/
+                    m_phsB_post[cellPHSB] ++;
+                    m_phsBCounts_post ++;
+                }
 
                 if (bValidLifetime2) {
                     if ( DRS4FalseTruePulseStreamManager::sharedInstance()->isArmed()) {
@@ -3028,6 +3283,16 @@ void DRS4Worker::runSingleThreaded()
                 /* recording pulse shape data if required */
                 if (!bBurstMode && bValidLifetime)
                     recordPulseShapeData(positiveSignal, timeAForYMax, timeBForYMax, yMinA, yMaxA, yMinB, yMaxB);
+            }
+
+            if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                m_phsA_post[cellPHSA] ++;
+                m_phsACounts_post ++;
+            }
+
+            if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                m_phsB_post[cellPHSB] ++;
+                m_phsBCounts_post ++;
             }
 
             if (bValidLifetime2) {
@@ -3424,6 +3689,10 @@ void DRS4Worker::runMultiThreaded()
         inputData.m_medianFilterWindowSizeB = DRS4SettingsManager::sharedInstance()->medianFilterWindowSizeB();
 
         /* Baseline - Jitter Corrections */
+        /* Baseline - Jitter Corrections */
+        DRS4BaselineCorrectionType::type blTypeA = DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodA();
+        int bl_peakCellA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellA();
+        int bl_windowA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowA();
         bool bUseBaseLineCorrectionA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledA();
         int bl_startCellA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellA();
         int bl_cellRegionA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionA();
@@ -3431,6 +3700,9 @@ void DRS4Worker::runMultiThreaded()
         bool bUseBaseLineCorrectionRejectionA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitRejectLimitA();
         double bl_rejectionLimitA = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationLimitInPercentageA();
 
+        DRS4BaselineCorrectionType::type blTypeB = DRS4SettingsManager::sharedInstance()->baselineCorrectionMethodB();
+        int bl_peakCellB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartPeakCellB();
+        int bl_windowB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationWindowB();
         bool bUseBaseLineCorrectionB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationEnabledB();
         int bl_startCellB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationStartCellB();
         int bl_cellRegionB = DRS4SettingsManager::sharedInstance()->baselineCorrectionCalculationRegionB();
@@ -3462,41 +3734,227 @@ void DRS4Worker::runMultiThreaded()
 
         /* baseline - jitter corrections */
         if (bUseBaseLineCorrectionA) {
-            const int endRegionA = (bl_startCellA + bl_cellRegionA - 1);
+            if (blTypeA == DRS4BaselineCorrectionType::type::fixed) {
+                const int endRegionA = (bl_startCellA + bl_cellRegionA - 1);
 
-            double blA = 0.0f;
+                double blA = 0.0f;
 
-            for (int i = bl_startCellA ; i  < endRegionA ; ++ i )
-                blA += inputData.m_waveChannel0[i];
+                for (int i = bl_startCellA ; i  < endRegionA ; ++ i )
+                    blA += inputData.m_waveChannel0[i];
 
-            blA /= bl_cellRegionA;
+                blA /= bl_cellRegionA;
 
-            const bool limitExceededA = (abs(blA - bl_valueA)/500.0) > bl_rejectionLimitA*0.01;
+                const bool limitExceededA = (abs(blA - bl_valueA)/500.0) > bl_rejectionLimitA*0.01;
 
-            if (bUseBaseLineCorrectionRejectionA && limitExceededA)
-                continue;
+                if (bUseBaseLineCorrectionRejectionA && limitExceededA)
+                    continue;
 
-            for (int i = 0 ; i < kNumberOfBins ; ++ i)
-                inputData.m_waveChannel0[i] -= blA;
+                for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                    inputData.m_waveChannel0[i] -= blA;
+            }
+            else if (blTypeA == DRS4BaselineCorrectionType::type::dynamic) {
+                float minV = 500.0;
+                float maxV = -500.0;
+
+                int iMinV = -1;
+                int iMaxV = -1;
+
+                int iStart = -1;
+                int iStop = -1;
+
+                for (int i = 0 ; i < kNumberOfBins ; ++ i) {
+                    if (inputData.m_waveChannel0[i] < minV) {
+                        iMinV = i;
+                        minV = inputData.m_waveChannel0[i];
+                    }
+
+                    if (inputData.m_waveChannel0[i] > maxV) {
+                        iMaxV = i;
+                        maxV = inputData.m_waveChannel0[i];
+                    }
+                }
+
+                if (inputData.m_positiveSignal) {
+                    iStop = iMaxV;
+
+                    if (iMaxV - bl_peakCellA < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMaxV - bl_peakCellA;
+                }
+                else {
+                    iStop = iMinV;
+
+                    if (iMinV - bl_peakCellA < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMinV - bl_peakCellA;
+                }
+
+                int lastIndex = -1;
+                for (int i = iStart ; i <  iStop - bl_windowA ; ++ i) {
+                    // mean + stddev
+                    float mean = 0.;
+                    float stddev = 0.;
+
+                    for (int s = 0 ; s < bl_windowA ; ++ s)
+                         mean +=  inputData.m_waveChannel0[i+s];
+
+                    mean /= bl_windowA;
+
+                    for (int s = 0 ; s < bl_windowA ; ++ s)
+                        stddev += (inputData.m_waveChannel0[i+s] - mean)*(inputData.m_waveChannel0[i+s] - mean);
+
+                    stddev /= (bl_windowA-1);
+
+                    if (inputData.m_positiveSignal) {
+                        if (inputData.m_waveChannel0[i+bl_windowA] > mean + stddev
+                                || inputData.m_waveChannel0[i+bl_windowA] < mean - stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                    else {
+                        if (inputData.m_waveChannel0[i+bl_windowA] < mean - stddev
+                                || inputData.m_waveChannel0[i+bl_windowA] > mean + stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                const int length = lastIndex - iStart;
+
+                if (length) {
+                    float mean = 0.;
+                    for (int i = 0 ; i < length ; ++ i)
+                        mean += inputData.m_waveChannel0[iStart + i];
+
+                    mean /= length;
+
+                    const bool limitExceededA = (abs(mean - bl_valueA)/500.0) > bl_rejectionLimitA*0.01;
+
+                    if (bUseBaseLineCorrectionRejectionA && limitExceededA)
+                        continue;
+
+                    for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                        inputData.m_waveChannel0[i] -= mean;
+                }
+                else
+                    continue;
+            }
         }
 
         if (bUseBaseLineCorrectionB) {
-            const int endRegionB = (bl_startCellB + bl_cellRegionB - 1);
+            if (blTypeB == DRS4BaselineCorrectionType::type::fixed) {
+                const int endRegionB = (bl_startCellB + bl_cellRegionB - 1);
 
-            double blB = 0.0f;
+                double blB = 0.0f;
 
-            for (int i = bl_startCellB ; i  < endRegionB ; ++ i )
-                blB += inputData.m_waveChannel1[i];
+                for (int i = bl_startCellB ; i  < endRegionB ; ++ i )
+                    blB += inputData.m_waveChannel1[i];
 
-            blB /= bl_cellRegionB;
+                blB /= bl_cellRegionB;
 
-            const bool limitExceededB = (abs(blB - bl_valueB)/500.0) > bl_rejectionLimitB*0.01;
+                const bool limitExceededB = (abs(blB - bl_valueB)/500.0) > bl_rejectionLimitB*0.01;
 
-            if (bUseBaseLineCorrectionRejectionB && limitExceededB)
-                continue;
+                if (bUseBaseLineCorrectionRejectionB && limitExceededB)
+                    continue;
 
-            for (int i = 0 ; i < kNumberOfBins ; ++ i)
-                inputData.m_waveChannel1[i] -= blB;
+                for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                    inputData.m_waveChannel1[i] -= blB;
+            }
+            else if (blTypeB == DRS4BaselineCorrectionType::type::dynamic) {
+                float minV = 500.0;
+                float maxV = -500.0;
+
+                int iMinV = -1;
+                int iMaxV = -1;
+
+                int iStart = -1;
+                int iStop = -1;
+
+                for (int i = 0 ; i < kNumberOfBins ; ++ i) {
+                    if (inputData.m_waveChannel1[i] < minV) {
+                        iMinV = i;
+                        minV = inputData.m_waveChannel1[i];
+                    }
+
+                    if (inputData.m_waveChannel1[i] > maxV) {
+                        iMaxV = i;
+                        maxV = inputData.m_waveChannel1[i];
+                    }
+                }
+
+                if (inputData.m_positiveSignal) {
+                    iStop = iMaxV;
+
+                    if (iMaxV - bl_peakCellB < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMaxV - bl_peakCellB;
+                }
+                else {
+                    iStop = iMinV;
+
+                    if (iMinV - bl_peakCellB < 0)
+                        iStart = 0;
+                    else
+                        iStart = iMinV - bl_peakCellB;
+                }
+
+                int lastIndex = -1;
+                for (int i = iStart ; i <  iStop - bl_windowB ; ++ i) {
+                    // mean + stddev
+                    float mean = 0.;
+                    float stddev = 0.;
+
+                    for (int s = 0 ; s < bl_windowB ; ++ s)
+                         mean +=  inputData.m_waveChannel1[i+s];
+
+                    mean /= bl_windowB;
+
+                    for (int s = 0 ; s < bl_windowB ; ++ s)
+                        stddev += (inputData.m_waveChannel1[i+s] - mean)*(inputData.m_waveChannel1[i+s] - mean);
+
+                    stddev /= (bl_windowB-1);
+
+                    if (inputData.m_positiveSignal) {
+                        if (inputData.m_waveChannel1[i+bl_windowB] > mean + stddev
+                                || inputData.m_waveChannel1[i+bl_windowB] < mean - stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                    else {
+                        if (inputData.m_waveChannel1[i+bl_windowB] < mean - stddev
+                                || inputData.m_waveChannel1[i+bl_windowB] > mean + stddev) {
+                            lastIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                const int length = lastIndex - iStart;
+
+                if (length) {
+                    float mean = 0.;
+                    for (int i = 0 ; i < length ; ++ i)
+                        mean += inputData.m_waveChannel1[iStart + i];
+
+                    mean /= length;
+
+                    const bool limitExceededB = (abs(mean - bl_valueB)/500.0) > bl_rejectionLimitB*0.01;
+
+                    if (bUseBaseLineCorrectionRejectionB && limitExceededB)
+                        continue;
+
+                    for (int i = 0 ; i < kNumberOfBins ; ++ i)
+                        inputData.m_waveChannel1[i] -= mean;
+                }
+                else
+                    continue;
+            }
         }
 
         /* clear pulse-data for new visualization */
@@ -4510,6 +4968,9 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                 || (int)timeStampB == -1)
             continue;
 
+        const double areaA_raw = areaA*(double)inputData.m_pulseAreaFilterBinningA;
+        const double areaB_raw = areaB*(double)inputData.m_pulseAreaFilterBinningB;
+
         /* area-Filter */
         if (!inputData.m_bBurstMode
                 && inputData.m_bPulseAreaPlot) {
@@ -4596,11 +5057,13 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
             if (y_AInside) {
                 /* incremental (mean ; stddev) */
                 outputData.m_areaFilterCollectionDataA.append(QPointF(indexPHSA, areaA));
+                outputData.m_areaFilterCollectionDataA_raw.append(areaA_raw);
             }
 
             if (y_BInside) {
                 /* incremental (mean ; stddev) */
                 outputData.m_areaFilterCollectionDataB.append(QPointF(indexPHSB, areaB));
+                outputData.m_areaFilterCollectionDataB_raw.append(areaB_raw);
             }
 
             if ( !y_AInside || !y_BInside )
@@ -4737,6 +5200,14 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                     bValidLifetime = true;
 
                 bValidLifetime2 = true;
+
+                if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    outputData.m_phsA_post.append(cellPHSA);
+                }
+
+                if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                    outputData.m_phsB_post.append(cellPHSB);
+                }
             }
 
             /* pulse-shape filter: record */
@@ -4841,6 +5312,14 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                     bValidLifetime = true;
 
                 bValidLifetime2 = true;
+
+                if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    outputData.m_phsA_post.append(cellPHSA);
+                }
+
+                if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                    outputData.m_phsB_post.append(cellPHSB);
+                }
             }
 
             /* pulse-shape filter: record */
@@ -4939,6 +5418,14 @@ DRS4ConcurrentCopyOutputData runCalculation(const QVector<DRS4ConcurrentCopyInpu
                     bValidLifetime = true;
 
                 bValidLifetime2 = true;
+
+                if ( cellPHSA < kNumberOfBins && cellPHSA >= 0 ) {
+                    outputData.m_phsA_post.append(cellPHSA);
+                }
+
+                if ( cellPHSB < kNumberOfBins && cellPHSB >= 0 ) {
+                    outputData.m_phsB_post.append(cellPHSB);
+                }
             }
 
             /* pulse-shape filter: record */
@@ -5067,6 +5554,16 @@ void DRS4WorkerConcurrentManager::merge()
 
         m_worker->m_phsBCounts += outputData.m_phsB.size();
 
+        for ( int index : outputData.m_phsA_post )
+            m_worker->m_phsA_post[index] ++;
+
+        m_worker->m_phsACounts_post += outputData.m_phsA_post.size();
+
+        for ( int index : outputData.m_phsB_post )
+            m_worker->m_phsB_post[index] ++;
+
+        m_worker->m_phsBCounts_post += outputData.m_phsB_post.size();
+
         /* Lifetime-Spectrum */
         for ( int index : outputData.m_lifeTimeDataAB ) {
             m_worker->m_lifeTimeDataAB[index] ++;
@@ -5122,12 +5619,14 @@ void DRS4WorkerConcurrentManager::merge()
 
         for ( int i = 0 ; i < outputData.m_areaFilterCollectionDataA.size() ; ++ i ) {
             const QPointF p = outputData.m_areaFilterCollectionDataA[i];
+            const double areaA_raw = outputData.m_areaFilterCollectionDataA_raw[i];
 
             const int indexA = (int)p.x();
             const double areaA = p.y();
 
             /* incremental (mean ; stddev) */
             double meanA  = m_worker->m_areaFilterCollectedDataA[indexA].x();
+            double meanA_raw  = m_worker->m_areaFilterCollectedDataA_raw[indexA];
             double stddevA = m_worker->m_areaFilterCollectedDataA[indexA].y();
 
             m_worker->m_areaFilterCollectedDataCounterA[indexA] ++;
@@ -5140,22 +5639,25 @@ void DRS4WorkerConcurrentManager::merge()
                 stddevA = 0.0;
 
             meanA = (1/(float)m_worker->m_areaFilterCollectedDataCounterA[indexA])*(areaA + float(m_worker->m_areaFilterCollectedDataCounterA[indexA] - 1)*meanA);
-
+            meanA_raw = (1/(float)m_worker->m_areaFilterCollectedDataCounterA[indexA])*(areaA_raw + float(m_worker->m_areaFilterCollectedDataCounterA[indexA] - 1)*meanA_raw);
 
             m_worker->m_areaFilterCollectedDataA[indexA].setX(meanA);
             m_worker->m_areaFilterCollectedDataA[indexA].setY(stddevA);
+            m_worker->m_areaFilterCollectedDataA_raw[indexA] = meanA_raw;
 
             m_worker->m_areaFilterCollectedACounter ++;
         }
 
         for ( int i = 0 ; i < outputData.m_areaFilterCollectionDataB.size() ; ++ i ) {
             const QPointF p = outputData.m_areaFilterCollectionDataB[i];
+            const double areaB_raw = outputData.m_areaFilterCollectionDataB_raw[i];
 
             const int indexB = (int)p.x();
             const double areaB = p.y();
 
             /* incremental (mean ; stddev) */
             double meanB  = m_worker->m_areaFilterCollectedDataB[indexB].x();
+            double meanB_raw  = m_worker->m_areaFilterCollectedDataB_raw[indexB];
             double stddevB = m_worker->m_areaFilterCollectedDataB[indexB].y();
 
             m_worker->m_areaFilterCollectedDataCounterB[indexB] ++;
@@ -5168,10 +5670,11 @@ void DRS4WorkerConcurrentManager::merge()
                 stddevB = 0.0;
 
             meanB = (1/(float)m_worker->m_areaFilterCollectedDataCounterB[indexB])*(areaB + float(m_worker->m_areaFilterCollectedDataCounterB[indexB] - 1)*meanB);
-
+            meanB_raw = (1/(float)m_worker->m_areaFilterCollectedDataCounterB[indexB])*(areaB_raw + float(m_worker->m_areaFilterCollectedDataCounterB[indexB] - 1)*meanB_raw);
 
             m_worker->m_areaFilterCollectedDataB[indexB].setX(meanB);
             m_worker->m_areaFilterCollectedDataB[indexB].setY(stddevB);
+            m_worker->m_areaFilterCollectedDataB_raw[indexB] = meanB_raw;
 
             m_worker->m_areaFilterCollectedBCounter ++;
         }

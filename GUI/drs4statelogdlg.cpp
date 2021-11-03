@@ -63,9 +63,6 @@ DRS4StateLogDlg::DRS4StateLogDlg(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //coming soon (Masterthesis of Michael Fischer)!
-    ui->checkBox_simulationElectronics->setEnabled(false);
-
     ui->checkBox_pulseStreamArmed->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_pulseStreamArmed->setFocusPolicy(Qt::NoFocus);
 
@@ -75,51 +72,33 @@ DRS4StateLogDlg::DRS4StateLogDlg(QWidget *parent) :
     ui->checkBox_scriptIsRunning->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_scriptIsRunning->setFocusPolicy(Qt::NoFocus);
 
-    ui->checkBox_simulationElectronics->setAttribute(Qt::WA_TransparentForMouseEvents);
-    ui->checkBox_simulationElectronics->setFocusPolicy(Qt::NoFocus);
-
     ui->checkBox_simulationLogNormal->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_simulationLogNormal->setFocusPolicy(Qt::NoFocus);
 
     ui->progressBar_size->setMaximum(DRS4StreamDataLoader::sharedInstance()->fileSizeInMegabyte());
     ui->progressBar_size->setValue(DRS4StreamDataLoader::sharedInstance()->loadedFileSizeInMegabyte());
 
-    ui->treeWidget_settingsFile->setColumnCount(2);
-    ui->treeWidget_settingsFile->headerItem()->setText(0, "xml-node");
-    ui->treeWidget_settingsFile->headerItem()->setText(1, "value");
-    ui->treeWidget_settingsFile->addTopLevelItem(new DXMLTreeWidgetItem(DRS4SettingsManager::sharedInstance()->parentNode()));
-    ui->treeWidget_settingsFile->expandAll();
-    ui->treeWidget_settingsFile->headerItem()->setFirstColumnSpanned(true);
-    ui->treeWidget_settingsFile->headerItem()->setExpanded(true);
-    QFont col1 = ui->treeWidget_settingsFile->headerItem()->font(0);
-    QFont col2 = ui->treeWidget_settingsFile->headerItem()->font(1);
-    col1.setBold(true);
-    col2.setBold(true);
-    ui->treeWidget_settingsFile->headerItem()->setFont(0, QFont(col1));
-    ui->treeWidget_settingsFile->headerItem()->setFont(1, QFont(col2));
-
-    if (ui->treeWidget_settingsFile->topLevelItem(0) )
-        ui->treeWidget_settingsFile->topLevelItem(0)->setText(0, DRS4SettingsManager::sharedInstance()->fileName());
-
-    ui->treeWidget_simulationInputFile->setColumnCount(2);
-    ui->treeWidget_simulationInputFile->headerItem()->setText(0, "xml-node");
-    ui->treeWidget_simulationInputFile->headerItem()->setText(1, "value");
-    ui->treeWidget_simulationInputFile->addTopLevelItem(new DXMLTreeWidgetItem(DRS4SimulationSettingsManager::sharedInstance()->parentNode()));
-    ui->treeWidget_simulationInputFile->expandAll();
-    ui->treeWidget_simulationInputFile->headerItem()->setFirstColumnSpanned(true);
-    ui->treeWidget_simulationInputFile->headerItem()->setExpanded(true);
-    col1 = ui->treeWidget_simulationInputFile->headerItem()->font(0);
-    col2 = ui->treeWidget_simulationInputFile->headerItem()->font(1);
-    col1.setBold(true);
-    col2.setBold(true);
-    ui->treeWidget_settingsFile->headerItem()->setFont(0, QFont(col1));
-    ui->treeWidget_settingsFile->headerItem()->setFont(1, QFont(col2));
-
-    if (ui->treeWidget_simulationInputFile->topLevelItem(0) )
-        ui->treeWidget_simulationInputFile->topLevelItem(0)->setText(0, DRS4SimulationSettingsManager::sharedInstance()->fileName());
-
     m_updateTimer.setInterval(1500);
     m_updateTimer.setSingleShot(false);
+
+    const QString text = PROGRAM_NAME + "<br><br>" + COPYRIGHT_NOTICE + "<br><br>";
+    const QString contact = "contact: <a href=\"danny.petschke@uni-wuerzburg.de\">danny.petschke@uni-wuerzburg.de</a><br><br>";
+    const QString publication1 = "<b>Related publications:</b><br><br><a href=\"https://www.sciencedirect.com/science/article/pii/S2352711019300676\">DDRS4PALS: A software for the acquisition and simulation of lifetime spectra using the DRS4 evaluation board</a><br><br>";
+    const QString publication2 = "<a href=\"https://www.sciencedirect.com/science/article/pii/S2352340918315142?via%3Dihub\">Data on pure tin by Positron Annihilation Lifetime Spectroscopy (PALS) acquired with a semi-analog/digital setup using DDRS4PALS</a><br><br><br>";
+    const QString publication3 = "<a href=\"https://www.sciencedirect.com/science/article/pii/S2352711018300530\">DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses</a><br><br><br>";
+    const QString publication4 = "<a href=\"https://www.sciencedirect.com/science/article/pii/S2352711018300694\">Update (v1.1) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses</a><br><br><br>";
+    const QString publication5 = "<a href=\"https://www.sciencedirect.com/science/article/pii/S2352711018301092\">Update (v1.2) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses</a><br><br><br>";
+    const QString publication6 = "<a href=\"https://www.sciencedirect.com/science/article/pii/S235271101930038X\">Update (v1.3) to DLTPulseGenerator: A library for the simulation of lifetime spectra based on detector-output pulses</a><br><br><br>";
+    const QString license = "<nobr>Fit Algorithm by: <br><a href=\"https://www.physics.wisc.edu/~craigm/idl/cmpfit.html\">MPFIT</a>: A MINPACK-1 Least Squares Fitting Library in C</nobr><br><br>";
+    const QString license2 = "<nobr>CF Interpolation by:<br><a href=\"http://www.alglib.net/\">ALGLIB</a>: A Numerical Analysis and Data Processing Library</nobr><br>and<br><a href=\"http://kluge.in-chemnitz.de/opensource/spline/\">Tino Kluge</a>: Cubic Spline Interpolation in C++<br><br>";
+    const QString license2_1 = "<nobr>Spike Removal by:<br><a href=\"http://www.sergejusz.com/engineering_tips/median_filter.htm/\">S. Zabinskis</a>: A Fast Median Filter in C++<br><br>";
+    const QString license4 = "<nobr>Logo designed by: <br><a href=\"https://www.researchgate.net/profile/Hannah_Heil\">Hannah Heil</a></nobr><br><br><br>";
+    const QString acknowlegment = "<b>Acknowledgment:</b><br><br><nobr>I thank Jakub Cizek (Charles University in Prague)<br><a href=\"https://www.researchgate.net/profile/Jakub_Cizek\">Jakub Cizek</a><br><br> and Martin Petriska (Slovak University of Technology in Bratislava)<br><a href=\"https://www.researchgate.net/profile/Martin_Petriska\">Martin Petriska</a><br><br> for fruitful discussions concerning pulse shape filtering and digital positron lifetime spectroscopy on the <a href=\"https://www.bgsu.edu/events/icpa-18.html\">ICPA-18</a>.</nobr><br><br>Furthermore, I thank <a href=\"https://www.researchgate.net/profile/Ricardo_Helm\">Ricardo Helm</a> for extensively testing this software.";
+    QString versionStr; versionStr = QString("v%1.%2").arg(DLTPULSEGENERATOR_MAJOR_VERSION).arg(DLTPULSEGENERATOR_MINOR_VERSION);
+    const QString license3 = "<nobr><a href=\"https://github.com/dpscience/DLTPulseGenerator\">DLTPulseGenerator</a> " + versionStr + " for Spectra-Simulation by: <br><a href=\"https://www.researchgate.net/profile/Danny_Petschke\">Danny Petschke</a></nobr><br><br>";
+    QString t("<b>" + text + "</b>" + contact + license + license2 + license2_1 + license3 + license4 + publication1 + publication2 + publication3 + publication4 + publication5 + publication6 + acknowlegment);
+
+    ui->plainTextEdit->appendHtml(t);
 
     connect(&m_updateTimer, SIGNAL(timeout()), this, SLOT(updateState()));
 }
@@ -153,13 +132,6 @@ void DRS4StateLogDlg::hideEvent(QHideEvent *event)
 void DRS4StateLogDlg::updateState()
 {
     ui->textEdit_simulationErrorCode->clear();
-
-    if ( !DRS4BoardManager::sharedInstance()->isDemoModeEnabled() )
-    {
-        ui->groupBox->setEnabled(false);
-        ui->treeWidget_simulationInputFile->setEnabled(false);
-        ui->label_fileNameSimulation2->setEnabled(false);
-    }
 
     const bool pulseStreamWriteArmed = DRS4StreamManager::sharedInstance()->isArmed();
     const bool pulseStreamReadArmed = DRS4StreamDataLoader::sharedInstance()->isArmed();
@@ -195,7 +167,6 @@ void DRS4StateLogDlg::updateState()
     }
 
     ui->checkBox_simulationLogNormal->setChecked(pulseSimulationLogNormal);
-    ui->checkBox_simulationElectronics->setChecked(pulseSimulationElectronics);
 
     ui->checkBox_scriptIsRunning->setChecked(scriptRunning);
 
@@ -206,70 +177,25 @@ void DRS4StateLogDlg::updateState()
 
     ui->label_fileNameSimulation->setText(fileNameSimulationFile);
     ui->label_fileNameSimulation->setToolTip(fileNameSimulationFile);
-    ui->label_fileNameSimulation2->setText(fileNameSimulationFile);
-    ui->label_fileNameSimulation2->setToolTip(fileNameSimulationFile);
 
     ui->label_scriptFile->setText(fileNameScript);
     ui->label_scriptFile->setToolTip(fileNameScript);
 
     ui->label_settingsFile->setText(settingsFile);
     ui->label_settingsFile->setToolTip(settingsFile);
-    ui->label_settingsFile2->setText(settingsFile);
-    ui->label_settingsFile2->setToolTip(settingsFile);
 
     ui->progressBar_size->setMaximum(DRS4StreamDataLoader::sharedInstance()->fileSizeInMegabyte());
     ui->progressBar_size->setValue(DRS4StreamDataLoader::sharedInstance()->loadedFileSizeInMegabyte());
 
     const QString settingsContent = DRS4SettingsManager::sharedInstance()->xmlContent();
 
-    if ( settingsContent != m_lastSettings ) {
-        ui->treeWidget_settingsFile->clear();
-
-        ui->treeWidget_settingsFile->setColumnCount(2);
-        ui->treeWidget_settingsFile->headerItem()->setText(0, "xml-node");
-        ui->treeWidget_settingsFile->headerItem()->setText(1, "value");
-        ui->treeWidget_settingsFile->addTopLevelItem(new DXMLTreeWidgetItem(DRS4SettingsManager::sharedInstance()->parentNode()));
-
-        ui->treeWidget_settingsFile->expandAll();
-        ui->treeWidget_settingsFile->headerItem()->setFirstColumnSpanned(true);
-        ui->treeWidget_settingsFile->headerItem()->setExpanded(true);
-        QFont col1 = ui->treeWidget_settingsFile->headerItem()->font(0);
-        QFont col2 = ui->treeWidget_settingsFile->headerItem()->font(1);
-        col1.setBold(true);
-        col2.setBold(true);
-        ui->treeWidget_settingsFile->headerItem()->setFont(0, QFont(col1));
-        ui->treeWidget_settingsFile->headerItem()->setFont(1, QFont(col2));
-
-        if (ui->treeWidget_settingsFile->topLevelItem(0) )
-            ui->treeWidget_settingsFile->topLevelItem(0)->setText(0, DRS4SettingsManager::sharedInstance()->fileName());
-
+    if ( settingsContent != m_lastSettings )
         m_lastSettings = settingsContent;
-    }
 
     if ( DRS4BoardManager::sharedInstance()->isDemoModeEnabled() ) {
         const QString simulationContent = (fileNameSimulationFile != "")?DRS4SimulationSettingsManager::sharedInstance()->xmlContent():"";
 
         if (simulationContent != m_lastSimulation) {
-            ui->treeWidget_simulationInputFile->clear();
-
-            ui->treeWidget_simulationInputFile->setColumnCount(2);
-            ui->treeWidget_simulationInputFile->headerItem()->setText(0, "xml-node");
-            ui->treeWidget_simulationInputFile->headerItem()->setText(1, "value");
-            ui->treeWidget_simulationInputFile->addTopLevelItem(new DXMLTreeWidgetItem(DRS4SimulationSettingsManager::sharedInstance()->parentNode()));
-
-            ui->treeWidget_simulationInputFile->expandAll();
-            ui->treeWidget_simulationInputFile->headerItem()->setFirstColumnSpanned(true);
-            ui->treeWidget_simulationInputFile->headerItem()->setExpanded(true);
-            QFont col1 = ui->treeWidget_simulationInputFile->headerItem()->font(0);
-            QFont col2 = ui->treeWidget_simulationInputFile->headerItem()->font(1);
-            col1.setBold(true);
-            col2.setBold(true);
-            ui->treeWidget_simulationInputFile->headerItem()->setFont(0, QFont(col1));
-            ui->treeWidget_simulationInputFile->headerItem()->setFont(1, QFont(col2));
-
-            if (ui->treeWidget_simulationInputFile->topLevelItem(0) )
-                ui->treeWidget_simulationInputFile->topLevelItem(0)->setText(0, DRS4SimulationSettingsManager::sharedInstance()->fileName());
-
             m_lastSimulation = simulationContent;
         }
     }

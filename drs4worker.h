@@ -302,8 +302,10 @@ class DRS4Worker : public QObject
 public:
     /* PHS */
     QVector<int> m_phsA, m_phsB;
+    QVector<int> m_phsA_post, m_phsB_post;
 
     int m_phsACounts, m_phsBCounts;
+    int m_phsACounts_post, m_phsBCounts_post;
 
 private:
     double m_summedPulseCountRateInSeconds;
@@ -316,6 +318,9 @@ public:
     /* Area-Filter */
     QVector<QPointF> m_areaFilterDataA;
     QVector<QPointF> m_areaFilterDataB;
+
+    QVector<double> m_areaFilterCollectedDataA_raw;
+    QVector<double> m_areaFilterCollectedDataB_raw;
 
     QVector<QPointF> m_areaFilterCollectedDataA;
     QVector<QPointF> m_areaFilterCollectedDataB;
@@ -465,6 +470,12 @@ public:
     int phsACounts() const;
     int phsBCounts() const;
 
+    QVector<int>* phsA_post();
+    QVector<int>* phsB_post();
+
+    int phsACounts_post() const;
+    int phsBCounts_post() const;
+
     double avgPulseCountRateInHz() const;
     double currentPulseCountRateInHz() const;
 
@@ -476,8 +487,10 @@ public:
     QVector<QPointF>* areaFilterBData();
 
     QVector<QPointF>* areaFilterACollectedData();
+    QVector<double>* areaFilterACollectedData_raw();
     QVector<int>* cntsAreaFilterACollectedData();
     QVector<QPointF>* areaFilterBCollectedData();
+    QVector<double>* areaFilterBCollectedData_raw();
     QVector<int>* cntsAreaFilterBCollectedData();
 
     int countsCollectedInAreaFilterA();
@@ -550,6 +563,7 @@ public:
 
     /* PHS */
     QVector<int> m_phsA, m_phsB; /* stores the index */
+    QVector<int> m_phsA_post, m_phsB_post; /* stores the index */
 
     /* Lifetime-Spectra */
     QVector<int> m_lifeTimeDataAB, m_lifeTimeDataBA, m_lifeTimeDataCoincidence, m_lifeTimeDataMerged; /* stores the index */
@@ -557,6 +571,7 @@ public:
     /* Area-Filter */
     QVector<QPointF> m_areaFilterDataA, m_areaFilterDataB;
     QVector<QPointF> m_areaFilterCollectionDataA, m_areaFilterCollectionDataB; /*mean and stddev calculation */
+    QVector<double> m_areaFilterCollectionDataA_raw, m_areaFilterCollectionDataB_raw; /*mean calculation */
 
     /* Rise-Time Filter */
     QVector<int> m_riseTimeFilterDataA, m_riseTimeFilterDataB;

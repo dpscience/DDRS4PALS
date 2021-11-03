@@ -515,7 +515,7 @@ QProgressBar::chunk
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>8</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1567,592 +1567,286 @@ border-color: black;
        <attribute name="title">
         <string>PHS</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <layout class="QVBoxLayout" name="verticalLayout_43">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+         <widget class="QTabWidget" name="tabWidget_9">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_20">
+           <attribute name="title">
+            <string>PHS - A</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="plot2DXWidget" name="widget_phs_A" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>800</width>
+                <height>200</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_21">
+           <attribute name="title">
+            <string>PHS - A (accepted events)</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="plot2DXWidget" name="widget_phs_A_post" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
-           <widget class="plot2DXWidget" name="widget_phs_A" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>800</width>
-              <height>200</height>
-             </size>
+           <widget class="QLabel" name="label_4">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>A: Start:</string>
             </property>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>A: Start:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_7">
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>LL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_startMinA">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_8">
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>UL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_startMaxA">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+           <widget class="QLabel" name="label_7">
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>LL:</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
-            <item>
-             <widget class="QLabel" name="label_12">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>A: Stop: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_13">
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>LL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_stopMinA">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_14">
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>UL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_stopMaxA">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_7">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_23">
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>Counts Start: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_countsStartA">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">Color: red</string>
-              </property>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_19">
-              <property name="styleSheet">
-               <string notr="true">Color: blue
-</string>
-              </property>
-              <property name="text">
-               <string>Counts Stop: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_countsStopA">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">Color: blue</string>
-              </property>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>Counts: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_phsACounts">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_savePHSA">
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton {
-border-style: flat;
-background-color:  rgb(216,216,216); 
-color: rgb(40,40,40);
-border-radius: 10;
-}
-
-QPushButton:hover {
-border-style: flat; 
-background-color: rgb(160,160,160);
-color: rgb(40,40,40);
-border-radius: 5;
-}
-
-QPushButton:pressed {
-border-style: flat; 
-background-color: transparent;
-color: rgb(40,40,40);
-border-radius: 2;
-border-color: black;
-}</string>
-              </property>
-              <property name="text">
-               <string>save</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_resetA">
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton {
-border-style: flat;
-background-color:  rgb(216,216,216); 
-color: rgb(40,40,40);
-border-radius: 10;
-}
-
-QPushButton:hover {
-border-style: flat; 
-background-color: rgb(160,160,160);
-color: rgb(40,40,40);
-border-radius: 5;
-}
-
-QPushButton:pressed {
-border-style: flat; 
-background-color: transparent;
-color: rgb(40,40,40);
-border-radius: 2;
-border-color: black;
-}</string>
-              </property>
-              <property name="text">
-               <string>reset</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QSpinBox" name="spinBox_startMinA">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>UL:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_startMaxA">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
-           <widget class="plot2DXWidget" name="widget_phs_B" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>800</width>
-              <height>200</height>
-             </size>
+           <widget class="QLabel" name="label_12">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>A: Stop: </string>
             </property>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_8">
-            <item>
-             <widget class="QLabel" name="label_9">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>B: Start:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_10">
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>LL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_startMinB">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_11">
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>UL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_startMaxB">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+           <widget class="QLabel" name="label_13">
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>LL:</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QLabel" name="label_15">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>B: Stop: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_16">
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>LL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_stopMinB">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_17">
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>UL:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBox_stopMaxB">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_28">
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>Counts Start: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_countsStartB">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: red</string>
-              </property>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_26">
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>Counts Stop: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_countsStopB">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">color: blue</string>
-              </property>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>Counts: </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_phsBCounts">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_savePHSB">
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton {
+           <widget class="QSpinBox" name="spinBox_stopMinA">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_14">
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>UL:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_stopMaxA">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_23">
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>Counts Start: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_countsStartA">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">Color: red</string>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_19">
+            <property name="styleSheet">
+             <string notr="true">Color: blue
+</string>
+            </property>
+            <property name="text">
+             <string>Counts Stop: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_countsStopA">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">Color: blue</string>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Counts: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_phsACounts">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_savePHSA">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
 border-style: flat;
 background-color:  rgb(216,216,216); 
 color: rgb(40,40,40);
@@ -2173,28 +1867,28 @@ color: rgb(40,40,40);
 border-radius: 2;
 border-color: black;
 }</string>
-              </property>
-              <property name="text">
-               <string>save</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_resetB">
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton {
+            </property>
+            <property name="text">
+             <string>save</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_resetA">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
 border-style: flat;
 background-color:  rgb(216,216,216); 
 color: rgb(40,40,40);
@@ -2215,13 +1909,359 @@ color: rgb(40,40,40);
 border-radius: 2;
 border-color: black;
 }</string>
-              </property>
-              <property name="text">
-               <string>reset</string>
+            </property>
+            <property name="text">
+             <string>reset</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="tabWidget_10">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_26">
+           <attribute name="title">
+            <string>PHS -B</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="plot2DXWidget" name="widget_phs_B" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>800</width>
+                <height>200</height>
+               </size>
               </property>
              </widget>
             </item>
            </layout>
+          </widget>
+          <widget class="QWidget" name="tab_27">
+           <attribute name="title">
+            <string>PHS -B (accepted events)</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_42">
+            <item>
+             <widget class="plot2DXWidget" name="widget_phs_B_post" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QLabel" name="label_9">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>B: Start:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_10">
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>LL:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_startMinB">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>UL:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_startMaxB">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QLabel" name="label_15">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>B: Stop: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_16">
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>LL:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_stopMinB">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_17">
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>UL:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_stopMaxB">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_28">
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>Counts Start: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_countsStartB">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: red</string>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_26">
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>Counts Stop: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_countsStopB">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: blue</string>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>Counts: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_phsBCounts">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_savePHSB">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
+            <property name="text">
+             <string>save</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_resetB">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+border-style: flat;
+background-color:  rgb(216,216,216); 
+color: rgb(40,40,40);
+border-radius: 10;
+}
+
+QPushButton:hover {
+border-style: flat; 
+background-color: rgb(160,160,160);
+color: rgb(40,40,40);
+border-radius: 5;
+}
+
+QPushButton:pressed {
+border-style: flat; 
+background-color: transparent;
+color: rgb(40,40,40);
+border-radius: 2;
+border-color: black;
+}</string>
+            </property>
+            <property name="text">
+             <string>reset</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -4926,7 +4966,7 @@ border-color: black;
            <string notr="true">color: blue</string>
           </property>
           <property name="text">
-           <string>These graphs show the amplitude-normalized pulses shifted with respect to the CF-level timing point (= 0.0 ns), which form the resulting liftime spectra appearing in the tabs Spec(A-B), Spec(B-A) or Spec(Prompt/IRF).</string>
+           <string>These graphs show the amplitude-normalized pulses shifted with respect to the CF-level timing point (= 0.0 ns). The displayed pulses contribute to the resulting liftime spectra appearing in the tabs Spec(A-B), Spec(B-A) or Spec(Prompt/IRF).</string>
           </property>
          </widget>
         </item>
@@ -5289,7 +5329,7 @@ border-color: black;
            <string notr="true">color: blue</string>
           </property>
           <property name="text">
-           <string>Note: The intrinsic filters are applied prior to the external filters. Therefore, the graphs shown in the tabs of the external filters are based on the modified waveforms. </string>
+           <string>Note: The intrinsic filters are applied prior to the external filters. Therefore, the data shown in the tabs of the external filters are based on the modified waveforms. </string>
           </property>
          </widget>
         </item>
@@ -5312,7 +5352,7 @@ border-color: black;
                </font>
               </property>
               <property name="text">
-               <string>Note: If the median-filter is activated, the baseline-correction and filter are applied to the modified waveform.</string>
+               <string>Note: If the median-filter is activated the baseline-correction and filter are applied to the modified waveform.</string>
               </property>
              </widget>
             </item>
@@ -5342,13 +5382,13 @@ border-color: black;
                 <item>
                  <widget class="QTabWidget" name="tabWidget_6">
                   <property name="currentIndex">
-                   <number>0</number>
+                   <number>1</number>
                   </property>
                   <widget class="QWidget" name="tab_13">
                    <attribute name="title">
                     <string>A</string>
                    </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_23">
+                   <layout class="QVBoxLayout" name="verticalLayout_47">
                     <item>
                      <widget class="QCheckBox" name="checkBox_activateBaselineCorrection_A">
                       <property name="font">
@@ -5368,117 +5408,293 @@ border-color: black;
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_55">
                       <item>
-                       <widget class="QGroupBox" name="groupBox_14">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
+                       <layout class="QVBoxLayout" name="verticalLayout_44">
+                        <item>
+                         <widget class="QLabel" name="label_150">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Baseline Correction Method</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="comboBox_BaselineCorrMethod_A">
+                          <property name="minimumSize">
+                           <size>
+                            <width>100</width>
+                            <height>35</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>16777215</width>
+                            <height>35</height>
+                           </size>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="verticalSpacer_9">
+                          <property name="orientation">
+                           <enum>Qt::Vertical</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>20</width>
+                            <height>40</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <widget class="QStackedWidget" name="stackedWidget_baselineA">
+                        <property name="currentIndex">
+                         <number>0</number>
                         </property>
-                        <property name="title">
-                         <string>CALCULATED Baseline</string>
-                        </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout_31">
-                         <item>
-                          <widget class="QLabel" name="label_82">
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                           <property name="text">
-                            <string>Average ( Start-Cell [#] </string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QSpinBox" name="spinBox_baseLineStartCell_A">
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_130">
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                           <property name="text">
-                            <string>: Cell-Region [#]</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QSpinBox" name="spinBox_baseLine_region_A">
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_145">
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                           <property name="text">
-                            <string>)</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <spacer name="horizontalSpacer_23">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                           <property name="sizeHint" stdset="0">
-                            <size>
-                             <width>376</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </spacer>
-                         </item>
-                        </layout>
+                        <widget class="QWidget" name="page">
+                         <layout class="QVBoxLayout" name="verticalLayout_45">
+                          <item>
+                           <widget class="QGroupBox" name="groupBox_14">
+                            <property name="font">
+                             <font>
+                              <weight>75</weight>
+                              <bold>true</bold>
+                             </font>
+                            </property>
+                            <property name="title">
+                             <string>CALCULATED Baseline</string>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_31">
+                             <item>
+                              <widget class="QLabel" name="label_82">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>Average ( Start-Cell [#] </string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLineStartCell_A">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_130">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>: Cell-Region [#]</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLine_region_A">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_145">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>)</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_23">
+                               <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>376</width>
+                                 <height>20</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_156">
+                            <property name="text">
+                             <string>&lt;b&gt;Fixed Baseline Correction Method:&lt;/b&gt;&lt;br&gt;&lt;br&gt;The baseline is determined according to its average over a given region of cells starting from a specific cell.  </string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                        <widget class="QWidget" name="page_2">
+                         <layout class="QVBoxLayout" name="verticalLayout_23">
+                          <item>
+                           <widget class="QGroupBox" name="groupBox_20">
+                            <property name="font">
+                             <font>
+                              <weight>75</weight>
+                              <bold>true</bold>
+                             </font>
+                            </property>
+                            <property name="title">
+                             <string>CALCULATED Baseline</string>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_64">
+                             <item>
+                              <widget class="QLabel" name="label_151">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>No. of Cells prior to the Peak-Max. [#]</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLineStartCellPeakMax_A">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_152">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>: Window-Size [#]</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLine_window_A">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_44">
+                               <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>376</width>
+                                 <height>20</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_157">
+                            <property name="text">
+                             <string>&lt;b&gt;Dynamic Baseline Correction Method:&lt;/b&gt;&lt;br&gt;&lt;br&gt; 
+The baseline is determined from an individual cell region for each pulse:&lt;br&gt;
+The cell region serving for the calculation of the average is determined by
+moving a window cell-wise starting from a specified number of cells prior&lt;br&gt;to the maximum amplitude towards the maximum amplitude. The stop-cell is then determined if a cell value within the windowexceeds the mean +/- 1st standard deviation. </string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
                        </widget>
                       </item>
                       <item>
@@ -5633,7 +5849,7 @@ border-color: black;
                       <property name="sizeHint" stdset="0">
                        <size>
                         <width>20</width>
-                        <height>551</height>
+                        <height>422</height>
                        </size>
                       </property>
                      </spacer>
@@ -5644,7 +5860,7 @@ border-color: black;
                    <attribute name="title">
                     <string>B</string>
                    </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_21">
+                   <layout class="QVBoxLayout" name="verticalLayout_49">
                     <item>
                      <widget class="QCheckBox" name="checkBox_activateBaselineCorrection_B">
                       <property name="font">
@@ -5664,117 +5880,293 @@ border-color: black;
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_56">
                       <item>
-                       <widget class="QGroupBox" name="groupBox_18">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
+                       <layout class="QVBoxLayout" name="verticalLayout_48">
+                        <item>
+                         <widget class="QLabel" name="label_155">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Baseline Correction Method</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="comboBox_baselineCorrMethodB">
+                          <property name="minimumSize">
+                           <size>
+                            <width>100</width>
+                            <height>35</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>16777215</width>
+                            <height>35</height>
+                           </size>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="verticalSpacer_10">
+                          <property name="orientation">
+                           <enum>Qt::Vertical</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>20</width>
+                            <height>40</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <widget class="QStackedWidget" name="stackedWidget">
+                        <property name="currentIndex">
+                         <number>0</number>
                         </property>
-                        <property name="title">
-                         <string>CALCULATED Baseline</string>
-                        </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout_59">
-                         <item>
-                          <widget class="QLabel" name="label_134">
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                           <property name="text">
-                            <string>Average ( Start-Cell [#] </string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QSpinBox" name="spinBox_baseLineStartCell_B">
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_135">
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                           <property name="text">
-                            <string>: Cell-Region [#]</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QSpinBox" name="spinBox_baseLine_region_B">
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color: blue</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_146">
-                           <property name="font">
-                            <font>
-                             <weight>75</weight>
-                             <bold>true</bold>
-                            </font>
-                           </property>
-                           <property name="styleSheet">
-                            <string notr="true">color:blue</string>
-                           </property>
-                           <property name="text">
-                            <string>)</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <spacer name="horizontalSpacer_33">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                           <property name="sizeHint" stdset="0">
-                            <size>
-                             <width>33</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </spacer>
-                         </item>
-                        </layout>
+                        <widget class="QWidget" name="page_3">
+                         <layout class="QVBoxLayout" name="verticalLayout_21">
+                          <item>
+                           <widget class="QGroupBox" name="groupBox_18">
+                            <property name="font">
+                             <font>
+                              <weight>75</weight>
+                              <bold>true</bold>
+                             </font>
+                            </property>
+                            <property name="title">
+                             <string>CALCULATED Baseline</string>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_59">
+                             <item>
+                              <widget class="QLabel" name="label_134">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>Average ( Start-Cell [#] </string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLineStartCell_B">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_135">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>: Cell-Region [#]</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLine_region_B">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_146">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color:blue</string>
+                               </property>
+                               <property name="text">
+                                <string>)</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_33">
+                               <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>33</width>
+                                 <height>20</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_159">
+                            <property name="text">
+                             <string>&lt;b&gt;Fixed Baseline Correction Method:&lt;/b&gt;&lt;br&gt;&lt;br&gt;The baseline is determined according to its average over a given region of cells starting from a specific cell.  </string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                        <widget class="QWidget" name="page_4">
+                         <layout class="QVBoxLayout" name="verticalLayout_46">
+                          <item>
+                           <widget class="QGroupBox" name="groupBox_21">
+                            <property name="font">
+                             <font>
+                              <weight>75</weight>
+                              <bold>true</bold>
+                             </font>
+                            </property>
+                            <property name="title">
+                             <string>CALCULATED Baseline</string>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_65">
+                             <item>
+                              <widget class="QLabel" name="label_153">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>No. of Cells prior to the Peak-Max. [#]</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLineStartCellPeakMax_B">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_154">
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                               <property name="text">
+                                <string>: Window-Size [#]</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="spinBox_baseLine_window_B">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>30</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <weight>75</weight>
+                                 <bold>true</bold>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: blue</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_45">
+                               <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>33</width>
+                                 <height>20</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_158">
+                            <property name="text">
+                             <string>&lt;b&gt;Dynamic Baseline Correction Method:&lt;/b&gt;&lt;br&gt;&lt;br&gt; 
+The baseline is determined from an individual cell region for each pulse:&lt;br&gt;
+The cell region serving for the calculation of the average is determined by
+moving a window cell-wise starting from a specified number of cells prior&lt;br&gt;to the maximum amplitude towards the maximum amplitude. The stop-cell is then determined if a cell value within the windowexceeds the mean +/- 1st standard deviation. </string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
                        </widget>
                       </item>
                       <item>
@@ -5954,7 +6346,7 @@ border-color: black;
                    </font>
                   </property>
                   <property name="text">
-                   <string>Activate the median-filter to remove frequently occurring spikes within the sweep and/or to reduce the signal noise. Note: The window-size should be an odd value such as 3, 5 or 7.</string>
+                   <string>Activate the median-filter to remove frequently occurring spikes or to reduce the signal noise. Note: The window-size should be an odd value such as 3, 5 or 7.</string>
                   </property>
                  </widget>
                 </item>
@@ -6225,7 +6617,7 @@ border-color: black;
                </font>
               </property>
               <property name="text">
-               <string>Note: All external filters are applied in OR-logic, which means that a rejection triggered by one activated filter discards the respective event.   </string>
+               <string>Note: All external filters are applied in OR-logic meaning that a rejection triggered by only one of the activated filters discards the respective event.   </string>
               </property>
              </widget>
             </item>
@@ -6248,7 +6640,7 @@ border-color: black;
                    </font>
                   </property>
                   <property name="text">
-                   <string>Activate the area-filter to reject events, which display multiple occurences of pulses within the sweep and/or indicate pulses that are piled-up. Note: The area is calculated with respect to the set ROI (Region-of-Interest defined in the tab 'Signal Scope').</string>
+                   <string>Activate the area-filter to reject events which show multiple occurences of pulses within the sweep and/or indicate pulses that are piled-up. Note: The area is calculated with respect to the set ROI (Region-of-Interest defined in the tab 'Signal Scope').</string>
                   </property>
                  </widget>
                 </item>
@@ -7237,7 +7629,7 @@ border-color: black;
                    </font>
                   </property>
                   <property name="text">
-                   <string>These graphs show the distributions of the time needed to rise from 10% to 90% of the pulse-amplitude, i.e. the rise-time distribution. Usually, the rise-time should be well distributed. If not, apply the rise-time filter.</string>
+                   <string>These graphs show the distributions of the time needed to rise the pulse from 10% to 90% of its amplitude, i.e. the rise-time distribution. Generally, the rise-time should be well distributed. If not, apply the rise-time filter.</string>
                   </property>
                  </widget>
                 </item>
@@ -7987,7 +8379,7 @@ border-color: black;
                    </font>
                   </property>
                   <property name="text">
-                   <string>The records of the pulse-shape filter are based on the prior filtered pulses, which contribute to the resulting lifetime spectra.  </string>
+                   <string>The records of the pulse-shape filter are based on the prior filtered pulses (area, rise-time) contributing to the resulting lifetime spectra.  </string>
                   </property>
                  </widget>
                 </item>

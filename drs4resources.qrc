@@ -33,6 +33,8 @@
         <file alias="icon">iconDesign/IconPNGRounded_red.png</file>
         <file alias="server">images/001-http.png</file>
         <file alias="rc">images/001-controle-remoto.png</file>
+        <file alias="dynbl">images/dynamicBaselineCorr.png</file>
+        <file alias="fixedbl">images/fixedBaselineCorr.png</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="copyright">license/COPYRIGHT</file>
