@@ -18,7 +18,7 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 <b>DDRS4PALS</b> - A software for the acquisition and simulation of positron lifetime spectra (PALS) using the DRS4 evaluation board<br>
 
-<b>pyRemoteDDRS4PALS: </b><b>DDRS4PALS</b> can be remotely controlled via [pyRemoteDDRS4PALS](https://github.com/dpscience/pyRemoteDDRS4PALS) provided by a TCP/IP and xml based API enabling the integration of the DRS4 evaluation board into any customized measurement environment related to PALS, i.e. synchronizing peripherical instrumentation such as temperature (heating/cooling) stages, cycle-loading machines or a vacuum control unit with the DRS4 evaluation board using DDRS4PALS software. 
+<b>pyRemoteDDRS4PALS: </b><b>DDRS4PALS</b> can be remotely controlled via [pyRemoteDDRS4PALS](https://github.com/dpscience/pyRemoteDDRS4PALS) provided by a TCP/IP and xml based API enabling the integration of the DRS4 evaluation board into any customized measurement environment related to PALS, i.e. synchronizing peripherical instrumentation such as temperature (heating/cooling) stages, cycle-loading machines or a vacuum control unit with the DRS4 evaluation board using DDRS4PALS software. Therefore, DDRS4PALS has integrated a server to communicate with.
 
 ### ``preview of the user interface of DDRS4PALS``
 <br>![DDRS4PALS](/images/ddrs4pals.png)
