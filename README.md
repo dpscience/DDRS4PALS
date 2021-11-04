@@ -18,13 +18,15 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 
 <b>DDRS4PALS</b> - A software for the acquisition and simulation of positron lifetime spectra (PALS) using the DRS4 evaluation board<br>
 
+<b>DDRS4PALS</b> can be remotely controlled via [pyRemoteDDRS4PALS](https://github.com/dpscience/pyRemoteDDRS4PALS) enabling the integration of the DRS4 evaluation board into any customized measurement environment related to PALS, i.e. synchronizing peripherical instrumentation such as temperature (heating/cooling) stages, cycle-loading machines or a vacuum control unit with the DRS4 evaluation board using DDRS4PALS software. 
+
 ### ``preview of the user interface of DDRS4PALS``
 <br>![DDRS4PALS](/images/ddrs4pals.png)
 
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ## ``Option 1: via installer``
-* Download the latest installer (<b>installer_DDRS4PALS-v1.16.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Download the latest installer (<b>installer_DDRS4PALS-v1.17.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
 * Run the installer.
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
@@ -34,8 +36,8 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 <b>The repository of the DDRS4PALS-installer can be found</b> [here.](https://github.com/dpscience/DDRS4PALS-installer)
 
 ## ``Option 2: manual installation``
-* Download the latest software release (<b>DDRS4PALS_v116.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
-* Unzip <b>DDRS4PALS_v116.rar</b>.
+* Download the latest software release (<b>DDRS4PALS_v117.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Unzip <b>DDRS4PALS_v117.rar</b>.
 * Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
 * <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
@@ -71,6 +73,12 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## ``v1.x``
+
+DDRS4PALS <b>v1.17</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4736899.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
+
+This version <b>1.17</b> can be remotely controlled via [pyRemoteDDRS4PALS](https://github.com/dpscience/pyRemoteDDRS4PALS) enabling the integration of the DRS4 evaluation board into any customized measurement environment related to PALS, i.e. synchronizing peripherical instrumentation such as temperature (heating/cooling) stages, cycle-loading machines or a vacuum control unit with the DRS4 evaluation board using DDRS4PALS software.
+
+This version is compatible with [pyRemoteDDRS4PALS v1.0](https://github.com/dpscience/pyRemoteDDRS4PALS/releases/tag/1.0)
 
 DDRS4PALS <b>v1.16</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4736899.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
 
