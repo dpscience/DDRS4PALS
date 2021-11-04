@@ -107,9 +107,6 @@ int main(int argc, char *argv[]) {
 
     DRS4ScopeDlg scopeDlg(startType);
 
-    scopeDlg.setMinimumSize(QSize(QApplication::desktop()->availableGeometry().width(), QApplication::desktop()->availableGeometry().height()));
-    scopeDlg.setMaximumSize(QSize(QApplication::desktop()->availableGeometry().width(), QApplication::desktop()->availableGeometry().height()));
-
     scopeDlg.showMaximized();
 
     return a.exec();

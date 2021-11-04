@@ -55,6 +55,8 @@
 #ifndef DRS4PROGRAMSETTINGSMANAGER_H
 #define DRS4PROGRAMSETTINGSMANAGER_H
 
+#include <QCoreApplication>
+
 #include <QMutex>
 #include <QMutexLocker>
 

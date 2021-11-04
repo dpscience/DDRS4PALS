@@ -553,7 +553,7 @@ void DRS4TextFileStreamManager::writeInterpolations(QVector<QPointF> *interpolat
      QTextStream stream(m_file);
 
      if ( m_file->open(QIODevice::WriteOnly) ) {
-         //stream << "#interpolation-type:\t" << ((interpolationType == DRS4InterpolationType::type::polynomial)?QString("polynomial"):QString("spline")) << "\n";
+         stream << "#interpolation-type:\t" << ((interpolationType == DRS4InterpolationType::type::polynomial)?QString("polynomial"):QString("spline")) << "\n";
 
          if (interpolationType == DRS4InterpolationType::type::spline) {
              QString splineType;

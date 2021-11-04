@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1806</width>
-    <height>1105</height>
+    <width>1637</width>
+    <height>935</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -531,7 +531,7 @@ QProgressBar::chunk
               <property name="minimumSize">
                <size>
                 <width>800</width>
-                <height>250</height>
+                <height>150</height>
                </size>
               </property>
              </widget>
@@ -775,7 +775,7 @@ QProgressBar::chunk
               <property name="minimumSize">
                <size>
                 <width>800</width>
-                <height>250</height>
+                <height>150</height>
                </size>
               </property>
              </widget>
@@ -4491,7 +4491,7 @@ border-color: black;
            </widget>
           </item>
           <item>
-           <widget class="DRS4DoubleSpinBox" name="doubleSpinBox_meanCoincidence">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_meanCoincidence">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -5849,7 +5849,7 @@ moving a window cell-wise starting from a specified number of cells prior&lt;br&
                       <property name="sizeHint" stdset="0">
                        <size>
                         <width>20</width>
-                        <height>422</height>
+                        <height>290</height>
                        </size>
                       </property>
                      </spacer>
@@ -9624,6 +9624,38 @@ border-color: black;
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label_valiLTPerSec">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: green</string>
+        </property>
+        <property name="text">
+         <string>Lifetime Efficiency [Hz]:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_validCoincidencePerSec">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: green</string>
+        </property>
+        <property name="text">
+         <string>Prompt Efficiency [Hz]:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_43">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -9651,38 +9683,6 @@ border-color: black;
       </property>
      </widget>
     </item>
-    <item>
-     <widget class="QLabel" name="label_valiLTPerSec">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: green</string>
-      </property>
-      <property name="text">
-       <string>Lifetime Efficiency [Hz]:</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_validCoincidencePerSec">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: green</string>
-      </property>
-      <property name="text">
-       <string>Prompt Efficiency [Hz]:</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -9691,7 +9691,7 @@ border-color: black;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1806</width>
+     <width>1637</width>
      <height>20</height>
     </rect>
    </property>

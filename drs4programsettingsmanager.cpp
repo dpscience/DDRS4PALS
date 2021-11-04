@@ -161,7 +161,7 @@ DRS4ProgramSettingsManager *DRS4ProgramSettingsManager::sharedInstance() {
 
 bool DRS4ProgramSettingsManager::load()
 {
-    DSimpleXMLReader reader("settings" + EXT_PROGRAM_SETTINGS_FILE);
+    DSimpleXMLReader reader(QCoreApplication::applicationDirPath() + "//settings" + EXT_PROGRAM_SETTINGS_FILE);
     DSimpleXMLTag tag;
 
     if ( !reader.readFromFile(&tag, true, PROGRAM_SETTINGS_ENCRYPTION_KEY) ) {
@@ -354,7 +354,7 @@ bool DRS4ProgramSettingsManager::save()
 {
     setLastSaveDate(QDateTime::currentDateTime());
 
-    DSimpleXMLWriter writer("settings" + EXT_PROGRAM_SETTINGS_FILE);
+    DSimpleXMLWriter writer(QCoreApplication::applicationDirPath() + "//settings" + EXT_PROGRAM_SETTINGS_FILE);
 
     return writer.writeToFile(m_parentNode, true, PROGRAM_SETTINGS_ENCRYPTION_KEY.toStdString().c_str());
 }

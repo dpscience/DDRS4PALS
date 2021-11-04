@@ -182,7 +182,7 @@ DRS4ScopeDlg::DRS4ScopeDlg(const ProgramStartType &startType, QWidget *parent) :
         DRS4BoardManager::sharedInstance()->setDemoMode(true);
         DRS4BoardManager::sharedInstance()->setDemoFromStreamData(false);
 
-        DRS4SimulationSettingsManager::sharedInstance()->save("__generalSimulationSettings" + EXT_SIMULATION_INPUT_FILE);
+        DRS4SimulationSettingsManager::sharedInstance()->save(QCoreApplication::applicationDirPath() + "//__generalSimulationSettings" + EXT_SIMULATION_INPUT_FILE);
 
         ui->actionLoad_Simulation_Input->setEnabled(true);
         connect(ui->actionLoad_Simulation_Input, SIGNAL(triggered()), this, SLOT(loadSimulationToolSettings()));
@@ -4814,8 +4814,8 @@ void DRS4ScopeDlg::plotLifetimeSpectra()
             ui->pushButton_CoincidenceFit->setEnabled(true);
     }
 
-    ui->label_valiLTPerSec->setText("Lifetime Efficiency\t[Hz]:\t[A-B] " + QString::number(avgCountABHz, 'f', 2) + " (" + QString::number(countABHz, 'f', 2) + ") [B-A] " + QString::number(avgCountBAHz, 'f', 2) + " (" + QString::number(countBAHz, 'f', 2) + ") [Merged] " + QString::number(avgCountMergedHz, 'f', 2) + " (" + QString::number(countMergedHz, 'f', 2) + ")");
-    ui->label_validCoincidencePerSec->setText("Prompt Efficiency\t[Hz]:\t" + QString::number(avgCountCoincidenceHz, 'f', 2) + " (" + QString::number(countCoincidenceHz, 'f', 2) + ")" );
+    ui->label_valiLTPerSec->setText("/Lifetime Efficiency [Hz]: [A-B] " + QString::number(avgCountABHz, 'f', 2) + " (" + QString::number(countABHz, 'f', 2) + ") [B-A] " + QString::number(avgCountBAHz, 'f', 2) + " (" + QString::number(countBAHz, 'f', 2) + ") [Merged] " + QString::number(avgCountMergedHz, 'f', 2) + " (" + QString::number(countMergedHz, 'f', 2) + ")");
+    ui->label_validCoincidencePerSec->setText("/Prompt Efficiency [Hz]: " + QString::number(avgCountCoincidenceHz, 'f', 2) + " (" + QString::number(countCoincidenceHz, 'f', 2) + ")" );
 
     m_lifetimeRequestTimer->start();
 }
@@ -4986,7 +4986,7 @@ void DRS4ScopeDlg::resetAllLTSpectraByPushButton(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetLTSpectrumABByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum A-B. Are you sure?", "Reset AB Spectrum (Spec (A-B))?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum A-B ?", "Reset AB Spectrum - Spec (A-B))?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumAB(source);
@@ -4994,7 +4994,7 @@ void DRS4ScopeDlg::resetLTSpectrumABByPushButton(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetLTSpectrumBAByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum B-A. Are you sure?", "Reset BA Spectrum (Spec (B-A)?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum B-A ?", "Reset BA Spectrum - Spec (B-A)?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumBA(source);
@@ -5002,7 +5002,7 @@ void DRS4ScopeDlg::resetLTSpectrumBAByPushButton(const FunctionSource &source)
 
 void DRS4ScopeDlg::resetLTSpectrumCoincidenceByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum Prompt/IRF. Are you sure?", "Reset Prompt Spectrum (Prompt/IRF)?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Spectrum Prompt/IRF ?", "Reset Prompt Spectrum - Prompt/IRF?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumCoincidence(source);
@@ -5010,7 +5010,7 @@ void DRS4ScopeDlg::resetLTSpectrumCoincidenceByPushButton(const FunctionSource &
 
 void DRS4ScopeDlg::resetLTSpectrumMergedByPushButton(const FunctionSource &source)
 {
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Merged Spectrum. Are you sure?", "Reset Merged Spectrum (Spec (Merged)?", QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, "Resetting Merged Spectrum ?", "Reset Merged Spectrum - Spec (Merged)?", QMessageBox::Yes|QMessageBox::No);
 
     if ( reply == QMessageBox::Yes )
         resetLTSpectrumMerged(source);
@@ -5233,8 +5233,8 @@ void DRS4ScopeDlg::resetLTSpectrumMerged(const FunctionSource &source)
 
     while(!m_worker->isBlocking()) {}
 
-    resetLTSpectrumAB();
-    resetLTSpectrumBA();
+    /*resetLTSpectrumAB();
+    resetLTSpectrumBA();*/
 
     m_worker->resetMergedSpectrum();
     clearMergedFitData();
@@ -8645,7 +8645,7 @@ void DRS4ScopeDlg::autoSave()
 
     while(!m_worker->isBlocking()) {}
 
-    DRS4SettingsManager::sharedInstance()->save("__drs4AutoSave" + EXT_LT_SETTINGS_FILE, true);
+    DRS4SettingsManager::sharedInstance()->save(QCoreApplication::applicationDirPath() + "//__drs4AutoSave" + EXT_LT_SETTINGS_FILE, true);
 
     m_worker->setBusy(false);
 }
@@ -8660,14 +8660,14 @@ void DRS4ScopeDlg::loadAutoSave()
     const double oldSweep = DRS4SettingsManager::sharedInstance()->sweepInNanoseconds();
     const double ratio = (double)oldValue/oldSweep;
 
-    if ( !DRS4SettingsManager::sharedInstance()->load("__drs4AutoSave" + EXT_LT_SETTINGS_FILE) )
+    if ( !DRS4SettingsManager::sharedInstance()->load(QCoreApplication::applicationDirPath() + "//__drs4AutoSave" + EXT_LT_SETTINGS_FILE) )
     {
         MSGBOX("Sorry, No Autosave-File available!");
         m_worker->setBusy(false);
         return;
     }
     else
-        m_currentSettingsPath = "__drs4AutoSave" + EXT_LT_SETTINGS_FILE;
+        m_currentSettingsPath = QCoreApplication::applicationDirPath() + "//__drs4AutoSave" + EXT_LT_SETTINGS_FILE;
 
     m_worker->setBusy(false);
 
@@ -9678,10 +9678,10 @@ void DRS4ScopeDlg::updateInBurstMode()
     ui->label_countsStopA->setText(QVariant(cntAStop).toString() + " (" + QVariant(cntAStop_post).toString() + ")");
     ui->label_countsStopB->setText(QVariant(cntBStop).toString() + " (" + QVariant(cntBStop_post).toString() + ")");
 
-    ui->label_valiLTPerSec->setText("Lifetime Efficiency\t[Hz]:\t[A-B] " + QString::number(avgCountABHz, 'f', 2) + " (" + QString::number(countABHz, 'f', 2) + ") [B-A] " + QString::number(avgCountBAHz, 'f', 2) + " (" + QString::number(countBAHz, 'f', 2) + ") [Merged] " + QString::number(avgCountMergedHz, 'f', 2) + " (" + QString::number(countMergedHz, 'f', 2) + ")");
-    ui->label_validCoincidencePerSec->setText("Prompt Efficiency\t[Hz]:\t" + QString::number(avgCountCoincidenceHz, 'f', 2) + " (" + QString::number(countCoincidenceHz, 'f', 2) + ")" );
+    ui->label_valiLTPerSec->setText("/Lifetime Efficiency [Hz]: [A-B] " + QString::number(avgCountABHz, 'f', 2) + " (" + QString::number(countABHz, 'f', 2) + ") [B-A] " + QString::number(avgCountBAHz, 'f', 2) + " (" + QString::number(countBAHz, 'f', 2) + ") [Merged] " + QString::number(avgCountMergedHz, 'f', 2) + " (" + QString::number(countMergedHz, 'f', 2) + ")");
+    ui->label_validCoincidencePerSec->setText("/Prompt Efficiency [Hz]: " + QString::number(avgCountCoincidenceHz, 'f', 2) + " (" + QString::number(countCoincidenceHz, 'f', 2) + ")" );
 
-    ui->label_phsCntPerSecA->setText("Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
+    ui->label_phsCntPerSecA->setText("/Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
 
     m_burstModeTimer->start();
 }
@@ -9982,7 +9982,7 @@ void DRS4ScopeDlg::plotPHS()
 
         while(!m_worker->isBlocking()) {}
 
-        ui->label_phsCntPerSecA->setText("Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
+        ui->label_phsCntPerSecA->setText("/Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
 
         m_worker->setBusy(false);
 
@@ -10119,7 +10119,7 @@ void DRS4ScopeDlg::plotPHS()
         }
     }
 
-    ui->label_phsCntPerSecA->setText("Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
+    ui->label_phsCntPerSecA->setText("/Sample Rate [Hz]: " + QString::number(m_worker->avgPulseCountRateInHz(), 'f', 2) + " (" + QString::number(m_worker->currentPulseCountRateInHz(), 'f', 2) + ")" );
 
     m_worker->setBusy(false);
 

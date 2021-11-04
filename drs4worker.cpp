@@ -781,25 +781,10 @@ void DRS4Worker::resetMergedSpectrum()
 {
     QMutexLocker locker(&m_mutex);
 
-    m_abCounts = 0;
-    m_baCounts = 0;
-    m_coincidenceCounts = 0;
     m_mergedCounts = 0;
-
-    m_lifeTimeDataAB.fill(0, DRS4SettingsManager::sharedInstance()->channelCntAB());
-    m_lifeTimeDataBA.fill(0, DRS4SettingsManager::sharedInstance()->channelCntBA());
-    m_lifeTimeDataCoincidence.fill(0, DRS4SettingsManager::sharedInstance()->channelCntCoincindence());
     m_lifeTimeDataMerged.fill(0, DRS4SettingsManager::sharedInstance()->channelCntMerged());
-
-    m_maxY_ABSpectrum = 0;
-    m_maxY_BASpectrum = 0;
     m_maxY_MergedSpectrum = 0;
-    m_maxY_CoincidenceSpectrum = 0;
-
     m_startAqMerged = QDateTime::currentDateTime();
-    m_startAqBA = QDateTime::currentDateTime();
-    m_startAqAB = QDateTime::currentDateTime();
-    m_startAqPrompt = QDateTime::currentDateTime();
 }
 
 void DRS4Worker::resetCoincidenceSpectrum()
