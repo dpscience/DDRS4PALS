@@ -79,7 +79,7 @@ DDRS4PALS <b>v1.18</b> (<b>DLTPulseGenerator v1.4</b>):<br>[![DOI](https://zenod
 
 This version <b>1.18</b> has integrated the new version 1.4 of DLTPulseGenerator library for simulation purposes. This update enables you to incorporate pulse height spectra (PHS) from real data or generated via Geant4, so that effects on the background contributing to the lifetime spectra with regard to the PHS window settings can be studied more realistically.
 
-For more information, see the attached example files demonstrating the integration of a real BC422-Q plastic scintillator PHS spectrum considered as simulation input. The related section in the simulation input file is: '<pulse-height-spectrum-PHS>...</pulse-height-spectrum-PHS>'. 
+For more information, see the attached example files demonstrating the integration of a real BC422-Q plastic scintillator PHS spectrum considered as simulation input. The related section/tag in the simulation input file is: tag 'pulse-height-spectrum-PHS'. 
 
 DDRS4PALS <b>v1.17</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4736899.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
 
