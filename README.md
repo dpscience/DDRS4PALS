@@ -1,4 +1,5 @@
 ![badge-OS](https://img.shields.io/badge/OS-tested%20under%20Windows%2010-brightgreen)
+![badge-OS](https://img.shields.io/badge/OS-tested%20under%20Windows%2011-brightgreen)
 
 Support this project and keep always updated about recent software releases, bug fixes and major improvements by [following on researchgate](https://www.researchgate.net/project/DDRS4PALS-a-software-for-the-acquisition-and-simulation-of-positron-annihilation-lifetime-spectra-PALS-using-the-DRS4-evaluation-board) or [github](https://github.com/dpscience?tab=followers).
 
@@ -26,9 +27,9 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 # Quickstart Guide on Windows OS <img src="https://github.com/dpscience/DDRS4PALS/blob/master/iconDesign/IconPNGRounded_red.png" width="25" height="25">
 
 ## ``Option 1: via installer``
-* Download the latest installer (<b>installer_DDRS4PALS-v1.17.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Download the latest installer (<b>installer_DDRS4PALS-v1.18.exe</b>): https://github.com/dpscience/DDRS4PALS/releases
 * Run the installer.
-* <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
+* <b>Windows 10|11:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
 * Select the <b>DRS4 evaluation board</b> from the list of devices and click on "Install Driver".
 * Run the <b>DDRS4PALS</b> executable.
@@ -36,10 +37,10 @@ Copyright (c) 2016-2021 Danny Petschke (danny.petschke@uni-wuerzburg.de) All rig
 <b>The repository of the DDRS4PALS-installer can be found</b> [here.](https://github.com/dpscience/DDRS4PALS-installer)
 
 ## ``Option 2: manual installation``
-* Download the latest software release (<b>DDRS4PALS_v117.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
-* Unzip <b>DDRS4PALS_v117.rar</b>.
+* Download the latest software release (<b>DDRS4PALS_v118.rar</b>): https://github.com/dpscience/DDRS4PALS/releases
+* Unzip <b>DDRS4PALS_v118.rar</b>.
 * Download and install the <b>Visual C++ Redistributable Package (x64)</b> if requested by the OS: https://www.microsoft.com/de-de/download/details.aspx?id=48145
-* <b>Windows 10:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
+* <b>Windows 10|11:</b> install the <b>Zadig USB driver</b>: https://zadig.akeo.ie/ 
 * Plug in the <b>DRS4 evaluation board</b> and run the <b>Zadig</b> program. 
 * Select the <b>DRS4 evaluation board</b> from the list of devices and click on "Install Driver".
 * Run the <b>DDRS4PALS</b> executable.
@@ -73,6 +74,12 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1219522.svg)](https://doi.org/10.5281/zenodo.1219522)
 
 ## ``v1.x``
+
+DDRS4PALS <b>v1.18</b> (<b>DLTPulseGenerator v1.4</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4736899.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
+
+This version <b>1.18</b> has integrated the new version 1.4 of DLTPulseGenerator library for simulation purposes. This update enables you to incorporate pulse height spectra (PHS) from real data or generated via Geant4, so that effects on the background contributing to the lifetime spectra with regard to the PHS window settings can be studied more realistically.
+
+For more information, see the attached example files demonstrating the integration of a real BC422-Q plastic scintillator PHS spectrum considered as simulation input. The related section in the simulation input file is: '<pulse-height-spectrum-PHS>...</pulse-height-spectrum-PHS>'. 
 
 DDRS4PALS <b>v1.17</b> (<b>DLTPulseGenerator v1.3</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4736899.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
 
