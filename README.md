@@ -75,7 +75,7 @@ You can cite all released software versions by using the <b>DOI 10.5281/zenodo.1
 
 ## ``v1.x``
 
-DDRS4PALS <b>v1.18</b> (<b>DLTPulseGenerator v1.4</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4736899.svg)](https://doi.org/10.5281/zenodo.4736899)<br>
+DDRS4PALS <b>v1.18</b> (<b>DLTPulseGenerator v1.4</b>):<br>[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7032030.svg)](https://doi.org/10.5281/zenodo.7032030)<br>
 
 This version <b>1.18</b> has integrated the new version 1.4 of DLTPulseGenerator library for simulation purposes. This update enables you to incorporate pulse height spectra (PHS) from real data or generated via Geant4, so that effects on the background contributing to the lifetime spectra with regard to the PHS window settings can be studied more realistically.
 
