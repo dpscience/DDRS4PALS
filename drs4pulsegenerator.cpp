@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2021 Danny Petschke
+**  Copyright (C) 2016-2022 Dr. Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 **
 *****************************************************************************
 **
-**  @author: Danny Petschke
+**  @author: Dr. Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
 *****************************************************************************
@@ -126,6 +126,10 @@ QString DRS4PulseGenerator::getErrorString() const
             errorStr += "<li><font color=\"Red\">invalid time axis random aperture jitter value</font></li>";
         if ((m_error & DLTErrorType::INVALID_DIGITIZATION_DEPTH))
             errorStr += "<li><font color=\"Red\">invalid digitization depth value</font></li>";
+        if ((m_error & DLTErrorType::INVALID_PHS_GRID))
+            errorStr += "<li><font color=\"Red\">invalid PHS grid settings</font></li>";
+        if ((m_error & DLTErrorType::INVALID_PHS_RESOLUTION))
+            errorStr += "<li><font color=\"Red\">invalid PHS resolution</font></li>";
     }
 
     errorStr += "</b></lu>";
@@ -133,22 +137,76 @@ QString DRS4PulseGenerator::getErrorString() const
     return errorStr;
 }
 
+std::vector<double> DRS4PulseGenerator::readPHSFile(const QString& filename)
+{
+    if (filename.isEmpty())
+        return std::vector<double>();
+
+    QFile file(filename);
+
+    if (!file.exists())
+        return std::vector<double>();
+
+    if (file.open(QIODevice::ReadOnly)) {
+        std::vector<double> vec;
+
+        QTextStream in(&file);
+
+        while (!in.atEnd()) {
+            bool ok = false;
+            const double val = QVariant(in.readLine()).toDouble(&ok);
+
+            if (ok)
+                vec.push_back(val);
+        }
+
+        file.close();
+
+        return vec;
+    }
+
+    return std::vector<double>();
+}
+
 void DRS4PulseGenerator::update()
 {
     QMutexLocker locker(&m_mutex);
 
     //PHS:
-    m_phsDistribution.meanOfStartA = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_A();
-    m_phsDistribution.meanOfStartB = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_B();
 
-    m_phsDistribution.meanOfStopA = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_A();
-    m_phsDistribution.meanOfStopB = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_B();
+    m_phsDistribution.useGaussianModels = DRS4SimulationSettingsManager::sharedInstance()->usingPHSGaussianModel();
 
-    m_phsDistribution.stddevOfStartA = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_A();
-    m_phsDistribution.stddevOfStartB = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_B();
+    if (DRS4SimulationSettingsManager::sharedInstance()->phsFileName511keV_A().isEmpty()
+            || DRS4SimulationSettingsManager::sharedInstance()->phsFileName1274keV_A().isEmpty()
+            || DRS4SimulationSettingsManager::sharedInstance()->phsFileName511keV_B().isEmpty()
+                        || DRS4SimulationSettingsManager::sharedInstance()->phsFileName1274keV_B().isEmpty())
+        m_phsDistribution.useGaussianModels = true;
 
-    m_phsDistribution.stddevOfStopA = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_A();
-    m_phsDistribution.stddevOfStopB = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_B();
+    if (!m_phsDistribution.useGaussianModels) {
+        m_phsDistribution.distributionStopA = readPHSFile(DRS4SimulationSettingsManager::sharedInstance()->phsFileName511keV_A());
+        m_phsDistribution.distributionStartA = readPHSFile(DRS4SimulationSettingsManager::sharedInstance()->phsFileName1274keV_A());
+        m_phsDistribution.distributionStopB = readPHSFile(DRS4SimulationSettingsManager::sharedInstance()->phsFileName511keV_B());
+        m_phsDistribution.distributionStartB = readPHSFile(DRS4SimulationSettingsManager::sharedInstance()->phsFileName1274keV_B());
+
+        m_phsDistribution.resolutionMilliVoltPerStepA = DRS4SimulationSettingsManager::sharedInstance()->phsResolution_A();
+        m_phsDistribution.resolutionMilliVoltPerStepB = DRS4SimulationSettingsManager::sharedInstance()->phsResolution_B();
+
+        m_phsDistribution.gridNumberA = DRS4SimulationSettingsManager::sharedInstance()->phsGridNumber_A();
+        m_phsDistribution.gridNumberB = DRS4SimulationSettingsManager::sharedInstance()->phsGridNumber_B();
+    }
+    else {
+        m_phsDistribution.meanOfStartA = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_A();
+        m_phsDistribution.meanOfStartB = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS1274keV_B();
+
+        m_phsDistribution.meanOfStopA = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_A();
+        m_phsDistribution.meanOfStopB = -DRS4SimulationSettingsManager::sharedInstance()->meanPHS511keV_B();
+
+        m_phsDistribution.stddevOfStartA = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_A();
+        m_phsDistribution.stddevOfStartB = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS1274keV_B();
+
+        m_phsDistribution.stddevOfStopA = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_A();
+        m_phsDistribution.stddevOfStopB = -DRS4SimulationSettingsManager::sharedInstance()->sigmaPHS511keV_B();
+    }
 
     //Device-Info:
     m_deviceInfo.ATS = DRS4SimulationSettingsManager::sharedInstance()->arrivalTimeSpreadInNs();    
@@ -670,7 +728,7 @@ void DRS4PulseGenerator::update()
     m_simulationInput.tau5Distribution = distrInfo5;
 
     m_simulationInput.intensityOfBackgroundOccurrance = DRS4SimulationSettingsManager::sharedInstance()->backgroundIntensity();
-    m_simulationInput.intensityOfPromtOccurrance = DRS4SimulationSettingsManager::sharedInstance()->coincidenceIntensity();
+    m_simulationInput.intensityOfPromptOccurrance = DRS4SimulationSettingsManager::sharedInstance()->coincidenceIntensity();
 
     m_simulationInput.isStartStopAlternating = true;
 

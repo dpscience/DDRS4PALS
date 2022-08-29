@@ -3,7 +3,7 @@
 #  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 #  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 #
-#  Copyright (C) 2016-2021 Danny Petschke
+#  Copyright (C) 2016-2022 Dr. Danny Petschke
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ QT       += core gui concurrent script printsupport network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = DDRS4PALS_1_0_17
+TARGET = DDRS4PALS_1_0_18
 TEMPLATE = app
 
 RC_FILE = softwareIcon.rc

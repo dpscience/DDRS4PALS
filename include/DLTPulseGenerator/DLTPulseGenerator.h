@@ -1,6 +1,6 @@
 /*******************************************************************************************
 **
-** Copyright (c) 2017 - 2019 Danny Petschke. All rights reserved.
+** Copyright (c) 2017 - 2022 Dr. Danny Petschke. All rights reserved.
 ** 
 ** Redistribution and use in source and binary forms, with or without modification, 
 ** are permitted provided that the following conditions are met:
@@ -32,7 +32,8 @@
 ***********************************************************************************************/
 
 /* For the compilation as static or linked library set COMPILE_AS_LIBRARY = 1 */
-#define COMPILE_AS_LIBRARY			 1
+
+#define COMPILE_AS_LIBRARY			 0
 
 #ifndef DLTPULSEGENERATOR_H
 #define DLTPULSEGENERATOR_H
@@ -45,10 +46,10 @@
 #include <memory>
 #include <cstdint>
 
-#define DLTPULSEGENERATOR_VERSION_RELEASE_DATE "15.01.2019"
+#define DLTPULSEGENERATOR_VERSION_RELEASE_DATE "28.08.2022"
 
 #define DLTPULSEGENERATOR_MAJOR_VERSION 1
-#define DLTPULSEGENERATOR_MINOR_VERSION 3
+#define DLTPULSEGENERATOR_MINOR_VERSION 4
 
 #if COMPILE_AS_LIBRARY == 1
 #define DLTPULSEGENERATOR_EXPORT				   __declspec(dllexport) 
@@ -73,7 +74,7 @@
 
 #define DLTSetup_DEMO				{ DLTIRF_PDS_DEMO, DLTIRF_PDS_DEMO, DLTIRF_MU_DEMO, 0.25f, 200.0f, 1024 }
 #define DLTPulse_DEMO				{ DLTPulseInfo_Demo, DLTPulseInfo_Demo, {true, 14}, 500.0f, 65.0f, true }
-#define DLTPHS_DEMO					{ 190.0f, 90.0f, 150.0f, 25.0f, 190.0f, 90.0f, 150.0f, 25.0f }
+#define DLTPHS_DEMO					{ true, 190.0f, 90.0f, 150.0f, 25.0f, 190.0f, 90.0f, 150.0f, 25.0f, std::vector<double>(), std::vector<double>(), 0., 0, std::vector<double>(), std::vector<double>(), 0., 0 }
 #define DLTSimulationInput_DEMO		{ true, true, true, false, false, 0.160f, 0.420f, 3.2f, 0.0f, 0.0f, 0.25f, 0.25f, 0.5f, 0.0f, 0.0f, {true, DLifeTime::DLTDistributionFunction::Function::GAUSSIAN, 0.02f, 0.0f, 10000, 0.005f}, IGNORE_LT_DISTRIBUTION, IGNORE_LT_DISTRIBUTION, IGNORE_LT_DISTRIBUTION, IGNORE_LT_DISTRIBUTION, 0.25f, 0.05f, true }
 
 #define DLTPulseGeneratorDEMO		DLTSimulationInput_DEMO, DLTPHS_DEMO, DLTSetup_DEMO, DLTPulse_DEMO
@@ -88,24 +89,27 @@ struct DLTPULSEGENERATOR_EXPORT DLTDistributionFunction {
 	};
 };
 
-/** The digitization resolution Q (of an ADC) is defined as: Q = 2*amplitude/(2^digitizationDepth) 
-**  The variable 'amplitude' is given in structure 'DLTPulse' and represents the overall readout range. 
+/** The digitization resolution Q (of an ADC) is in general defined as: Q = 2*amplitude/(2^digitizationDepth) 
+**  The variable 'amplitude' is given in structure 'DLTPulse' and represents the overall readout range of the vertical axis (= voltage axis). 
 **  Note: A factor 2 scales the readout range symmetrically around a zero baseline. 
 **/
+
 typedef struct {
 	bool enabled;
 
 	unsigned int digitizationDepth;  // [bit]
 } DLTPULSEGENERATOR_EXPORT DLTPulseDigitizationInfo;
 
-/* Voltage axis random noise (Gaussian distributed) */
+/* voltage axis random noise (Gaussian distributed) */
+
 typedef struct {
 	bool enabled;
 
 	double rndNoise;  // stddev [mV]
 } DLTPULSEGENERATOR_EXPORT DLTPulseRandomNoiseInfo;
 
-/* Voltage axis baseline-offset jitter (Gaussian distributed) */
+/* voltage axis baseline-offset jitter (Gaussian distributed) */
+
 typedef struct {
 	bool enabled;
 
@@ -113,7 +117,8 @@ typedef struct {
 	double stddevOfBaselineOffsetJitter;  // stddev [mV]
 } DLTPULSEGENERATOR_EXPORT DLTPulseBaselineOffsetJitterInfo;
 
-/* Time axis non-linearity (Gaussian distributed): aperture jitter (fixed and random) */
+/* time axis non-linearity (Gaussian distributed): aperture jitter (fixed and random) */
+
 typedef struct {
 	bool enabled;
 
@@ -121,24 +126,27 @@ typedef struct {
 	double rndApertureJitter;			  // stddev [ns]
 } DLTPULSEGENERATOR_EXPORT DLTPulseTimeAxisNonlinearityInfo;
 
-/** The (non-TTL) detector output pulse originating from photomultipliers or (avalanche) photodiodes
-**  can be mathematically described by a log-normal distribution function ...
+/** The detector output pulses originating from photomultipliers or (avalanche) photodiodes
+**  can mathematically be described by a log-normal distribution function:
 **
 **  U(t) = A*exp(-0.5*(ln(t/triseTime)/w)²)
 **
 **  A        - amplitude (or voltage range e.g. 0.5V)
 **  w        - pulseWidth
-**  riseTime - needed time from 0 [mV] to max. amplitude (A)
+**  riseTime - time needed to rise the pulse from 0 [mV] to the max. amplitude (A)
 **/
+
 typedef struct {
 	double riseTime;	// [ns] 
 	double pulseWidth;	// [ns]
 
 	/* voltage domain */
+
 	DLTPulseBaselineOffsetJitterInfo baselineOffsetJitterInfoV;
 	DLTPulseRandomNoiseInfo		     randomNoiseInfoV;
 
 	/* time domain */
+
 	DLTPulseTimeAxisNonlinearityInfo timeAxisNonLinearityInfoT;
 
 } DLTPULSEGENERATOR_EXPORT DLTPulseInfo;
@@ -167,6 +175,7 @@ typedef struct {
 } DLTPULSEGENERATOR_EXPORT DLTIRF;
 
 /* The intrument response function (IRF) of PDS A (B) can be described by a linear combination of up to five functions. */
+
 typedef struct {
 	DLTIRF irf1PDS;
 	DLTIRF irf2PDS;
@@ -176,6 +185,7 @@ typedef struct {
 } DLTPULSEGENERATOR_EXPORT DLTIRF_PDS;
 
 /* The intrument response function (IRF) of MU can be described by a linear combination of up to five functions. */
+
 typedef struct {
 	DLTIRF irf1MU;
 	DLTIRF irf2MU;
@@ -186,33 +196,51 @@ typedef struct {
 
 /** Simplified setup consisting of ...
 **
-** (PDS) Photo Detection System 
-** (MU)  Measure Unit			
+** (PDS) Photo Detection System (e.g. photomultiplier tubes)
+** (MU)  Measure Unit (e.g. DRS4 eval. board)			
 **/
-typedef struct {
-	DLTIRF_PDS irfA;		// Intrument response function (IRF) of Photo - Detection System (PDS) - Detector A
-	DLTIRF_PDS irfB;		// Intrument response function (IRF) of Photo - Detection System (PDS) - Detector B
 
-	DLTIRF_MU irfMU;		// Intrument response function of Measure - Unit (MU)
+typedef struct {
+	DLTIRF_PDS irfA;		// intrument response function (IRF) of Photo - Detection System (PDS) - Detector A
+	DLTIRF_PDS irfB;		// intrument response function (IRF) of Photo - Detection System (PDS) - Detector B
+
+	DLTIRF_MU irfMU;		// intrument response function of Measure - Unit (MU)
 	
-	double ATS;				// Arrival-Time Spread (ATS) [ns]
+	double ATS;				// arrival-time spread (ATS) [ns]
 
 	double sweep;			// digitized pulses (class DPulseF) are stored in the sweep [ns]
 	int numberOfCells;		// one cell represents the class DPointF which is stored in the class DPulseF
 } DLTPULSEGENERATOR_EXPORT DLTSetup;
 
-/** Pulse-Height Spectrum (PHS): distribution of the detetcor output pulse amplitudes 
+/** Pulse height spectrum (PHS): distribution of detector output pulse amplitudes 
 **	
-**  Mostly relevant for energy resolved measurements, such as Positron Annihilation Lifetime Spectroscopy (PALS).
-**  The PHS is represented by a linear combination of two Gaussian distribution functions for start and stop, respectively.
-**  In case of (avalanche) photodiodes, the values named as stddev can be set to zero.
-**
-**  The mean should be in the range of ... 
+**  The PHS can be generated by two variants managed by the parameter 'useGaussianModels' ...
+**   
+**  (1) 'useGaussianModels' = true: 
+**  
+**  The PHS will be approximated by a linear combination of two Gaussian distribution functions for the start and stop quanta, respectively.
+**  The 'mean...' indicated parameter (i.e. mean of Gaussians)  should be in the region of ... 
 **  
 **  0 < mean < max(amplitude) for positive polarity and
 **  min(amplitude) < mean < 0 for negative polarity.
+**
+**  (2) 'useGaussianModels' = false:
+** 
+**  The PHS will be generated based on real input data for the start and stop quanta, respectively.
+**  The 'distribution...' indicated vectors contain the data of the respective probabilities in abritrary units supposed to be arranged equidistantly.
+**  The resolution parameters 'resolutionMilliVoltPerStepA' and 'resolutionMilliVoltPerStepB' scale the probability corresponding amplitude axes.
+**  The 'resolution...' must be positive values eventhough the polarity is set to negative values.
+**  The 'gridNumber...' indicating parameters will up/downscale the given distribution to the desired resolution. 
+** 
+**  Example: vector consists of 1000 values which results in a maximum amplitude of 500 mV when setting the resolution to 0.5 mV. By setting the 'gridNumber' to 10000 the resulting resolution of the generated amplitudes 
+**  will be 0.05 mV.
 **/
+
 typedef struct {
+	bool useGaussianModels;
+
+	// if 'useGaussianModels' == true:
+
     double meanOfStartA;   // [mV]
     double meanOfStopA;    // [mV]
     double stddevOfStartA; // [mV]
@@ -222,13 +250,26 @@ typedef struct {
 	double meanOfStopB;    // [mV]
 	double stddevOfStartB; // [mV]
 	double stddevOfStopB;  // [mV]
+
+	// if 'useGaussianModels' == false:
+		
+	std::vector<double> distributionStartA;
+	std::vector<double> distributionStopA;
+	double resolutionMilliVoltPerStepA;
+	int gridNumberA;
+
+	std::vector<double> distributionStartB;
+	std::vector<double> distributionStopB;
+	double resolutionMilliVoltPerStepB;
+	int gridNumberB;
 } DLTPULSEGENERATOR_EXPORT DLTPHS;
 
-/** Each component to be simulated must be enabled by setting the related variable 'ltX_activated' true. 
-**  The sum of all enabled intensities must be equal one.
+/** Each component to be simulated has to be explicitely enabled by setting the related variable 'ltX_activated' true. ('X' indicates the id of the component)
+**  The sum of all enabled intensities must be equal to one (= 100%).
 **  The lifetimes are generated to receive the start and stop pulses alternately from detector A and B
 **  by setting the variable 'isStartStopAlternating' = true.
 **/
+
 typedef struct {
 	bool enabled;
 
@@ -264,15 +305,14 @@ typedef struct {
 	DLTDistributionInfo tau4Distribution;
 	DLTDistributionInfo tau5Distribution;
 
-    double intensityOfPromtOccurrance;
+    double intensityOfPromptOccurrance;
     double intensityOfBackgroundOccurrance;
 
 	bool isStartStopAlternating;
 } DLTPULSEGENERATOR_EXPORT DLTSimulationInput;
 
 
-class DLTPULSEGENERATOR_EXPORT DLTPointF
-{
+class DLTPULSEGENERATOR_EXPORT DLTPointF {
     double m_x;
     double m_y;
 
@@ -290,8 +330,7 @@ public:
     double y() const;
 };
 
-class DLTPULSEGENERATOR_EXPORT DLTPulseF
-{
+class DLTPULSEGENERATOR_EXPORT DLTPulseF {
 	std::vector<DLTPointF> *m_vector;
 
 	double *m_time, *m_voltage;
@@ -311,8 +350,7 @@ public:
 
 typedef DLTPULSEGENERATOR_EXPORT int32_t DLTError;
 
-enum DLTPULSEGENERATOR_EXPORT DLTErrorType : DLTError
-{
+enum DLTPULSEGENERATOR_EXPORT DLTErrorType : DLTError {
 	NONE_ERROR										= 0x00000000,
 
     NO_LIFETIMES_TO_SIMULATE						= 0x00000001,
@@ -338,11 +376,12 @@ enum DLTPULSEGENERATOR_EXPORT DLTErrorType : DLTError
 	INVALID_VOLTAGE_RND_NOISE						= 0x00080000,
 	INVALID_TIME_NONLINEARITY_FIXED_APERTURE_JITTER = 0x00100000,
 	INVALID_TIME_NONLINEARITY_RND_APERTURE_JITTER	= 0x00200000,
-	INVALID_DIGITIZATION_DEPTH						= 0x00400000
+	INVALID_DIGITIZATION_DEPTH						= 0x00400000,
+	INVALID_PHS_GRID								= 0x00800000,
+	INVALID_PHS_RESOLUTION							= 0x01000000
 };
 
-class DLTPULSEGENERATOR_EXPORT DLTCallback
-{
+class DLTPULSEGENERATOR_EXPORT DLTCallback {
 public:
    DLTCallback() {}
    virtual ~DLTCallback() {}
@@ -350,8 +389,7 @@ public:
    virtual void onEvent(DLTError error) {}
 };
 
-class DLTPULSEGENERATOR_EXPORT DLTPulseGenerator
-{
+class DLTPULSEGENERATOR_EXPORT DLTPulseGenerator {
     DLTSetup		   m_setupInfo;
     DLTPulse		   m_pulseInfo;
 	DLTPHS			   m_phsDistribution;
@@ -376,6 +414,7 @@ private:
 	void initPulseGenerator(DLTError *error, DLTCallback *callback = nullptr);
 	void initLTGenerator(DLTError *error, DLTCallback *callback = nullptr);
 	void initIRFGenerator(DLTError *error, DLTCallback *callback = nullptr);
+	void initPHS(DLTError *error, DLTCallback *callback = nullptr);
     
 	double estimateFWHM();
 	double nextLifeTime(bool *bPromt, bool *bValid);
@@ -388,21 +427,20 @@ private:
 
     class DLTPulseGeneratorPrivate;
 	class DLTDistributionManager;
+	class DLTInterpolator;
     std::unique_ptr<DLTPulseGeneratorPrivate> m_privatePtr;
 };
 
 } //end namespace
 
-
-/** The class DLT_C_WRAPPER is used as singleton pattern to access from Ansi C functions.
-**	Thus, an interface to different programming languages such as matlab (mex-compiler) or 
-**  python (ctypes-library) is provided.
+/** The following class 'DLT_C_WRAPPER' is supposed to be used to access DLTPulseGenerator from Ansi C functions
+**	in order to make the functionality of this library accessible to programming languages such as  
+**  Matlab or Python.
 **  
-**	An example how to use class DLTPulseGenerator in combination with class DLT_C_WRAPPER 
-**  is given in python: pyDLTPulseGenerator
+**	An example for Python 'pyDLTPulseGenerator' can be found in the related repository.
 **/
-class DLT_C_WRAPPER : public DLifeTime::DLTCallback
-{
+
+class DLT_C_WRAPPER : public DLifeTime::DLTCallback {
 	DLifeTime::DLTPulseGenerator *m_accessPtr;
 	
 public:
@@ -427,9 +465,8 @@ public:
 	DLifeTime::DLTError			  m_lastError;
 };
 
-DLTPULSEGENERATOR_EXPORT_C extern bool emitPulse(double trigger_in_mV_A, double trigger_in_mV_B); //call this to generate a new pulse!
+DLTPULSEGENERATOR_EXPORT_C extern bool emitPulse(double trigger_in_mV_A, double trigger_in_mV_B); 
 
-// to get the values of the pulses call 'emitPulse' before!
 DLTPULSEGENERATOR_EXPORT_C extern double getTimeA(int index);
 DLTPULSEGENERATOR_EXPORT_C extern double getTimeB(int index);
 DLTPULSEGENERATOR_EXPORT_C extern double getVoltageA(int index);
@@ -442,7 +479,6 @@ DLTPULSEGENERATOR_EXPORT_C extern DLifeTime::DLTError getLastError();
 DLTPULSEGENERATOR_EXPORT_C extern void init();
 DLTPULSEGENERATOR_EXPORT_C extern void update();
 
-//equivalent to DLTSetup:
 DLTPULSEGENERATOR_EXPORT_C extern void manipulate(DLifeTime::DLTIRF *irf, bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
 
 DLTPULSEGENERATOR_EXPORT_C extern void setIRF_PDS_A_1(bool enabled, DLifeTime::DLTDistributionFunction::Function functionType, double intensity, double uncertainty, double relativeShift);
@@ -467,7 +503,6 @@ DLTPULSEGENERATOR_EXPORT_C extern void setATS(double ATS_in_nanoSeconds);
 DLTPULSEGENERATOR_EXPORT_C extern void setSweep(double sweep_in_nanoSeconds);
 DLTPULSEGENERATOR_EXPORT_C extern void setNumberOfCells(int numberOfCells);
 
-//equivalent to DLTPulse:
 DLTPULSEGENERATOR_EXPORT_C extern void setRiseTimeA(double riseTime_in_nanoSeconds);
 DLTPULSEGENERATOR_EXPORT_C extern void setPulseWidthA(double pulseWidth);
 
@@ -488,13 +523,16 @@ DLTPULSEGENERATOR_EXPORT_C extern void setDelay(double delay_in_nanoSeconds);
 DLTPULSEGENERATOR_EXPORT_C extern void setAmplitude(double amplitude_in_milliVolt);
 DLTPULSEGENERATOR_EXPORT_C extern void setUsingPositiveSignalPolarity(bool isPositiveSignalPolarity);
 
-//equivalent to DLTPHSDistribution:
+DLTPULSEGENERATOR_EXPORT_C extern void setPHSFromGaussianModel(bool enabled);
+
 DLTPULSEGENERATOR_EXPORT_C extern void setStartOfA(double meanOfStart_A_in_milliVolt, double sigmaOfStart_A_in_milliVolt);
 DLTPULSEGENERATOR_EXPORT_C extern void setStartOfB(double meanOfStart_B_in_milliVolt, double sigmaOfStart_B_in_milliVolt);
 DLTPULSEGENERATOR_EXPORT_C extern void setStopOfA(double meanOfStop_A_in_milliVolt, double sigmaOfStop_A_in_milliVolt);
 DLTPULSEGENERATOR_EXPORT_C extern void setStopOfB(double meanOfStop_B_in_milliVolt, double sigmaOfStop_B_in_milliVolt);
 
-//equivalent to DLTSimulationInput:
+DLTPULSEGENERATOR_EXPORT_C extern void setPHSDistributionOfA(double resolution, int gridNumber, double distributionStart[], int sizeOfStart, double distributionStop[], int sizeOfStop);
+DLTPULSEGENERATOR_EXPORT_C extern void setPHSDistributionOfB(double resolution, int gridNumber, double distributionStart[], int sizeOfStart, double distributionStop[], int sizeOfStop);
+
 DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_1(bool lt1_activated, double tau1_in_nanoSeconds, double intensity1, bool lt1_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);
 DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_2(bool lt2_activated, double tau2_in_nanoSeconds, double intensity2, bool lt2_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);
 DLTPULSEGENERATOR_EXPORT_C extern void setLifeTime_3(bool lt3_activated, double tau3_in_nanoSeconds, double intensity3, bool lt3_distributionActivated, DLifeTime::DLTDistributionFunction::Function functionType, double param1, int gridNumber, double gridIncrement);

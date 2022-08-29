@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2021 Danny Petschke
+**  Copyright (C) 2016-2022 Dr. Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 **
 *****************************************************************************
 **
-**  @author: Danny Petschke
+**  @author: Dr. Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
 *****************************************************************************
@@ -378,6 +378,9 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     //PHS:
     m_phsParentNode = new DSimpleXMLNode("pulse-height-spectrum-PHS");
 
+    m_phsUseGaussianModelNode = new DSimpleXMLNode("use-gaussian-model");
+    m_phsUseGaussianModelNode->setValue(true);
+
     m_meanPHS_A_511Node = new DSimpleXMLNode("mean-stop-window-A-in-mV");
     m_meanPHS_A_511Node->setValue(90.0f);
     m_meanPHS_B_511Node = new DSimpleXMLNode("mean-stop-window-B-in-mV");
@@ -395,6 +398,24 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
     m_sigmaPHS_A_1274Node->setValue(150.0f);
     m_sigmaPHS_B_1274Node = new DSimpleXMLNode("standard-deviation-start-window-B-in-mV");
     m_sigmaPHS_B_1274Node->setValue(150.0f);
+
+    m_phs_filename_A_1274Node = new DSimpleXMLNode("filename-start-A");
+    m_phs_filename_A_1274Node->setValue("");
+    m_phs_filename_A_511Node = new DSimpleXMLNode("filename-stop-A");
+    m_phs_filename_A_511Node->setValue("");
+    m_phs_resolution_A_Node = new DSimpleXMLNode("resolution-A-in-mV");
+    m_phs_resolution_A_Node->setValue(0.5);
+    m_phs_gridNumber_A_Node = new DSimpleXMLNode("gridnumber-A");
+    m_phs_gridNumber_A_Node->setValue(10000);
+
+    m_phs_filename_B_1274Node = new DSimpleXMLNode("filename-start-B");
+    m_phs_filename_B_1274Node->setValue("");
+    m_phs_filename_B_511Node = new DSimpleXMLNode("filename-stop-B");
+    m_phs_filename_B_511Node->setValue("");
+    m_phs_resolution_B_Node = new DSimpleXMLNode("resolution-B-in-mV");
+    m_phs_resolution_B_Node->setValue(0.5);
+    m_phs_gridNumber_B_Node = new DSimpleXMLNode("gridnumber-B");
+    m_phs_gridNumber_B_Node->setValue(10000);
 
     //LT:
     m_ltParentNode = new DSimpleXMLNode("lifetime-spectrum-simulation-input");
@@ -504,8 +525,10 @@ DRS4SimulationSettingsManager::DRS4SimulationSettingsManager()
 
 
     //setup XML-table:
-    (*m_phsParentNode) << m_meanPHS_A_511Node << m_meanPHS_B_511Node << m_meanPHS_A_1274Node << m_meanPHS_B_1274Node
-                                    << m_sigmaPHS_A_511Node << m_sigmaPHS_B_511Node << m_sigmaPHS_A_1274Node << m_sigmaPHS_B_1274Node;
+    (*m_phsParentNode) << m_phsUseGaussianModelNode << m_meanPHS_A_511Node << m_meanPHS_B_511Node << m_meanPHS_A_1274Node << m_meanPHS_B_1274Node
+                                    << m_sigmaPHS_A_511Node << m_sigmaPHS_B_511Node << m_sigmaPHS_A_1274Node << m_sigmaPHS_B_1274Node
+                                    << m_phs_filename_A_511Node << m_phs_filename_A_1274Node << m_phs_resolution_A_Node << m_phs_gridNumber_A_Node
+                                    << m_phs_filename_B_511Node << m_phs_filename_B_1274Node << m_phs_resolution_B_Node << m_phs_gridNumber_B_Node;
 
         (*m_pulseShapeDigitizationParentNode) << m_pulseShapeDigitization_enabled_Node << m_pulseShapeDigitization_depth_in_bit_Node;
 
@@ -1132,6 +1155,8 @@ bool DRS4SimulationSettingsManager::load(const QString &path)
 
     if ( !ok )
     {
+        m_phsUseGaussianModelNode->setValue(true);
+
         m_meanPHS_A_511Node->setValue(90.0f);
         m_meanPHS_B_511Node->setValue(90.0f);
         m_meanPHS_A_1274Node->setValue(190.0f);
@@ -1141,9 +1166,25 @@ bool DRS4SimulationSettingsManager::load(const QString &path)
         m_sigmaPHS_B_511Node->setValue(25.0f);
         m_sigmaPHS_A_1274Node->setValue(150.0f);
         m_sigmaPHS_B_1274Node->setValue(150.0f);
+
+        m_phs_filename_A_511Node->setValue("");
+        m_phs_filename_A_1274Node->setValue("");
+        m_phs_resolution_A_Node->setValue(0.5);
+        m_phs_gridNumber_A_Node->setValue(10000);
+
+        m_phs_filename_B_511Node->setValue("");
+        m_phs_filename_B_1274Node->setValue("");
+        m_phs_resolution_B_Node->setValue(0.5);
+        m_phs_gridNumber_B_Node->setValue(10000);
     }
     else
     {
+        const bool  useModel = phsParentTag.getValueAt(m_phsUseGaussianModelNode, &ok).toBool();
+        if ( ok )
+            m_phsUseGaussianModelNode->setValue(useModel);
+        else
+            m_phsUseGaussianModelNode->setValue(true);
+
         const double  sigma1274keV_A = phsParentTag.getValueAt(m_sigmaPHS_A_1274Node, &ok).toDouble(&ok);
         if ( ok )
             m_sigmaPHS_A_1274Node->setValue(sigma1274keV_A);
@@ -1191,6 +1232,54 @@ bool DRS4SimulationSettingsManager::load(const QString &path)
             m_meanPHS_B_1274Node->setValue(mean1274keV_B);
         else
             m_meanPHS_B_1274Node->setValue(190.0f);
+
+        const QString  filename_511_A = phsParentTag.getValueAt(m_phs_filename_A_511Node, &ok).toString();
+        if ( ok )
+            m_phs_filename_A_511Node->setValue(filename_511_A);
+        else
+            m_phs_filename_A_511Node->setValue("");
+
+        const QString  filename_1274_A = phsParentTag.getValueAt(m_phs_filename_A_1274Node, &ok).toString();
+        if ( ok )
+            m_phs_filename_A_1274Node->setValue(filename_1274_A);
+        else
+            m_phs_filename_A_1274Node->setValue("");
+
+        const double  res_A = phsParentTag.getValueAt(m_phs_resolution_A_Node, &ok).toDouble(&ok);
+        if ( ok )
+            m_phs_resolution_A_Node->setValue(res_A);
+        else
+            m_phs_resolution_A_Node->setValue(0.5);
+
+        const int  grid_A = phsParentTag.getValueAt(m_phs_gridNumber_A_Node, &ok).toInt(&ok);
+        if ( ok )
+            m_phs_gridNumber_A_Node->setValue(grid_A);
+        else
+            m_phs_gridNumber_A_Node->setValue(10000);
+
+        const QString  filename_511_B = phsParentTag.getValueAt(m_phs_filename_B_511Node, &ok).toString();
+        if ( ok )
+            m_phs_filename_B_511Node->setValue(filename_511_B);
+        else
+            m_phs_filename_B_511Node->setValue("");
+
+        const QString  filename_1274_B = phsParentTag.getValueAt(m_phs_filename_B_1274Node, &ok).toString();
+        if ( ok )
+            m_phs_filename_B_1274Node->setValue(filename_1274_B);
+        else
+            m_phs_filename_B_1274Node->setValue("");
+
+        const double  res_B = phsParentTag.getValueAt(m_phs_resolution_B_Node, &ok).toDouble(&ok);
+        if ( ok )
+            m_phs_resolution_B_Node->setValue(res_B);
+        else
+            m_phs_resolution_B_Node->setValue(0.5);
+
+        const int  grid_B = phsParentTag.getValueAt(m_phs_gridNumber_B_Node, &ok).toInt(&ok);
+        if ( ok )
+            m_phs_gridNumber_B_Node->setValue(grid_B);
+        else
+            m_phs_gridNumber_B_Node->setValue(10000);
     }
     /* -----> /Pulse-Height-Spectrum Settings <-----*/
 
@@ -2332,6 +2421,13 @@ float DRS4SimulationSettingsManager::mu_irf_5_shift() const
     return m_irfMU_5_relativeShift->getValue().toFloat();
 }
 
+bool DRS4SimulationSettingsManager::usingPHSGaussianModel() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phsUseGaussianModelNode->getValue().toBool();
+}
+
 float DRS4SimulationSettingsManager::sigmaPHS511keV_A() const
 {
     QMutexLocker locker(&m_mutex);
@@ -2386,6 +2482,62 @@ float DRS4SimulationSettingsManager::meanPHS1274keV_B() const
     QMutexLocker locker(&m_mutex);
 
     return m_meanPHS_B_1274Node->getValue().toFloat();
+}
+
+QString DRS4SimulationSettingsManager::phsFileName511keV_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_filename_A_511Node->getValue().toString();
+}
+
+double DRS4SimulationSettingsManager::phsResolution_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_resolution_A_Node->getValue().toDouble();
+}
+
+int DRS4SimulationSettingsManager::phsGridNumber_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_gridNumber_A_Node->getValue().toInt();
+}
+
+QString DRS4SimulationSettingsManager::phsFileName1274keV_A() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_filename_A_1274Node->getValue().toString();
+}
+
+QString DRS4SimulationSettingsManager::phsFileName511keV_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_filename_B_511Node->getValue().toString();
+}
+
+double DRS4SimulationSettingsManager::phsResolution_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_resolution_B_Node->getValue().toDouble();
+}
+
+int DRS4SimulationSettingsManager::phsGridNumber_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_gridNumber_B_Node->getValue().toInt();
+}
+
+QString DRS4SimulationSettingsManager::phsFileName1274keV_B() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_phs_filename_B_1274Node->getValue().toString();
 }
 
 float DRS4SimulationSettingsManager::arrivalTimeSpreadInNs() const

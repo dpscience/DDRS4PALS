@@ -3,7 +3,7 @@
 **  DDRS4PALS, a software for the acquisition of lifetime spectra using the
 **  DRS4 evaluation board of PSI: https://www.psi.ch/drs/evaluation-board
 **
-**  Copyright (C) 2016-2021 Danny Petschke
+**  Copyright (C) 2016-2022 Dr. Danny Petschke
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 **
 *****************************************************************************
 **
-**  @author: Danny Petschke
+**  @author: Dr. Danny Petschke
 **  @contact: danny.petschke@uni-wuerzburg.de
 **
 *****************************************************************************
@@ -254,6 +254,8 @@ class DRS4SimulationSettingsManager
     /* phs */
     DSimpleXMLNode *m_phsParentNode;
 
+        DSimpleXMLNode *m_phsUseGaussianModelNode;
+
         DSimpleXMLNode *m_sigmaPHS_A_511Node;
         DSimpleXMLNode *m_sigmaPHS_B_511Node;
 
@@ -265,6 +267,16 @@ class DRS4SimulationSettingsManager
 
         DSimpleXMLNode *m_meanPHS_A_1274Node;
         DSimpleXMLNode *m_meanPHS_B_1274Node;
+
+        DSimpleXMLNode *m_phs_resolution_A_Node;
+        DSimpleXMLNode *m_phs_gridNumber_A_Node;
+        DSimpleXMLNode *m_phs_filename_A_511Node;
+        DSimpleXMLNode *m_phs_filename_A_1274Node;
+
+        DSimpleXMLNode *m_phs_resolution_B_Node;
+        DSimpleXMLNode *m_phs_gridNumber_B_Node;
+        DSimpleXMLNode *m_phs_filename_B_511Node;
+        DSimpleXMLNode *m_phs_filename_B_1274Node;
 
     DSimpleXMLNode *m_arrivalTimeSpreadInNsNode;
 
@@ -435,6 +447,7 @@ public:
     float mu_irf_5_uncertainty() const;
     float mu_irf_5_shift() const;
 
+    bool usingPHSGaussianModel() const;
 
     float sigmaPHS511keV_A() const;
     float meanPHS511keV_A() const;
@@ -448,6 +461,15 @@ public:
     float sigmaPHS1274keV_B() const;
     float meanPHS1274keV_B() const;
 
+    QString phsFileName511keV_A() const;
+    QString phsFileName1274keV_A() const;
+    double phsResolution_A() const;
+    int phsGridNumber_A() const;
+
+    QString phsFileName511keV_B() const;
+    QString phsFileName1274keV_B() const;
+    double phsResolution_B() const;
+    int phsGridNumber_B() const;
 
     float arrivalTimeSpreadInNs() const;
 
